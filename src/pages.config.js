@@ -53,6 +53,7 @@ import Markets from './pages/Markets';
 import MarketDetail from './pages/MarketDetail';
 import Trade from './pages/Trade';
 import WalletConnect from './pages/WalletConnect';
+import Portfolio from './pages/Portfolio';
 import __Layout from './Layout.jsx';
 
 
@@ -63,6 +64,7 @@ export const PAGES = {
     "MarketDetail": MarketDetail,
     "Trade": Trade,
     "WalletConnect": WalletConnect,
+    "Portfolio": Portfolio,
 }
 
 export const pagesConfig = {
