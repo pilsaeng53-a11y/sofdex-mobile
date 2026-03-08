@@ -57,11 +57,9 @@ export default function MarketDetail() {
         <p className="text-[11px] text-slate-500">Last updated · <span className="text-emerald-400">Live</span></p>
       </div>
 
-      {/* Chart */}
+      {/* TradingView Chart */}
       <div className="px-4 mb-5">
-        <div className="glass-card rounded-2xl p-4">
-          <PriceChart basePrice={asset.price} positive={isPositive} />
-        </div>
+        <TradingViewChart symbol={asset.symbol} height={320} />
       </div>
 
       {/* Stats grid */}

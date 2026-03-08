@@ -76,11 +76,9 @@ export default function Trade() {
         </div>
       </div>
 
-      {/* Chart */}
+      {/* TradingView Chart */}
       <div className="px-4 mb-4">
-        <div className="glass-card rounded-2xl p-3">
-          <PriceChart basePrice={selectedAsset.price} positive={isPositive} />
-        </div>
+        <TradingViewChart symbol={selectedAsset.symbol} height={300} />
       </div>
 
       {/* Order panel */}
