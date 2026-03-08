@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
-import PriceChart from '../components/shared/PriceChart';
+import TradingViewChart from '../components/trade/TradingViewChart';
 import OrderPanel from '../components/trade/OrderPanel';
 import PositionsPanel from '../components/trade/PositionsPanel';
 import { ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';

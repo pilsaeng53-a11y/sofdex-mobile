@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Share2, TrendingUp, TrendingDown, Activity, BarChart3, Clock } from 'lucide-react';
 import { getMarketBySymbol, formatPrice, formatChange } from '../components/shared/MarketData';
-import PriceChart from '../components/shared/PriceChart';
+import TradingViewChart from '../components/trade/TradingViewChart';
 
 export default function MarketDetail() {
   const urlParams = new URLSearchParams(window.location.search);
