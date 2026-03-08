@@ -53,18 +53,26 @@ export default function Trade() {
       </div>
 
       {/* Quick stats */}
-      <div className="px-4 mb-3 flex gap-4 text-[11px]">
-        <div>
+      <div className="px-4 mb-3 flex gap-4 text-[11px] overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
+        <div className="flex-shrink-0">
           <span className="text-slate-500">Vol 24h </span>
           <span className="text-slate-300 font-medium">{selectedAsset.volume}</span>
         </div>
-        <div>
-          <span className="text-slate-500">Leverage </span>
+        <div className="flex-shrink-0">
+          <span className="text-slate-500">Max Lev </span>
           <span className="text-[#00d4aa] font-medium">{selectedAsset.leverage || '50x'}</span>
         </div>
-        <div>
+        <div className="flex-shrink-0">
           <span className="text-slate-500">Funding </span>
-          <span className="text-emerald-400 font-medium">0.01%</span>
+          <span className="text-emerald-400 font-medium">+0.01%</span>
+        </div>
+        <div className="flex-shrink-0">
+          <span className="text-slate-500">OI </span>
+          <span className="text-slate-300 font-medium">$248M</span>
+        </div>
+        <div className="flex-shrink-0">
+          <span className="text-slate-500">Mcap </span>
+          <span className="text-slate-300 font-medium">{selectedAsset.mcap}</span>
         </div>
       </div>
 
