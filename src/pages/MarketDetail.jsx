@@ -135,7 +135,7 @@ export default function MarketDetail() {
           <p className="text-xs text-slate-400 leading-relaxed">
             {asset.category === 'rwa' 
               ? `${asset.name} is a tokenized real-world asset available on SOFDex. Trade with institutional-grade execution, deep liquidity, and transparent pricing backed by verifiable on-chain assets.`
-              : `${asset.name} ({asset.symbol}) perpetual futures are available on SOFDex with up to ${asset.leverage || '50x'} leverage. Access deep liquidity, tight spreads, and advanced order types on Solana's leading multi-asset exchange.`
+              : `${asset.name} (${asset.symbol}) perpetual futures are available on SOFDex with up to ${asset.leverage || '50x'} leverage. Access deep liquidity, tight spreads, and advanced order types on Solana's leading multi-asset exchange.`
             }
           </p>
         </div>
