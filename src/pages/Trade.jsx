@@ -77,7 +77,7 @@ export default function Trade() {
 
       {/* Order panel */}
       <div className="px-4 mb-4">
-        <OrderPanel />
+        <OrderPanel asset={selectedAsset} />
       </div>
 
       {/* Positions */}
