@@ -1,12 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { Zap, Info } from 'lucide-react';
 
-export default function OrderPanel() {
+const leverageOptions = [1, 2, 5, 10, 25, 50, 100];
+const pctButtons = ['25%', '50%', '75%', 'Max'];
+
+export default function OrderPanel({ asset }) {
   const [side, setSide] = useState('buy');
   const [orderType, setOrderType] = useState('market');
   const [amount, setAmount] = useState('');
+  const [limitPrice, setLimitPrice] = useState('');
   const [leverage, setLeverage] = useState(10);
 
-  const leverageOptions = [1, 2, 5, 10, 25, 50, 100];
+  const basePrice = asset?.price || 0;
+  const parsedAmount = parseFloat(amount) || 0;
+  const entryPrice = orderType === 'limit' && limitPrice ? parseFloat(limitPrice) : basePrice;
+  const positionSize = parsedAmount * leverage;
+  const fee = positionSize * 0.0005;
+  const liqDistance = 1 / leverage;
+  const liqPrice = side === 'buy'
+    ? entryPrice * (1 - liqDistance * 0.9)
+    : entryPrice * (1 + liqDistance * 0.9);
+
+  const handlePct = (pct) => {
+    const balance = 1200; // mock balance
+    const val = pct === 'Max' ? balance : balance * (parseInt(pct) / 100);
+    setAmount(val.toFixed(2));
+  };
 
   return (
     <div className="glass-card rounded-2xl p-4">
@@ -15,7 +34,9 @@ export default function OrderPanel() {
         <button
           onClick={() => setSide('buy')}
           className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${
-            side === 'buy' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-500'
+            side === 'buy'
+              ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20'
+              : 'text-slate-500 hover:text-slate-300'
           }`}
         >
           Buy / Long
@@ -23,7 +44,9 @@ export default function OrderPanel() {
         <button
           onClick={() => setSide('sell')}
           className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all ${
-            side === 'sell' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'text-slate-500'
+            side === 'sell'
+              ? 'bg-red-500 text-white shadow-lg shadow-red-500/20'
+              : 'text-slate-500 hover:text-slate-300'
           }`}
         >
           Sell / Short
@@ -37,7 +60,9 @@ export default function OrderPanel() {
             key={type}
             onClick={() => setOrderType(type)}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-medium capitalize transition-all ${
-              orderType === type ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
+              orderType === type
+                ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
+                : 'text-slate-500 border border-transparent hover:text-slate-300'
             }`}
           >
             {type}
@@ -45,31 +70,42 @@ export default function OrderPanel() {
         ))}
       </div>
 
-      {/* Price input (for limit/stop) */}
+      {/* Limit price input */}
       {orderType !== 'market' && (
         <div className="mb-3">
-          <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Price (USD)</label>
+          <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">
+            {orderType === 'limit' ? 'Limit Price (USD)' : 'Stop Price (USD)'}
+          </label>
           <input
-            type="text"
-            placeholder="0.00"
+            type="number"
+            placeholder={basePrice ? basePrice.toFixed(2) : '0.00'}
+            value={limitPrice}
+            onChange={(e) => setLimitPrice(e.target.value)}
             className="w-full h-11 px-4 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30"
           />
         </div>
       )}
 
-      {/* Amount input */}
+      {/* Collateral input */}
       <div className="mb-3">
-        <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Amount (USD)</label>
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="text-[11px] text-slate-500 font-medium">Collateral (USDC)</label>
+          <span className="text-[11px] text-slate-500">Bal: <span className="text-slate-300 font-medium">$1,200</span></span>
+        </div>
         <input
-          type="text"
+          type="number"
           placeholder="0.00"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           className="w-full h-11 px-4 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30"
         />
-        <div className="flex gap-2 mt-2">
-          {['25%', '50%', '75%', '100%'].map(pct => (
-            <button key={pct} className="flex-1 py-1.5 rounded-lg bg-[#0d1220] text-[10px] font-medium text-slate-500 hover:text-[#00d4aa] hover:bg-[#00d4aa]/5 transition-all">
+        <div className="flex gap-1.5 mt-2">
+          {pctButtons.map(pct => (
+            <button
+              key={pct}
+              onClick={() => handlePct(pct)}
+              className="flex-1 py-1.5 rounded-lg bg-[#0d1220] text-[10px] font-medium text-slate-500 hover:text-[#00d4aa] hover:bg-[#00d4aa]/5 transition-all border border-transparent hover:border-[#00d4aa]/15"
+            >
               {pct}
             </button>
           ))}
@@ -80,9 +116,16 @@ export default function OrderPanel() {
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <label className="text-[11px] text-slate-500 font-medium">Leverage</label>
-          <span className="text-sm font-bold text-[#00d4aa]">{leverage}x</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-sm font-bold text-[#00d4aa]">{leverage}x</span>
+            {parsedAmount > 0 && (
+              <span className="text-[10px] text-slate-500">
+                = <span className="text-slate-300 font-medium">${positionSize.toFixed(0)}</span>
+              </span>
+            )}
+          </div>
         </div>
-        <div className="flex gap-1.5">
+        <div className="flex gap-1">
           {leverageOptions.map(lev => (
             <button
               key={lev}
@@ -90,12 +133,30 @@ export default function OrderPanel() {
               className={`flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${
                 leverage === lev
                   ? 'bg-[#00d4aa]/15 text-[#00d4aa] border border-[#00d4aa]/20'
-                  : 'bg-[#0d1220] text-slate-500 border border-transparent'
+                  : 'bg-[#0d1220] text-slate-500 border border-transparent hover:text-slate-300'
               }`}
             >
               {lev}x
             </button>
           ))}
+        </div>
+        {/* Leverage risk bar */}
+        <div className="mt-2 h-1 rounded-full bg-[#0d1220] overflow-hidden">
+          <div
+            className="h-full rounded-full transition-all"
+            style={{
+              width: `${(leverage / 100) * 100}%`,
+              background: leverage <= 10
+                ? '#22c55e'
+                : leverage <= 25
+                ? '#f59e0b'
+                : '#ef4444'
+            }}
+          />
+        </div>
+        <div className="flex justify-between text-[9px] text-slate-600 mt-0.5">
+          <span>Low Risk</span>
+          <span>High Risk</span>
         </div>
       </div>
 
@@ -103,25 +164,41 @@ export default function OrderPanel() {
       <div className="bg-[#0d1220] rounded-xl p-3 mb-4 space-y-2">
         <div className="flex justify-between text-[11px]">
           <span className="text-slate-500">Est. Entry</span>
-          <span className="text-slate-300">Market Price</span>
+          <span className="text-slate-300 font-medium">
+            {orderType === 'market' ? 'Market' : limitPrice ? `$${parseFloat(limitPrice).toFixed(2)}` : '—'}
+          </span>
         </div>
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Est. Liq. Price</span>
-          <span className="text-slate-300">—</span>
+          <span className="text-slate-500">Position Size</span>
+          <span className="text-slate-300 font-medium">
+            {parsedAmount > 0 ? `$${positionSize.toFixed(2)}` : '—'}
+          </span>
         </div>
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Fee</span>
-          <span className="text-slate-300">0.05%</span>
+          <span className="text-slate-500">Liq. Price</span>
+          <span className={`font-medium ${parsedAmount > 0 ? 'text-red-400' : 'text-slate-300'}`}>
+            {parsedAmount > 0 ? `$${liqPrice.toFixed(2)}` : '—'}
+          </span>
+        </div>
+        <div className="flex justify-between text-[11px]">
+          <span className="text-slate-500">Trading Fee</span>
+          <span className="text-slate-300 font-medium">
+            {parsedAmount > 0 ? `$${fee.toFixed(4)}` : '0.05%'}
+          </span>
         </div>
       </div>
 
-      {/* Submit button */}
-      <button className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-all shadow-lg ${
-        side === 'buy' 
-          ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/20' 
-          : 'bg-red-500 hover:bg-red-400 shadow-red-500/20'
-      }`}>
+      {/* Submit */}
+      <button
+        className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-all shadow-lg flex items-center justify-center gap-2 ${
+          side === 'buy'
+            ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/20'
+            : 'bg-red-500 hover:bg-red-400 shadow-red-500/20'
+        }`}
+      >
+        <Zap className="w-4 h-4" />
         {side === 'buy' ? 'Open Long' : 'Open Short'}
+        {parsedAmount > 0 && ` · $${positionSize.toFixed(0)}`}
       </button>
     </div>
   );
