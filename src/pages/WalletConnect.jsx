@@ -139,7 +139,7 @@ export default function WalletConnect() {
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-3 mb-6">
+            <div className="flex gap-3 mb-4">
               <button
                 onClick={() => navigate(createPageUrl('Trade'))}
                 className="flex-1 py-3.5 rounded-xl gradient-teal text-white font-bold text-sm shadow-lg shadow-[#00d4aa]/20 flex items-center justify-center gap-2"
@@ -151,6 +151,19 @@ export default function WalletConnect() {
                 className="flex-1 py-3.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-white font-bold text-sm"
               >
                 Portfolio
+              </button>
+            </div>
+            {/* Deposit prompt */}
+            <div className="flex items-center gap-3 p-3.5 rounded-xl bg-[#0d1220] border border-[#00d4aa]/10">
+              <div className="w-8 h-8 rounded-lg bg-[#00d4aa]/10 flex items-center justify-center flex-shrink-0">
+                <Zap className="w-4 h-4 text-[#00d4aa]" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-white">Deposit to start trading</p>
+                <p className="text-[10px] text-slate-500">Transfer USDC or SOL to your trading account</p>
+              </div>
+              <button className="text-[11px] font-bold text-[#00d4aa] bg-[#00d4aa]/10 px-3 py-1.5 rounded-lg hover:bg-[#00d4aa]/20 transition-colors whitespace-nowrap">
+                Deposit
               </button>
             </div>
           </motion.div>
