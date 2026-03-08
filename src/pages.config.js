@@ -54,6 +54,7 @@ import MarketDetail from './pages/MarketDetail';
 import Trade from './pages/Trade';
 import WalletConnect from './pages/WalletConnect';
 import Portfolio from './pages/Portfolio';
+import RWAExplore from './pages/RWAExplore';
 import __Layout from './Layout.jsx';
 
 
@@ -65,6 +66,7 @@ export const PAGES = {
     "Trade": Trade,
     "WalletConnect": WalletConnect,
     "Portfolio": Portfolio,
+    "RWAExplore": RWAExplore,
 }
 
 export const pagesConfig = {
