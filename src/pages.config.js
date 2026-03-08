@@ -49,7 +49,6 @@
  */
 import Splash from './pages/Splash';
 import Home from './pages/Home';
-import Markets from './pages/Markets';
 import MarketDetail from './pages/MarketDetail';
 import Trade from './pages/Trade';
 import WalletConnect from './pages/WalletConnect';
@@ -63,7 +62,6 @@ import __Layout from './Layout.jsx';
 export const PAGES = {
     "Splash": Splash,
     "Home": Home,
-    "Markets": Markets,
     "MarketDetail": MarketDetail,
     "Trade": Trade,
     "WalletConnect": WalletConnect,
