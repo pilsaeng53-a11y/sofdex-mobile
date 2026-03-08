@@ -49,12 +49,14 @@
  */
 import Splash from './pages/Splash';
 import Home from './pages/Home';
+import Markets from './pages/Markets';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Splash": Splash,
     "Home": Home,
+    "Markets": Markets,
 }
 
 export const pagesConfig = {
