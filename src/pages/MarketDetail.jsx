@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Share2, TrendingUp, TrendingDown, Activity, BarChart3, Clock } from 'lucide-react';
 import { getMarketBySymbol, formatPrice, formatChange } from '../components/shared/MarketData';
+import { useMarketData } from '../components/shared/MarketDataProvider';
 import TradingViewChart from '../components/trade/TradingViewChart';
 
 export default function MarketDetail() {
@@ -10,7 +11,11 @@ export default function MarketDetail() {
   const navigate = useNavigate();
   const asset = getMarketBySymbol(symbol);
   const [orderType, setOrderType] = useState('market');
-  const isPositive = asset?.change >= 0;
+  const { getLiveAsset } = useMarketData();
+  const live = getLiveAsset(symbol);
+  const displayPrice  = live.available ? live.price  : asset?.price;
+  const displayChange = live.available ? live.change : asset?.change;
+  const isPositive = (displayChange ?? 0) >= 0;
 
   if (!asset) {
     return (
@@ -46,12 +51,12 @@ export default function MarketDetail() {
       {/* Price section */}
       <div className="px-4 mb-4">
         <div className="flex items-end gap-3 mb-1">
-          <span className="text-3xl font-bold text-white">${formatPrice(asset.price)}</span>
+          <span className="text-3xl font-bold text-white">${formatPrice(displayPrice)}</span>
           <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${
             isPositive ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'
           }`}>
             {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-            {formatChange(asset.change)}
+            {formatChange(displayChange ?? 0)}
           </div>
         </div>
         <p className="text-[11px] text-slate-500">Last updated · <span className="text-emerald-400">Live</span></p>
