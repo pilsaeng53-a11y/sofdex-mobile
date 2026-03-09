@@ -1,10 +1,20 @@
 import React from 'react';
 import { Flame } from 'lucide-react';
 import { CRYPTO_MARKETS } from '../shared/MarketData';
+import { useMarketData } from '../shared/MarketDataProvider';
 import AssetCard from '../shared/AssetCard';
 
 export default function TrendingAssets() {
-  const trending = [...CRYPTO_MARKETS].sort((a, b) => Math.abs(b.change) - Math.abs(a.change)).slice(0, 4);
+  const { liveData } = useMarketData();
+
+  // Sort by absolute live 24h change; fall back to static change while loading
+  const trending = [...CRYPTO_MARKETS]
+    .map(a => {
+      const live = liveData[a.symbol];
+      return live?.available ? { ...a, price: live.price, change: live.change } : a;
+    })
+    .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+    .slice(0, 4);
 
   return (
     <div className="mb-6">

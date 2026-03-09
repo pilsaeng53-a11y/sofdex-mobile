@@ -47,28 +47,28 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Splash from './pages/Splash';
+import Governance from './pages/Governance';
 import Home from './pages/Home';
 import MarketDetail from './pages/MarketDetail';
+import Portfolio from './pages/Portfolio';
+import Profile from './pages/Profile';
+import RWAExplore from './pages/RWAExplore';
+import Splash from './pages/Splash';
 import Trade from './pages/Trade';
 import WalletConnect from './pages/WalletConnect';
-import Portfolio from './pages/Portfolio';
-import RWAExplore from './pages/RWAExplore';
-import Governance from './pages/Governance';
-import Profile from './pages/Profile';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Splash": Splash,
+    "Governance": Governance,
     "Home": Home,
     "MarketDetail": MarketDetail,
+    "Portfolio": Portfolio,
+    "Profile": Profile,
+    "RWAExplore": RWAExplore,
+    "Splash": Splash,
     "Trade": Trade,
     "WalletConnect": WalletConnect,
-    "Portfolio": Portfolio,
-    "RWAExplore": RWAExplore,
-    "Governance": Governance,
-    "Profile": Profile,
 }
 
 export const pagesConfig = {

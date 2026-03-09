@@ -1,18 +1,17 @@
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
 import { CRYPTO_MARKETS, RWA_MARKETS } from '../shared/MarketData';
-import { useLivePrices } from '../shared/useLivePrices';
+import { useMarketData } from '../shared/MarketDataProvider';
 import MiniChart from '../shared/MiniChart';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 const ALL_ASSETS = [...CRYPTO_MARKETS, ...RWA_MARKETS];
-const ALL_SYMBOLS = ALL_ASSETS.map(a => a.symbol);
 
 function formatPrice(price) {
-  if (price >= 1000)      return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  if (price >= 1)         return price.toFixed(2);
-  if (price >= 0.0001)    return price.toFixed(4);
+  if (price == null) return '—';
+  if (price >= 1000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (price >= 1)    return price.toFixed(2);
+  if (price >= 0.0001) return price.toFixed(4);
   return price.toFixed(8);
 }
 
@@ -39,18 +38,21 @@ function SkeletonRow() {
 
 export default function TopMovers() {
   const [tab, setTab] = useState('gainers');
-  const { prices, loading } = useLivePrices(ALL_SYMBOLS);
+  const { liveData, sparklines } = useMarketData();
+  const hasLiveData = Object.keys(liveData).length > 0;
 
-  // Build enriched list using live data where available, static fallback otherwise
+  // Merge live data on top of static; static is fallback for RWA/non-Binance
   const enriched = ALL_ASSETS.map(asset => {
-    const live = prices[asset.symbol];
-    if (live?.available) {
-      return { ...asset, price: live.price, change: live.change, sparkline: live.sparkline, liveOk: true };
-    }
-    return { ...asset, sparkline: null, liveOk: false };
+    const live = liveData[asset.symbol];
+    return {
+      ...asset,
+      price:    live?.available ? live.price  : asset.price,
+      change:   live?.available ? live.change : asset.change,
+      sparkline: sparklines[asset.symbol] ?? null,
+      isLive:   !!live?.available,
+    };
   });
 
-  // Sort by live change, only include assets we have a change value for
   const sorted = [...enriched]
     .sort((a, b) => tab === 'gainers' ? b.change - a.change : a.change - b.change)
     .slice(0, 5);
@@ -86,7 +88,7 @@ export default function TopMovers() {
       </div>
 
       <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-        {loading
+        {!hasLiveData
           ? Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
           : sorted.map((asset, i) => {
               const isPos = asset.change >= 0;
@@ -101,23 +103,12 @@ export default function TopMovers() {
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
-                      {asset.liveOk
-                        ? <MiniChart data={asset.sparkline} width={60} height={24} />
-                        : <div className="w-[60px] text-center text-[10px] text-slate-600">N/A</div>
-                      }
+                      <MiniChart data={asset.sparkline} positive={isPos} width={60} height={24} />
                       <div className="text-right min-w-[80px]">
-                        {asset.liveOk
-                          ? <>
-                              <p className="text-sm font-semibold text-slate-100">${formatPrice(asset.price)}</p>
-                              <p className={`text-[11px] font-medium ${isPos ? 'text-emerald-400' : 'text-red-400'}`}>
-                                {isPos ? '+' : ''}{asset.change.toFixed(2)}%
-                              </p>
-                            </>
-                          : <>
-                              <p className="text-sm font-semibold text-slate-600">—</p>
-                              <p className="text-[11px] text-slate-600">Unavailable</p>
-                            </>
-                        }
+                        <p className="text-sm font-semibold text-slate-100">${formatPrice(asset.price)}</p>
+                        <p className={`text-[11px] font-medium ${isPos ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {isPos ? '+' : ''}{asset.change.toFixed(2)}%
+                        </p>
                       </div>
                     </div>
                   </div>

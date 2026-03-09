@@ -2,20 +2,26 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { formatPrice, formatChange } from './MarketData';
+import { useMarketData } from './MarketDataProvider';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 const symbolColors = {
-  SOL: 'from-[#9945FF] to-[#14F195]',
-  BTC: 'from-[#F7931A] to-[#FFB347]',
-  ETH: 'from-[#627EEA] to-[#8B9FEF]',
-  JUP: 'from-[#00D4AA] to-[#06B6D4]',
-  RAY: 'from-[#5AC4BE] to-[#2B6CB0]',
+  SOL:  'from-[#9945FF] to-[#14F195]',
+  BTC:  'from-[#F7931A] to-[#FFB347]',
+  ETH:  'from-[#627EEA] to-[#8B9FEF]',
+  JUP:  'from-[#00D4AA] to-[#06B6D4]',
+  RAY:  'from-[#5AC4BE] to-[#2B6CB0]',
   RNDR: 'from-[#E84142] to-[#FF6B6B]',
 };
 
 export default function AssetCard({ asset, compact = false }) {
+  const { getLiveAsset } = useMarketData();
+  const live = getLiveAsset(asset.symbol);
+
+  const price  = live.available ? live.price  : asset.price;
+  const change = live.available ? live.change : asset.change;
   const gradientClass = symbolColors[asset.symbol] || 'from-slate-500 to-slate-600';
-  const isPositive = asset.change >= 0;
+  const isPositive = change >= 0;
 
   if (compact) {
     return (
@@ -32,10 +38,10 @@ export default function AssetCard({ asset, compact = false }) {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm font-semibold text-slate-100">${formatPrice(asset.price)}</p>
+              <p className="text-sm font-semibold text-slate-100">${formatPrice(price)}</p>
               <div className={`flex items-center gap-0.5 justify-end ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
                 {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                <span className="text-[11px] font-medium">{formatChange(asset.change)}</span>
+                <span className="text-[11px] font-medium">{formatChange(change)}</span>
               </div>
             </div>
           </div>
@@ -52,12 +58,12 @@ export default function AssetCard({ asset, compact = false }) {
         </div>
         <p className="text-sm font-semibold text-slate-100 mb-0.5">{asset.symbol}</p>
         <p className="text-[11px] text-slate-500 mb-2">{asset.name}</p>
-        <p className="text-lg font-bold text-white mb-1">${formatPrice(asset.price)}</p>
+        <p className="text-lg font-bold text-white mb-1">${formatPrice(price)}</p>
         <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
           isPositive ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'
         }`}>
           {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-          {formatChange(asset.change)}
+          {formatChange(change)}
         </div>
       </div>
     </Link>
