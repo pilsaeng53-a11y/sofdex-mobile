@@ -19,7 +19,6 @@ export const SYMBOL_MAP = {
   'EURO-B': 'TVC:EURUSD',
   'RE-NYC': null,
   'RE-DXB': null,
-  'EURO-B': 'TVC:EURUSD',
 };
 
 // ── SOFDex symbol → Binance spot ticker (for WS + REST price feed) ────────────
