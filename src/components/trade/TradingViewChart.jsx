@@ -1,26 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Loader2, AlertTriangle } from 'lucide-react';
-
-// Map SOFDex symbols → TradingView symbols
-const SYMBOL_MAP = {
-  'BTC':    'BINANCE:BTCUSDT',
-  'ETH':    'BINANCE:ETHUSDT',
-  'SOL':    'BINANCE:SOLUSDT',
-  'JUP':    'BINANCE:JUPUSDT',
-  'RAY':    'BINANCE:RAYUSDT',
-  'RNDR':   'BINANCE:RNDRUSDT',
-  'BONK':   'BINANCE:BONKUSDT',
-  'HNT':    'BINANCE:HNTUSDT',
-  'AAPL-T': 'NASDAQ:AAPL',
-  'MSFT-T': 'NASDAQ:MSFT',
-  'NVDA-T': 'NASDAQ:NVDA',
-  'GOLD-T': 'OANDA:XAUUSD',
-  'CRUDE-T':'NYMEX:CL1!',
-  'SP500-T':'SP:SPX',
-  'TSLA-T': 'NASDAQ:TSLA',
-  'TBILL':  'TVC:US10Y',
-  'EURO-B': 'TVC:EURUSD',
-};
+import { SYMBOL_MAP } from '../shared/symbolMap';
 
 const TIMEFRAMES = [
   { label: '1m',  value: '1'   },
