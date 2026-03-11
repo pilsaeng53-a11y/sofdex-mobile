@@ -6,25 +6,26 @@ import PositionsPanel from '../components/trade/PositionsPanel';
 import OrderBook from '../components/trade/OrderBook';
 import RecentTrades from '../components/trade/RecentTrades';
 import { useMarketData } from '../components/shared/MarketDataProvider';
-import { ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
+import { ChevronDown, TrendingUp, TrendingDown, BookOpen, Activity } from 'lucide-react';
+
+const SIDE_TABS = ['OrderBook', 'Recent Trades'];
 
 export default function Trade() {
   const [selectedSymbol, setSelectedSymbol] = useState(CRYPTO_MARKETS[0].symbol);
-  const [showSelector, setShowSelector]     = useState(false);
+  const [showSelector, setShowSelector] = useState(false);
+  const [sideTab, setSideTab] = useState('OrderBook');
   const { getLiveAsset } = useMarketData();
 
-  const staticAsset   = CRYPTO_MARKETS.find(a => a.symbol === selectedSymbol) || CRYPTO_MARKETS[0];
-  const live          = getLiveAsset(selectedSymbol);
-  const displayPrice  = live.available ? live.price  : staticAsset.price;
+  const staticAsset = CRYPTO_MARKETS.find(a => a.symbol === selectedSymbol) || CRYPTO_MARKETS[0];
+  const live = getLiveAsset(selectedSymbol);
+  const displayPrice = live.available ? live.price : staticAsset.price;
   const displayChange = live.available ? live.change : staticAsset.change;
-  const isPositive    = displayChange >= 0;
-
-  // Pass live-merged asset to OrderPanel so it uses current price
+  const isPositive = displayChange >= 0;
   const assetForPanel = { ...staticAsset, price: displayPrice, change: displayChange };
 
   return (
     <div className="min-h-screen">
-      {/* Header with pair selector */}
+      {/* Pair selector header */}
       <div className="px-4 pt-4 pb-2">
         <div className="flex items-center justify-between">
           <button
@@ -34,18 +35,15 @@ export default function Trade() {
             <span className="text-sm font-bold text-white">{selectedSymbol}-PERP</span>
             <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
           </button>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-sm font-bold text-white">${formatPrice(displayPrice)}</p>
-              <div className={`flex items-center gap-0.5 justify-end ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-                {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                <span className="text-[11px] font-medium">{formatChange(displayChange)}</span>
-              </div>
+          <div className="text-right">
+            <p className="text-sm font-bold text-white">${formatPrice(displayPrice)}</p>
+            <div className={`flex items-center gap-0.5 justify-end ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+              {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              <span className="text-[11px] font-medium">{formatChange(displayChange)}</span>
             </div>
           </div>
         </div>
 
-        {/* Pair selector dropdown */}
         {showSelector && (
           <div className="mt-2 glass-card rounded-xl overflow-hidden max-h-48 overflow-y-auto">
             {CRYPTO_MARKETS.map(asset => {
@@ -70,37 +68,45 @@ export default function Trade() {
 
       {/* Quick stats */}
       <div className="px-4 mb-3 flex gap-4 text-[11px] overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-        <div className="flex-shrink-0">
-          <span className="text-slate-500">Vol 24h </span>
-          <span className="text-slate-300 font-medium">{staticAsset.volume}</span>
-        </div>
-        <div className="flex-shrink-0">
-          <span className="text-slate-500">Max Lev </span>
-          <span className="text-[#00d4aa] font-medium">{staticAsset.leverage || '50x'}</span>
-        </div>
-        <div className="flex-shrink-0">
-          <span className="text-slate-500">Funding </span>
-          <span className="text-emerald-400 font-medium">+0.01%</span>
-        </div>
-        <div className="flex-shrink-0">
-          <span className="text-slate-500">OI </span>
-          <span className="text-slate-300 font-medium">$248M</span>
-        </div>
-        <div className="flex-shrink-0">
-          <span className="text-slate-500">Mcap </span>
-          <span className="text-slate-300 font-medium">{staticAsset.mcap}</span>
-        </div>
+        {[
+          ['Vol 24h', staticAsset.volume],
+          ['Max Lev', staticAsset.leverage || '50x'],
+          ['Funding', '+0.01%'],
+          ['OI', '$248M'],
+          ['Mcap', staticAsset.mcap],
+        ].map(([label, val], i) => (
+          <div key={i} className="flex-shrink-0">
+            <span className="text-slate-500">{label} </span>
+            <span className={`font-medium ${label === 'Funding' ? 'text-emerald-400' : label === 'Max Lev' ? 'text-[#00d4aa]' : 'text-slate-300'}`}>{val}</span>
+          </div>
+        ))}
       </div>
 
-      {/* TradingView Chart — uses same mapped symbol as the live data engine */}
+      {/* TradingView chart */}
       <div className="px-4 mb-4">
-        <TradingViewChart symbol={selectedSymbol} height={300} />
+        <TradingViewChart symbol={selectedSymbol} height={280} />
       </div>
 
-      {/* OrderBook + Recent Trades */}
-      <div className="px-4 mb-4 grid grid-cols-2 gap-3">
-        <OrderBook price={displayPrice} />
-        <RecentTrades price={displayPrice} />
+      {/* OrderBook / Recent Trades toggle */}
+      <div className="px-4 mb-2 flex gap-1.5">
+        {SIDE_TABS.map(t => (
+          <button
+            key={t}
+            onClick={() => setSideTab(t)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              sideTab === t ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
+            }`}
+          >
+            {t === 'OrderBook' ? <BookOpen className="w-3.5 h-3.5" /> : <Activity className="w-3.5 h-3.5" />}
+            {t}
+          </button>
+        ))}
+      </div>
+
+      <div className="px-4 mb-4">
+        {sideTab === 'OrderBook'
+          ? <OrderBook price={displayPrice} />
+          : <RecentTrades price={displayPrice} />}
       </div>
 
       {/* Order panel */}
@@ -108,7 +114,7 @@ export default function Trade() {
         <OrderPanel asset={assetForPanel} />
       </div>
 
-      {/* Positions */}
+      {/* Positions / orders / history */}
       <div className="px-4 pb-6">
         <PositionsPanel />
       </div>

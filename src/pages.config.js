@@ -64,6 +64,7 @@ import LiquidationFeed from './pages/LiquidationFeed';
 import WhaleTracker from './pages/WhaleTracker';
 import Notifications from './pages/Notifications';
 import News from './pages/News';
+import Markets from './pages/Markets';
 import __Layout from './Layout.jsx';
 
 
@@ -85,6 +86,7 @@ export const PAGES = {
     "WhaleTracker": WhaleTracker,
     "Notifications": Notifications,
     "News": News,
+    "Markets": Markets,
 }
 
 export const pagesConfig = {
