@@ -3,6 +3,8 @@ import { CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/
 import TradingViewChart from '../components/trade/TradingViewChart';
 import OrderPanel from '../components/trade/OrderPanel';
 import PositionsPanel from '../components/trade/PositionsPanel';
+import OrderBook from '../components/trade/OrderBook';
+import RecentTrades from '../components/trade/RecentTrades';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { ChevronDown, TrendingUp, TrendingDown } from 'lucide-react';
 

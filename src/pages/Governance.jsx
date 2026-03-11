@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Vote, Clock, CheckCircle2, XCircle, Users, Zap } from 'lucide-react';
+import { Vote, Clock, CheckCircle2, XCircle, Users, Zap, TrendingUp } from 'lucide-react';
 import { GOVERNANCE_PROPOSALS } from '../components/shared/MarketData';
 
 const statusConfig = {
