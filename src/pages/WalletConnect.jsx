@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Wallet, Check, ExternalLink, Shield, Zap } from 'lucide-react';
+import { ArrowLeft, Wallet, Check, ExternalLink, Shield, Zap, Building2, Vote, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const wallets = [
-  { name: 'Phantom', icon: '👻', desc: 'Most popular Solana wallet', color: 'from-[#AB9FF2] to-[#7B61FF]' },
-  { name: 'Solflare', icon: '🔥', desc: 'Advanced Solana wallet', color: 'from-[#FC6E21] to-[#FCA311]' },
-  { name: 'Backpack', icon: '🎒', desc: 'Multi-chain wallet', color: 'from-[#E33D46] to-[#F06449]' },
-  { name: 'Ledger', icon: '🔒', desc: 'Hardware wallet', color: 'from-slate-600 to-slate-700' },
-  { name: 'WalletConnect', icon: '🔗', desc: 'Connect any wallet', color: 'from-[#3B99FC] to-[#2D7DD2]' },
+  { name: 'Phantom',       icon: '👻', desc: 'Most popular Solana wallet', color: 'from-[#AB9FF2] to-[#7B61FF]' },
+  { name: 'Backpack',      icon: '🎒', desc: 'Multi-chain xNFT wallet',    color: 'from-[#E33D46] to-[#F06449]' },
+  { name: 'Solflare',      icon: '🔥', desc: 'Advanced Solana wallet',     color: 'from-[#FC6E21] to-[#FCA311]' },
+  { name: 'MetaMask',      icon: '🦊', desc: 'EVM & multichain wallet',    color: 'from-[#F5841F] to-[#E2761B]' },
+  { name: 'Ledger',        icon: '🔒', desc: 'Hardware wallet',            color: 'from-slate-600 to-slate-700' },
+  { name: 'WalletConnect', icon: '🔗', desc: 'Connect any wallet',         color: 'from-[#3B99FC] to-[#2D7DD2]' },
 ];
 
 export default function WalletConnect() {
@@ -115,16 +116,22 @@ export default function WalletConnect() {
             </div>
 
             {/* Wallet info */}
-            <div className="glass-card rounded-2xl p-5 mb-4">
-              <div className="flex items-center justify-between mb-4">
+            <div className="glass-card rounded-2xl p-4 mb-3">
+              <div className="flex items-center justify-between mb-3">
                 <p className="text-[11px] text-slate-500 font-medium">Connected Wallet</p>
                 <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> Active
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" /> Active
                 </span>
               </div>
-              <p className="text-sm font-mono text-slate-300 mb-4">7xKXtg...9mN4pQ</p>
+              <div className="flex items-center gap-2 mb-3 bg-[#0d1220] rounded-xl px-3 py-2">
+                <p className="text-sm font-mono text-slate-300 flex-1">7xKXtg...9mN4pQ</p>
+                <button className="text-slate-500 hover:text-[#00d4aa] transition-colors">
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+              </div>
               
-              <div className="grid grid-cols-2 gap-3">
+              {/* Token balances */}
+              <div className="grid grid-cols-2 gap-2 mb-3">
                 <div className="bg-[#0d1220] rounded-xl p-3">
                   <p className="text-[10px] text-slate-500 mb-1">SOL Balance</p>
                   <p className="text-lg font-bold text-white">24.82</p>
@@ -134,6 +141,39 @@ export default function WalletConnect() {
                   <p className="text-[10px] text-slate-500 mb-1">USDC Balance</p>
                   <p className="text-lg font-bold text-white">12,450</p>
                   <p className="text-[10px] text-slate-500">≈ $12,450</p>
+                </div>
+              </div>
+
+              {/* RWA Holdings */}
+              <div className="bg-[#0d1220] rounded-xl p-3 mb-2">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Building2 className="w-3.5 h-3.5 text-purple-400" />
+                  <p className="text-[10px] text-slate-500 font-semibold">RWA Holdings</p>
+                </div>
+                <div className="space-y-1.5">
+                  {[
+                    { name: 'Manhattan Tower', symbol: 'RE-MHT-1', value: '$29,700', yield: '6.8%' },
+                    { name: 'US T-Bill Token', symbol: 'TBILL',     value: '$2,506',  yield: '5.12%' },
+                  ].map((r, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <p className="text-[10px] text-slate-300">{r.name}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-emerald-400">{r.yield}</span>
+                        <span className="text-[10px] text-white font-semibold">{r.value}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Governance power */}
+              <div className="bg-[#0d1220] rounded-xl p-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Vote className="w-3.5 h-3.5 text-[#00d4aa]" />
+                    <p className="text-[10px] text-slate-500">Governance Power</p>
+                  </div>
+                  <p className="text-xs font-bold text-[#00d4aa]">1,248 SOFD</p>
                 </div>
               </div>
             </div>
