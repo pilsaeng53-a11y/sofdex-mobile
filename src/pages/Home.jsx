@@ -10,7 +10,7 @@ export default function Home() {
     <div className="min-h-screen">
 
       {/* Welcome section */}
-      <div className="px-4 pt-2 pb-4">
+      <div className="px-4 pt-3 pb-2">
         <p className="text-slate-500 text-xs font-medium">Global Multi-Asset Trading Platform</p>
       </div>
 

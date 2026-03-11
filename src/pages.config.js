@@ -56,6 +56,9 @@ import RWAExplore from './pages/RWAExplore';
 import Splash from './pages/Splash';
 import Trade from './pages/Trade';
 import WalletConnect from './pages/WalletConnect';
+import Analytics from './pages/Analytics';
+import Launchpad from './pages/Launchpad';
+import Earn from './pages/Earn';
 import __Layout from './Layout.jsx';
 
 
@@ -69,6 +72,9 @@ export const PAGES = {
     "Splash": Splash,
     "Trade": Trade,
     "WalletConnect": WalletConnect,
+    "Analytics": Analytics,
+    "Launchpad": Launchpad,
+    "Earn": Earn,
 }
 
 export const pagesConfig = {
