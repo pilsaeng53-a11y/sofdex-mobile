@@ -57,9 +57,9 @@ export default function MarketOverview() {
       </div>
 
       {error && !loading && (
-        <div className="mb-3 px-3 py-2 rounded-xl bg-red-500/5 border border-red-500/15 text-[11px] text-red-400 flex items-center justify-between">
-          <span>Could not fetch live data</span>
-          <button onClick={refetch} className="underline hover:text-red-300">Retry</button>
+        <div className="mb-3 px-3 py-2 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-[11px] text-slate-500 flex items-center justify-between">
+          <span>Stats temporarily unavailable</span>
+          <button onClick={refetch} className="text-[#00d4aa] hover:text-[#00d4aa]/80 transition-colors">Retry</button>
         </div>
       )}
 
