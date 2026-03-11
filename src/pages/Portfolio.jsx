@@ -230,7 +230,7 @@ export default function Portfolio() {
       </div>
 
       {/* Recent transactions */}
-      <div className="px-4 pb-6">
+      <div className={tab !== 'All' && tab !== 'Positions' ? 'hidden' : 'px-4 pb-6'}>
         <h3 className="text-sm font-bold text-white mb-3">Recent Transactions</h3>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
           {transactions.map((tx, i) => (
