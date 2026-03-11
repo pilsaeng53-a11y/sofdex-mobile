@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
   X, Home, BarChart3, TrendingUp, Wallet, Vote,
-  ChevronRight, ChevronDown, Newspaper, Building2,
+  ChevronRight, ChevronDown, Newspaper, Building2, MapPin,
   Settings, HelpCircle, FileText, Archive,
   BarChart2, Users, BookOpen, Rocket, Zap,
   Eye, Flame, Bell, PieChart, Activity
@@ -24,7 +24,7 @@ const NAV_SECTIONS = [
     items: [
       { label: 'News',             page: 'News',            icon: Newspaper },
       { label: 'RWA Markets',      page: 'RWAExplore',      icon: Building2 },
-      { label: 'Real Estate',      page: 'RealEstate',      icon: Building2 },
+      { label: 'Real Estate',      page: 'RealEstate',      icon: MapPin },
       { label: 'Analytics',        page: 'Analytics',       icon: PieChart },
       { label: 'Launchpad',        page: 'Launchpad',       icon: Rocket },
     ],
