@@ -5,38 +5,65 @@ import {
   X, Home, BarChart3, TrendingUp, Wallet, Vote,
   ChevronRight, ChevronDown, Newspaper, Building2,
   Settings, HelpCircle, FileText, Archive,
-  BarChart2, Users, BookOpen
+  BarChart2, Users, BookOpen, Rocket, Zap,
+  Eye, Flame, Bell, PieChart, Activity
 } from 'lucide-react';
 
-const MAIN_LINKS = [
-  { label: 'Home',      page: 'Home',       icon: Home },
-  { label: 'Markets',   page: 'Markets',    icon: BarChart3 },
-  { label: 'Trade',     page: 'Trade',      icon: TrendingUp },
-  { label: 'Portfolio', page: 'Portfolio',  icon: Wallet },
+const NAV_SECTIONS = [
+  {
+    label: 'Exchange',
+    items: [
+      { label: 'Home',      page: 'Home',      icon: Home },
+      { label: 'Markets',   page: 'Markets',   icon: BarChart3 },
+      { label: 'Trade',     page: 'Trade',     icon: TrendingUp },
+      { label: 'Portfolio', page: 'Portfolio', icon: Wallet },
+    ],
+  },
+  {
+    label: 'Discover',
+    items: [
+      { label: 'News',            page: 'News',            icon: Newspaper },
+      { label: 'RWA Assets',      page: 'RWAExplore',      icon: Building2 },
+      { label: 'Analytics',       page: 'Analytics',       icon: PieChart },
+      { label: 'Launchpad',       page: 'Launchpad',       icon: Rocket },
+    ],
+  },
+  {
+    label: 'Earn & Social',
+    items: [
+      { label: 'Earn / Staking',  page: 'Earn',            icon: Zap },
+      { label: 'Social Trading',  page: 'SocialTrading',   icon: Users },
+    ],
+  },
+  {
+    label: 'Live Feed',
+    items: [
+      { label: 'Liquidation Feed', page: 'LiquidationFeed', icon: Flame },
+      { label: 'Whale Tracker',    page: 'WhaleTracker',    icon: Eye },
+    ],
+  },
 ];
 
 const GOVERNANCE_ITEMS = [
-  { label: 'Active Proposals',       page: 'Governance', icon: FileText },
-  { label: 'Proposal Archive',       page: 'Governance', icon: Archive },
-  { label: 'Voting Results',         page: 'Governance', icon: BarChart2 },
-  { label: 'Participating Wallets',  page: 'Governance', icon: Users },
-  { label: 'Governance Principles',  page: 'Governance', icon: BookOpen },
+  { label: 'Active Proposals',      page: 'Governance', icon: FileText },
+  { label: 'Proposal Archive',      page: 'Governance', icon: Archive },
+  { label: 'Voting Results',        page: 'Governance', icon: BarChart2 },
+  { label: 'Participating Wallets', page: 'Governance', icon: Users },
+  { label: 'Governance Principles', page: 'Governance', icon: BookOpen },
 ];
 
-const SECONDARY_LINKS = [
-  { label: 'News',       page: 'Home',       icon: Newspaper },
-  { label: 'RWA Assets', page: 'RWAExplore', icon: Building2 },
-  { label: 'Settings',   page: 'Profile',    icon: Settings },
-  { label: 'Support',    page: 'Home',       icon: HelpCircle },
+const ACCOUNT_LINKS = [
+  { label: 'Notifications', page: 'Notifications', icon: Bell },
+  { label: 'Settings',      page: 'Profile',       icon: Settings },
+  { label: 'Support',       page: 'Home',          icon: HelpCircle },
 ];
 
-export default function AppMenu({ isOpen, onClose }) {
+export default function AppMenu({ isOpen, onClose, currentPage }) {
   const [govExpanded, setGovExpanded] = useState(false);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
-      // small delay to allow CSS transition
       requestAnimationFrame(() => setVisible(true));
     } else {
       setVisible(false);
@@ -44,6 +71,25 @@ export default function AppMenu({ isOpen, onClose }) {
   }, [isOpen]);
 
   if (!isOpen && !visible) return null;
+
+  const NavLink = ({ item }) => {
+    const Icon = item.icon;
+    const isActive = currentPage === item.page;
+    return (
+      <Link
+        to={createPageUrl(item.page)}
+        onClick={onClose}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
+          isActive
+            ? 'bg-[#00d4aa]/10 text-[#00d4aa]'
+            : 'text-slate-300 hover:text-white hover:bg-[#151c2e]'
+        }`}
+      >
+        <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#00d4aa]' : 'text-slate-500 group-hover:text-[#00d4aa]'}`} />
+        <span className="text-sm font-medium">{item.label}</span>
+      </Link>
+    );
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex">
@@ -60,14 +106,12 @@ export default function AppMenu({ isOpen, onClose }) {
         style={{ transform: visible ? 'translateX(0)' : 'translateX(-100%)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 pt-6 pb-5 border-b border-[rgba(148,163,184,0.06)]">
+        <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[rgba(148,163,184,0.06)]">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center">
               <span className="text-xs font-black text-white">SF</span>
             </div>
-            <span className="text-base font-bold text-white">
-              SOF<span className="gradient-text">Dex</span>
-            </span>
+            <span className="text-base font-bold text-white">SOF<span className="gradient-text">Dex</span></span>
           </div>
           <button
             onClick={onClose}
@@ -77,27 +121,20 @@ export default function AppMenu({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Nav items */}
-        <div className="flex-1 px-3 py-4 space-y-0.5">
-
-          {/* Main links */}
-          {MAIN_LINKS.map(item => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.label}
-                to={createPageUrl(item.page)}
-                onClick={onClose}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group"
-              >
-                <Icon className="w-4 h-4 text-slate-500 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
-                <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
+        {/* Nav */}
+        <div className="flex-1 px-3 py-3 space-y-4">
+          {NAV_SECTIONS.map(section => (
+            <div key={section.label}>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{section.label}</p>
+              <div className="space-y-0.5">
+                {section.items.map(item => <NavLink key={item.label} item={item} />)}
+              </div>
+            </div>
+          ))}
 
           {/* Governance expandable */}
           <div>
+            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">DAO</p>
             <button
               onClick={() => setGovExpanded(v => !v)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group"
@@ -106,10 +143,8 @@ export default function AppMenu({ isOpen, onClose }) {
               <span className="text-sm font-medium flex-1 text-left">Governance</span>
               {govExpanded
                 ? <ChevronDown className="w-3.5 h-3.5 text-slate-600" />
-                : <ChevronRight className="w-3.5 h-3.5 text-slate-600" />
-              }
+                : <ChevronRight className="w-3.5 h-3.5 text-slate-600" />}
             </button>
-
             {govExpanded && (
               <div className="ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-[rgba(148,163,184,0.08)]">
                 {GOVERNANCE_ITEMS.map(item => {
@@ -130,26 +165,13 @@ export default function AppMenu({ isOpen, onClose }) {
             )}
           </div>
 
-          {/* Divider */}
-          <div className="pt-3 pb-1">
-            <div className="border-t border-[rgba(148,163,184,0.06)]" />
+          {/* Account */}
+          <div>
+            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">Account</p>
+            <div className="space-y-0.5">
+              {ACCOUNT_LINKS.map(item => <NavLink key={item.label} item={item} />)}
+            </div>
           </div>
-
-          {/* Secondary links */}
-          {SECONDARY_LINKS.map(item => {
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.label}
-                to={createPageUrl(item.page)}
-                onClick={onClose}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-[#151c2e] transition-all group"
-              >
-                <Icon className="w-4 h-4 text-slate-600 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
-                <span className="text-sm font-medium">{item.label}</span>
-              </Link>
-            );
-          })}
         </div>
 
         {/* Footer */}
@@ -158,7 +180,7 @@ export default function AppMenu({ isOpen, onClose }) {
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
             <span className="text-[10px] text-slate-500">All systems operational</span>
           </div>
-          <p className="text-[10px] text-slate-700">SOFDex v1.0 · Built on Solana · Institutional Grade</p>
+          <p className="text-[10px] text-slate-700">SOFDex v2.0 · Built on Solana · Institutional Grade</p>
         </div>
       </div>
     </div>
