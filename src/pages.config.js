@@ -47,56 +47,62 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AIIntelligence from './pages/AIIntelligence';
 import Analytics from './pages/Analytics';
 import Earn from './pages/Earn';
 import Governance from './pages/Governance';
 import Home from './pages/Home';
 import Launchpad from './pages/Launchpad';
+import LiquidationFeed from './pages/LiquidationFeed';
 import MarketDetail from './pages/MarketDetail';
 import Markets from './pages/Markets';
+import More from './pages/More';
 import News from './pages/News';
 import Notifications from './pages/Notifications';
 import Portfolio from './pages/Portfolio';
+import PredictionMarket from './pages/PredictionMarket';
 import Profile from './pages/Profile';
 import RWAExplore from './pages/RWAExplore';
-import SocialTrading from './pages/SocialTrading';
-import Splash from './pages/Splash';
-import WalletConnect from './pages/WalletConnect';
-import WhaleTracker from './pages/WhaleTracker';
 import RealEstate from './pages/RealEstate';
 import RealEstateDetail from './pages/RealEstateDetail';
+import SocialTrading from './pages/SocialTrading';
+import Splash from './pages/Splash';
 import Trade from './pages/Trade';
-import LiquidationFeed from './pages/LiquidationFeed';
-import More from './pages/More';
-import AIIntelligence from './pages/AIIntelligence';
-import PredictionMarket from './pages/PredictionMarket';
+import WalletConnect from './pages/WalletConnect';
+import WhaleTracker from './pages/WhaleTracker';
+import Referral from './pages/Referral';
+import Alerts from './pages/Alerts';
+import Leaderboard from './pages/Leaderboard';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AIIntelligence": AIIntelligence,
     "Analytics": Analytics,
     "Earn": Earn,
     "Governance": Governance,
     "Home": Home,
     "Launchpad": Launchpad,
+    "LiquidationFeed": LiquidationFeed,
     "MarketDetail": MarketDetail,
     "Markets": Markets,
+    "More": More,
     "News": News,
     "Notifications": Notifications,
     "Portfolio": Portfolio,
+    "PredictionMarket": PredictionMarket,
     "Profile": Profile,
     "RWAExplore": RWAExplore,
-    "SocialTrading": SocialTrading,
-    "Splash": Splash,
-    "WalletConnect": WalletConnect,
-    "WhaleTracker": WhaleTracker,
     "RealEstate": RealEstate,
     "RealEstateDetail": RealEstateDetail,
+    "SocialTrading": SocialTrading,
+    "Splash": Splash,
     "Trade": Trade,
-    "LiquidationFeed": LiquidationFeed,
-    "More": More,
-    "AIIntelligence": AIIntelligence,
-    "PredictionMarket": PredictionMarket,
+    "WalletConnect": WalletConnect,
+    "WhaleTracker": WhaleTracker,
+    "Referral": Referral,
+    "Alerts": Alerts,
+    "Leaderboard": Leaderboard,
 }
 
 export const pagesConfig = {
