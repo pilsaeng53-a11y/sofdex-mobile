@@ -17,10 +17,12 @@ export default function Home() {
       </div>
 
       <MarketOverview />
+      <QuickAccess />
       <FeaturedBanner />
       <TrendingAssets />
       <MarketCategories />
       <TopMovers />
+      <NewsPreview />
 
       {/* Ecosystem footer */}
       <div className="px-4 pb-6">
