@@ -41,9 +41,23 @@ const pieData = [
 
 const PORTFOLIO_TABS = ['All', 'Crypto', 'RWA', 'Positions'];
 
+const CHART_PERIODS = ['1D', '7D', '1M', '3M', 'ALL'];
+
+function generatePortfolioData(period) {
+  const points = { '1D': 24, '7D': 7, '1M': 30, '3M': 90, 'ALL': 180 };
+  const n = points[period];
+  let v = 68000;
+  return Array.from({ length: n }, (_, i) => {
+    v = v + (Math.random() - 0.42) * 800;
+    return { i, v: Math.max(v, 50000) };
+  });
+}
+
 export default function Portfolio() {
   const [showBalance, setShowBalance] = useState(true);
   const [tab, setTab] = useState('All');
+  const [chartPeriod, setChartPeriod] = useState('7D');
+  const chartData = generatePortfolioData(chartPeriod);
   const totalBalance = '$71,823.85';
   const totalPnL = '+$1,248.90';
   const unrealizedPnL = '+$449.90';
@@ -76,6 +90,40 @@ export default function Portfolio() {
               <span className="text-[11px] text-slate-500">24h PnL</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Performance chart */}
+      <div className="px-4 mb-5">
+        <div className="glass-card rounded-2xl p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-white">Performance</h3>
+            <div className="flex gap-1">
+              {CHART_PERIODS.map(p => (
+                <button key={p} onClick={() => setChartPeriod(p)}
+                  className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-all ${
+                    chartPeriod === p ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-600'
+                  }`}>{p}</button>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={130}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="portGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#00d4aa" stopOpacity={0.25} />
+                  <stop offset="95%" stopColor="#00d4aa" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis dataKey="i" hide />
+              <Tooltip
+                contentStyle={{ background: '#151c2e', border: '1px solid rgba(148,163,184,0.1)', borderRadius: 8, fontSize: 10 }}
+                formatter={(v) => [`$${v.toFixed(0)}`, 'Portfolio']}
+                labelFormatter={() => ''}
+              />
+              <Area type="monotone" dataKey="v" stroke="#00d4aa" fill="url(#portGrad)" strokeWidth={2} dot={false} />
+            </AreaChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
