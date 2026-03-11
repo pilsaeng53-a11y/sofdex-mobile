@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart, Building2, ShieldCheck } from 'lucide-react';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 const holdings = [
-  { symbol: 'SOL', name: 'Solana', amount: '24.82', value: '$4,648.54', change: 5.23, allocation: 27 },
-  { symbol: 'USDC', name: 'USD Coin', amount: '12,450', value: '$12,450.00', change: 0, allocation: 42 },
-  { symbol: 'BTC', name: 'Bitcoin', amount: '0.045', value: '$4,429.15', change: 2.14, allocation: 15 },
-  { symbol: 'TBILL', name: 'US T-Bill Token', amount: '25', value: '$2,506.00', change: 0.02, allocation: 8 },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold', amount: '1.2', value: '$2,810.16', change: 0.87, allocation: 8 },
+  { symbol: 'SOL', name: 'Solana', amount: '24.82', value: '$4,648.54', change: 5.23, type: 'crypto' },
+  { symbol: 'USDC', name: 'USD Coin', amount: '12,450', value: '$12,450.00', change: 0, type: 'crypto' },
+  { symbol: 'BTC', name: 'Bitcoin', amount: '0.045', value: '$4,429.15', change: 2.14, type: 'crypto' },
+  { symbol: 'TBILL', name: 'US T-Bill Token', amount: '25', value: '$2,506.00', change: 0.02, type: 'rwa' },
+  { symbol: 'GOLD-T', name: 'Tokenized Gold', amount: '1.2', value: '$2,810.16', change: 0.87, type: 'rwa' },
+];
+
+const rwaHoldings = [
+  { symbol: 'RE-MHT-1', name: 'Manhattan Prime Tower', tokens: '120', value: '$29,700.00', change: 1.24, yield: 6.8, verified: true },
+  { symbol: 'RE-SGP-1', name: 'Marina Bay Tower', tokens: '50', value: '$9,930.00', change: 1.67, yield: 5.4, verified: true },
+  { symbol: 'TBILL', name: 'US Treasury Bill Token', tokens: '25', value: '$2,506.00', change: 0.02, yield: 5.12, verified: true },
+  { symbol: 'GOLD-T', name: 'Tokenized Gold', tokens: '1.2', value: '$2,810.00', change: 0.87, yield: 0, verified: false },
 ];
 
 const positions = [
@@ -25,16 +32,22 @@ const transactions = [
 ];
 
 const pieData = [
-  { name: 'Crypto', value: 42, color: '#00d4aa' },
-  { name: 'Stables', value: 30, color: '#3b82f6' },
-  { name: 'RWA', value: 16, color: '#8b5cf6' },
-  { name: 'Positions', value: 12, color: '#f59e0b' },
+  { name: 'Crypto', value: 34, color: '#00d4aa' },
+  { name: 'Stables', value: 22, color: '#3b82f6' },
+  { name: 'Real Estate', value: 26, color: '#8b5cf6' },
+  { name: 'RWA Other', value: 10, color: '#ec4899' },
+  { name: 'Positions', value: 8, color: '#f59e0b' },
 ];
+
+const PORTFOLIO_TABS = ['All', 'Crypto', 'RWA', 'Positions'];
 
 export default function Portfolio() {
   const [showBalance, setShowBalance] = useState(true);
-  const totalBalance = '$26,843.85';
-  const totalPnL = '+$448.90';
+  const [tab, setTab] = useState('All');
+  const totalBalance = '$71,823.85';
+  const totalPnL = '+$1,248.90';
+  const unrealizedPnL = '+$449.90';
+  const realizedPnL = '+$799.00';
 
   return (
     <div className="min-h-screen">
@@ -95,11 +108,38 @@ export default function Portfolio() {
         </div>
       </div>
 
-      {/* Holdings */}
+      {/* PnL summary */}
+      <div className="px-4 mb-4">
+        <div className="grid grid-cols-2 gap-2.5">
+          <div className="glass-card rounded-xl p-3">
+            <p className="text-[10px] text-slate-500 mb-0.5">Unrealized PnL</p>
+            <p className="text-sm font-bold text-emerald-400">{showBalance ? unrealizedPnL : '••••'}</p>
+          </div>
+          <div className="glass-card rounded-xl p-3">
+            <p className="text-[10px] text-slate-500 mb-0.5">Realized PnL</p>
+            <p className="text-sm font-bold text-emerald-400">{showBalance ? realizedPnL : '••••'}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab bar */}
+      <div className="flex gap-1.5 px-4 mb-4">
+        {PORTFOLIO_TABS.map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
+              tab === t ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 bg-[#151c2e] border border-transparent'
+            }`}>
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {/* Crypto Holdings */}
+      {(tab === 'All' || tab === 'Crypto') && (
       <div className="px-4 mb-5">
-        <h3 className="text-sm font-bold text-white mb-3">Holdings</h3>
+        <h3 className="text-sm font-bold text-white mb-3">Crypto Holdings</h3>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-          {holdings.map((h, i) => (
+          {holdings.filter(h => tab === 'All' ? true : h.type === 'crypto').map((h, i) => (
             <div key={i} className="p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-[#1a2340] flex items-center justify-center text-[10px] font-bold text-[#00d4aa]">
@@ -120,6 +160,41 @@ export default function Portfolio() {
           ))}
         </div>
       </div>
+      )}
+
+      {/* RWA Holdings */}
+      {(tab === 'All' || tab === 'RWA') && (
+      <div className="px-4 mb-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Building2 className="w-4 h-4 text-[#8b5cf6]" />
+          <h3 className="text-sm font-bold text-white">RWA Holdings</h3>
+        </div>
+        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
+          {rwaHoldings.map((h, i) => (
+            <div key={i} className="p-3.5 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[#1a1040] flex items-center justify-center text-[9px] font-bold text-[#8b5cf6]">
+                  {h.symbol.slice(0, 3)}
+                </div>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-xs font-semibold text-white">{h.name}</p>
+                    {h.verified && <ShieldCheck className="w-3 h-3 text-[#00d4aa]" />}
+                  </div>
+                  <p className="text-[11px] text-slate-500">{h.tokens} tokens {h.yield > 0 ? `· ${h.yield}% yield` : ''}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-semibold text-white">{showBalance ? h.value : '••••'}</p>
+                <p className={`text-[11px] font-medium ${h.change > 0 ? 'text-emerald-400' : h.change < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                  {h.change > 0 ? '+' : ''}{h.change}%
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+      )}
 
       {/* Active positions */}
       <div className="px-4 mb-5">

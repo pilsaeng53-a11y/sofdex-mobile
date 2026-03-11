@@ -23,9 +23,10 @@ const NAV_SECTIONS = [
     label: 'Discover',
     items: [
       { label: 'News',             page: 'News',            icon: Newspaper },
-      { label: 'RWA Assets',      page: 'RWAExplore',      icon: Building2 },
-      { label: 'Analytics',       page: 'Analytics',       icon: PieChart },
-      { label: 'Launchpad',       page: 'Launchpad',       icon: Rocket },
+      { label: 'RWA Markets',      page: 'RWAExplore',      icon: Building2 },
+      { label: 'Real Estate',      page: 'RealEstate',      icon: Building2 },
+      { label: 'Analytics',        page: 'Analytics',       icon: PieChart },
+      { label: 'Launchpad',        page: 'Launchpad',       icon: Rocket },
     ],
   },
   {
