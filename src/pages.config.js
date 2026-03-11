@@ -47,44 +47,48 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import Analytics from './pages/Analytics';
+import Earn from './pages/Earn';
 import Governance from './pages/Governance';
 import Home from './pages/Home';
+import Launchpad from './pages/Launchpad';
+import LiquidationFeed from './pages/LiquidationFeed';
 import MarketDetail from './pages/MarketDetail';
+import Markets from './pages/Markets';
+import News from './pages/News';
+import Notifications from './pages/Notifications';
 import Portfolio from './pages/Portfolio';
 import Profile from './pages/Profile';
 import RWAExplore from './pages/RWAExplore';
+import SocialTrading from './pages/SocialTrading';
 import Splash from './pages/Splash';
 import WalletConnect from './pages/WalletConnect';
-import Analytics from './pages/Analytics';
-import Launchpad from './pages/Launchpad';
-import Earn from './pages/Earn';
-import SocialTrading from './pages/SocialTrading';
-import LiquidationFeed from './pages/LiquidationFeed';
 import WhaleTracker from './pages/WhaleTracker';
-import Notifications from './pages/Notifications';
-import News from './pages/News';
-import Markets from './pages/Markets';
+import RealEstate from './pages/RealEstate';
+import RealEstateDetail from './pages/RealEstateDetail';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "Analytics": Analytics,
+    "Earn": Earn,
     "Governance": Governance,
     "Home": Home,
+    "Launchpad": Launchpad,
+    "LiquidationFeed": LiquidationFeed,
     "MarketDetail": MarketDetail,
+    "Markets": Markets,
+    "News": News,
+    "Notifications": Notifications,
     "Portfolio": Portfolio,
     "Profile": Profile,
     "RWAExplore": RWAExplore,
+    "SocialTrading": SocialTrading,
     "Splash": Splash,
     "WalletConnect": WalletConnect,
-    "Analytics": Analytics,
-    "Launchpad": Launchpad,
-    "Earn": Earn,
-    "SocialTrading": SocialTrading,
-    "LiquidationFeed": LiquidationFeed,
     "WhaleTracker": WhaleTracker,
-    "Notifications": Notifications,
-    "News": News,
-    "Markets": Markets,
+    "RealEstate": RealEstate,
+    "RealEstateDetail": RealEstateDetail,
 }
 
 export const pagesConfig = {
