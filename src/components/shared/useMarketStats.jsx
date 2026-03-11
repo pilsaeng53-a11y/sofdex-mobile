@@ -22,57 +22,61 @@ export function useMarketStats() {
   const [error, setError]     = useState(false);
 
   async function fetchAll() {
-    try {
-      // Fetch CoinGecko global + Binance futures tickers + premium index in parallel
-      const [cgRes, bnRes, pmRes] = await Promise.all([
-        fetch('https://api.coingecko.com/api/v3/global'),
-        fetch('https://fapi.binance.com/fapi/v1/ticker/24hr'),
-        fetch('https://fapi.binance.com/fapi/v1/premiumIndex'),
-      ]);
+    const safeJson = async (res) => {
+      try { return res.ok ? await res.json() : null; } catch { return null; }
+    };
+    const safeFetch = (url) => fetch(url).then(r => r).catch(() => ({ ok: false }));
 
-      if (!cgRes.ok || !bnRes.ok || !pmRes.ok) throw new Error('fetch failed');
+    try {
+      // Use allSettled so one failing source never blocks the others
+      const [cgRes, bnRes, pmRes] = await Promise.all([
+        safeFetch('https://api.coingecko.com/api/v3/global'),
+        safeFetch('https://fapi.binance.com/fapi/v1/ticker/24hr'),
+        safeFetch('https://fapi.binance.com/fapi/v1/premiumIndex'),
+      ]);
 
       const [cgData, bnTickers, pmIndex] = await Promise.all([
-        cgRes.json(), bnRes.json(), pmRes.json(),
+        safeJson(cgRes), safeJson(bnRes), safeJson(pmRes),
       ]);
 
-      // Fetch OI for top symbols in parallel
+      // Fetch OI — individual failures become null
       const oiData = await Promise.all(
         OI_SYMBOLS.map(s =>
-          fetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${s}`)
-            .then(r => r.json())
+          safeFetch(`https://fapi.binance.com/fapi/v1/openInterest?symbol=${s}`)
+            .then(r => safeJson(r))
         )
       );
 
       // Total global 24h volume (CoinGecko)
-      const totalVolume = cgData?.data?.total_volume?.usd ?? 0;
+      const totalVolume = cgData?.data?.total_volume?.usd ?? null;
 
       // 24h trade count across top futures pairs (Binance)
-      const topTickers  = Array.isArray(bnTickers)
+      const topTickers = Array.isArray(bnTickers)
         ? bnTickers.filter(t => FUTURES_SYMBOLS.includes(t.symbol))
         : [];
       const totalTrades = topTickers.reduce((acc, t) => acc + (parseInt(t.count) || 0), 0);
 
-      // Open Interest in USD: Binance OI qty × mark price
+      // Open Interest in USD
       const pmMap = {};
       if (Array.isArray(pmIndex)) {
         pmIndex.forEach(p => { pmMap[p.symbol] = parseFloat(p.markPrice) || 0; });
       }
       const totalOI = oiData.reduce((acc, d) => {
+        if (!d) return acc;
         const price = pmMap[d.symbol] || 0;
         const oi    = parseFloat(d.openInterest) || 0;
         return acc + oi * price;
       }, 0);
 
+      const hasAnyData = totalVolume !== null || totalTrades > 0 || totalOI > 0;
+
       setStats({
-        totalVolume:   fmtUSD(totalVolume),
-        openInterest:  fmtUSD(totalOI),
-        trades24h:     fmtCount(totalTrades),
-        // Active Traders is a platform-specific metric not exposed by public APIs.
-        // TODO: wire to internal SOFDex aggregation endpoint once backend is live.
+        totalVolume:  totalVolume !== null ? fmtUSD(totalVolume) : null,
+        openInterest: totalOI > 0         ? fmtUSD(totalOI)     : null,
+        trades24h:    totalTrades > 0     ? fmtCount(totalTrades): null,
         activeTraders: null,
       });
-      setError(false);
+      setError(!hasAnyData);
     } catch {
       setError(true);
     } finally {
