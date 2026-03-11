@@ -40,6 +40,7 @@ const NAV_SECTIONS = [
     label: 'Live Feed',
     items: [
       { label: 'Liquidation Feed', page: 'LiquidationFeed', icon: Flame },
+
       { label: 'Whale Tracker',    page: 'WhaleTracker',    icon: Eye },
     ],
   },
