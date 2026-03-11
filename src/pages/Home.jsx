@@ -22,11 +22,14 @@ export default function Home() {
         <p className="text-slate-500 text-xs font-medium">Global Multi-Asset Trading Platform</p>
       </div>
 
+      <MarketPulseBar />
       <MarketOverview />
       <QuickAccess />
       <AISentimentCard />
+      <AIOpportunityCard />
       <FeaturedBanner />
       <TrendingAssets />
+      <ActivityStream />
       <PredictionPreview />
       <MarketCategories />
       <TopMovers />
