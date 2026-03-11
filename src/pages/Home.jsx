@@ -1,28 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Bell, Search, Wallet } from 'lucide-react';
+import { Bell, Search, Wallet, Menu } from 'lucide-react';
 import MarketOverview from '../components/home/MarketOverview';
 import FeaturedBanner from '../components/home/FeaturedBanner';
 import TrendingAssets from '../components/home/TrendingAssets';
 import TopMovers from '../components/home/TopMovers';
 import MarketCategories from '../components/home/MarketCategories';
+import AppMenu from '../components/shared/AppMenu';
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen">
+      <AppMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} />
+
       {/* Header */}
       <div className="px-4 pt-4 pb-3 flex items-center justify-between">
-        <div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="w-9 h-9 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all"
+          >
+            <Menu className="w-4 h-4 text-slate-400" />
+          </button>
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center">
               <span className="text-xs font-black text-white">SF</span>
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-white tracking-tight">
-                SOF<span className="gradient-text">Dex</span>
-              </h1>
-            </div>
+            <h1 className="text-lg font-bold text-white tracking-tight">
+              SOF<span className="gradient-text">Dex</span>
+            </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
