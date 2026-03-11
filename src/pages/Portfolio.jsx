@@ -197,7 +197,8 @@ export default function Portfolio() {
       )}
 
       {/* Active positions */}
-      <div className="px-4 mb-5">
+      {(tab === 'All' || tab === 'Positions') && <div className="px-4 mb-5" style={{display:'contents'}}></div>}
+      <div className={tab !== 'All' && tab !== 'Positions' ? 'hidden' : 'px-4 mb-5'}>
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-bold text-white">Active Positions</h3>
           <Link to={createPageUrl('Trade')}>
