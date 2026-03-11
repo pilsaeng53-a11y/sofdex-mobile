@@ -1,15 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { TrendingUp, Vote, Newspaper, Building2, Zap, Rocket } from 'lucide-react';
+import { TrendingUp, Vote, Newspaper, Building2, Zap, Rocket, MapPin } from 'lucide-react';
 
 const QUICK_ITEMS = [
-  { label: 'Trade', page: 'Trade', icon: TrendingUp, color: 'from-[#00d4aa]/20 to-[#06b6d4]/10', iconColor: 'text-[#00d4aa]' },
-  { label: 'Governance', page: 'Governance', icon: Vote, color: 'from-blue-500/15 to-blue-600/5', iconColor: 'text-blue-400' },
-  { label: 'News', page: 'News', icon: Newspaper, color: 'from-amber-500/15 to-amber-600/5', iconColor: 'text-amber-400' },
-  { label: 'RWA', page: 'RWAExplore', icon: Building2, color: 'from-purple-500/15 to-purple-600/5', iconColor: 'text-purple-400' },
-  { label: 'Earn', page: 'Earn', icon: Zap, color: 'from-emerald-500/15 to-emerald-600/5', iconColor: 'text-emerald-400' },
-  { label: 'Launch', page: 'Launchpad', icon: Rocket, color: 'from-orange-500/15 to-orange-600/5', iconColor: 'text-orange-400' },
+  { label: 'Trade',      page: 'Trade',       icon: TrendingUp, color: 'from-[#00d4aa]/20 to-[#06b6d4]/10', iconColor: 'text-[#00d4aa]' },
+  { label: 'Real Estate',page: 'RealEstate',  icon: MapPin,     color: 'from-purple-500/15 to-purple-600/5', iconColor: 'text-purple-400' },
+  { label: 'RWA Hub',    page: 'RWAExplore',  icon: Building2,  color: 'from-violet-500/15 to-violet-600/5', iconColor: 'text-violet-400' },
+  { label: 'Earn',       page: 'Earn',        icon: Zap,        color: 'from-emerald-500/15 to-emerald-600/5', iconColor: 'text-emerald-400' },
+  { label: 'News',       page: 'News',        icon: Newspaper,  color: 'from-amber-500/15 to-amber-600/5', iconColor: 'text-amber-400' },
+  { label: 'Launch',     page: 'Launchpad',   icon: Rocket,     color: 'from-orange-500/15 to-orange-600/5', iconColor: 'text-orange-400' },
 ];
 
 export default function QuickAccess() {

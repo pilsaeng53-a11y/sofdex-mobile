@@ -52,7 +52,6 @@ import Earn from './pages/Earn';
 import Governance from './pages/Governance';
 import Home from './pages/Home';
 import Launchpad from './pages/Launchpad';
-import LiquidationFeed from './pages/LiquidationFeed';
 import MarketDetail from './pages/MarketDetail';
 import Markets from './pages/Markets';
 import News from './pages/News';
@@ -75,7 +74,6 @@ export const PAGES = {
     "Governance": Governance,
     "Home": Home,
     "Launchpad": Launchpad,
-    "LiquidationFeed": LiquidationFeed,
     "MarketDetail": MarketDetail,
     "Markets": Markets,
     "News": News,

@@ -1,18 +1,22 @@
 import React from 'react';
-import { Building2, Gem, Landmark, TrendingUp, Banknote } from 'lucide-react';
+import { Building2, Gem, Landmark, TrendingUp, Banknote, Palette, Coins } from 'lucide-react';
 
 const iconMap = {
-  'Real Estate': Building2,
-  'Commodity': Gem,
-  'Treasury': Landmark,
-  'Equity': TrendingUp,
+  'Real Estate':      Building2,
+  'Commodity':        Gem,
+  'Treasury':         Landmark,
+  'Equity':           TrendingUp,
+  'Art / Collectibles': Palette,
+  'Gold':             Coins,
 };
 
 const colorMap = {
-  'Real Estate': 'from-[#8b5cf6] to-[#6d28d9]',
-  'Commodity': 'from-[#f59e0b] to-[#d97706]',
-  'Treasury': 'from-[#3b82f6] to-[#2563eb]',
-  'Equity': 'from-[#00d4aa] to-[#059669]',
+  'Real Estate':      'from-[#8b5cf6] to-[#6d28d9]',
+  'Commodity':        'from-[#f59e0b] to-[#d97706]',
+  'Treasury':         'from-[#3b82f6] to-[#2563eb]',
+  'Equity':           'from-[#00d4aa] to-[#059669]',
+  'Art / Collectibles': 'from-[#ec4899] to-[#be185d]',
+  'Gold':             'from-[#f59e0b] to-[#92400e]',
 };
 
 export default function RWACategoryCard({ type, count, totalValue }) {

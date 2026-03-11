@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, BarChart3, TrendingUp, Wallet, Newspaper } from 'lucide-react';
+import { Home, BarChart3, TrendingUp, Wallet, Building2 } from 'lucide-react';
 
 const tabs = [
-  { name: 'Home', page: 'Home', icon: Home },
-  { name: 'Markets', page: 'Markets', icon: BarChart3 },
-  { name: 'Trade', page: 'Trade', icon: TrendingUp },
+  { name: 'Home',      page: 'Home',      icon: Home },
+  { name: 'Markets',   page: 'Markets',   icon: BarChart3 },
+  { name: 'Trade',     page: 'Trade',     icon: TrendingUp },
+  { name: 'RWA',       page: 'RWAExplore', icon: Building2 },
   { name: 'Portfolio', page: 'Portfolio', icon: Wallet },
-  { name: 'News', page: 'News', icon: Newspaper },
 ];
 
 export default function BottomNav({ currentPage }) {
