@@ -8,61 +8,68 @@ import {
   BarChart2, Users, BookOpen, Rocket, Zap,
   Eye, Flame, Bell, PieChart, Activity
 } from 'lucide-react';
+import { useLang } from './LanguageContext';
 
 const NAV_SECTIONS = [
   {
-    label: 'Exchange',
+    labelKey: 'menu_exchange',
     items: [
-      { label: 'Home',      page: 'Home',      icon: Home },
-      { label: 'Markets',   page: 'Markets',   icon: BarChart3 },
-      { label: 'Trade',     page: 'Trade',     icon: TrendingUp },
-      { label: 'Portfolio', page: 'Portfolio', icon: Wallet },
+      { labelKey: 'menu_home',      page: 'Home',      icon: Home },
+      { labelKey: 'menu_markets',   page: 'Markets',   icon: BarChart3 },
+      { labelKey: 'menu_trade',     page: 'Trade',     icon: TrendingUp },
+      { labelKey: 'menu_portfolio', page: 'Portfolio', icon: Wallet },
     ],
   },
   {
-    label: 'Discover',
+    labelKey: 'menu_discover',
     items: [
-      { label: 'News',             page: 'News',            icon: Newspaper },
-      { label: 'RWA Markets',      page: 'RWAExplore',      icon: Building2 },
-      { label: 'Real Estate',      page: 'RealEstate',      icon: MapPin },
-      { label: 'Analytics',        page: 'Analytics',       icon: PieChart },
-      { label: 'Launchpad',        page: 'Launchpad',       icon: Rocket },
+      { labelKey: 'menu_news',             page: 'News',            icon: Newspaper },
+      { labelKey: 'menu_rwaMarkets',       page: 'RWAExplore',      icon: Building2 },
+      { labelKey: 'menu_realEstate',       page: 'RealEstate',      icon: MapPin },
+      { labelKey: 'menu_analytics',        page: 'Analytics',       icon: PieChart },
+      { labelKey: 'menu_launchpad',        page: 'Launchpad',       icon: Rocket },
+      { labelKey: 'menu_aiIntelligence',   page: 'AIIntelligence',  icon: Activity },
+      { labelKey: 'menu_predictionMarket', page: 'PredictionMarket',icon: BarChart2 },
+      { labelKey: 'menu_alerts',           page: 'Alerts',          icon: Bell },
+      { labelKey: 'menu_leaderboard',      page: 'Leaderboard',     icon: BarChart3 },
     ],
   },
   {
-    label: 'Earn & Social',
+    labelKey: 'menu_earnSocial',
     items: [
-      { label: 'Earn / Staking',  page: 'Earn',            icon: Zap },
-      { label: 'Social Trading',  page: 'SocialTrading',   icon: Users },
+      { labelKey: 'menu_earnStaking',   page: 'Earn',          icon: Zap },
+      { labelKey: 'menu_copyTrading',   page: 'CopyTrading',   icon: Users },
+      { labelKey: 'menu_socialTrading', page: 'SocialTrading', icon: Users },
+      { labelKey: 'menu_referralHub',   page: 'Referral',      icon: Rocket },
     ],
   },
   {
-    label: 'Live Feed',
+    labelKey: 'menu_liveFeed',
     items: [
-      { label: 'Liquidation Feed', page: 'LiquidationFeed', icon: Flame },
-
-      { label: 'Whale Tracker',    page: 'WhaleTracker',    icon: Eye },
+      { labelKey: 'menu_liquidationFeed', page: 'LiquidationFeed', icon: Flame },
+      { labelKey: 'menu_whaleTracker',    page: 'WhaleTracker',    icon: Eye },
     ],
   },
 ];
 
-const GOVERNANCE_ITEMS = [
-  { label: 'Active Proposals',      page: 'Governance', icon: FileText },
-  { label: 'Proposal Archive',      page: 'Governance', icon: Archive },
-  { label: 'Voting Results',        page: 'Governance', icon: BarChart2 },
-  { label: 'Participating Wallets', page: 'Governance', icon: Users },
-  { label: 'Governance Principles', page: 'Governance', icon: BookOpen },
+const GOVERNANCE_ITEM_KEYS = [
+  { labelKey: 'gov_activeProposals',      page: 'Governance', icon: FileText },
+  { labelKey: 'gov_proposalArchive',      page: 'Governance', icon: Archive },
+  { labelKey: 'gov_votingResults',        page: 'Governance', icon: BarChart2 },
+  { labelKey: 'gov_participatingWallets', page: 'Governance', icon: Users },
+  { labelKey: 'gov_principles',           page: 'Governance', icon: BookOpen },
 ];
 
-const ACCOUNT_LINKS = [
-  { label: 'Notifications', page: 'Notifications', icon: Bell },
-  { label: 'Settings',      page: 'Profile',       icon: Settings },
-  { label: 'Support',       page: 'Home',          icon: HelpCircle },
+const ACCOUNT_LINK_KEYS = [
+  { labelKey: 'menu_notifications', page: 'Notifications', icon: Bell },
+  { labelKey: 'menu_settings',      page: 'Profile',       icon: Settings },
+  { labelKey: 'menu_support',       page: 'Home',          icon: HelpCircle },
 ];
 
 export default function AppMenu({ isOpen, onClose, currentPage }) {
   const [govExpanded, setGovExpanded] = useState(false);
   const [visible, setVisible] = useState(false);
+  const { t } = useLang();
 
   useEffect(() => {
     if (isOpen) {
@@ -88,7 +95,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
         }`}
       >
         <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#00d4aa]' : 'text-slate-500 group-hover:text-[#00d4aa]'}`} />
-        <span className="text-sm font-medium">{item.label}</span>
+        <span className="text-sm font-medium">{t(item.labelKey)}</span>
       </Link>
     );
   };
@@ -126,40 +133,40 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
         {/* Nav */}
         <div className="flex-1 px-3 py-3 space-y-4">
           {NAV_SECTIONS.map(section => (
-            <div key={section.label}>
-              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{section.label}</p>
+            <div key={section.labelKey}>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t(section.labelKey)}</p>
               <div className="space-y-0.5">
-                {section.items.map(item => <NavLink key={item.label} item={item} />)}
+                {section.items.map(item => <NavLink key={item.labelKey} item={item} />)}
               </div>
             </div>
           ))}
 
           {/* Governance expandable */}
           <div>
-            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">DAO</p>
+            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_dao')}</p>
             <button
               onClick={() => setGovExpanded(v => !v)}
               className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group"
             >
               <Vote className="w-4 h-4 text-slate-500 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
-              <span className="text-sm font-medium flex-1 text-left">Governance</span>
+              <span className="text-sm font-medium flex-1 text-left">{t('menu_governance')}</span>
               {govExpanded
                 ? <ChevronDown className="w-3.5 h-3.5 text-slate-600" />
                 : <ChevronRight className="w-3.5 h-3.5 text-slate-600" />}
             </button>
             {govExpanded && (
               <div className="ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-[rgba(148,163,184,0.08)]">
-                {GOVERNANCE_ITEMS.map(item => {
+                {GOVERNANCE_ITEM_KEYS.map(item => {
                   const Icon = item.icon;
                   return (
                     <Link
-                      key={item.label}
+                      key={item.labelKey}
                       to={createPageUrl(item.page)}
                       onClick={onClose}
                       className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#151c2e] transition-all group"
                     >
                       <Icon className="w-3.5 h-3.5 text-slate-600 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
-                      <span className="text-xs font-medium">{item.label}</span>
+                      <span className="text-xs font-medium">{t(item.labelKey)}</span>
                     </Link>
                   );
                 })}
@@ -169,9 +176,9 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
 
           {/* Account */}
           <div>
-            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">Account</p>
+            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_account')}</p>
             <div className="space-y-0.5">
-              {ACCOUNT_LINKS.map(item => <NavLink key={item.label} item={item} />)}
+              {ACCOUNT_LINK_KEYS.map(item => <NavLink key={item.labelKey} item={item} />)}
             </div>
           </div>
         </div>
@@ -180,7 +187,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
         <div className="px-5 py-4 border-t border-[rgba(148,163,184,0.06)]">
           <div className="flex items-center gap-2 mb-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
-            <span className="text-[10px] text-slate-500">All systems operational</span>
+            <span className="text-[10px] text-slate-500">{t('common_allSystems')}</span>
           </div>
           <p className="text-[10px] text-slate-700">SOFDex v2.0 · Built on Solana · Institutional Grade</p>
         </div>
