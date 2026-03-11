@@ -9,6 +9,9 @@ import NewsPreview from '../components/home/NewsPreview';
 import AISentimentCard from '../components/home/AISentimentCard';
 import PredictionPreview from '../components/home/PredictionPreview';
 import ReferralPreview from '../components/home/ReferralPreview';
+import AIOpportunityCard from '../components/home/AIOpportunityCard';
+import ActivityStream from '../components/home/ActivityStream';
+import MarketPulseBar from '../components/shared/MarketPulseBar';
 
 export default function Home() {
   return (
