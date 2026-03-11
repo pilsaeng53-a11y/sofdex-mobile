@@ -65,6 +65,9 @@ import WalletConnect from './pages/WalletConnect';
 import WhaleTracker from './pages/WhaleTracker';
 import RealEstate from './pages/RealEstate';
 import RealEstateDetail from './pages/RealEstateDetail';
+import Trade from './pages/Trade';
+import LiquidationFeed from './pages/LiquidationFeed';
+import More from './pages/More';
 import __Layout from './Layout.jsx';
 
 
@@ -87,6 +90,9 @@ export const PAGES = {
     "WhaleTracker": WhaleTracker,
     "RealEstate": RealEstate,
     "RealEstateDetail": RealEstateDetail,
+    "Trade": Trade,
+    "LiquidationFeed": LiquidationFeed,
+    "More": More,
 }
 
 export const pagesConfig = {

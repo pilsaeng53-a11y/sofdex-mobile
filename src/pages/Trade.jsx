@@ -1,0 +1,130 @@
+import React, { useState } from 'react';
+import { useMarketData } from '../components/shared/MarketDataProvider';
+import { ALL_MARKETS, CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
+import TradingViewChart from '../components/trade/TradingViewChart';
+import OrderPanel from '../components/trade/OrderPanel';
+import OrderBook from '../components/trade/OrderBook';
+import RecentTrades from '../components/trade/RecentTrades';
+import PositionsPanel from '../components/trade/PositionsPanel';
+import { TrendingUp, TrendingDown, ChevronDown } from 'lucide-react';
+
+export default function Trade() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const [symbol, setSymbol] = useState(urlParams.get('symbol') || 'SOL');
+  const [tab, setTab] = useState('Order');
+  const [showPicker, setShowPicker] = useState(false);
+  const { getLiveAsset } = useMarketData();
+
+  const baseAsset = ALL_MARKETS.find(a => a.symbol === symbol) || CRYPTO_MARKETS[0];
+  const live = getLiveAsset(symbol);
+  const price = live.available ? live.price : baseAsset.price;
+  const change = live.available ? live.change : baseAsset.change;
+  const positive = change >= 0;
+
+  // Deterministic funding rate from symbol
+  const fundingVal = ((symbol.charCodeAt(0) % 10) - 4.5) * 0.003;
+  const fundingPositive = fundingVal >= 0;
+
+  const h24High = (price * 1.028).toFixed(2);
+  const h24Low = (price * 0.972).toFixed(2);
+
+  return (
+    <div className="min-h-screen">
+      {/* Symbol header */}
+      <div className="px-4 pt-3 pb-2 border-b border-[rgba(148,163,184,0.06)]">
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={() => setShowPicker(v => !v)}
+            className="flex items-center gap-2.5"
+          >
+            <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa]">
+              {symbol.slice(0, 2)}
+            </div>
+            <div className="text-left">
+              <div className="flex items-center gap-1">
+                <span className="text-base font-bold text-white">{symbol}-PERP</span>
+                <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showPicker ? 'rotate-180' : ''}`} />
+              </div>
+              <span className="text-[10px] text-slate-500">Perpetual · Up to {baseAsset.leverage || '50x'}</span>
+            </div>
+          </button>
+
+          <div className="text-right">
+            <p className="text-lg font-bold text-white font-mono">${formatPrice(price)}</p>
+            <div className={`flex items-center justify-end gap-1 text-xs font-semibold ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
+              {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {formatChange(change)}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats bar */}
+        <div className="flex gap-5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
+          {[
+            { label: '24h High', value: `$${h24High}`, color: 'text-white' },
+            { label: '24h Low', value: `$${h24Low}`, color: 'text-white' },
+            { label: 'Volume', value: baseAsset.volume || '2.8B', color: 'text-white' },
+            { label: 'Funding', value: `${fundingPositive ? '+' : ''}${fundingVal.toFixed(4)}%`, color: fundingPositive ? 'text-emerald-400' : 'text-red-400' },
+            { label: 'Market Cap', value: baseAsset.mcap || '—', color: 'text-white' },
+          ].map(stat => (
+            <div key={stat.label} className="flex-shrink-0">
+              <p className="text-[10px] text-slate-500">{stat.label}</p>
+              <p className={`text-[11px] font-semibold ${stat.color}`}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Symbol picker dropdown */}
+      {showPicker && (
+        <div className="mx-4 mt-1.5 glass-card rounded-xl border border-[rgba(148,163,184,0.1)] overflow-hidden">
+          <div className="flex flex-wrap gap-1.5 p-3">
+            {CRYPTO_MARKETS.map(m => (
+              <button
+                key={m.symbol}
+                onClick={() => { setSymbol(m.symbol); setShowPicker(false); }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  symbol === m.symbol
+                    ? 'bg-[#00d4aa]/15 text-[#00d4aa] border border-[#00d4aa]/25'
+                    : 'bg-[#0d1220] text-slate-400 border border-transparent hover:text-white'
+                }`}
+              >
+                {m.symbol}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Chart */}
+      <div className="px-4 pt-3 pb-3">
+        <TradingViewChart symbol={symbol} height={275} />
+      </div>
+
+      {/* Trade tabs */}
+      <div className="flex px-4 gap-1 mb-3">
+        {['Order', 'Orderbook', 'Trades', 'Positions'].map(t => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
+              tab === t
+                ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
+                : 'text-slate-500 bg-[#151c2e] border border-transparent'
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab content */}
+      <div className="px-4 pb-6">
+        {tab === 'Order' && <OrderPanel asset={{ ...baseAsset, price, change }} />}
+        {tab === 'Orderbook' && <OrderBook price={price} />}
+        {tab === 'Trades' && <RecentTrades price={price} />}
+        {tab === 'Positions' && <PositionsPanel />}
+      </div>
+    </div>
+  );
+}
