@@ -37,7 +37,8 @@ const SECTIONS = [
     label: 'Earn & Social',
     items: [
       { label: 'Earn / Staking',  page: 'Earn',          icon: Zap,    color: 'from-emerald-500/20 to-emerald-600/5', iconColor: 'text-emerald-400' },
-      { label: 'Social Trading',  page: 'SocialTrading', icon: Users,  color: 'from-cyan-500/20 to-cyan-600/5',       iconColor: 'text-cyan-400' },
+      { label: 'Copy Trading',    page: 'CopyTrading',   icon: Users,  color: 'from-cyan-500/20 to-cyan-600/5',       iconColor: 'text-cyan-400' },
+      { label: 'Social Trading',  page: 'SocialTrading', icon: Users,  color: 'from-sky-500/20 to-sky-600/5',         iconColor: 'text-sky-400' },
       { label: 'Launchpad',       page: 'Launchpad',     icon: Rocket, color: 'from-rose-500/20 to-rose-600/5',       iconColor: 'text-rose-400' },
       { label: 'Referral Hub',    page: 'Referral',      icon: Gift,   color: 'from-green-500/20 to-green-600/5',     iconColor: 'text-green-400' },
     ],
