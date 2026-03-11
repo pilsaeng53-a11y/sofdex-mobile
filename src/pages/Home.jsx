@@ -6,6 +6,9 @@ import TopMovers from '../components/home/TopMovers';
 import MarketCategories from '../components/home/MarketCategories';
 import QuickAccess from '../components/home/QuickAccess';
 import NewsPreview from '../components/home/NewsPreview';
+import AISentimentCard from '../components/home/AISentimentCard';
+import PredictionPreview from '../components/home/PredictionPreview';
+import ReferralPreview from '../components/home/ReferralPreview';
 
 export default function Home() {
   return (
@@ -18,10 +21,13 @@ export default function Home() {
 
       <MarketOverview />
       <QuickAccess />
+      <AISentimentCard />
       <FeaturedBanner />
       <TrendingAssets />
+      <PredictionPreview />
       <MarketCategories />
       <TopMovers />
+      <ReferralPreview />
       <NewsPreview />
 
       {/* Ecosystem footer */}

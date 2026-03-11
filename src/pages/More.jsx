@@ -4,39 +4,42 @@ import { createPageUrl } from '@/utils';
 import {
   Vote, Newspaper, Building2, PieChart, Rocket, Zap,
   Users, Flame, Eye, Settings, HelpCircle, MapPin, Bell,
-  Brain, Target
+  Brain, Target, Gift, Trophy
 } from 'lucide-react';
 
 const SECTIONS = [
   {
     label: 'AI & Intelligence',
     items: [
-      { label: 'AI Intelligence', page: 'AIIntelligence', icon: Brain, color: 'from-[#00d4aa]/20 to-[#06b6d4]/5', iconColor: 'text-[#00d4aa]' },
-      { label: 'Prediction Market', page: 'PredictionMarket', icon: Target, color: 'from-violet-500/20 to-violet-600/5', iconColor: 'text-violet-400' },
+      { label: 'AI Intelligence',   page: 'AIIntelligence',  icon: Brain,  color: 'from-[#00d4aa]/20 to-[#06b6d4]/5',    iconColor: 'text-[#00d4aa]' },
+      { label: 'Prediction Market', page: 'PredictionMarket',icon: Target, color: 'from-violet-500/20 to-violet-600/5',   iconColor: 'text-violet-400' },
+      { label: 'Leaderboards',      page: 'Leaderboard',     icon: Trophy, color: 'from-amber-500/20 to-amber-600/5',     iconColor: 'text-amber-400' },
+      { label: 'Alert Center',      page: 'Alerts',          icon: Bell,   color: 'from-red-500/20 to-red-600/5',         iconColor: 'text-red-400' },
     ],
   },
   {
     label: 'Market Intelligence',
     items: [
-      { label: 'News', page: 'News', icon: Newspaper, color: 'from-amber-500/20 to-amber-600/5', iconColor: 'text-amber-400' },
-      { label: 'Analytics', page: 'Analytics', icon: PieChart, color: 'from-blue-500/20 to-blue-600/5', iconColor: 'text-blue-400' },
-      { label: 'Whale Tracker', page: 'WhaleTracker', icon: Eye, color: 'from-violet-500/20 to-violet-600/5', iconColor: 'text-violet-400' },
-      { label: 'Liquidations', page: 'LiquidationFeed', icon: Flame, color: 'from-orange-500/20 to-orange-600/5', iconColor: 'text-orange-400' },
+      { label: 'News',          page: 'News',            icon: Newspaper, color: 'from-amber-500/20 to-amber-600/5',  iconColor: 'text-amber-400' },
+      { label: 'Analytics',     page: 'Analytics',       icon: PieChart,  color: 'from-blue-500/20 to-blue-600/5',   iconColor: 'text-blue-400' },
+      { label: 'Whale Tracker', page: 'WhaleTracker',    icon: Eye,       color: 'from-violet-500/20 to-violet-600/5',iconColor: 'text-violet-400' },
+      { label: 'Liquidations',  page: 'LiquidationFeed', icon: Flame,     color: 'from-orange-500/20 to-orange-600/5',iconColor: 'text-orange-400' },
     ],
   },
   {
     label: 'RWA Assets',
     items: [
       { label: 'RWA Markets', page: 'RWAExplore', icon: Building2, color: 'from-purple-500/20 to-purple-600/5', iconColor: 'text-purple-400' },
-      { label: 'Real Estate', page: 'RealEstate', icon: MapPin, color: 'from-pink-500/20 to-pink-600/5', iconColor: 'text-pink-400' },
+      { label: 'Real Estate', page: 'RealEstate',  icon: MapPin,    color: 'from-pink-500/20 to-pink-600/5',    iconColor: 'text-pink-400' },
     ],
   },
   {
     label: 'Earn & Social',
     items: [
-      { label: 'Earn / Staking', page: 'Earn', icon: Zap, color: 'from-emerald-500/20 to-emerald-600/5', iconColor: 'text-emerald-400' },
-      { label: 'Social Trading', page: 'SocialTrading', icon: Users, color: 'from-cyan-500/20 to-cyan-600/5', iconColor: 'text-cyan-400' },
-      { label: 'Launchpad', page: 'Launchpad', icon: Rocket, color: 'from-rose-500/20 to-rose-600/5', iconColor: 'text-rose-400' },
+      { label: 'Earn / Staking',  page: 'Earn',          icon: Zap,    color: 'from-emerald-500/20 to-emerald-600/5', iconColor: 'text-emerald-400' },
+      { label: 'Social Trading',  page: 'SocialTrading', icon: Users,  color: 'from-cyan-500/20 to-cyan-600/5',       iconColor: 'text-cyan-400' },
+      { label: 'Launchpad',       page: 'Launchpad',     icon: Rocket, color: 'from-rose-500/20 to-rose-600/5',       iconColor: 'text-rose-400' },
+      { label: 'Referral Hub',    page: 'Referral',      icon: Gift,   color: 'from-green-500/20 to-green-600/5',     iconColor: 'text-green-400' },
     ],
   },
   {
@@ -48,9 +51,9 @@ const SECTIONS = [
   {
     label: 'Account',
     items: [
-      { label: 'Notifications', page: 'Notifications', icon: Bell, color: 'from-slate-600/20 to-slate-700/5', iconColor: 'text-slate-400' },
-      { label: 'Settings', page: 'Profile', icon: Settings, color: 'from-slate-600/20 to-slate-700/5', iconColor: 'text-slate-400' },
-      { label: 'Support', page: 'Home', icon: HelpCircle, color: 'from-slate-600/20 to-slate-700/5', iconColor: 'text-slate-400' },
+      { label: 'Notifications', page: 'Notifications', icon: Bell,       color: 'from-slate-600/20 to-slate-700/5', iconColor: 'text-slate-400' },
+      { label: 'Settings',      page: 'Profile',       icon: Settings,   color: 'from-slate-600/20 to-slate-700/5', iconColor: 'text-slate-400' },
+      { label: 'Support',       page: 'Home',          icon: HelpCircle, color: 'from-slate-600/20 to-slate-700/5', iconColor: 'text-slate-400' },
     ],
   },
 ];
