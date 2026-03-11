@@ -4,10 +4,17 @@ import { createPageUrl } from '@/utils';
 import {
   Vote, Newspaper, Building2, PieChart, Rocket, Zap,
   Users, Flame, Eye, Settings, HelpCircle, MapPin, Bell,
-  BarChart3, TrendingUp
+  Brain, Target
 } from 'lucide-react';
 
 const SECTIONS = [
+  {
+    label: 'AI & Intelligence',
+    items: [
+      { label: 'AI Intelligence', page: 'AIIntelligence', icon: Brain, color: 'from-[#00d4aa]/20 to-[#06b6d4]/5', iconColor: 'text-[#00d4aa]' },
+      { label: 'Prediction Market', page: 'PredictionMarket', icon: Target, color: 'from-violet-500/20 to-violet-600/5', iconColor: 'text-violet-400' },
+    ],
+  },
   {
     label: 'Market Intelligence',
     items: [

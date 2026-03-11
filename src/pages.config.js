@@ -68,6 +68,8 @@ import RealEstateDetail from './pages/RealEstateDetail';
 import Trade from './pages/Trade';
 import LiquidationFeed from './pages/LiquidationFeed';
 import More from './pages/More';
+import AIIntelligence from './pages/AIIntelligence';
+import PredictionMarket from './pages/PredictionMarket';
 import __Layout from './Layout.jsx';
 
 
@@ -93,6 +95,8 @@ export const PAGES = {
     "Trade": Trade,
     "LiquidationFeed": LiquidationFeed,
     "More": More,
+    "AIIntelligence": AIIntelligence,
+    "PredictionMarket": PredictionMarket,
 }
 
 export const pagesConfig = {
