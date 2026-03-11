@@ -59,6 +59,11 @@ import WalletConnect from './pages/WalletConnect';
 import Analytics from './pages/Analytics';
 import Launchpad from './pages/Launchpad';
 import Earn from './pages/Earn';
+import SocialTrading from './pages/SocialTrading';
+import LiquidationFeed from './pages/LiquidationFeed';
+import WhaleTracker from './pages/WhaleTracker';
+import Notifications from './pages/Notifications';
+import News from './pages/News';
 import __Layout from './Layout.jsx';
 
 
@@ -75,6 +80,11 @@ export const PAGES = {
     "Analytics": Analytics,
     "Launchpad": Launchpad,
     "Earn": Earn,
+    "SocialTrading": SocialTrading,
+    "LiquidationFeed": LiquidationFeed,
+    "WhaleTracker": WhaleTracker,
+    "Notifications": Notifications,
+    "News": News,
 }
 
 export const pagesConfig = {
