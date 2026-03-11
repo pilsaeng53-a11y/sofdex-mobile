@@ -1,25 +1,32 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { BarChart3, Search, TrendingUp, TrendingDown, Star } from 'lucide-react';
+import { BarChart3, Search, TrendingUp, TrendingDown, Star, StarOff } from 'lucide-react';
 import { CRYPTO_MARKETS, RWA_MARKETS, TRADFI_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import MiniChart from '../components/shared/MiniChart';
 
-const TABS = ['All', 'Crypto', 'RWA', 'TradFi', 'Gainers', 'Losers', 'Volume'];
+const TABS = ['All', 'Crypto', 'RWA', 'TradFi', 'Gainers', 'Losers', 'Volume', 'Watchlist'];
 
-function MarketRow({ asset, showYield }) {
+function MarketRow({ asset, watchlist = [], onToggleWatch }) {
   const { getLiveAsset } = useMarketData();
   const live = getLiveAsset(asset.symbol);
   const price = live.available ? live.price : asset.price;
   const change = live.available ? live.change : asset.change;
   const positive = change >= 0;
+  const isWatched = watchlist.includes(asset.symbol);
 
   return (
     <Link to={`${createPageUrl('MarketDetail')}?symbol=${asset.symbol}`}>
       <div className="flex items-center justify-between px-4 py-3 hover:bg-[#151c2e] transition-colors">
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[10px] font-black text-[#00d4aa] flex-shrink-0">
+          <button
+            onClick={(e) => onToggleWatch && onToggleWatch(asset.symbol, e)}
+            className="flex-shrink-0"
+          >
+            <Star className={`w-3.5 h-3.5 transition-colors ${isWatched ? 'fill-amber-400 text-amber-400' : 'text-slate-700 hover:text-slate-500'}`} />
+          </button>
+          <div className="w-8 h-8 rounded-xl bg-[#1a2340] flex items-center justify-center text-[10px] font-black text-[#00d4aa] flex-shrink-0">
             {asset.symbol.slice(0, 2)}
           </div>
           <div className="min-w-0">
@@ -28,7 +35,7 @@ function MarketRow({ asset, showYield }) {
           </div>
         </div>
 
-        <div className="w-16 flex-shrink-0">
+        <div className="w-14 flex-shrink-0">
           <MiniChart positive={positive} />
         </div>
 
@@ -44,12 +51,21 @@ function MarketRow({ asset, showYield }) {
   );
 }
 
+const DEFAULT_WATCHLIST = ['BTC', 'ETH', 'SOL', 'GOLD-T', 'TBILL'];
+
 export default function Markets() {
   const [tab, setTab] = useState('All');
   const [search, setSearch] = useState('');
+  const [watchlist, setWatchlist] = useState(DEFAULT_WATCHLIST);
   const { getLiveAsset } = useMarketData();
 
   const allAssets = [...CRYPTO_MARKETS, ...RWA_MARKETS, ...TRADFI_MARKETS];
+
+  const toggleWatch = (symbol, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setWatchlist(prev => prev.includes(symbol) ? prev.filter(s => s !== symbol) : [...prev, symbol]);
+  };
 
   const getFiltered = () => {
     let base = allAssets;
@@ -68,6 +84,8 @@ export default function Markets() {
       }).slice(0, 10);
     } else if (tab === 'Volume') {
       base = [...CRYPTO_MARKETS].sort((a, b) => parseFloat(b.volume) - parseFloat(a.volume));
+    } else if (tab === 'Watchlist') {
+      base = allAssets.filter(a => watchlist.includes(a.symbol));
     }
 
     if (search) {
@@ -127,10 +145,18 @@ export default function Markets() {
       {/* Rows */}
       <div className="glass-card mx-4 mt-2 rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.05)]">
         {filtered.length === 0 && (
-          <div className="p-8 text-center text-slate-500 text-sm">No assets found</div>
+          <div className="p-8 text-center text-slate-500 text-sm">
+            {tab === 'Watchlist' ? (
+              <div>
+                <StarOff className="w-8 h-8 text-slate-700 mx-auto mb-2" />
+                <p>No watchlist assets yet</p>
+                <p className="text-[11px] text-slate-600 mt-1">Tap ★ on any asset to add it</p>
+              </div>
+            ) : 'No assets found'}
+          </div>
         )}
         {filtered.map(asset => (
-          <MarketRow key={asset.symbol} asset={asset} />
+          <MarketRow key={asset.symbol} asset={asset} watchlist={watchlist} onToggleWatch={toggleWatch} />
         ))}
       </div>
 
