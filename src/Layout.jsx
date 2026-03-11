@@ -6,6 +6,7 @@ import BottomNav from './components/shared/BottomNav';
 import TickerStrip from './components/shared/TickerStrip';
 import AppMenu from './components/shared/AppMenu';
 import { MarketDataProvider } from './components/shared/MarketDataProvider';
+import { LanguageProvider } from './components/shared/LanguageContext';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
@@ -14,6 +15,7 @@ export default function Layout({ children, currentPageName }) {
   const showShell = !NO_SHELL_PAGES.includes(currentPageName);
 
   return (
+    <LanguageProvider>
     <MarketDataProvider>
       <div className="min-h-screen bg-[#0a0e1a] text-slate-100 max-w-lg mx-auto relative">
         {showShell && (
@@ -67,5 +69,6 @@ export default function Layout({ children, currentPageName }) {
         {showShell && <BottomNav currentPage={currentPageName} />}
       </div>
     </MarketDataProvider>
+    </LanguageProvider>
   );
 }
