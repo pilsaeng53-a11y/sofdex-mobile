@@ -73,6 +73,7 @@ import WhaleTracker from './pages/WhaleTracker';
 import Referral from './pages/Referral';
 import Alerts from './pages/Alerts';
 import Leaderboard from './pages/Leaderboard';
+import CopyTrading from './pages/CopyTrading';
 import __Layout from './Layout.jsx';
 
 
@@ -103,6 +104,7 @@ export const PAGES = {
     "Referral": Referral,
     "Alerts": Alerts,
     "Leaderboard": Leaderboard,
+    "CopyTrading": CopyTrading,
 }
 
 export const pagesConfig = {

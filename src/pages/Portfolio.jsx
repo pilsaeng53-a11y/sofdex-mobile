@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart, Building2, ShieldCheck } from 'lucide-react';
-import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 
 const holdings = [
   { symbol: 'SOL', name: 'Solana', amount: '24.82', value: '$4,648.54', change: 5.23, type: 'crypto' },

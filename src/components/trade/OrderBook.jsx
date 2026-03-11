@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { formatPrice } from '../shared/MarketData';
+import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
 function generateOrders(basePrice, side, count = 12) {
   const orders = [];
