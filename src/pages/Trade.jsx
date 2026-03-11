@@ -97,6 +97,12 @@ export default function Trade() {
         <TradingViewChart symbol={selectedSymbol} height={300} />
       </div>
 
+      {/* OrderBook + Recent Trades */}
+      <div className="px-4 mb-4 grid grid-cols-2 gap-3">
+        <OrderBook price={displayPrice} />
+        <RecentTrades price={displayPrice} />
+      </div>
+
       {/* Order panel */}
       <div className="px-4 mb-4">
         <OrderPanel asset={assetForPanel} />
