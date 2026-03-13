@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, BarChart3, TrendingUp, Wallet, MoreHorizontal } from 'lucide-react';
+import { Home, BarChart3, TrendingUp, Wallet, ArrowDownUp } from 'lucide-react';
 import { useLang } from './LanguageContext';
 
 const TAB_KEYS = [
@@ -9,7 +9,7 @@ const TAB_KEYS = [
   { key: 'nav_markets',   page: 'Markets',   icon: BarChart3 },
   { key: 'nav_trade',     page: 'Trade',     icon: TrendingUp },
   { key: 'nav_portfolio', page: 'Portfolio', icon: Wallet },
-  { key: 'nav_more',      page: 'More',      icon: MoreHorizontal },
+  { key: 'nav_swap',      page: 'Swap',      icon: ArrowDownUp },
 ];
 
 export default function BottomNav({ currentPage }) {
