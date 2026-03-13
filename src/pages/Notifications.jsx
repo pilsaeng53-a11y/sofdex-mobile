@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Bell, TrendingUp, Newspaper, Vote, Wallet, Rocket, CheckCircle2, X, Settings } from 'lucide-react';
+import { useLang } from '../components/shared/LanguageContext';
 
 const NOTIFICATIONS = [
   {
@@ -39,9 +40,10 @@ const NOTIFICATIONS = [
   },
 ];
 
-const typeFilters = ['all', 'price', 'governance', 'news', 'portfolio', 'launchpad'];
+const TYPE_FILTER_KEYS = [['all','notif_all'],['price','notif_price'],['governance','notif_governance'],['news','notif_news'],['portfolio','notif_portfolio'],['launchpad','notif_launchpad']];
 
 export default function Notifications() {
+  const { t } = useLang();
   const [filter, setFilter] = useState('all');
   const [dismissed, setDismissed] = useState(new Set());
 
@@ -53,7 +55,7 @@ export default function Notifications() {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Bell className="w-5 h-5 text-[#00d4aa]" />
-          <h1 className="text-xl font-bold text-white">Notifications</h1>
+          <h1 className="text-xl font-bold text-white">{t('page_notifications')}</h1>
           {unreadCount > 0 && (
             <span className="px-2 py-0.5 rounded-full bg-[#00d4aa] text-black text-[10px] font-black">{unreadCount}</span>
           )}
@@ -65,18 +67,18 @@ export default function Notifications() {
 
       {/* Alert Preferences */}
       <div className="glass-card rounded-2xl p-4 mb-5">
-        <p className="text-xs font-bold text-white mb-3">Alert Preferences</p>
+        <p className="text-xs font-bold text-white mb-3">{t('notif_alertPrefs')}</p>
         <div className="grid grid-cols-2 gap-2">
           {[
-            { label: 'Price Alerts', enabled: true },
-            { label: 'News Alerts', enabled: true },
-            { label: 'Governance', enabled: true },
-            { label: 'Portfolio', enabled: true },
-            { label: 'Launchpad', enabled: false },
-            { label: 'System', enabled: false },
+            { labelKey: 'notif_priceAlerts', enabled: true },
+            { labelKey: 'notif_newsAlerts', enabled: true },
+            { labelKey: 'notif_governance', enabled: true },
+            { labelKey: 'notif_portfolio', enabled: true },
+            { labelKey: 'notif_launchpad', enabled: false },
+            { labelKey: 'notif_system', enabled: false },
           ].map((pref, i) => (
             <div key={i} className="flex items-center justify-between bg-[#0d1220] rounded-xl px-3 py-2">
-              <span className="text-xs text-slate-400">{pref.label}</span>
+              <span className="text-xs text-slate-400">{t(pref.labelKey)}</span>
               <div className={`w-8 h-4 rounded-full transition-colors ${pref.enabled ? 'bg-[#00d4aa]' : 'bg-[#1a2340]'} relative`}>
                 <div className={`absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all ${pref.enabled ? 'right-0.5' : 'left-0.5'}`} />
               </div>
@@ -87,15 +89,15 @@ export default function Notifications() {
 
       {/* Type filter */}
       <div className="flex gap-1.5 mb-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-        {typeFilters.map(f => (
+        {TYPE_FILTER_KEYS.map(([val, key]) => (
           <button
-            key={f}
-            onClick={() => setFilter(f)}
+            key={val}
+            onClick={() => setFilter(val)}
             className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
-              filter === f ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
+              filter === val ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
             }`}
           >
-            {f}
+            {t(key)}
           </button>
         ))}
       </div>
@@ -105,7 +107,7 @@ export default function Notifications() {
         {visible.length === 0 && (
           <div className="glass-card rounded-2xl p-8 text-center">
             <Bell className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <p className="text-sm text-slate-500">No notifications in this category</p>
+            <p className="text-sm text-slate-500">{t('notif_empty')}</p>
           </div>
         )}
         {visible.map(n => {
