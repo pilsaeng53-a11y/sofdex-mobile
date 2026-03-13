@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLang } from '../components/shared/LanguageContext';
 import MarketOverview from '../components/home/MarketOverview';
 import FeaturedBanner from '../components/home/FeaturedBanner';
 import TrendingAssets from '../components/home/TrendingAssets';
@@ -14,12 +15,13 @@ import ActivityStream from '../components/home/ActivityStream';
 import MarketPulseBar from '../components/shared/MarketPulseBar';
 
 export default function Home() {
+  const { t } = useLang();
   return (
     <div className="min-h-screen">
 
       {/* Welcome section */}
       <div className="px-4 pt-3 pb-2">
-        <p className="text-slate-500 text-xs font-medium">Global Multi-Asset Trading Platform</p>
+        <p className="text-slate-500 text-xs font-medium">{t('home_subtitle')}</p>
       </div>
 
       <MarketPulseBar />
@@ -39,13 +41,13 @@ export default function Home() {
       {/* Ecosystem footer */}
       <div className="px-4 pb-6">
         <div className="glass-card rounded-2xl p-4 text-center">
-          <p className="text-[11px] text-slate-500 mb-1">Powered by</p>
+          <p className="text-[11px] text-slate-500 mb-1">{t('home_poweredBy')}</p>
           <p className="text-sm font-bold">
             <span className="text-white">Sol</span>
             <span className="gradient-text">Fort</span>
             <span className="text-slate-500 font-normal"> Ecosystem</span>
           </p>
-          <p className="text-[11px] text-slate-600 mt-1">Built on Solana · Institutional Grade</p>
+          <p className="text-[11px] text-slate-600 mt-1">{t('home_builtOn')}</p>
         </div>
       </div>
     </div>
