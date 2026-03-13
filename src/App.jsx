@@ -4,6 +4,10 @@ import { queryClientInstance } from '@/lib/query-client'
 import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
+import DocAssetOverview from './pages/DocAssetOverview';
+import DocLegalDocuments from './pages/DocLegalDocuments';
+import DocTokenStructure from './pages/DocTokenStructure';
+import DocRiskDisclosure from './pages/DocRiskDisclosure';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -57,6 +61,10 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/DocAssetOverview" element={<LayoutWrapper currentPageName="DocAssetOverview"><DocAssetOverview /></LayoutWrapper>} />
+      <Route path="/DocLegalDocuments" element={<LayoutWrapper currentPageName="DocLegalDocuments"><DocLegalDocuments /></LayoutWrapper>} />
+      <Route path="/DocTokenStructure" element={<LayoutWrapper currentPageName="DocTokenStructure"><DocTokenStructure /></LayoutWrapper>} />
+      <Route path="/DocRiskDisclosure" element={<LayoutWrapper currentPageName="DocRiskDisclosure"><DocRiskDisclosure /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

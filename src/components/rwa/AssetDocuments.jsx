@@ -1,11 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { FileText, Shield, Landmark, AlertTriangle, ShieldCheck, Building2, Star, ChevronRight } from 'lucide-react';
 
 const DOCS = [
-  { icon: FileText, label: 'Asset Overview', desc: 'Full property description, location analysis, and asset summary', color: 'text-blue-400', bg: 'bg-blue-400/10' },
-  { icon: Landmark, label: 'Legal Docs', desc: 'Title deed, ownership structure, jurisdiction documentation', color: 'text-purple-400', bg: 'bg-purple-400/10' },
-  { icon: Shield, label: 'Token Structure', desc: 'Smart contract architecture, token economics, distribution model', color: 'text-[#00d4aa]', bg: 'bg-[#00d4aa]/10' },
-  { icon: AlertTriangle, label: 'Risk Disclosure', desc: 'Full risk factors, liquidity risks, market conditions disclosure', color: 'text-amber-400', bg: 'bg-amber-400/10' },
+  { icon: FileText, label: 'Asset Overview', desc: 'Full property description, location analysis, and asset summary', color: 'text-blue-400', bg: 'bg-blue-400/10', page: 'DocAssetOverview' },
+  { icon: Landmark, label: 'Legal Docs', desc: 'Title deed, ownership structure, jurisdiction documentation', color: 'text-purple-400', bg: 'bg-purple-400/10', page: 'DocLegalDocuments' },
+  { icon: Shield, label: 'Token Structure', desc: 'Smart contract architecture, token economics, distribution model', color: 'text-[#00d4aa]', bg: 'bg-[#00d4aa]/10', page: 'DocTokenStructure' },
+  { icon: AlertTriangle, label: 'Risk Disclosure', desc: 'Full risk factors, liquidity risks, market conditions disclosure', color: 'text-amber-400', bg: 'bg-amber-400/10', page: 'DocRiskDisclosure' },
 ];
 
 const TRUST_BADGES = [
@@ -45,8 +47,11 @@ export default function AssetDocuments({ property }) {
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
           {DOCS.map((doc, i) => {
             const Icon = doc.icon;
+            const symbol = property?.symbol || '';
+            const name = property?.shortName || property?.name || '';
+            const href = `${createPageUrl(doc.page)}?symbol=${encodeURIComponent(symbol)}&name=${encodeURIComponent(name)}&back=RealEstateDetail`;
             return (
-              <button key={i} className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-[#1a2340] transition-colors text-left">
+              <Link key={i} to={href} className="flex items-center gap-3 px-4 py-3.5 hover:bg-[#1a2340] transition-colors">
                 <div className={`w-8 h-8 rounded-xl ${doc.bg} flex items-center justify-center flex-shrink-0`}>
                   <Icon className={`w-4 h-4 ${doc.color}`} />
                 </div>
@@ -58,7 +63,7 @@ export default function AssetDocuments({ property }) {
                   <span className="text-[10px] px-2 py-0.5 rounded-lg bg-[#00d4aa]/10 text-[#00d4aa] font-semibold">PDF</span>
                   <ChevronRight className="w-4 h-4 text-slate-600" />
                 </div>
-              </button>
+              </Link>
             );
           })}
         </div>
