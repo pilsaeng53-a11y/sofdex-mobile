@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLang } from './components/shared/LanguageContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Bell, Search, Wallet, Menu } from 'lucide-react';
@@ -10,12 +11,12 @@ import { LanguageProvider } from './components/shared/LanguageContext';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
-export default function Layout({ children, currentPageName }) {
+function LayoutInner({ children, currentPageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLang();
   const showShell = !NO_SHELL_PAGES.includes(currentPageName);
 
   return (
-    <LanguageProvider>
     <MarketDataProvider>
       <div className="min-h-screen bg-[#0a0e1a] text-slate-100 max-w-lg mx-auto relative">
         {showShell && (
@@ -54,7 +55,7 @@ export default function Layout({ children, currentPageName }) {
                   <Link to={createPageUrl('WalletConnect')}>
                     <button className="h-8 px-3 rounded-xl bg-[#00d4aa]/10 border border-[#00d4aa]/20 flex items-center gap-1.5 hover:bg-[#00d4aa]/20 transition-all">
                       <Wallet className="w-3.5 h-3.5 text-[#00d4aa]" />
-                      <span className="text-xs font-semibold text-[#00d4aa]">Connect</span>
+                      <span className="text-xs font-semibold text-[#00d4aa]">{t('common_connect')}</span>
                     </button>
                   </Link>
                 </div>
@@ -69,6 +70,13 @@ export default function Layout({ children, currentPageName }) {
         {showShell && <BottomNav currentPage={currentPageName} />}
       </div>
     </MarketDataProvider>
+  );
+}
+
+export default function Layout({ children, currentPageName }) {
+  return (
+    <LanguageProvider>
+      <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
     </LanguageProvider>
   );
 }
