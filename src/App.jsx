@@ -5,6 +5,8 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import DocAssetOverview from './pages/DocAssetOverview';
+import Swap from './pages/Swap';
+import SolFort from './pages/SolFort';
 import DocLegalDocuments from './pages/DocLegalDocuments';
 import DocTokenStructure from './pages/DocTokenStructure';
 import DocRiskDisclosure from './pages/DocRiskDisclosure';
@@ -65,6 +67,8 @@ const AuthenticatedApp = () => {
       <Route path="/DocLegalDocuments" element={<LayoutWrapper currentPageName="DocLegalDocuments"><DocLegalDocuments /></LayoutWrapper>} />
       <Route path="/DocTokenStructure" element={<LayoutWrapper currentPageName="DocTokenStructure"><DocTokenStructure /></LayoutWrapper>} />
       <Route path="/DocRiskDisclosure" element={<LayoutWrapper currentPageName="DocRiskDisclosure"><DocRiskDisclosure /></LayoutWrapper>} />
+      <Route path="/Swap" element={<LayoutWrapper currentPageName="Swap"><Swap /></LayoutWrapper>} />
+      <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
