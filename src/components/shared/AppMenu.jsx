@@ -6,7 +6,7 @@ import {
   ChevronRight, ChevronDown, Newspaper, Building2, MapPin,
   Settings, HelpCircle, FileText, Archive,
   BarChart2, Users, BookOpen, Rocket, Zap,
-  Eye, Flame, Bell, PieChart, Activity
+  Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 
@@ -17,6 +17,7 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_home',      page: 'Home',      icon: Home },
       { labelKey: 'menu_markets',   page: 'Markets',   icon: BarChart3 },
       { labelKey: 'menu_trade',     page: 'Trade',     icon: TrendingUp },
+      { labelKey: 'menu_swap',      page: 'Swap',      icon: ArrowDownUp },
       { labelKey: 'menu_portfolio', page: 'Portfolio', icon: Wallet },
     ],
   },
@@ -32,6 +33,13 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_predictionMarket', page: 'PredictionMarket',icon: BarChart2 },
       { labelKey: 'menu_alerts',           page: 'Alerts',          icon: Bell },
       { labelKey: 'menu_leaderboard',      page: 'Leaderboard',     icon: BarChart3 },
+    ],
+  },
+  {
+    labelKey: 'menu_solfort',
+    items: [
+      { labelKey: 'menu_solfortPage', page: 'SolFort', icon: Star },
+      { labelKey: 'menu_swapSof',     page: 'Swap',    icon: ArrowDownUp },
     ],
   },
   {
