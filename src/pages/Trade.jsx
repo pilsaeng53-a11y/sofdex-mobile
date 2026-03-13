@@ -7,6 +7,7 @@ import OrderBook from '../components/trade/OrderBook';
 import RecentTrades from '../components/trade/RecentTrades';
 import PositionsPanel from '../components/trade/PositionsPanel';
 import { TrendingUp, TrendingDown, ChevronDown } from 'lucide-react';
+import { useLang } from '../components/shared/LanguageContext';
 
 export default function Trade() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -15,6 +16,7 @@ export default function Trade() {
   const [showPicker, setShowPicker] = useState(false);
   const { getLiveAsset } = useMarketData();
 
+  const { t } = useLang();
   const baseAsset = ALL_MARKETS.find(a => a.symbol === symbol) || CRYPTO_MARKETS[0];
   const live = getLiveAsset(symbol);
   const price = live.available ? live.price : baseAsset.price;
@@ -45,7 +47,7 @@ export default function Trade() {
                 <span className="text-base font-bold text-white">{symbol}-PERP</span>
                 <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showPicker ? 'rotate-180' : ''}`} />
               </div>
-              <span className="text-[10px] text-slate-500">Perpetual · Up to {baseAsset.leverage || '50x'}</span>
+              <span className="text-[10px] text-slate-500">{t('trade_perpetual')} · {t('trade_upTo')} {baseAsset.leverage || '50x'}</span>
             </div>
           </button>
 
@@ -61,11 +63,11 @@ export default function Trade() {
         {/* Stats bar */}
         <div className="flex gap-5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
           {[
-            { label: '24h High', value: `$${h24High}`, color: 'text-white' },
-            { label: '24h Low', value: `$${h24Low}`, color: 'text-white' },
-            { label: 'Volume', value: baseAsset.volume || '2.8B', color: 'text-white' },
-            { label: 'Funding', value: `${fundingPositive ? '+' : ''}${fundingVal.toFixed(4)}%`, color: fundingPositive ? 'text-emerald-400' : 'text-red-400' },
-            { label: 'Market Cap', value: baseAsset.mcap || '—', color: 'text-white' },
+            { label: t('trade_24hHigh'), value: `$${h24High}`, color: 'text-white' },
+            { label: t('trade_24hLow'), value: `$${h24Low}`, color: 'text-white' },
+            { label: t('trade_volume'), value: baseAsset.volume || '2.8B', color: 'text-white' },
+            { label: t('trade_funding'), value: `${fundingPositive ? '+' : ''}${fundingVal.toFixed(4)}%`, color: fundingPositive ? 'text-emerald-400' : 'text-red-400' },
+            { label: t('trade_marketCap'), value: baseAsset.mcap || '—', color: 'text-white' },
           ].map(stat => (
             <div key={stat.label} className="flex-shrink-0">
               <p className="text-[10px] text-slate-500">{stat.label}</p>
@@ -103,17 +105,22 @@ export default function Trade() {
 
       {/* Trade tabs */}
       <div className="flex px-4 gap-1 mb-3">
-        {['Order', 'Orderbook', 'Trades', 'Positions'].map(t => (
+        {[
+          { val: 'Order', key: 'trade_order' },
+          { val: 'Orderbook', key: 'trade_orderbook' },
+          { val: 'Trades', key: 'trade_trades' },
+          { val: 'Positions', key: 'trade_positions' },
+        ].map(item => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={item.val}
+            onClick={() => setTab(item.val)}
             className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
-              tab === t
+              tab === item.val
                 ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
                 : 'text-slate-500 bg-[#151c2e] border border-transparent'
             }`}
           >
-            {t}
+            {t(item.key)}
           </button>
         ))}
       </div>
