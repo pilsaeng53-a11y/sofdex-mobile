@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart, Building2, ShieldCheck } from 'lucide-react';
+import { useLang } from '../components/shared/LanguageContext';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 
 const holdings = [
@@ -39,7 +40,7 @@ const pieData = [
   { name: 'Positions', value: 8, color: '#f59e0b' },
 ];
 
-const PORTFOLIO_TABS = ['All', 'Crypto', 'RWA', 'Positions'];
+const PORTFOLIO_TAB_KEYS = [['All','portfolio_all'],['Crypto','portfolio_crypto'],['RWA','portfolio_rwa'],['Positions','portfolio_positions']];
 
 const CHART_PERIODS = ['1D', '7D', '1M', '3M', 'ALL'];
 
@@ -54,6 +55,7 @@ function generatePortfolioData(period) {
 }
 
 export default function Portfolio() {
+  const { t } = useLang();
   const [showBalance, setShowBalance] = useState(true);
   const [tab, setTab] = useState('All');
   const [chartPeriod, setChartPeriod] = useState('7D');
@@ -67,7 +69,7 @@ export default function Portfolio() {
     <div className="min-h-screen">
       {/* Header */}
       <div className="px-4 pt-4 pb-2 flex items-center justify-between">
-        <h1 className="text-xl font-bold text-white">Portfolio</h1>
+        <h1 className="text-xl font-bold text-white">{t('page_portfolio')}</h1>
         <button onClick={() => setShowBalance(!showBalance)} className="w-9 h-9 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)]">
           {showBalance ? <Eye className="w-4 h-4 text-slate-400" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
         </button>
@@ -78,7 +80,7 @@ export default function Portfolio() {
         <div className="relative overflow-hidden glass-card rounded-2xl p-5 glow-border">
           <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-[#00d4aa]/8 to-transparent rounded-full blur-2xl" />
           <div className="relative z-10">
-            <p className="text-[11px] text-slate-500 font-medium mb-1">Total Balance</p>
+            <p className="text-[11px] text-slate-500 font-medium mb-1">{t('portfolio_totalBalance')}</p>
             <h2 className="text-3xl font-bold text-white mb-1">
               {showBalance ? totalBalance : '••••••'}
             </h2>
@@ -87,7 +89,7 @@ export default function Portfolio() {
                 <ArrowUpRight className="w-3.5 h-3.5" />
                 <span className="text-xs font-semibold">{showBalance ? totalPnL : '••••'}</span>
               </div>
-              <span className="text-[11px] text-slate-500">24h PnL</span>
+              <span className="text-[11px] text-slate-500">{t('portfolio_24hPnl')}</span>
             </div>
           </div>
         </div>
@@ -97,7 +99,7 @@ export default function Portfolio() {
       <div className="px-4 mb-5">
         <div className="glass-card rounded-2xl p-4">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-sm font-bold text-white">Performance</h3>
+            <h3 className="text-sm font-bold text-white">{t('portfolio_performance')}</h3>
             <div className="flex gap-1">
               {CHART_PERIODS.map(p => (
                 <button key={p} onClick={() => setChartPeriod(p)}
@@ -130,7 +132,7 @@ export default function Portfolio() {
       {/* Allocation chart */}
       <div className="px-4 mb-5">
         <div className="glass-card rounded-2xl p-4">
-          <h3 className="text-sm font-bold text-white mb-3">Allocation</h3>
+          <h3 className="text-sm font-bold text-white mb-3">{t('portfolio_allocation')}</h3>
           <div className="flex items-center gap-4">
             <div className="w-24 h-24">
               <ResponsiveContainer width="100%" height="100%">
@@ -160,11 +162,11 @@ export default function Portfolio() {
       <div className="px-4 mb-4">
         <div className="grid grid-cols-2 gap-2.5">
           <div className="glass-card rounded-xl p-3">
-            <p className="text-[10px] text-slate-500 mb-0.5">Unrealized PnL</p>
+            <p className="text-[10px] text-slate-500 mb-0.5">{t('portfolio_unrealizedPnl')}</p>
             <p className="text-sm font-bold text-emerald-400">{showBalance ? unrealizedPnL : '••••'}</p>
           </div>
           <div className="glass-card rounded-xl p-3">
-            <p className="text-[10px] text-slate-500 mb-0.5">Realized PnL</p>
+            <p className="text-[10px] text-slate-500 mb-0.5">{t('portfolio_realizedPnl')}</p>
             <p className="text-sm font-bold text-emerald-400">{showBalance ? realizedPnL : '••••'}</p>
           </div>
         </div>
@@ -172,12 +174,12 @@ export default function Portfolio() {
 
       {/* Tab bar */}
       <div className="flex gap-1.5 px-4 mb-4">
-        {PORTFOLIO_TABS.map(t => (
-          <button key={t} onClick={() => setTab(t)}
+        {PORTFOLIO_TAB_KEYS.map(([val, key]) => (
+          <button key={val} onClick={() => setTab(val)}
             className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
-              tab === t ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 bg-[#151c2e] border border-transparent'
+              tab === val ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 bg-[#151c2e] border border-transparent'
             }`}>
-            {t}
+            {t(key)}
           </button>
         ))}
       </div>
@@ -185,7 +187,7 @@ export default function Portfolio() {
       {/* Crypto Holdings */}
       {(tab === 'All' || tab === 'Crypto') && (
       <div className="px-4 mb-5">
-        <h3 className="text-sm font-bold text-white mb-3">Crypto Holdings</h3>
+        <h3 className="text-sm font-bold text-white mb-3">{t('portfolio_cryptoHoldings')}</h3>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
           {holdings.filter(h => tab === 'All' ? true : h.type === 'crypto').map((h, i) => (
             <div key={i} className="p-3.5 flex items-center justify-between">
@@ -215,7 +217,7 @@ export default function Portfolio() {
       <div className="px-4 mb-5">
         <div className="flex items-center gap-2 mb-3">
           <Building2 className="w-4 h-4 text-[#8b5cf6]" />
-          <h3 className="text-sm font-bold text-white">RWA Holdings</h3>
+          <h3 className="text-sm font-bold text-white">{t('portfolio_rwaHoldings')}</h3>
         </div>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
           {rwaHoldings.map((h, i) => (
@@ -247,9 +249,9 @@ export default function Portfolio() {
       {/* Active positions */}
       <div className={tab !== 'All' && tab !== 'Positions' ? 'hidden' : 'px-4 mb-5'}>
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-bold text-white">Active Positions</h3>
+          <h3 className="text-sm font-bold text-white">{t('portfolio_activePositions')}</h3>
           <Link to={createPageUrl('Trade')}>
-            <span className="text-[11px] text-[#00d4aa] font-medium">View All</span>
+            <span className="text-[11px] text-[#00d4aa] font-medium">{t('portfolio_viewAll')}</span>
           </Link>
         </div>
         <div className="space-y-2">
@@ -279,7 +281,7 @@ export default function Portfolio() {
 
       {/* Recent transactions */}
       <div className={tab !== 'All' && tab !== 'Positions' ? 'hidden' : 'px-4 pb-6'}>
-        <h3 className="text-sm font-bold text-white mb-3">Recent Transactions</h3>
+        <h3 className="text-sm font-bold text-white mb-3">{t('portfolio_recentTx')}</h3>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
           {transactions.map((tx, i) => (
             <div key={i} className="p-3.5 flex items-center justify-between">
