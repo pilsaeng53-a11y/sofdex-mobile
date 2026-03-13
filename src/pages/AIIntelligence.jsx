@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart } from 'lucide-react';
+import { useLang } from '../components/shared/LanguageContext';
 import { CRYPTO_MARKETS } from '../components/shared/MarketData';
 
 // --- Static AI Data ---
@@ -107,9 +108,11 @@ const OPPORTUNITY_SCANNER = [
   { asset: 'RE-DXB',type: 'Undervalued RWA',     detail: 'AI model: -18.9% to fair',   signal: 'Value opportunity', color: 'text-amber-400', bg: 'bg-amber-400/10' },
 ];
 
-const TABS = ['Signals', 'Smart Money', 'Sectors', 'Volatility', 'Portfolio', 'Risk', 'News', 'Liq.Zones', 'RWA', 'Scanner'];
+const AI_TAB_KEYS = ['ai_tab_signals','ai_tab_smartMoney','ai_tab_sectors','ai_tab_volatility','ai_tab_portfolio','ai_tab_risk','ai_tab_news','ai_tab_liqZones','ai_tab_rwa','ai_tab_scanner'];
+const AI_TAB_VALUES = ['Signals','Smart Money','Sectors','Volatility','Portfolio','Risk','News','Liq.Zones','RWA','Scanner'];
 
 export default function AIIntelligence() {
+  const { t } = useLang();
   const [tab, setTab] = useState('Signals');
   const [refreshed, setRefreshed] = useState(false);
 
@@ -125,17 +128,17 @@ export default function AIIntelligence() {
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2">
             <Brain className="w-5 h-5 text-[#00d4aa]" />
-            <h1 className="text-xl font-bold text-white">AI Intelligence</h1>
+            <h1 className="text-xl font-bold text-white">{t('page_ai')}</h1>
           </div>
           <button
             onClick={handleRefresh}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all"
           >
             <Bot className={`w-3.5 h-3.5 text-[#00d4aa] ${refreshed ? 'animate-spin' : ''}`} />
-            <span className="text-[11px] text-slate-400 font-medium">{refreshed ? 'Analyzing…' : 'AI Refresh'}</span>
+            <span className="text-[11px] text-slate-400 font-medium">{refreshed ? t('ai_analyzing') : t('ai_refresh')}</span>
           </button>
         </div>
-        <p className="text-[11px] text-slate-500">Powered by SOFDex AI Engine · Updated every 5 minutes</p>
+        <p className="text-[11px] text-slate-500">{t('ai_poweredBy')}</p>
       </div>
 
       {/* Overall Sentiment Banner */}
@@ -145,11 +148,11 @@ export default function AIIntelligence() {
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <p className="text-[10px] text-slate-500 font-medium mb-1">AI Market Sentiment</p>
+                <p className="text-[10px] text-slate-500 font-medium mb-1">{t('ai_marketSentiment')}</p>
                 <div className="flex items-center gap-2">
                   <span className="text-2xl font-black text-emerald-400">{AI_SENTIMENT.label}</span>
                   <span className="px-2 py-0.5 rounded-lg bg-emerald-400/10 text-emerald-400 text-[10px] font-bold border border-emerald-400/20">
-                    {AI_SENTIMENT.confidence} Confidence
+                    {AI_SENTIMENT.confidence} {t('ai_confidence')}
                   </span>
                 </div>
               </div>
@@ -172,17 +175,17 @@ export default function AIIntelligence() {
 
       {/* Tab bar */}
       <div className="flex gap-1.5 px-4 mb-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-        {TABS.map(t => (
+        {AI_TAB_VALUES.map((tabVal, idx) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabVal}
+            onClick={() => setTab(tabVal)}
             className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              tab === t
+              tab === tabVal
                 ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
                 : 'text-slate-500 border border-transparent'
             }`}
           >
-            {t}
+            {t(AI_TAB_KEYS[idx])}
           </button>
         ))}
       </div>
@@ -193,8 +196,8 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <Zap className="w-4 h-4 text-[#00d4aa]" />
-              <p className="text-xs font-bold text-white">AI Trade Signals</p>
-              <span className="text-[10px] text-slate-600">· Directional bias</span>
+              <p className="text-xs font-bold text-white">{t('ai_tradeSignals')}</p>
+              <span className="text-[10px] text-slate-600">· {t('ai_directionalBias')}</span>
             </div>
             {AI_SIGNALS.map((sig, i) => {
               const style = signalStyle[sig.signal];
@@ -216,7 +219,7 @@ export default function AIIntelligence() {
                   </div>
                   <div className="flex-shrink-0 text-right">
                     <div className="text-xs font-bold text-white">{sig.conf}%</div>
-                    <div className="text-[10px] text-slate-600">conf.</div>
+                    <div className="text-[10px] text-slate-600">{t('ai_conf')}</div>
                     <div className="w-12 h-1 rounded-full bg-[#0d1220] mt-1 overflow-hidden">
                       <div className={`h-full rounded-full ${style.bg.replace('/10', '/60')}`} style={{ width: `${sig.conf}%` }} />
                     </div>
@@ -232,7 +235,7 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <Activity className="w-4 h-4 text-violet-400" />
-              <p className="text-xs font-bold text-white">Smart Money Tracker</p>
+              <p className="text-xs font-bold text-white">{t('ai_smartMoneyTracker')}</p>
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400 pulse-dot" />
             </div>
             {SMART_MONEY.map((tx, i) => (
@@ -265,7 +268,7 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <TrendingUp className="w-4 h-4 text-amber-400" />
-              <p className="text-xs font-bold text-white">Sector & Narrative Tracker</p>
+              <p className="text-xs font-bold text-white">{t('ai_sectorTracker')}</p>
             </div>
             {SECTORS.map((s, i) => {
               const style = trendStyle[s.trend];
@@ -294,8 +297,8 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="w-4 h-4 text-orange-400" />
-              <p className="text-xs font-bold text-white">Volatility Radar</p>
-              <span className="text-[10px] text-slate-600">· Unusual activity alerts</span>
+              <p className="text-xs font-bold text-white">{t('ai_volatilityRadar')}</p>
+              <span className="text-[10px] text-slate-600">· {t('ai_unusualActivity')}</span>
             </div>
             {VOLATILITY_ALERTS.map((a, i) => (
               <div key={i} className={`glass-card rounded-2xl p-4 border ${a.border}`}>
@@ -315,7 +318,7 @@ export default function AIIntelligence() {
               </div>
             ))}
             <div className="glass-card rounded-2xl p-4 mt-1">
-              <p className="text-[10px] text-slate-500 mb-2 font-semibold uppercase tracking-wider">Low Volatility Assets</p>
+              <p className="text-[10px] text-slate-500 mb-2 font-semibold uppercase tracking-wider">{t('ai_lowVolAssets')}</p>
               <div className="flex flex-wrap gap-2">
                 {['BTC', 'ETH', 'TBILL', 'GOLD-T', 'EURO-B'].map(a => (
                   <span key={a} className="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] font-semibold text-slate-400 border border-[rgba(148,163,184,0.06)]">
@@ -332,12 +335,12 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <PieChart className="w-4 h-4 text-cyan-400" />
-              <p className="text-xs font-bold text-white">AI Portfolio Advisor</p>
+              <p className="text-xs font-bold text-white">{t('ai_portfolioAdvisor')}</p>
             </div>
             {/* Risk level */}
             <div className="glass-card rounded-2xl p-4 border border-amber-400/10">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-semibold text-slate-400">Portfolio Risk Level</p>
+                <p className="text-xs font-semibold text-slate-400">{t('ai_portfolioRisk')}</p>
                 <span className="text-xs font-black text-amber-400">{PORTFOLIO_ADVISOR.riskLevel} · {PORTFOLIO_ADVISOR.riskScore}/100</span>
               </div>
               <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden mb-3">
@@ -347,7 +350,7 @@ export default function AIIntelligence() {
             </div>
             {/* Suggestions */}
             <div className="glass-card rounded-2xl p-4">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">AI Suggestions</p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">{t('ai_aiSuggestions')}</p>
               <div className="space-y-2.5">
                 {PORTFOLIO_ADVISOR.suggestions.map((s, i) => (
                   <div key={i} className="flex items-start gap-2">
@@ -363,16 +366,16 @@ export default function AIIntelligence() {
             <div className="glass-card rounded-2xl p-4 border border-purple-400/10">
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-3.5 h-3.5 text-purple-400" />
-                <p className="text-xs font-semibold text-white">RWA Allocation Opportunity</p>
+                <p className="text-xs font-semibold text-white">{t('ai_rwaAllocation')}</p>
               </div>
               <div className="flex items-center gap-3 mb-2">
                 <div className="text-center">
-                  <p className="text-[10px] text-slate-500">Current</p>
+                  <p className="text-[10px] text-slate-500">{t('ai_current')}</p>
                   <p className="text-lg font-black text-slate-300">{PORTFOLIO_ADVISOR.rwa.current}</p>
                 </div>
                 <div className="flex-1 h-px bg-gradient-to-r from-slate-700 via-[#00d4aa] to-purple-400" />
                 <div className="text-center">
-                  <p className="text-[10px] text-slate-500">Target</p>
+                  <p className="text-[10px] text-slate-500">{t('ai_target')}</p>
                   <p className="text-lg font-black text-purple-400">{PORTFOLIO_ADVISOR.rwa.suggested}</p>
                 </div>
               </div>
@@ -386,8 +389,8 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <ShieldCheck className="w-4 h-4 text-blue-400" />
-              <p className="text-xs font-bold text-white">AI Risk Score</p>
-              <span className="text-[10px] text-slate-600">· Asset risk assessment</span>
+              <p className="text-xs font-bold text-white">{t('ai_riskScore')}</p>
+              <span className="text-[10px] text-slate-600">· {t('ai_assetRisk')}</span>
             </div>
             {AI_RISK_SCORES.map((r, i) => (
               <div key={i} className="glass-card rounded-2xl p-3.5 flex items-center gap-3">
@@ -417,14 +420,14 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <FileText className="w-4 h-4 text-[#00d4aa]" />
-              <p className="text-xs font-bold text-white">AI News Insight</p>
-              <span className="text-[10px] text-slate-600">· Auto-summarized headlines</span>
+              <p className="text-xs font-bold text-white">{t('ai_newsInsight')}</p>
+              <span className="text-[10px] text-slate-600">· {t('ai_autoSummarized')}</span>
             </div>
             {AI_NEWS.map((n, i) => (
               <div key={i} className="glass-card rounded-2xl p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border ${n.tag} ${n.bg} border-current/20`}>{n.impact}</span>
-                  <span className="text-[10px] text-slate-600">Impact</span>
+                  <span className="text-[10px] text-slate-600">{t('ai_impact')}</span>
                 </div>
                 <p className="text-xs font-semibold text-white mb-1.5 leading-snug">{n.headline}</p>
                 <p className="text-[10px] text-slate-500 leading-relaxed">{n.summary}</p>
@@ -438,8 +441,8 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <AlertTriangle className="w-4 h-4 text-red-400" />
-              <p className="text-xs font-bold text-white">AI Liquidation Predictor</p>
-              <span className="text-[10px] text-slate-600">· Key price clusters</span>
+              <p className="text-xs font-bold text-white">{t('ai_liqPredictor')}</p>
+              <span className="text-[10px] text-slate-600">· {t('ai_keyPriceClusters')}</span>
             </div>
             {LIQUIDATION_ZONES.map((lz, i) => (
               <div key={i} className="glass-card rounded-2xl p-4">
@@ -451,19 +454,19 @@ export default function AIIntelligence() {
                     <p className="text-sm font-bold text-white">{lz.asset}</p>
                   </div>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-lg ${lz.risk === 'High' ? 'text-red-400 bg-red-400/10' : 'text-amber-400 bg-amber-400/10'}`}>
-                    {lz.risk} Liq. Risk
+                    {lz.risk === 'High' ? t('ai_highLiqRisk') : t('ai_medLiqRisk')} {t('ai_liqRisk')}
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-emerald-400/5 border border-emerald-400/15 rounded-xl p-2.5">
-                    <p className="text-[9px] text-slate-500 mb-1">Long Cluster</p>
+                    <p className="text-[9px] text-slate-500 mb-1">{t('ai_longCluster')}</p>
                     <p className="text-[10px] font-bold text-emerald-400">{lz.longCluster}</p>
-                    <p className="text-[9px] text-slate-600 mt-0.5">{lz.longSize} at risk</p>
+                    <p className="text-[9px] text-slate-600 mt-0.5">{lz.longSize} {t('ai_atRisk')}</p>
                   </div>
                   <div className="bg-red-400/5 border border-red-400/15 rounded-xl p-2.5">
-                    <p className="text-[9px] text-slate-500 mb-1">Short Cluster</p>
+                    <p className="text-[9px] text-slate-500 mb-1">{t('ai_shortCluster')}</p>
                     <p className="text-[10px] font-bold text-red-400">{lz.shortCluster}</p>
-                    <p className="text-[9px] text-slate-600 mt-0.5">{lz.shortSize} at risk</p>
+                    <p className="text-[9px] text-slate-600 mt-0.5">{lz.shortSize} {t('ai_atRisk')}</p>
                   </div>
                 </div>
               </div>
@@ -476,7 +479,7 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <BarChart3 className="w-4 h-4 text-purple-400" />
-              <p className="text-xs font-bold text-white">AI RWA Valuation Model</p>
+              <p className="text-xs font-bold text-white">{t('ai_rwaValuation')}</p>
             </div>
             {RWA_VALUATIONS.map((r, i) => (
               <div key={i} className={`glass-card rounded-2xl p-4 border ${r.color.replace('text-', 'border-')}/10`}>
@@ -494,11 +497,11 @@ export default function AIIntelligence() {
                 </div>
                 <div className="flex items-center justify-between text-[11px] mt-1">
                   <div>
-                    <span className="text-slate-500">Current: </span>
+                    <span className="text-slate-500">{t('ai_current')}: </span>
                     <span className="text-white font-semibold">{r.current}</span>
                   </div>
                   <div>
-                    <span className="text-slate-500">Fair Value: </span>
+                    <span className="text-slate-500">{t('ai_fairValue')}: </span>
                     <span className={`font-bold ${r.color}`}>{r.fair}</span>
                   </div>
                   <div>
@@ -515,7 +518,7 @@ export default function AIIntelligence() {
           <>
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <p className="text-xs font-bold text-white">AI Opportunity Scanner</p>
+              <p className="text-xs font-bold text-white">{t('ai_opportunityScanner')}</p>
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 pulse-dot" />
             </div>
             {OPPORTUNITY_SCANNER.map((o, i) => (
