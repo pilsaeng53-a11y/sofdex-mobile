@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { ArrowDownUp, ChevronDown, Info, Zap, Clock, TrendingUp, X, Search } from 'lucide-react';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { useLang } from '../components/shared/LanguageContext';
+import { useSOFPrice } from '../components/shared/useSOFPrice';
 
 const SWAP_ASSETS = [
   { symbol: 'SOL',    name: 'Solana',                  category: 'crypto', icon: '◎',  color: '#9945FF' },
@@ -23,7 +24,6 @@ const SWAP_ASSETS = [
 ];
 
 const STABLE_SYMBOLS = ['USDT', 'USDC'];
-const SOF_PRICE = 0.0842; // internal SOF price
 
 const RECENT_PAIRS = [
   { from: 'SOL', to: 'USDT' },
@@ -139,6 +139,7 @@ function AssetSelector({ selected, onChange, exclude }) {
 export default function Swap() {
   const { t } = useLang();
   const { getLiveAsset } = useMarketData();
+  const sofLive = useSOFPrice();
 
   const [fromAsset, setFromAsset] = useState(SWAP_ASSETS.find(a => a.symbol === 'SOL'));
   const [toAsset, setToAsset] = useState(SWAP_ASSETS.find(a => a.symbol === 'USDT'));
@@ -148,7 +149,7 @@ export default function Swap() {
 
   const getPrice = useCallback((asset) => {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
-    if (asset.symbol === 'SOF') return SOF_PRICE;
+    if (asset.symbol === 'SOF') return sofLive.price || 0.0001;
     const live = getLiveAsset?.(asset.symbol);
     if (live?.price) return live.price;
     // fallback static prices
