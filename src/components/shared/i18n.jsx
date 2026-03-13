@@ -29,6 +29,8 @@ export const translations = {
     menu_liquidationFeed:'Liquidation Feed', menu_whaleTracker:'Whale Tracker', menu_governance:'Governance',
     menu_notifications:'Notifications', menu_settings:'Settings', menu_support:'Support',
     menu_aiIntelligence:'AI Intelligence', menu_predictionMarket:'Prediction Market', menu_alerts:'Alerts', menu_leaderboard:'Leaderboard',
+    menu_swap:'Swap', menu_solfort:'SOLFORT', menu_solfortPage:'SolFort Hub', menu_swapSof:'Swap SOF',
+    nav_swap:'Swap',
     // Governance menu items
     gov_activeProposals:'Active Proposals', gov_proposalArchive:'Proposal Archive', gov_votingResults:'Voting Results', gov_participatingWallets:'Participating Wallets', gov_principles:'Governance Principles',
     // Profile
@@ -103,7 +105,8 @@ export const translations = {
   },
 
   ko: {
-    nav_home:'홈', nav_markets:'마켓', nav_trade:'트레이드', nav_portfolio:'포트폴리오', nav_more:'더보기',
+    nav_home:'홈', nav_markets:'마켓', nav_trade:'트레이드', nav_portfolio:'포트폴리오', nav_more:'더보기', nav_swap:'스왑',
+    menu_swap:'스왑', menu_solfort:'솔포트', menu_solfortPage:'SolFort 허브', menu_swapSof:'SOF 스왑',
     menu_exchange:'거래소', menu_discover:'탐색', menu_earnSocial:'적립 & 소셜', menu_liveFeed:'실시간 피드', menu_dao:'DAO', menu_account:'계정',
     menu_home:'홈', menu_markets:'마켓', menu_trade:'트레이드', menu_portfolio:'포트폴리오',
     menu_news:'뉴스', menu_rwaMarkets:'RWA 시장', menu_realEstate:'부동산', menu_analytics:'분석', menu_launchpad:'런치패드',
@@ -172,7 +175,8 @@ export const translations = {
   },
 
   ja: {
-    nav_home:'ホーム', nav_markets:'マーケット', nav_trade:'トレード', nav_portfolio:'ポートフォリオ', nav_more:'もっと見る',
+    nav_home:'ホーム', nav_markets:'マーケット', nav_trade:'トレード', nav_portfolio:'ポートフォリオ', nav_more:'もっと見る', nav_swap:'スワップ',
+    menu_swap:'スワップ', menu_solfort:'SOLFORT', menu_solfortPage:'SolFort ハブ', menu_swapSof:'SOF スワップ',
     menu_exchange:'取引所', menu_discover:'発見', menu_earnSocial:'稼ぐ＆ソーシャル', menu_liveFeed:'ライブフィード', menu_dao:'DAO', menu_account:'アカウント',
     menu_home:'ホーム', menu_markets:'マーケット', menu_trade:'トレード', menu_portfolio:'ポートフォリオ',
     menu_news:'ニュース', menu_rwaMarkets:'RWA市場', menu_realEstate:'不動産', menu_analytics:'分析', menu_launchpad:'ローンチパッド',
@@ -241,7 +245,8 @@ export const translations = {
   },
 
   zh: {
-    nav_home:'首页', nav_markets:'市场', nav_trade:'交易', nav_portfolio:'投资组合', nav_more:'更多',
+    nav_home:'首页', nav_markets:'市场', nav_trade:'交易', nav_portfolio:'投资组合', nav_more:'更多', nav_swap:'兑换',
+    menu_swap:'兑换', menu_solfort:'SOLFORT', menu_solfortPage:'SolFort 中心', menu_swapSof:'兑换 SOF',
     menu_exchange:'交易所', menu_discover:'发现', menu_earnSocial:'赚取 & 社交', menu_liveFeed:'实时动态', menu_dao:'DAO', menu_account:'账户',
     menu_home:'首页', menu_markets:'市场', menu_trade:'交易', menu_portfolio:'投资组合',
     menu_news:'新闻', menu_rwaMarkets:'RWA市场', menu_realEstate:'房地产', menu_analytics:'分析', menu_launchpad:'发射台',
