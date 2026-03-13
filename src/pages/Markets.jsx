@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { BarChart3, Search, TrendingUp, TrendingDown, Star, StarOff } from 'lucide-react';
+import { useLang } from '../components/shared/LanguageContext';
 import { CRYPTO_MARKETS, RWA_MARKETS, TRADFI_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import MiniChart from '../components/shared/MiniChart';
 
-const TABS = ['All', 'Crypto', 'RWA', 'TradFi', 'Gainers', 'Losers', 'Volume', 'Watchlist'];
+const TAB_KEYS = ['markets_all','markets_crypto','markets_rwa','markets_tradfi','markets_gainers','markets_losers','markets_volume','markets_watchlist'];
+const TAB_VALUES = ['All','Crypto','RWA','TradFi','Gainers','Losers','Volume','Watchlist'];
 
 function MarketRow({ asset, watchlist = [], onToggleWatch }) {
   const { getLiveAsset } = useMarketData();
@@ -58,6 +60,7 @@ export default function Markets() {
   const [search, setSearch] = useState('');
   const [watchlist, setWatchlist] = useState(DEFAULT_WATCHLIST);
   const { getLiveAsset } = useMarketData();
+  const { t } = useLang();
 
   const allAssets = [...CRYPTO_MARKETS, ...RWA_MARKETS, ...TRADFI_MARKETS];
 
@@ -103,7 +106,7 @@ export default function Markets() {
     <div className="min-h-screen">
       <div className="px-4 pt-4 pb-2 flex items-center gap-2">
         <BarChart3 className="w-5 h-5 text-[#00d4aa]" />
-        <h1 className="text-xl font-bold text-white">Markets</h1>
+        <h1 className="text-xl font-bold text-white">{t('page_markets')}</h1>
       </div>
 
       {/* Search */}
@@ -112,7 +115,7 @@ export default function Markets() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
-            placeholder="Search assets..."
+            placeholder={t('markets_searchPlaceholder')}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full h-10 pl-10 pr-4 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30 transition-colors"
@@ -122,24 +125,24 @@ export default function Markets() {
 
       {/* Tabs */}
       <div className="flex gap-1.5 px-4 mb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-        {TABS.map(t => (
+        {TAB_VALUES.map((tabVal, idx) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={tabVal}
+            onClick={() => setTab(tabVal)}
             className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              tab === t ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
+              tab === tabVal ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
             }`}
           >
-            {t}
+            {t(TAB_KEYS[idx])}
           </button>
         ))}
       </div>
 
       {/* Table header */}
       <div className="flex items-center justify-between px-4 py-2 text-[10px] text-slate-600 font-semibold border-b border-[rgba(148,163,184,0.06)]">
-        <span>Asset</span>
-        <span>7d Chart</span>
-        <span className="text-right">Price / 24h</span>
+        <span>{t('markets_colAsset')}</span>
+        <span>{t('markets_col7d')}</span>
+        <span className="text-right">{t('markets_colPrice24h')}</span>
       </div>
 
       {/* Rows */}
@@ -149,10 +152,10 @@ export default function Markets() {
             {tab === 'Watchlist' ? (
               <div>
                 <StarOff className="w-8 h-8 text-slate-700 mx-auto mb-2" />
-                <p>No watchlist assets yet</p>
-                <p className="text-[11px] text-slate-600 mt-1">Tap ★ on any asset to add it</p>
+                <p>{t('markets_noWatchlist')}</p>
+                <p className="text-[11px] text-slate-600 mt-1">{t('markets_tapToAdd')}</p>
               </div>
-            ) : 'No assets found'}
+            ) : t('markets_noResults')}
           </div>
         )}
         {filtered.map(asset => (
