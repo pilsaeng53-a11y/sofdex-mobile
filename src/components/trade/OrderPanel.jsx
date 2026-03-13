@@ -1,10 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Zap, Info } from 'lucide-react';
+import { useLang } from '../shared/LanguageContext';
 
 const leverageOptions = [1, 2, 5, 10, 25, 50, 100];
 const pctButtons = ['25%', '50%', '75%', 'Max'];
 
 export default function OrderPanel({ asset }) {
+  const { t } = useLang();
   const [side, setSide] = useState('buy');
   const [orderType, setOrderType] = useState('market');
   const [amount, setAmount] = useState('');
@@ -39,7 +41,7 @@ export default function OrderPanel({ asset }) {
               : 'text-slate-500 hover:text-slate-300'
           }`}
         >
-          Buy / Long
+          {t('order_buyLong')}
         </button>
         <button
           onClick={() => setSide('sell')}
@@ -49,13 +51,13 @@ export default function OrderPanel({ asset }) {
               : 'text-slate-500 hover:text-slate-300'
           }`}
         >
-          Sell / Short
+          {t('order_sellShort')}
         </button>
       </div>
 
       {/* Order type */}
       <div className="flex gap-1 mb-4">
-        {['market', 'limit', 'stop'].map(type => (
+        {[['market','order_market'],['limit','order_limit'],['stop','order_stop']].map(([type, key]) => (
           <button
             key={type}
             onClick={() => setOrderType(type)}
@@ -65,7 +67,7 @@ export default function OrderPanel({ asset }) {
                 : 'text-slate-500 border border-transparent hover:text-slate-300'
             }`}
           >
-            {type}
+            {t(key)}
           </button>
         ))}
       </div>
@@ -74,7 +76,7 @@ export default function OrderPanel({ asset }) {
       {orderType !== 'market' && (
         <div className="mb-3">
           <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">
-            {orderType === 'limit' ? 'Limit Price (USD)' : 'Stop Price (USD)'}
+            {orderType === 'limit' ? t('order_limitPrice') : t('order_stopPrice')}
           </label>
           <input
             type="number"
@@ -89,8 +91,8 @@ export default function OrderPanel({ asset }) {
       {/* Collateral input */}
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-[11px] text-slate-500 font-medium">Collateral (USDC)</label>
-          <span className="text-[11px] text-slate-500">Bal: <span className="text-slate-300 font-medium">$1,200</span></span>
+          <label className="text-[11px] text-slate-500 font-medium">{t('order_collateral')}</label>
+          <span className="text-[11px] text-slate-500">{t('order_balance')} <span className="text-slate-300 font-medium">$1,200</span></span>
         </div>
         <input
           type="number"
@@ -115,7 +117,7 @@ export default function OrderPanel({ asset }) {
       {/* Leverage */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-[11px] text-slate-500 font-medium">Leverage</label>
+          <label className="text-[11px] text-slate-500 font-medium">{t('order_leverage')}</label>
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-bold text-[#00d4aa]">{leverage}x</span>
             {parsedAmount > 0 && (
@@ -155,33 +157,33 @@ export default function OrderPanel({ asset }) {
           />
         </div>
         <div className="flex justify-between text-[9px] text-slate-600 mt-0.5">
-          <span>Low Risk</span>
-          <span>High Risk</span>
+          <span>{t('order_lowRisk')}</span>
+          <span>{t('order_highRisk')}</span>
         </div>
       </div>
 
       {/* Order summary */}
       <div className="bg-[#0d1220] rounded-xl p-3 mb-4 space-y-2">
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Est. Entry</span>
+          <span className="text-slate-500">{t('order_estEntry')}</span>
           <span className="text-slate-300 font-medium">
             {orderType === 'market' ? 'Market' : limitPrice ? `$${parseFloat(limitPrice).toFixed(2)}` : '—'}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Position Size</span>
+          <span className="text-slate-500">{t('order_positionSize')}</span>
           <span className="text-slate-300 font-medium">
             {parsedAmount > 0 ? `$${positionSize.toFixed(2)}` : '—'}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Liq. Price</span>
+          <span className="text-slate-500">{t('order_liqPrice')}</span>
           <span className={`font-medium ${parsedAmount > 0 ? 'text-red-400' : 'text-slate-300'}`}>
             {parsedAmount > 0 ? `$${liqPrice.toFixed(2)}` : '—'}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Trading Fee</span>
+          <span className="text-slate-500">{t('order_tradingFee')}</span>
           <span className="text-slate-300 font-medium">
             {parsedAmount > 0 ? `$${fee.toFixed(4)}` : '0.05%'}
           </span>
@@ -197,7 +199,7 @@ export default function OrderPanel({ asset }) {
         }`}
       >
         <Zap className="w-4 h-4" />
-        {side === 'buy' ? 'Open Long' : 'Open Short'}
+        {side === 'buy' ? t('order_openLong') : t('order_openShort')}
         {parsedAmount > 0 && ` · $${positionSize.toFixed(0)}`}
       </button>
     </div>
