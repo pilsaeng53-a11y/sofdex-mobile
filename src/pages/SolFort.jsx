@@ -5,13 +5,7 @@ import {
   TrendingUp, Zap, Shield, Globe, BarChart3, Users,
   ArrowUpRight, ExternalLink, Copy, Check, ChevronRight, Layers
 } from 'lucide-react';
-
-const SOF_STATS = [
-  { label: 'Token Price',    value: '$0.0842',  change: '+12.4%',  positive: true },
-  { label: 'Market Cap',    value: '$84.2M',   change: '+8.1%',   positive: true },
-  { label: 'Total Supply',  value: '1B SOF',   change: null,       positive: null },
-  { label: '24h Volume',    value: '$3.2M',    change: '+34.5%',  positive: true },
-];
+import { useSOFPrice, formatSOFPrice, formatMarketCap } from '../components/shared/useSOFPrice';
 
 const PLATFORM_FEATURES = [
   { icon: BarChart3, color: '#00d4aa', title: 'Multi-Asset DEX',       desc: 'Trade crypto, RWA, tokenized equities and commodities on a single platform.' },
@@ -44,6 +38,7 @@ const RAYDIUM_URL = `https://raydium.io/swap/?inputMint=4qNEbbP5b3sEAxPxnzGzVtjv
 export default function SolFort() {
   const [copied, setCopied] = useState(false);
   const [activeSection, setActiveSection] = useState('platform');
+  const sofPrice = useSOFPrice();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(CONTRACT).then(() => {
@@ -118,9 +113,31 @@ export default function SolFort() {
             </a>
           </div>
 
-          {/* Stats */}
+          {/* Live Stats */}
           <div className="grid grid-cols-2 gap-2">
-            {SOF_STATS.map((stat, i) => (
+            {[
+              {
+                label: 'Token Price',
+                value: sofPrice.loading ? '…' : sofPrice.error ? '—' : formatSOFPrice(sofPrice.price),
+                change: sofPrice.change24h != null ? `${sofPrice.change24h >= 0 ? '+' : ''}${sofPrice.change24h.toFixed(2)}%` : null,
+                positive: sofPrice.change24h >= 0,
+              },
+              {
+                label: 'Market Cap',
+                value: sofPrice.loading ? '…' : formatMarketCap(sofPrice.marketCap),
+                change: null, positive: null,
+              },
+              {
+                label: 'Total Supply',
+                value: '1B SOF',
+                change: null, positive: null,
+              },
+              {
+                label: '24h Volume',
+                value: sofPrice.loading ? '…' : formatMarketCap(sofPrice.volume24h),
+                change: null, positive: null,
+              },
+            ].map((stat, i) => (
               <div key={i} className="glass-card rounded-xl p-3 border border-[rgba(148,163,184,0.04)]">
                 <p className="text-[10px] text-slate-500 mb-1">{stat.label}</p>
                 <p className="text-sm font-bold text-white">{stat.value}</p>
