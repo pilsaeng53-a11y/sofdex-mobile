@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
   TrendingUp, Zap, Shield, Globe, BarChart3, Users,
-  ArrowUpRight, ExternalLink, Copy, Check, ChevronRight, Layers
+  ArrowUpRight, ExternalLink, Copy, Check, ChevronRight, Layers, Crown, Star
 } from 'lucide-react';
 import { useSOFPrice, formatSOFPrice, formatMarketCap } from '../components/shared/useSOFPrice';
 
@@ -221,6 +222,7 @@ export default function SolFort() {
           { key: 'token',    label: '$SOF Token' },
           { key: 'revenue',  label: 'Revenue Share' },
           { key: 'agency',   label: 'Agency' },
+          { key: 'grade',    label: 'My Grade' },
           { key: 'buy',      label: 'Buy SOF' },
         ].map(s => (
           <button
@@ -415,6 +417,69 @@ export default function SolFort() {
             className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#F7931A]/10 border border-[#F7931A]/20 text-[#F7931A] font-bold text-sm hover:bg-[#F7931A]/15 transition-all active:scale-[0.98]">
             <ExternalLink className="w-4 h-4" /> Apply as Sales Partner
           </a>
+        </div>
+      )}
+
+      {/* My Grade & Partners Section */}
+      {activeSection === 'grade' && (
+        <div className="px-4 space-y-3">
+          {/* My Grade */}
+          <div className="glass-card rounded-2xl p-4 border border-amber-400/15">
+            <div className="flex items-center gap-2 mb-3">
+              <Crown className="w-4 h-4 text-amber-400" />
+              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">My Grade</p>
+            </div>
+            {[
+              { grade: 'Green',    commission: '10%', badge: '🟢', color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20' },
+              { grade: 'Purple',   commission: '30%', badge: '🟣', color: 'text-purple-400',  bg: 'bg-purple-400/10',  border: 'border-purple-400/20' },
+              { grade: 'Gold',     commission: '40%', badge: '🥇', color: 'text-amber-400',   bg: 'bg-amber-400/10',   border: 'border-amber-400/20',   active: true },
+              { grade: 'Platinum', commission: '50%', badge: '💎', color: 'text-[#00d4aa]',   bg: 'bg-[#00d4aa]/10',   border: 'border-[#00d4aa]/20' },
+            ].map(g => (
+              <div key={g.grade} className={`flex items-center justify-between py-2.5 px-3 rounded-xl mb-1.5 border ${g.active ? g.border + ' ' + g.bg : 'border-transparent'}`}>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base">{g.badge}</span>
+                  <span className={`text-sm font-bold ${g.active ? g.color : 'text-slate-500'}`}>{g.grade}</span>
+                  {g.active && <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-400/10 text-amber-400">Current</span>}
+                </div>
+                <span className={`text-sm font-black ${g.active ? g.color : 'text-slate-600'}`}>{g.commission}</span>
+              </div>
+            ))}
+            <a href={AFFILIATES_URL} target="_blank" rel="noopener noreferrer"
+              className="mt-2 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#F7931A]/10 border border-[#F7931A]/20 text-[#F7931A] font-semibold text-xs hover:bg-[#F7931A]/15 transition-all">
+              <ExternalLink className="w-3.5 h-3.5" /> View Grade Upgrade Requirements
+            </a>
+          </div>
+
+          {/* My Partners */}
+          <div className="glass-card rounded-2xl p-4 border border-[rgba(148,163,184,0.04)]">
+            <div className="flex items-center gap-2 mb-3">
+              <Users className="w-4 h-4 text-[#00d4aa]" />
+              <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">My Partners</p>
+            </div>
+            {[
+              { wallet: 'GkPq...7Xm2', grade: 'Purple', badge: '🟣', color: 'text-purple-400', volume: '$218,400' },
+              { wallet: 'So14...nR8k', grade: 'Green',  badge: '🟢', color: 'text-emerald-400', volume: '$42,100' },
+            ].map((p, i) => (
+              <div key={i} className="flex items-center justify-between py-2.5 border-b border-[rgba(148,163,184,0.05)] last:border-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-[#1a2340] flex items-center justify-center">
+                    <Users className="w-3.5 h-3.5 text-slate-500" />
+                  </div>
+                  <div>
+                    <p className="text-[12px] font-bold text-white font-mono">{p.wallet}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      <span className="text-[9px]">{p.badge}</span>
+                      <span className={`text-[9px] font-semibold ${p.color}`}>{p.grade}</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-[11px] font-semibold text-slate-400">{p.volume}</p>
+                  <p className="text-[9px] text-slate-600">volume</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
