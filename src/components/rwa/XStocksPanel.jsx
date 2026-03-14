@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { TrendingUp, TrendingDown, BarChart2, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { TrendingUp, TrendingDown, BarChart2, ExternalLink, ChevronDown, ChevronUp, ChevronRight } from 'lucide-react';
 import { TRADFI_MARKETS } from '../shared/MarketData';
 import { useMarketData } from '../shared/MarketDataProvider';
 
