@@ -299,6 +299,7 @@ export const translations = {
     inst_note_stocks:'토큰화된 주식은 경제적 노출만을 반영하며 직접 주식 소유권이 아닙니다.',
     inst_note_generic:'이 자산은 독립적 검증을 받습니다. 기관 KYC 승인 후 실사 패키지를 제공합니다.',
     menu_institutional:'기관',
+    menu_wallet:'지갑',
   },
 
   ja: {

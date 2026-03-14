@@ -23,6 +23,7 @@ export default function WalletConnect() {
     setTimeout(() => {
       setConnecting(null);
       setConnected(true);
+      try { localStorage.setItem('sofdex_wallet_connected', '1'); } catch {}
     }, 1500);
   };
 
