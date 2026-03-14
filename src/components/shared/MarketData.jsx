@@ -22,26 +22,47 @@ export const RWA_MARKETS = [
 ];
 
 export const TRADFI_MARKETS = [
-  // xStocks — Tokenized Equities
-  { symbol: "AAPLx", name: "Apple",    price: 227.50, change: 1.23,  volume: "156M", mcap: "8.2B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "AMZNx", name: "Amazon",   price: 198.40, change: 0.67,  volume: "89M",  mcap: "6.4B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "GOOGLx",name: "Alphabet", price: 175.20, change: -0.45, volume: "78M",  mcap: "5.1B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "TSLAx", name: "Tesla",    price: 248.90, change: 3.45,  volume: "234M", mcap: "12.4B", category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "NVDAx", name: "NVIDIA",   price: 892.40, change: 4.56,  volume: "189M", mcap: "11.2B", category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "MSFTx", name: "Microsoft",price: 445.20, change: 0.89,  volume: "112M", mcap: "7.1B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "METAx", name: "Meta",     price: 582.30, change: 2.14,  volume: "98M",  mcap: "6.8B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "COINx", name: "Coinbase", price: 234.50, change: 5.67,  volume: "67M",  mcap: "3.4B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "JPMx",  name: "JPMorgan", price: 218.40, change: 0.34,  volume: "56M",  mcap: "4.2B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "BABAx", name: "Alibaba",  price: 108.20, change: -1.23, volume: "45M",  mcap: "3.1B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "NEFLXx",name: "Netflix",  price: 985.60, change: 1.78,  volume: "67M",  mcap: "5.4B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  { symbol: "AMDx",  name: "AMD",      price: 162.40, change: 2.34,  volume: "89M",  mcap: "4.8B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
-  // xETFs — Tokenized ETFs
-  { symbol: "SPYx",  name: "S&P 500 ETF",       price: 584.20, change: 0.45,  volume: "456M", mcap: "18.4B", category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
-  { symbol: "QQQx",  name: "Nasdaq-100 ETF",    price: 495.80, change: 0.78,  volume: "312M", mcap: "14.2B", category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
-  { symbol: "GLDx",  name: "Gold ETF",           price: 232.40, change: 0.34,  volume: "234M", mcap: "9.8B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
-  { symbol: "VTIx",  name: "Total Market ETF",  price: 275.60, change: 0.56,  volume: "178M", mcap: "8.4B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
-  { symbol: "IWMx",  name: "Russell 2000 ETF",  price: 218.40, change: -0.23, volume: "89M",  mcap: "4.2B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
-  { symbol: "EMBx",  name: "EM Bond ETF",        price: 98.20,  change: -0.67, volume: "67M",  mcap: "2.8B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
+  // ── Tech ──────────────────────────────────────────────────────────────
+  { symbol: "AAPLx",  name: "Apple",          price: 227.50, change: 1.23,  volume: "156M", mcap: "8.2B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:AAPL"  },
+  { symbol: "MSFTx",  name: "Microsoft",      price: 445.20, change: 0.89,  volume: "112M", mcap: "7.1B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:MSFT"  },
+  { symbol: "GOOGLx", name: "Alphabet",       price: 175.20, change: -0.45, volume: "78M",  mcap: "5.1B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:GOOGL" },
+  { symbol: "AMZNx",  name: "Amazon",         price: 198.40, change: 0.67,  volume: "89M",  mcap: "6.4B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:AMZN"  },
+  { symbol: "METAx",  name: "Meta Platforms", price: 582.30, change: 2.14,  volume: "98M",  mcap: "6.8B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:META"  },
+  { symbol: "NVDAx",  name: "NVIDIA",         price: 892.40, change: 4.56,  volume: "189M", mcap: "11.2B", category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:NVDA"  },
+  { symbol: "TSLAx",  name: "Tesla",          price: 248.90, change: 3.45,  volume: "234M", mcap: "12.4B", category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:TSLA"  },
+  { symbol: "NFLXx",  name: "Netflix",        price: 985.60, change: 1.78,  volume: "67M",  mcap: "5.4B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:NFLX"  },
+  { symbol: "AMDx",   name: "AMD",            price: 162.40, change: 2.34,  volume: "89M",  mcap: "4.8B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:AMD"   },
+  { symbol: "INTCx",  name: "Intel",          price: 31.80,  change: -1.45, volume: "112M", mcap: "3.2B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NASDAQ:INTC"  },
+  { symbol: "TSMx",   name: "TSMC",           price: 175.60, change: 0.98,  volume: "78M",  mcap: "4.5B",  category: "tradfi", type: "xStock", sector: "Tech",       tvSymbol: "NYSE:TSM"     },
+  // ── Finance ───────────────────────────────────────────────────────────
+  { symbol: "JPMx",   name: "JPMorgan Chase", price: 218.40, change: 0.34,  volume: "56M",  mcap: "4.2B",  category: "tradfi", type: "xStock", sector: "Finance",    tvSymbol: "NYSE:JPM"     },
+  { symbol: "BACx",   name: "Bank of America",price: 44.20,  change: 0.67,  volume: "89M",  mcap: "3.8B",  category: "tradfi", type: "xStock", sector: "Finance",    tvSymbol: "NYSE:BAC"     },
+  { symbol: "GSx",    name: "Goldman Sachs",  price: 512.30, change: 1.12,  volume: "34M",  mcap: "5.1B",  category: "tradfi", type: "xStock", sector: "Finance",    tvSymbol: "NYSE:GS"      },
+  { symbol: "BRKx",   name: "Berkshire Hath.",price: 449.80, change: 0.45,  volume: "28M",  mcap: "4.7B",  category: "tradfi", type: "xStock", sector: "Finance",    tvSymbol: "NYSE:BRK.B"   },
+  // ── Consumer ──────────────────────────────────────────────────────────
+  { symbol: "DISx",   name: "Walt Disney",    price: 112.40, change: -0.89, volume: "67M",  mcap: "3.4B",  category: "tradfi", type: "xStock", sector: "Consumer",   tvSymbol: "NYSE:DIS"     },
+  { symbol: "NIKEx",  name: "Nike",           price: 78.60,  change: -1.23, volume: "78M",  mcap: "2.9B",  category: "tradfi", type: "xStock", sector: "Consumer",   tvSymbol: "NYSE:NKE"     },
+  { symbol: "SBUXx",  name: "Starbucks",      price: 98.20,  change: 0.56,  volume: "56M",  mcap: "2.1B",  category: "tradfi", type: "xStock", sector: "Consumer",   tvSymbol: "NASDAQ:SBUX"  },
+  { symbol: "MCDx",   name: "McDonald's",     price: 298.40, change: 0.34,  volume: "45M",  mcap: "3.6B",  category: "tradfi", type: "xStock", sector: "Consumer",   tvSymbol: "NYSE:MCD"     },
+  // ── Industrial ────────────────────────────────────────────────────────
+  { symbol: "CATx",   name: "Caterpillar",    price: 342.80, change: 1.02,  volume: "34M",  mcap: "3.2B",  category: "tradfi", type: "xStock", sector: "Industrial", tvSymbol: "NYSE:CAT"     },
+  { symbol: "BAx",    name: "Boeing",         price: 178.40, change: -0.78, volume: "56M",  mcap: "2.8B",  category: "tradfi", type: "xStock", sector: "Industrial", tvSymbol: "NYSE:BA"      },
+  { symbol: "GEx",    name: "GE Aerospace",   price: 192.60, change: 0.67,  volume: "45M",  mcap: "2.4B",  category: "tradfi", type: "xStock", sector: "Industrial", tvSymbol: "NYSE:GE"      },
+  // ── Healthcare ────────────────────────────────────────────────────────
+  { symbol: "JNJx",   name: "Johnson & Johnson",price: 156.80,change: 0.23,  volume: "56M",  mcap: "2.9B",  category: "tradfi", type: "xStock", sector: "Healthcare", tvSymbol: "NYSE:JNJ"     },
+  { symbol: "PFEx",   name: "Pfizer",         price: 28.40,  change: -0.45, volume: "89M",  mcap: "1.8B",  category: "tradfi", type: "xStock", sector: "Healthcare", tvSymbol: "NYSE:PFE"     },
+  { symbol: "MRKx",   name: "Merck",          price: 134.60, change: 0.89,  volume: "45M",  mcap: "2.3B",  category: "tradfi", type: "xStock", sector: "Healthcare", tvSymbol: "NYSE:MRK"     },
+  // ── Energy ────────────────────────────────────────────────────────────
+  { symbol: "XOMx",   name: "ExxonMobil",     price: 118.40, change: 1.34,  volume: "67M",  mcap: "3.1B",  category: "tradfi", type: "xStock", sector: "Energy",     tvSymbol: "NYSE:XOM"     },
+  { symbol: "CVXx",   name: "Chevron",        price: 156.20, change: 0.78,  volume: "56M",  mcap: "2.8B",  category: "tradfi", type: "xStock", sector: "Energy",     tvSymbol: "NYSE:CVX"     },
+  // ── xETFs — Tokenized ETFs ────────────────────────────────────────────
+  { symbol: "SPYx",   name: "S&P 500 ETF",    price: 584.20, change: 0.45,  volume: "456M", mcap: "18.4B", category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "AMEX:SPY"     },
+  { symbol: "QQQx",   name: "Nasdaq-100 ETF", price: 495.80, change: 0.78,  volume: "312M", mcap: "14.2B", category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "NASDAQ:QQQ"   },
+  { symbol: "VTIx",   name: "Total Market ETF",price: 275.60,change: 0.56,  volume: "178M", mcap: "8.4B",  category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "AMEX:VTI"     },
+  { symbol: "DIAx",   name: "Dow Jones ETF",  price: 432.40, change: 0.34,  volume: "134M", mcap: "7.2B",  category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "AMEX:DIA"     },
+  { symbol: "IWMx",   name: "Russell 2000 ETF",price: 218.40,change: -0.23, volume: "89M",  mcap: "4.2B",  category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "AMEX:IWM"     },
+  { symbol: "GLDx",   name: "Gold ETF",       price: 232.40, change: 0.34,  volume: "234M", mcap: "9.8B",  category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "AMEX:GLD"     },
+  { symbol: "SLVx",   name: "Silver ETF",     price: 27.80,  change: 0.56,  volume: "112M", mcap: "3.4B",  category: "tradfi", type: "xETF",   sector: "ETF",        tvSymbol: "AMEX:SLV"     },
 ];
 
 export const ALL_MARKETS = [...CRYPTO_MARKETS, ...RWA_MARKETS, ...TRADFI_MARKETS];
