@@ -135,12 +135,12 @@ export default function Alerts() {
 
       {/* Tabs */}
       <div className="flex gap-1.5 px-4 mb-4">
-        {['active', 'notifications'].map(t => (
-          <button key={t} onClick={() => setTab(t)}
+        {['active', 'notifications'].map(tabKey => (
+          <button key={tabKey} onClick={() => setTab(tabKey)}
             className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
-              tab === t ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
+              tab === tabKey ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
             }`}>
-            {tab === 'active' ? `${t('alerts_activeTab')} (${alerts.filter(a => a.active).length})` : t('alerts_notificationsTab')}
+            {tabKey === 'active' ? `${t('alerts_activeTab')} (${alerts.filter(a => a.active).length})` : t('alerts_notificationsTab')}
           </button>
         ))}
       </div>
