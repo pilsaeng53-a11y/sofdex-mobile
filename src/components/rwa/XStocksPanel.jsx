@@ -60,46 +60,40 @@ function StockRow({ asset }) {
     : null;
 
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-[rgba(148,163,184,0.05)] last:border-0">
-      {/* Icon */}
-      <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center flex-shrink-0 border border-[rgba(148,163,184,0.06)]">
-        <span className="text-[8px] font-black text-slate-300 leading-none text-center">{asset.symbol.replace('x','').slice(0,4)}</span>
-      </div>
-
-      {/* Name + badges */}
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-          <p className="text-[12px] font-bold text-white">{asset.symbol}</p>
-          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border ${typeCfg.bg} ${typeCfg.text} ${typeCfg.border}`}>
-            {asset.type === 'xETF' ? 'Tokenized ETF' : 'Tokenized Stock'}
-          </span>
+    <Link to={`${createPageUrl('MarketDetail')}?symbol=${asset.symbol}`}>
+      <div className="flex items-center gap-3 py-2.5 border-b border-[rgba(148,163,184,0.05)] last:border-0 hover:bg-[#151c2e]/40 transition-colors -mx-4 px-4">
+        {/* Icon */}
+        <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center flex-shrink-0 border border-[rgba(148,163,184,0.06)]">
+          <span className="text-[8px] font-black text-slate-300 leading-none text-center">{asset.symbol.replace('x','').slice(0,4)}</span>
         </div>
-        <div className="flex items-center gap-1.5">
+
+        {/* Name + badges */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+            <p className="text-[12px] font-bold text-white">{asset.symbol}</p>
+            <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded border ${typeCfg.bg} ${typeCfg.text} ${typeCfg.border}`}>
+              {asset.type === 'xETF' ? 'Tokenized ETF' : 'Tokenized Stock'}
+            </span>
+          </div>
           <p className="text-[10px] text-slate-500 truncate">{asset.name}</p>
-          {tvUrl && (
-            <a href={tvUrl} target="_blank" rel="noopener noreferrer"
-              onClick={e => e.stopPropagation()}
-              className="flex-shrink-0 opacity-40 hover:opacity-80 transition-opacity">
-              <ExternalLink className="w-2.5 h-2.5 text-slate-400" />
-            </a>
-          )}
         </div>
-      </div>
 
-      {/* Sparkline */}
-      <Sparkline symbol={asset.symbol} positive={positive} />
+        {/* Sparkline */}
+        <Sparkline symbol={asset.symbol} positive={positive} />
 
-      {/* Price + change */}
-      <div className="text-right flex-shrink-0">
-        <p className="text-[12px] font-bold text-white">
-          ${price >= 1000 ? price.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : price.toFixed(2)}
-        </p>
-        <p className={`text-[10px] font-semibold flex items-center justify-end gap-0.5 ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
-          {positive ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
-          {positive ? '+' : ''}{change.toFixed(2)}%
-        </p>
+        {/* Price + change */}
+        <div className="text-right flex-shrink-0">
+          <p className="text-[12px] font-bold text-white">
+            ${price >= 1000 ? price.toLocaleString('en', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : price.toFixed(2)}
+          </p>
+          <p className={`text-[10px] font-semibold flex items-center justify-end gap-0.5 ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
+            {positive ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
+            {positive ? '+' : ''}{change.toFixed(2)}%
+          </p>
+        </div>
+        <ChevronRight className="w-3 h-3 text-slate-700 flex-shrink-0" />
       </div>
-    </div>
+    </Link>
   );
 }
 
