@@ -9,12 +9,53 @@ export const SYMBOL_MAP = {
   'RNDR':       'BINANCE:RENDERUSDT',
   'BONK':       'BINANCE:BONKUSDT',
   'HNT':        'BINANCE:HNTUSDT',
-  // Tokenized equities
+  // Tokenized equities (legacy)
   'AAPL-T':     'NASDAQ:AAPL',
   'MSFT-T':     'NASDAQ:MSFT',
   'NVDA-T':     'NASDAQ:NVDA',
   'TSLA-T':     'NASDAQ:TSLA',
   'SP500-T':    'SP:SPX',
+  // xStocks — Tech
+  'AAPLx':      'NASDAQ:AAPL',
+  'MSFTx':      'NASDAQ:MSFT',
+  'GOOGLx':     'NASDAQ:GOOGL',
+  'AMZNx':      'NASDAQ:AMZN',
+  'METAx':      'NASDAQ:META',
+  'NVDAx':      'NASDAQ:NVDA',
+  'TSLAx':      'NASDAQ:TSLA',
+  'NFLXx':      'NASDAQ:NFLX',
+  'AMDx':       'NASDAQ:AMD',
+  'INTCx':      'NASDAQ:INTC',
+  'TSMx':       'NYSE:TSM',
+  // xStocks — Finance
+  'JPMx':       'NYSE:JPM',
+  'BACx':       'NYSE:BAC',
+  'GSx':        'NYSE:GS',
+  'BRKx':       'NYSE:BRK.B',
+  // xStocks — Consumer
+  'DISx':       'NYSE:DIS',
+  'NIKEx':      'NYSE:NKE',
+  'SBUXx':      'NASDAQ:SBUX',
+  'MCDx':       'NYSE:MCD',
+  // xStocks — Industrial
+  'CATx':       'NYSE:CAT',
+  'BAx':        'NYSE:BA',
+  'GEx':        'NYSE:GE',
+  // xStocks — Healthcare
+  'JNJx':       'NYSE:JNJ',
+  'PFEx':       'NYSE:PFE',
+  'MRKx':       'NYSE:MRK',
+  // xStocks — Energy
+  'XOMx':       'NYSE:XOM',
+  'CVXx':       'NYSE:CVX',
+  // xETFs
+  'SPYx':       'AMEX:SPY',
+  'QQQx':       'NASDAQ:QQQ',
+  'VTIx':       'AMEX:VTI',
+  'DIAx':       'AMEX:DIA',
+  'IWMx':       'AMEX:IWM',
+  'GLDx':       'AMEX:GLD',
+  'SLVx':       'AMEX:SLV',
   // Commodities & macro
   'GOLD-T':     'OANDA:XAUUSD',
   'CRUDE-T':    'NYMEX:CL1!',
