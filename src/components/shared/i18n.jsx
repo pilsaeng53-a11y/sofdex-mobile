@@ -79,6 +79,20 @@ export const translations = {
     gov_stage_voting_desc:'On-chain voting is live for eligible SOF holders.',
     gov_stage_passed_desc:'Proposal passed quorum and approval threshold.',
     gov_stage_executed_desc:'Proposal has been implemented on-chain.',
+    gov_oneWalletRule:'One wallet = one vote per proposal.',
+    gov_alreadyVoted:'Your wallet has already voted on this proposal.',
+    // SolFort hub
+    solfort_about:'About SolFort', solfort_token:'Token Info', solfort_revenue:'Revenue Share',
+    solfort_buyDistributor:'Buy from Distributor', solfort_agency:'Agency Info', solfort_salesPartner:'Apply as Sales Partner',
+    solfort_liveChart:'View Live Chart',
+    // RWA
+    rwa_xstocks:'Tokenized Stocks & ETFs', rwa_yield:'Yield Dashboard', rwa_infrastructure:'Infrastructure',
+    rwa_energy:'Energy', rwa_tokenizedNote:'These are tokenized representations — not direct equity ownership.',
+    // Global Indicators
+    indicators_title:'Global Indicators', indicators_gold:'Gold', indicators_oil:'Crude Oil',
+    indicators_us10y:'US 10Y Yield', indicators_dxy:'Dollar Index', indicators_sp500:'S&P 500',
+    // Portfolio allocation
+    portfolio_gold:'Gold', portfolio_xstocks:'xStocks', portfolio_commodities:'Commodities',
     // AI Intelligence
     page_ai:'AI Intelligence', ai_poweredBy:'Powered by SOFDex AI Engine · Updated every 5 minutes',
     ai_refresh:'AI Refresh', ai_analyzing:'Analyzing…', ai_marketSentiment:'AI Market Sentiment', ai_confidence:'Confidence',

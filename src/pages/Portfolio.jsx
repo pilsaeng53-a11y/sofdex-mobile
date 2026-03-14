@@ -33,11 +33,13 @@ const transactions = [
 ];
 
 const pieData = [
-  { name: 'Crypto', value: 34, color: '#00d4aa' },
-  { name: 'Stables', value: 22, color: '#3b82f6' },
-  { name: 'Real Estate', value: 26, color: '#8b5cf6' },
-  { name: 'RWA Other', value: 10, color: '#ec4899' },
-  { name: 'Positions', value: 8, color: '#f59e0b' },
+  { name: 'Crypto',     value: 28, color: '#00d4aa' },
+  { name: 'Stables',    value: 18, color: '#3b82f6' },
+  { name: 'Real Estate',value: 22, color: '#8b5cf6' },
+  { name: 'Gold',       value: 9,  color: '#FFD700' },
+  { name: 'xStocks',    value: 11, color: '#60a5fa' },
+  { name: 'Commodities',value: 4,  color: '#f59e0b' },
+  { name: 'Positions',  value: 8,  color: '#ec4899' },
 ];
 
 const PORTFOLIO_TAB_KEYS = [['All','portfolio_all'],['Crypto','portfolio_crypto'],['RWA','portfolio_rwa'],['Positions','portfolio_positions']];
