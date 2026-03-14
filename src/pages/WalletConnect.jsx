@@ -19,7 +19,6 @@ export default function WalletConnect() {
   const [connecting, setConnecting] = useState(null);
 
   const handleConnect = (wallet) => {
-    // eslint-disable-next-line no-unused-vars
     setConnecting(wallet.name);
     setTimeout(() => {
       setConnecting(null);
@@ -189,10 +188,10 @@ export default function WalletConnect() {
                 <Zap className="w-4 h-4" /> Start Trading
               </button>
               <button
-                onClick={() => navigate(createPageUrl('Portfolio'))}
+                onClick={() => navigate(createPageUrl('Wallet'))}
                 className="flex-1 py-3.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-white font-bold text-sm"
               >
-                Portfolio
+                Wallet
               </button>
             </div>
             {/* Deposit prompt */}
