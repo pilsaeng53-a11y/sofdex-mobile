@@ -7,6 +7,8 @@ import PageNotFound from './lib/PageNotFound';
 import DocAssetOverview from './pages/DocAssetOverview';
 import LaunchpadDetail from './pages/LaunchpadDetail';
 import Announcements from './pages/Announcements';
+import Institutional from './pages/Institutional';
+import AssetRegistryDetail from './pages/AssetRegistryDetail';
 import Swap from './pages/Swap';
 import SolFort from './pages/SolFort';
 import GovernanceDetail from './pages/GovernanceDetail';
