@@ -54,8 +54,9 @@ const NAV_SECTIONS = [
   {
     labelKey: 'menu_liveFeed',
     items: [
-      { labelKey: 'menu_liquidationFeed', page: 'LiquidationFeed', icon: Flame },
-      { labelKey: 'menu_whaleTracker',    page: 'WhaleTracker',    icon: Eye },
+      { labelKey: 'menu_liquidationFeed',  page: 'LiquidationFeed', icon: Flame },
+      { labelKey: 'menu_whaleTracker',     page: 'WhaleTracker',    icon: Eye },
+      { labelKey: 'menu_announcements',    page: 'Announcements',   icon: Bell },
     ],
   },
 ];
