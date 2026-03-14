@@ -14,6 +14,7 @@ import PredictionPreview from '../components/home/PredictionPreview';
 import ReferralPreview from '../components/home/ReferralPreview';
 import AIOpportunityCard from '../components/home/AIOpportunityCard';
 import ActivityStream from '../components/home/ActivityStream';
+import LaunchpadPreview from '../components/home/LaunchpadPreview';
 import MarketPulseBar from '../components/shared/MarketPulseBar';
 
 export default function Home() {
@@ -33,6 +34,7 @@ export default function Home() {
       <GlobalIndicators />
       <AIOpportunityCard />
       <SmartDiscovery />
+      <LaunchpadPreview />
       <FeaturedBanner />
       <TrendingAssets />
       <ActivityStream />
