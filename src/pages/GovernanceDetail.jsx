@@ -252,6 +252,12 @@ export default function GovernanceDetail() {
               </div>
             )}
 
+            {/* One-wallet rule notice */}
+            <div className="glass-card rounded-xl px-3 py-2.5 border border-[rgba(148,163,184,0.06)] flex items-center gap-2">
+              <Shield className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+              <p className="text-[10px] text-slate-500">{t('gov_oneWalletRule')}</p>
+            </div>
+
             {/* Vote buttons */}
             {proposal.status === 'active' && (
               <div className="space-y-2">
