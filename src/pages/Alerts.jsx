@@ -91,12 +91,12 @@ export default function Alerts() {
             <div>
               <p className="text-[10px] text-slate-500 mb-1.5">{t('alerts_alertType')}</p>
               <div className="grid grid-cols-2 gap-1.5">
-                {ALERT_TYPES.slice(0, 6).map(t => (
-                  <button key={t.id} onClick={() => setNewType(t.id)}
+                {ALERT_TYPES.slice(0, 6).map(at => (
+                  <button key={at.id} onClick={() => setNewType(at.id)}
                     className={`p-2 rounded-xl text-[10px] font-semibold text-left transition-all border ${
-                      newType === t.id ? 'border-[#00d4aa]/30 bg-[#00d4aa]/10 text-[#00d4aa]' : 'border-[rgba(148,163,184,0.06)] text-slate-400'
+                      newType === at.id ? 'border-[#00d4aa]/30 bg-[#00d4aa]/10 text-[#00d4aa]' : 'border-[rgba(148,163,184,0.06)] text-slate-400'
                     }`}>
-                    {t.label}
+                    {at.label}
                   </button>
                 ))}
               </div>
