@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import {
   X, Home, BarChart3, TrendingUp, Wallet, Vote,
   ChevronRight, ChevronDown, Newspaper, Building2, MapPin,
-  Settings, HelpCircle, FileText, Archive,
+  Settings, HelpCircle, FileText, Archive, Shield,
   BarChart2, Users, BookOpen, Rocket, Zap,
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star
 } from 'lucide-react';
