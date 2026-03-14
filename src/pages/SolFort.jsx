@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
   TrendingUp, Zap, Shield, Globe, BarChart3, Users,
