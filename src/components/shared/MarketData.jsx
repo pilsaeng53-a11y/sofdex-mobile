@@ -22,9 +22,26 @@ export const RWA_MARKETS = [
 ];
 
 export const TRADFI_MARKETS = [
-  { symbol: "AAPL-T", name: "Apple Tokenized", price: 227.50, change: 1.23, volume: "156M", mcap: "8.2B", category: "tradfi" },
-  { symbol: "MSFT-T", name: "Microsoft Token", price: 445.20, change: 0.89, volume: "112M", mcap: "6.1B", category: "tradfi" },
-  { symbol: "NVDA-T", name: "NVIDIA Token", price: 892.40, change: 4.56, volume: "234M", mcap: "12.4B", category: "tradfi" },
+  // xStocks — Tokenized Equities
+  { symbol: "AAPLx", name: "Apple",    price: 227.50, change: 1.23,  volume: "156M", mcap: "8.2B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "AMZNx", name: "Amazon",   price: 198.40, change: 0.67,  volume: "89M",  mcap: "6.4B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "GOOGLx",name: "Alphabet", price: 175.20, change: -0.45, volume: "78M",  mcap: "5.1B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "TSLAx", name: "Tesla",    price: 248.90, change: 3.45,  volume: "234M", mcap: "12.4B", category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "NVDAx", name: "NVIDIA",   price: 892.40, change: 4.56,  volume: "189M", mcap: "11.2B", category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "MSFTx", name: "Microsoft",price: 445.20, change: 0.89,  volume: "112M", mcap: "7.1B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "METAx", name: "Meta",     price: 582.30, change: 2.14,  volume: "98M",  mcap: "6.8B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "COINx", name: "Coinbase", price: 234.50, change: 5.67,  volume: "67M",  mcap: "3.4B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "JPMx",  name: "JPMorgan", price: 218.40, change: 0.34,  volume: "56M",  mcap: "4.2B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "BABAx", name: "Alibaba",  price: 108.20, change: -1.23, volume: "45M",  mcap: "3.1B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "NEFLXx",name: "Netflix",  price: 985.60, change: 1.78,  volume: "67M",  mcap: "5.4B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  { symbol: "AMDx",  name: "AMD",      price: 162.40, change: 2.34,  volume: "89M",  mcap: "4.8B",  category: "tradfi", type: "xStock", assetType: "Tokenized Equity" },
+  // xETFs — Tokenized ETFs
+  { symbol: "SPYx",  name: "S&P 500 ETF",       price: 584.20, change: 0.45,  volume: "456M", mcap: "18.4B", category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
+  { symbol: "QQQx",  name: "Nasdaq-100 ETF",    price: 495.80, change: 0.78,  volume: "312M", mcap: "14.2B", category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
+  { symbol: "GLDx",  name: "Gold ETF",           price: 232.40, change: 0.34,  volume: "234M", mcap: "9.8B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
+  { symbol: "VTIx",  name: "Total Market ETF",  price: 275.60, change: 0.56,  volume: "178M", mcap: "8.4B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
+  { symbol: "IWMx",  name: "Russell 2000 ETF",  price: 218.40, change: -0.23, volume: "89M",  mcap: "4.2B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
+  { symbol: "EMBx",  name: "EM Bond ETF",        price: 98.20,  change: -0.67, volume: "67M",  mcap: "2.8B",  category: "tradfi", type: "xETF", assetType: "Tokenized ETF" },
 ];
 
 export const ALL_MARKETS = [...CRYPTO_MARKETS, ...RWA_MARKETS, ...TRADFI_MARKETS];
