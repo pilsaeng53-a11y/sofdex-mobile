@@ -9,6 +9,7 @@ import LaunchpadDetail from './pages/LaunchpadDetail';
 import Announcements from './pages/Announcements';
 import Institutional from './pages/Institutional';
 import AssetRegistryDetail from './pages/AssetRegistryDetail';
+import WalletPage from './pages/Wallet';
 import Swap from './pages/Swap';
 import SolFort from './pages/SolFort';
 import GovernanceDetail from './pages/GovernanceDetail';

@@ -19,6 +19,7 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_trade',     page: 'Trade',     icon: TrendingUp },
       { labelKey: 'menu_swap',      page: 'Swap',      icon: ArrowDownUp },
       { labelKey: 'menu_portfolio', page: 'Portfolio', icon: Wallet },
+      { labelKey: 'menu_wallet',    page: 'Wallet',    icon: Wallet },
     ],
   },
   {
