@@ -6,6 +6,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import DocAssetOverview from './pages/DocAssetOverview';
 import LaunchpadDetail from './pages/LaunchpadDetail';
+import Announcements from './pages/Announcements';
 import Swap from './pages/Swap';
 import SolFort from './pages/SolFort';
 import GovernanceDetail from './pages/GovernanceDetail';
@@ -73,6 +74,7 @@ const AuthenticatedApp = () => {
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="/GovernanceDetail" element={<LayoutWrapper currentPageName="GovernanceDetail"><GovernanceDetail /></LayoutWrapper>} />
       <Route path="/LaunchpadDetail" element={<LayoutWrapper currentPageName="LaunchpadDetail"><LaunchpadDetail /></LayoutWrapper>} />
+      <Route path="/Announcements" element={<LayoutWrapper currentPageName="Announcements"><Announcements /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
