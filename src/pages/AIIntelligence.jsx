@@ -1,50 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart } from 'lucide-react';
+import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart, Info } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
-import { CRYPTO_MARKETS } from '../components/shared/MarketData';
 
-// --- Static AI Data ---
+// ── Per-asset AI scoring (deterministic but varied) ──────────────────────────
+const ASSET_SIGNALS = {
+  BTC:  { signal: 'Bullish',  score: 81, basis: '$92,400',  factors: ['ETF inflows +$420M week', 'Whale accumulation', 'Halving narrative'], risk: 'High volatility near $90K support. Stop-loss recommended.' },
+  SOL:  { signal: 'Bullish',  score: 88, basis: '$186.20',  factors: ['DePIN sector strength', 'On-chain volume spike', 'Whale buys +$27M'], risk: 'Momentum extended. RSI at 74, pullback possible to $172.' },
+  ETH:  { signal: 'Neutral',  score: 62, basis: '$3,820',   factors: ['Spot ETF uncertainty', 'Low staking APR narrative', 'Range-bound price action'], risk: 'No clear directional catalyst. Avoid over-leverage.' },
+  JUP:  { signal: 'Bullish',  score: 76, basis: '$1.24',    factors: ['Jupiverse expansion', 'Airdrop momentum', 'Volume 8.4x 30d avg'], risk: 'Small-cap. High impact from whale exits.' },
+  RNDR: { signal: 'Bullish',  score: 72, basis: '$9.48',    factors: ['AI compute demand rising', 'Sector +42%', 'Breakout from consolidation'], risk: 'Tech/AI narrative dependent. Monitor macro risk.' },
+  RAY:  { signal: 'Neutral',  score: 55, basis: '$2.14',    factors: ['DEX volumes stabilizing', 'Memecoin season fading', 'TVL flat'], risk: 'Low conviction. Wait for volume confirmation.' },
+  BONK: { signal: 'Bearish',  score: 67, basis: '$0.0000318', factors: ['Retail FOMO fading', 'RSI overbought', 'Volume declining'], risk: 'Extreme speculative risk. Only micro-positions.' },
+  HNT:  { signal: 'Neutral',  score: 58, basis: '$7.82',    factors: ['Network growth steady', 'Lacking near-term catalyst', 'Accumulation phase'], risk: 'Sideways range. No strong entry signal.' },
+};
+
 const AI_SENTIMENT = {
-  label: 'Bullish',
-  score: 74,
-  confidence: 'High',
+  label: 'Bullish', score: 74, confidence: 'High',
   explanation: 'On-chain accumulation by large wallets accelerated over the past 48h. Exchange outflows hit a 30-day high, signaling reduced sell pressure. Derivatives funding remains mildly positive.',
+  reasoning: 'Weighted composite of: price momentum (+18pts), whale activity (+22pts), volume profile (+14pts), news sentiment (+12pts), macro indicators (+8pts). Score normalized to 100.',
+  factors: ['Price momentum: BTC +6.4%, SOL +11.3%', 'Whale activity: Net inflows $42M in 24h', 'Volume spike: 2.3x 30-day average', 'Macro: Fed hold → risk-on', 'Sector strength: DePIN + RWA leading'],
 };
 
 const SMART_MONEY = [
-  { type: 'Whale Buy',     asset: 'BTC',  amount: '142 BTC',    usd: '$13.9M', wallet: '1AaBb...9Cc3', dir: 'in',  time: '4m ago' },
-  { type: 'Whale Buy',     asset: 'SOL',  amount: '48,200 SOL', usd: '$9.0M',  wallet: 'Sol7x...nX4', dir: 'in',  time: '11m ago' },
-  { type: 'Large Transfer',asset: 'ETH',  amount: '2,100 ETH',  usd: '$8.1M',  wallet: 'Binance Hot', dir: 'out', time: '19m ago' },
-  { type: 'Whale Sell',    asset: 'BTC',  amount: '89 BTC',     usd: '$8.8M',  wallet: '3Ffd2...7Kq9', dir: 'out', time: '25m ago' },
-  { type: 'Whale Buy',     asset: 'JUP',  amount: '6.2M JUP',   usd: '$7.7M',  wallet: 'Sol4r...Mn2', dir: 'in',  time: '38m ago' },
-  { type: 'Exchange Inflow', asset: 'ETH', amount: '3,800 ETH', usd: '$14.6M', wallet: 'OKX Cold',    dir: 'out', time: '52m ago' },
+  { type: 'Whale Buy',       asset: 'BTC', amount: '142 BTC',    usd: '$13.9M', wallet: '1AaBb...9Cc3', dir: 'in',  time: '4m ago' },
+  { type: 'Whale Buy',       asset: 'SOL', amount: '48,200 SOL', usd: '$9.0M',  wallet: 'Sol7x...nX4', dir: 'in',  time: '11m ago' },
+  { type: 'Large Transfer',  asset: 'ETH', amount: '2,100 ETH',  usd: '$8.1M',  wallet: 'Binance Hot', dir: 'out', time: '19m ago' },
+  { type: 'Whale Sell',      asset: 'BTC', amount: '89 BTC',     usd: '$8.8M',  wallet: '3Ffd2...7Kq9', dir: 'out', time: '25m ago' },
+  { type: 'Whale Buy',       asset: 'JUP', amount: '6.2M JUP',   usd: '$7.7M',  wallet: 'Sol4r...Mn2', dir: 'in',  time: '38m ago' },
+  { type: 'Exchange Inflow', asset: 'ETH', amount: '3,800 ETH',  usd: '$14.6M', wallet: 'OKX Cold',    dir: 'out', time: '52m ago' },
 ];
 
 const SECTORS = [
-  { name: 'Crypto',          change: '+6.4%',  trend: 'hot',     desc: 'BTC & SOL leading broad rally' },
-  { name: 'RWA',             change: '+9.2%',  trend: 'hot',     desc: 'Tokenized treasury inflows surge' },
-  { name: 'Real Estate',     change: '+3.1%',  trend: 'rising',  desc: 'Dubai & NYC properties gaining' },
-  { name: 'Commodities',     change: '+1.8%',  trend: 'rising',  desc: 'Gold tokens tracking spot price' },
-  { name: 'Art / Collectibles', change: '-2.4%', trend: 'cooling', desc: 'Low volume, sideways action' },
-  { name: 'Solana Ecosystem',change: '+11.3%', trend: 'hot',     desc: 'JUP, RAY, RNDR all breakout' },
-];
-
-const AI_SIGNALS = [
-  { asset: 'BTC',   signal: 'Bullish',  conf: 81, reason: 'ETF inflows + halving narrative strengthening' },
-  { asset: 'SOL',   signal: 'Bullish',  conf: 88, reason: 'DePIN growth + memecoin volume surge on-chain' },
-  { asset: 'ETH',   signal: 'Neutral',  conf: 62, reason: 'Spot ETF uncertainty, low staking APR narrative' },
-  { asset: 'JUP',   signal: 'Bullish',  conf: 76, reason: 'Jupiverse expansion + airdrop momentum' },
-  { asset: 'RNDR',  signal: 'Bullish',  conf: 72, reason: 'AI compute demand rising, Apple Vision catalyst' },
-  { asset: 'RAY',   signal: 'Neutral',  conf: 55, reason: 'DEX volumes stabilizing after meme season' },
-  { asset: 'BONK',  signal: 'Bearish',  conf: 67, reason: 'Retail FOMO fading, RSI overbought signals' },
-  { asset: 'HNT',   signal: 'Neutral',  conf: 58, reason: 'Network growth steady, lacking near-term catalyst' },
+  { name: 'Crypto',             change: '+6.4%',  trend: 'hot',     desc: 'BTC & SOL leading broad rally' },
+  { name: 'RWA',                change: '+9.2%',  trend: 'hot',     desc: 'Tokenized treasury inflows surge' },
+  { name: 'Real Estate',        change: '+3.1%',  trend: 'rising',  desc: 'Dubai & NYC properties gaining' },
+  { name: 'Commodities',        change: '+1.8%',  trend: 'rising',  desc: 'Gold tokens tracking spot price' },
+  { name: 'Art / Collectibles', change: '-2.4%',  trend: 'cooling', desc: 'Low volume, sideways action' },
+  { name: 'Solana Ecosystem',   change: '+11.3%', trend: 'hot',     desc: 'JUP, RAY, RNDR all breakout' },
 ];
 
 const VOLATILITY_ALERTS = [
-  { asset: 'BONK',  level: 'Extreme', change: '+42%',  note: 'Volume 18x above 30d average',   color: 'text-red-400',    bg: 'bg-red-400/8',    border: 'border-red-400/20' },
-  { asset: 'JUP',   level: 'High',    change: '+8.7%', note: 'Options IV spiked to 210%',       color: 'text-orange-400', bg: 'bg-orange-400/8', border: 'border-orange-400/20' },
-  { asset: 'RNDR',  level: 'High',    change: '+12.3%',note: 'Breakout from 3-week consolidation', color: 'text-orange-400', bg: 'bg-orange-400/8', border: 'border-orange-400/20' },
-  { asset: 'GOLD-T',level: 'Low',     change: '+0.9%', note: 'Near historic support',            color: 'text-emerald-400',bg: 'bg-emerald-400/8',border: 'border-emerald-400/20' },
+  { asset: 'BONK',   level: 'Extreme', change: '+42%',   note: 'Volume 18x above 30d average',        color: 'text-red-400',     bg: 'bg-red-400/8',     border: 'border-red-400/20' },
+  { asset: 'JUP',    level: 'High',    change: '+8.7%',  note: 'Options IV spiked to 210%',            color: 'text-orange-400',  bg: 'bg-orange-400/8',  border: 'border-orange-400/20' },
+  { asset: 'RNDR',   level: 'High',    change: '+12.3%', note: 'Breakout from 3-week consolidation',   color: 'text-orange-400',  bg: 'bg-orange-400/8',  border: 'border-orange-400/20' },
+  { asset: 'GOLD-T', level: 'Low',     change: '+0.9%',  note: 'Near historic support',                color: 'text-emerald-400', bg: 'bg-emerald-400/8', border: 'border-emerald-400/20' },
 ];
 
 const trendStyle = {
@@ -60,56 +59,97 @@ const signalStyle = {
 };
 
 const PORTFOLIO_ADVISOR = {
-  riskLevel: 'Medium',
-  riskScore: 58,
+  riskLevel: 'Medium', riskScore: 58,
   suggestions: [
     'Reduce BTC exposure from 32% → 25% to lower volatility drag',
     'Add 10–15% RWA bonds (TBILL) for yield stabilisation',
     'Consider diversifying into Solana DePIN sector (RNDR, HNT)',
   ],
+  factors: ['Price momentum analysis', 'Sector correlation matrix', 'Volatility-adjusted Sharpe ratio', 'Macro rate environment'],
   rwa: { current: '18%', suggested: '28%', reason: 'RWA sector momentum + treasury yield opportunity' },
 };
 
 const AI_RISK_SCORES = [
-  { asset: 'BTC',    score: 72, label: 'High Volatility',   color: 'text-orange-400', bar: 'bg-orange-400' },
-  { asset: 'SOL',    score: 78, label: 'High Volatility',   color: 'text-orange-400', bar: 'bg-orange-400' },
-  { asset: 'GOLD-T', score: 22, label: 'Stable Hedge',      color: 'text-emerald-400', bar: 'bg-emerald-400' },
-  { asset: 'TBILL',  score: 12, label: 'Safe Haven',        color: 'text-emerald-400', bar: 'bg-emerald-400' },
-  { asset: 'RE-NYC', score: 34, label: 'Low Risk',          color: 'text-blue-400',   bar: 'bg-blue-400' },
-  { asset: 'BONK',   score: 95, label: 'Extreme Risk',      color: 'text-red-400',    bar: 'bg-red-400' },
-  { asset: 'JUP',    score: 65, label: 'Medium-High',       color: 'text-amber-400',  bar: 'bg-amber-400' },
-  { asset: 'ETH',    score: 60, label: 'Moderate',          color: 'text-amber-400',  bar: 'bg-amber-400' },
+  { asset: 'BTC',    score: 72, label: 'High Volatility',  color: 'text-orange-400', bar: 'bg-orange-400', factors: ['24h range: 4.2%', 'Beta: 1.0 (baseline)', 'Exchange inflows rising'] },
+  { asset: 'SOL',    score: 78, label: 'High Volatility',  color: 'text-orange-400', bar: 'bg-orange-400', factors: ['Momentum extended', 'RSI: 74', 'Options IV: 185%'] },
+  { asset: 'GOLD-T', score: 22, label: 'Stable Hedge',     color: 'text-emerald-400', bar: 'bg-emerald-400', factors: ['Tracks physical gold', 'Low 24h range: 0.3%', 'Safe haven demand'] },
+  { asset: 'TBILL',  score: 12, label: 'Safe Haven',       color: 'text-emerald-400', bar: 'bg-emerald-400', factors: ['US Gov. backed', '4.8% yield', 'Minimal price risk'] },
+  { asset: 'RE-NYC', score: 34, label: 'Low Risk',         color: 'text-blue-400',    bar: 'bg-blue-400', factors: ['Illiquid underlying', 'Rental yield: 5.2%', 'NAV-pegged'] },
+  { asset: 'BONK',   score: 95, label: 'Extreme Risk',     color: 'text-red-400',     bar: 'bg-red-400', factors: ['Memecoin, no utility', 'Volume 18x spike', 'Retail speculation'] },
+  { asset: 'JUP',    score: 65, label: 'Medium-High',      color: 'text-amber-400',   bar: 'bg-amber-400', factors: ['Small-cap', 'Airdrop dilution risk', 'Strong narrative'] },
+  { asset: 'ETH',    score: 60, label: 'Moderate',         color: 'text-amber-400',   bar: 'bg-amber-400', factors: ['ETF uncertainty', 'Staking: 4.1% APR', 'Range-bound'] },
 ];
 
 const AI_NEWS = [
-  { headline: 'Fed holds rates — crypto markets rally 6% on risk-on sentiment', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Dovish Fed signals reduce macro headwinds; BTC and SOL leading the move higher.' },
-  { headline: 'BlackRock expands tokenized treasury fund to $18B AUM', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Institutional RWA demand accelerating; TBILL and tokenized bonds seeing inflow surge.' },
-  { headline: 'SEC approves spot SOL ETF application — details pending', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Historical pattern suggests 20–40% rally within 30 days of ETF approval announcements.' },
-  { headline: 'Dubai launches tokenized real estate pilot for global investors', impact: 'Neutral', tag: 'text-slate-400', bg: 'bg-slate-400/10', summary: 'RWA expansion into MENA region. Long-term positive; near-term impact muted.' },
+  { headline: 'Fed holds rates — crypto markets rally 6% on risk-on sentiment', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Dovish Fed signals reduce macro headwinds; BTC and SOL leading the move higher.', factors: ['Macro: Fed rate decision', 'Sentiment: Risk-on shift', 'Volume: +140% spike on news'] },
+  { headline: 'BlackRock expands tokenized treasury fund to $18B AUM', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Institutional RWA demand accelerating; TBILL and tokenized bonds seeing inflow surge.', factors: ['RWA sector strength', 'Institutional flows', 'Narrative: Real yield on-chain'] },
+  { headline: 'SEC approves spot SOL ETF application — details pending', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Historical pattern suggests 20–40% rally within 30 days of ETF approval announcements.', factors: ['Regulatory catalyst', 'Price momentum', 'Retail FOMO potential'] },
+  { headline: 'Dubai launches tokenized real estate pilot for global investors', impact: 'Neutral', tag: 'text-slate-400', bg: 'bg-slate-400/10', summary: 'RWA expansion into MENA region. Long-term positive; near-term impact muted.', factors: ['RWA expansion', 'Geopolitical risk neutral', 'Long-term structural positive'] },
 ];
 
 const LIQUIDATION_ZONES = [
-  { asset: 'BTC',  longCluster: '$92,000–$93,500', shortCluster: '$101,000–$103,000', risk: 'High', longSize: '$320M', shortSize: '$280M' },
-  { asset: 'SOL',  longCluster: '$168–$172',        shortCluster: '$198–$205',         risk: 'High', longSize: '$45M',  shortSize: '$38M' },
-  { asset: 'ETH',  longCluster: '$3,400–$3,500',    shortCluster: '$4,100–$4,300',     risk: 'Med',  longSize: '$180M', shortSize: '$210M' },
+  { asset: 'BTC', longCluster: '$92,000–$93,500', shortCluster: '$101,000–$103,000', risk: 'High', longSize: '$320M', shortSize: '$280M' },
+  { asset: 'SOL', longCluster: '$168–$172',        shortCluster: '$198–$205',         risk: 'High', longSize: '$45M',  shortSize: '$38M' },
+  { asset: 'ETH', longCluster: '$3,400–$3,500',    shortCluster: '$4,100–$4,300',     risk: 'Med',  longSize: '$180M', shortSize: '$210M' },
 ];
 
 const RWA_VALUATIONS = [
-  { symbol: 'RE-NYC', name: 'NYC Real Estate',  fair: '$58.20', current: '$52.40', status: 'Undervalued', pct: '+10.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold',   fair: '$2,290', current: '$2,341', status: 'Overvalued',  pct: '-2.2%',  color: 'text-red-400',    bg: 'bg-red-400/10' },
-  { symbol: 'TBILL',  name: 'US T-Bill Token',  fair: '$100.28',current: '$100.24',status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10' },
-  { symbol: 'RE-DXB', name: 'Dubai RE',         fair: '$148.00',current: '$124.50',status: 'Undervalued', pct: '+18.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
+  { symbol: 'RE-NYC', name: 'NYC Real Estate', fair: '$58.20', current: '$52.40', status: 'Undervalued', pct: '+10.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'DCF model on 2024 rental yields + cap rate compression' },
+  { symbol: 'GOLD-T', name: 'Tokenized Gold',  fair: '$2,290', current: '$2,341', status: 'Overvalued',  pct: '-2.2%',  color: 'text-red-400',    bg: 'bg-red-400/10',    basis: 'Spot gold price parity check vs. XAUUSD' },
+  { symbol: 'TBILL',  name: 'US T-Bill Token', fair: '$100.28',current: '$100.24',status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Yield-to-maturity NAV calculation' },
+  { symbol: 'RE-DXB', name: 'Dubai RE',        fair: '$148.00',current: '$124.50',status: 'Undervalued', pct: '+18.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'CBRE Dubai property index + yield spread model' },
 ];
 
 const OPPORTUNITY_SCANNER = [
-  { asset: 'JUP',   type: 'Volume Spike',        detail: '8.4x above 30d avg',         signal: 'Watch for breakout', color: 'text-violet-400', bg: 'bg-violet-400/10' },
-  { asset: 'SOL',   type: 'Whale Accumulation',  detail: '3 new wallets · +$27M',      signal: 'Bullish accumulation', color: 'text-emerald-400', bg: 'bg-emerald-400/10' },
-  { asset: 'RNDR',  type: 'Sector Momentum',     detail: 'AI compute narrative +42%',  signal: 'Trend continuation', color: 'text-cyan-400', bg: 'bg-cyan-400/10' },
-  { asset: 'RE-DXB',type: 'Undervalued RWA',     detail: 'AI model: -18.9% to fair',   signal: 'Value opportunity', color: 'text-amber-400', bg: 'bg-amber-400/10' },
+  { asset: 'JUP',    type: 'Volume Spike',        detail: '8.4x above 30d avg',         signal: 'Watch for breakout',     color: 'text-violet-400',  bg: 'bg-violet-400/10',  factors: ['Volume spike', 'Price momentum', 'Narrative strength'] },
+  { asset: 'SOL',    type: 'Whale Accumulation',  detail: '3 new wallets · +$27M',      signal: 'Bullish accumulation',   color: 'text-emerald-400', bg: 'bg-emerald-400/10', factors: ['Whale activity', 'Exchange outflows', 'DePIN sector'] },
+  { asset: 'RNDR',   type: 'Sector Momentum',     detail: 'AI compute narrative +42%',  signal: 'Trend continuation',     color: 'text-cyan-400',    bg: 'bg-cyan-400/10',    factors: ['Sector strength', 'AI macro theme', 'Breakout pattern'] },
+  { asset: 'RE-DXB', type: 'Undervalued RWA',     detail: 'AI model: -18.9% to fair',   signal: 'Value opportunity',      color: 'text-amber-400',   bg: 'bg-amber-400/10',   factors: ['Valuation model', 'Yield spread', 'MENA property demand'] },
 ];
 
 const AI_TAB_KEYS = ['ai_tab_signals','ai_tab_smartMoney','ai_tab_sectors','ai_tab_volatility','ai_tab_portfolio','ai_tab_risk','ai_tab_news','ai_tab_liqZones','ai_tab_rwa','ai_tab_scanner'];
 const AI_TAB_VALUES = ['Signals','Smart Money','Sectors','Volatility','Portfolio','Risk','News','Liq.Zones','RWA','Scanner'];
+
+function AIDisclaimer() {
+  return (
+    <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-400/5 border border-amber-400/15 mb-4">
+      <Info className="w-3.5 h-3.5 text-amber-400 flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="text-[10px] text-amber-400/80 font-semibold leading-snug">AI analysis is for informational purposes only and does not guarantee returns.</p>
+        <p className="text-[10px] text-slate-600 mt-0.5">Users remain responsible for all investment decisions.</p>
+      </div>
+    </div>
+  );
+}
+
+function ReasoningCard({ factors, risk, basis }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="mt-2">
+      <button onClick={() => setOpen(v => !v)} className="flex items-center gap-1.5 text-[10px] text-slate-600 hover:text-slate-400 transition-colors">
+        <Brain className="w-3 h-3" />
+        {open ? 'Hide' : 'View'} AI reasoning
+      </button>
+      {open && (
+        <div className="mt-2 p-2.5 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.06)] space-y-1.5">
+          {basis && <p className="text-[10px] text-slate-500"><span className="text-slate-400 font-semibold">Basis:</span> {basis}</p>}
+          {factors?.length > 0 && (
+            <div>
+              <p className="text-[10px] text-slate-500 font-semibold mb-1">Market factors used:</p>
+              {factors.map((f, i) => <p key={i} className="text-[10px] text-slate-600">· {f}</p>)}
+            </div>
+          )}
+          {risk && (
+            <div className="flex items-start gap-1.5 pt-1 border-t border-[rgba(148,163,184,0.04)]">
+              <AlertTriangle className="w-3 h-3 text-amber-400 flex-shrink-0 mt-0.5" />
+              <p className="text-[10px] text-amber-400/70">{risk}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function AIIntelligence() {
   const { t } = useLang();
@@ -130,10 +170,7 @@ export default function AIIntelligence() {
             <Brain className="w-5 h-5 text-[#00d4aa]" />
             <h1 className="text-xl font-bold text-white">{t('page_ai')}</h1>
           </div>
-          <button
-            onClick={handleRefresh}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all"
-          >
+          <button onClick={handleRefresh} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all">
             <Bot className={`w-3.5 h-3.5 text-[#00d4aa] ${refreshed ? 'animate-spin' : ''}`} />
             <span className="text-[11px] text-slate-400 font-medium">{refreshed ? t('ai_analyzing') : t('ai_refresh')}</span>
           </button>
@@ -161,14 +198,11 @@ export default function AIIntelligence() {
                 <p className="text-[10px] text-slate-500">/ 100</p>
               </div>
             </div>
-            {/* Score bar */}
             <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden mb-3">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400 transition-all"
-                style={{ width: `${AI_SENTIMENT.score}%` }}
-              />
+              <div className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400" style={{ width: `${AI_SENTIMENT.score}%` }} />
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">{AI_SENTIMENT.explanation}</p>
+            <p className="text-[11px] text-slate-400 leading-relaxed mb-2">{AI_SENTIMENT.explanation}</p>
+            <ReasoningCard factors={AI_SENTIMENT.factors} risk={null} basis={AI_SENTIMENT.reasoning} />
           </div>
         </div>
       </div>
@@ -176,21 +210,18 @@ export default function AIIntelligence() {
       {/* Tab bar */}
       <div className="flex gap-1.5 px-4 mb-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {AI_TAB_VALUES.map((tabVal, idx) => (
-          <button
-            key={tabVal}
-            onClick={() => setTab(tabVal)}
+          <button key={tabVal} onClick={() => setTab(tabVal)}
             className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              tab === tabVal
-                ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
-                : 'text-slate-500 border border-transparent'
-            }`}
-          >
+              tab === tabVal ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
+            }`}>
             {t(AI_TAB_KEYS[idx])}
           </button>
         ))}
       </div>
 
       <div className="px-4 space-y-3">
+        <AIDisclaimer />
+
         {/* AI Trade Signals */}
         {tab === 'Signals' && (
           <>
@@ -199,31 +230,33 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_tradeSignals')}</p>
               <span className="text-[10px] text-slate-600">· {t('ai_directionalBias')}</span>
             </div>
-            {AI_SIGNALS.map((sig, i) => {
+            {Object.entries(ASSET_SIGNALS).map(([asset, sig]) => {
               const style = signalStyle[sig.signal];
               const Icon = style.icon;
               return (
-                <div key={i} className="glass-card rounded-2xl p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa] flex-shrink-0">
-                    {sig.asset.slice(0, 2)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-sm font-bold text-white">{sig.asset}</span>
-                      <span className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg text-[10px] font-bold border ${style.color} ${style.bg} ${style.border}`}>
-                        <Icon className="w-2.5 h-2.5" />
-                        {sig.signal}
-                      </span>
+                <div key={asset} className="glass-card rounded-2xl p-3.5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa] flex-shrink-0">
+                      {asset.slice(0, 2)}
                     </div>
-                    <p className="text-[10px] text-slate-500 truncate">{sig.reason}</p>
-                  </div>
-                  <div className="flex-shrink-0 text-right">
-                    <div className="text-xs font-bold text-white">{sig.conf}%</div>
-                    <div className="text-[10px] text-slate-600">{t('ai_conf')}</div>
-                    <div className="w-12 h-1 rounded-full bg-[#0d1220] mt-1 overflow-hidden">
-                      <div className={`h-full rounded-full ${style.bg.replace('/10', '/60')}`} style={{ width: `${sig.conf}%` }} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-0.5">
+                        <span className="text-sm font-bold text-white">{asset}</span>
+                        <span className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg text-[10px] font-bold border ${style.color} ${style.bg} ${style.border}`}>
+                          <Icon className="w-2.5 h-2.5" />{sig.signal}
+                        </span>
+                      </div>
+                      <p className="text-[10px] text-slate-500">Est. basis: <span className="text-slate-400 font-semibold">{sig.basis}</span></p>
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      <div className="text-xs font-bold text-white">{sig.score}%</div>
+                      <div className="text-[10px] text-slate-600">{t('ai_conf')}</div>
+                      <div className="w-12 h-1 rounded-full bg-[#0d1220] mt-1 overflow-hidden">
+                        <div className={`h-full rounded-full ${style.bg.replace('/10', '/60')}`} style={{ width: `${sig.score}%` }} />
+                      </div>
                     </div>
                   </div>
+                  <ReasoningCard factors={sig.factors} risk={sig.risk} />
                 </div>
               );
             })}
@@ -238,13 +271,14 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_smartMoneyTracker')}</p>
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400 pulse-dot" />
             </div>
+            <div className="glass-card rounded-2xl p-3 mb-1 border border-violet-400/10">
+              <p className="text-[10px] text-slate-500">Tracking large wallet movements and exchange flows. Data sourced from on-chain analytics.</p>
+            </div>
             {SMART_MONEY.map((tx, i) => (
               <div key={i} className="glass-card rounded-2xl p-3.5 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${tx.dir === 'in' ? 'bg-emerald-400/10' : 'bg-red-400/10'}`}>
-                    {tx.dir === 'in'
-                      ? <ArrowDownRight className="w-4 h-4 text-emerald-400" />
-                      : <ArrowUpRight className="w-4 h-4 text-red-400" />}
+                    {tx.dir === 'in' ? <ArrowDownRight className="w-4 h-4 text-emerald-400" /> : <ArrowUpRight className="w-4 h-4 text-red-400" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
@@ -321,34 +355,34 @@ export default function AIIntelligence() {
               <p className="text-[10px] text-slate-500 mb-2 font-semibold uppercase tracking-wider">{t('ai_lowVolAssets')}</p>
               <div className="flex flex-wrap gap-2">
                 {['BTC', 'ETH', 'TBILL', 'GOLD-T', 'EURO-B'].map(a => (
-                  <span key={a} className="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] font-semibold text-slate-400 border border-[rgba(148,163,184,0.06)]">
-                    {a}
-                  </span>
+                  <span key={a} className="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] font-semibold text-slate-400 border border-[rgba(148,163,184,0.06)]">{a}</span>
                 ))}
               </div>
             </div>
           </>
         )}
 
-        {/* AI Portfolio Advisor */}
+        {/* Portfolio Advisor */}
         {tab === 'Portfolio' && (
           <>
             <div className="flex items-center gap-2 mb-1">
               <PieChart className="w-4 h-4 text-cyan-400" />
               <p className="text-xs font-bold text-white">{t('ai_portfolioAdvisor')}</p>
             </div>
-            {/* Risk level */}
+            <div className="glass-card rounded-2xl p-3 mb-1 border border-cyan-400/10">
+              <p className="text-[10px] text-cyan-400/70 font-semibold mb-0.5">Wallet-Context Analysis</p>
+              <p className="text-[10px] text-slate-500">Connect your wallet to receive personalised AI portfolio views based on your actual holdings and position history.</p>
+            </div>
             <div className="glass-card rounded-2xl p-4 border border-amber-400/10">
               <div className="flex items-center justify-between mb-2">
                 <p className="text-xs font-semibold text-slate-400">{t('ai_portfolioRisk')}</p>
                 <span className="text-xs font-black text-amber-400">{PORTFOLIO_ADVISOR.riskLevel} · {PORTFOLIO_ADVISOR.riskScore}/100</span>
               </div>
               <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden mb-3">
-                <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-400 transition-all" style={{ width: `${PORTFOLIO_ADVISOR.riskScore}%` }} />
+                <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-400" style={{ width: `${PORTFOLIO_ADVISOR.riskScore}%` }} />
               </div>
-              <p className="text-[10px] text-slate-500">Your portfolio leans toward high-volatility crypto assets. Consider rebalancing to reduce risk.</p>
+              <ReasoningCard factors={PORTFOLIO_ADVISOR.factors} risk="Portfolio risk score is indicative only. Market conditions change rapidly." />
             </div>
-            {/* Suggestions */}
             <div className="glass-card rounded-2xl p-4">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">{t('ai_aiSuggestions')}</p>
               <div className="space-y-2.5">
@@ -362,7 +396,6 @@ export default function AIIntelligence() {
                 ))}
               </div>
             </div>
-            {/* RWA allocation */}
             <div className="glass-card rounded-2xl p-4 border border-purple-400/10">
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-3.5 h-3.5 text-purple-400" />
@@ -384,7 +417,7 @@ export default function AIIntelligence() {
           </>
         )}
 
-        {/* AI Risk Score */}
+        {/* Risk Score */}
         {tab === 'Risk' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -393,29 +426,31 @@ export default function AIIntelligence() {
               <span className="text-[10px] text-slate-600">· {t('ai_assetRisk')}</span>
             </div>
             {AI_RISK_SCORES.map((r, i) => (
-              <div key={i} className="glass-card rounded-2xl p-3.5 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa] flex-shrink-0">
-                  {r.asset.slice(0, 2)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm font-bold text-white">{r.asset}</span>
-                    <span className={`text-[10px] font-bold ${r.color}`}>{r.label}</span>
+              <div key={i} className="glass-card rounded-2xl p-3.5">
+                <div className="flex items-center gap-3 mb-1.5">
+                  <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa] flex-shrink-0">
+                    {r.asset.slice(0, 2)}
                   </div>
-                  <div className="h-1.5 rounded-full bg-[#0d1220] overflow-hidden">
-                    <div className={`h-full rounded-full transition-all ${r.bar}`} style={{ width: `${r.score}%` }} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm font-bold text-white">{r.asset}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-bold ${r.color}`}>{r.label}</span>
+                        <span className={`text-sm font-black ${r.color}`}>{r.score}</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-[#0d1220] overflow-hidden">
+                      <div className={`h-full rounded-full transition-all ${r.bar}`} style={{ width: `${r.score}%` }} />
+                    </div>
                   </div>
                 </div>
-                <div className="flex-shrink-0 text-right">
-                  <span className={`text-sm font-black ${r.color}`}>{r.score}</span>
-                  <p className="text-[9px] text-slate-600">/ 100</p>
-                </div>
+                <ReasoningCard factors={r.factors} risk={null} />
               </div>
             ))}
           </>
         )}
 
-        {/* AI News Insight */}
+        {/* News */}
         {tab === 'News' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -430,13 +465,14 @@ export default function AIIntelligence() {
                   <span className="text-[10px] text-slate-600">{t('ai_impact')}</span>
                 </div>
                 <p className="text-xs font-semibold text-white mb-1.5 leading-snug">{n.headline}</p>
-                <p className="text-[10px] text-slate-500 leading-relaxed">{n.summary}</p>
+                <p className="text-[10px] text-slate-500 leading-relaxed mb-1">{n.summary}</p>
+                <ReasoningCard factors={n.factors} risk={null} />
               </div>
             ))}
           </>
         )}
 
-        {/* AI Liquidation Predictor */}
+        {/* Liquidation Zones */}
         {tab === 'Liq.Zones' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -474,7 +510,7 @@ export default function AIIntelligence() {
           </>
         )}
 
-        {/* AI RWA Valuation */}
+        {/* RWA Valuation */}
         {tab === 'RWA' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -482,7 +518,7 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_rwaValuation')}</p>
             </div>
             {RWA_VALUATIONS.map((r, i) => (
-              <div key={i} className={`glass-card rounded-2xl p-4 border ${r.color.replace('text-', 'border-')}/10`}>
+              <div key={i} className="glass-card rounded-2xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2.5">
                     <div className={`w-9 h-9 rounded-xl ${r.bg} flex items-center justify-center text-[10px] font-black ${r.color}`}>
@@ -495,19 +531,12 @@ export default function AIIntelligence() {
                   </div>
                   <div className={`px-2 py-1 rounded-lg ${r.bg} text-[10px] font-bold ${r.color}`}>{r.status}</div>
                 </div>
-                <div className="flex items-center justify-between text-[11px] mt-1">
-                  <div>
-                    <span className="text-slate-500">{t('ai_current')}: </span>
-                    <span className="text-white font-semibold">{r.current}</span>
-                  </div>
-                  <div>
-                    <span className="text-slate-500">{t('ai_fairValue')}: </span>
-                    <span className={`font-bold ${r.color}`}>{r.fair}</span>
-                  </div>
-                  <div>
-                    <span className={`font-black text-sm ${r.color}`}>{r.pct}</span>
-                  </div>
+                <div className="flex items-center justify-between text-[11px] mt-1 mb-2">
+                  <div><span className="text-slate-500">{t('ai_current')}: </span><span className="text-white font-semibold">{r.current}</span></div>
+                  <div><span className="text-slate-500">{t('ai_fairValue')}: </span><span className={`font-bold ${r.color}`}>{r.fair}</span></div>
+                  <span className={`font-black text-sm ${r.color}`}>{r.pct}</span>
                 </div>
+                <ReasoningCard factors={null} risk={null} basis={r.basis} />
               </div>
             ))}
           </>
@@ -536,10 +565,11 @@ export default function AIIntelligence() {
                   <Zap className={`w-4 h-4 ${o.color}`} />
                 </div>
                 <p className="text-[11px] text-slate-400 mb-1">{o.detail}</p>
-                <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg ${o.bg}`}>
+                <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg ${o.bg} mb-1`}>
                   <TrendingUp className={`w-2.5 h-2.5 ${o.color}`} />
                   <span className={`text-[10px] font-bold ${o.color}`}>{o.signal}</span>
                 </div>
+                <ReasoningCard factors={o.factors} risk="Opportunity signals do not guarantee price movement." />
               </div>
             ))}
           </>
