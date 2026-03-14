@@ -95,7 +95,7 @@ export default function GovernanceDetail() {
         </button>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-bold text-white truncate">{t('gov_proposalDetail')}</p>
-          <p className="text-[10px] text-slate-500 font-mono">SFD-{String(proposal.id).padStart(3, '0')}</p>
+          <p className="text-[10px] text-slate-500 font-mono">SFD-{String(proposalId).padStart(3, '0')}</p>
         </div>
         <span className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-semibold border ${config.color}`}>
           <Icon className="w-3 h-3" />
