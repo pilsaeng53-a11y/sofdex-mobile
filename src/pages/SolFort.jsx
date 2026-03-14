@@ -34,10 +34,12 @@ const REVENUE_ITEMS = [
 
 const CONTRACT = '4qNEbbP5b3sEAxPxnzGzVtjvEjP2e4raGWJnyRm3z9A3';
 const RAYDIUM_URL = `https://raydium.io/swap/?inputMint=4qNEbbP5b3sEAxPxnzGzVtjvEjP2e4raGWJnyRm3z9A3&outputMint=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`;
+const AFFILIATES_URL = 'https://www.solfort.foundation/affiliates';
+const FOUNDATION_URL = 'https://www.solfort.foundation';
 
 export default function SolFort() {
   const [copied, setCopied] = useState(false);
-  const [activeSection, setActiveSection] = useState('platform');
+  const [activeSection, setActiveSection] = useState('about');
   const sofPrice = useSOFPrice();
 
   const handleCopy = () => {
@@ -195,12 +197,31 @@ export default function SolFort() {
         </a>
       </div>
 
+      {/* Quick Actions */}
+      <div className="px-4 mt-4 mb-2 grid grid-cols-3 gap-2">
+        {[
+          { label: 'Buy SOF', icon: '💰', href: RAYDIUM_URL, color: '#00d4aa' },
+          { label: 'Live Chart', icon: '📊', href: RAYDIUM_URL, color: '#9945FF' },
+          { label: 'Sales Partner', icon: '🤝', href: AFFILIATES_URL, color: '#F7931A' },
+        ].map(a => (
+          <a key={a.label} href={a.href} target="_blank" rel="noopener noreferrer"
+            className="glass-card rounded-xl p-3 text-center border border-[rgba(148,163,184,0.06)] hover:border-opacity-30 transition-all active:scale-95"
+            style={{ borderColor: `${a.color}20` }}>
+            <div className="text-xl mb-1">{a.icon}</div>
+            <p className="text-[10px] font-bold" style={{ color: a.color }}>{a.label}</p>
+          </a>
+        ))}
+      </div>
+
       {/* Section Tabs */}
       <div className="flex gap-1.5 px-4 mt-5 mb-4 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {[
-          { key: 'platform', label: 'SolFort' },
+          { key: 'about',    label: 'About' },
+          { key: 'platform', label: 'Platform' },
           { key: 'token',    label: '$SOF Token' },
-          { key: 'revenue',  label: 'Revenue' },
+          { key: 'revenue',  label: 'Revenue Share' },
+          { key: 'agency',   label: 'Agency' },
+          { key: 'buy',      label: 'Buy SOF' },
         ].map(s => (
           <button
             key={s.key}
@@ -215,6 +236,38 @@ export default function SolFort() {
           </button>
         ))}
       </div>
+
+      {/* About Section */}
+      {activeSection === 'about' && (
+        <div className="px-4 space-y-3">
+          <div className="glass-card rounded-2xl p-4 border border-[rgba(148,163,184,0.04)]">
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2">About SolFort</p>
+            <p className="text-[12px] text-slate-300 leading-relaxed">
+              SolFort is the next-generation multi-asset decentralized exchange built on Solana. It enables trading of crypto, tokenized real-world assets (RWA), tokenized equities, and commodities — all from one unified platform with institutional-grade custody and on-chain settlement.
+            </p>
+          </div>
+          <div className="glass-card rounded-2xl p-4 border border-[rgba(148,163,184,0.04)]">
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-3">Key Facts</p>
+            {[
+              ['Blockchain', 'Solana (65,000 TPS)'],
+              ['Asset Classes', 'Crypto · RWA · Equities · Gold · Commodities'],
+              ['Governance', 'On-chain DAO via SOF token'],
+              ['Settlement', 'Sub-cent, near-instant finality'],
+              ['Custody', 'Institutional-grade, audited contracts'],
+              ['Foundation', 'solfort.foundation'],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between py-2 border-b border-[rgba(148,163,184,0.04)] last:border-0">
+                <span className="text-[11px] text-slate-500">{k}</span>
+                <span className="text-[11px] font-semibold text-slate-300">{v}</span>
+              </div>
+            ))}
+          </div>
+          <a href={FOUNDATION_URL} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 py-3 rounded-2xl bg-[#9945FF]/10 border border-[#9945FF]/20 text-[#9945FF] font-semibold text-sm hover:bg-[#9945FF]/15 transition-all">
+            <ExternalLink className="w-4 h-4" /> Visit solfort.foundation
+          </a>
+        </div>
+      )}
 
       {/* Platform Section */}
       {activeSection === 'platform' && (
@@ -334,6 +387,65 @@ export default function SolFort() {
               ))}
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Agency Section */}
+      {activeSection === 'agency' && (
+        <div className="px-4 space-y-3">
+          <div className="glass-card rounded-2xl p-4 border border-[#F7931A]/15">
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2">Agency Information</p>
+            <p className="text-[12px] text-slate-300 leading-relaxed mb-3">
+              SolFort operates a global sales partner and agency program. Authorized distributors and agencies can offer SOF token access to their clients and earn commission from trading activity.
+            </p>
+            {[
+              ['Program', 'SolFort Sales Partner Network'],
+              ['Commission', 'Revenue share on referred volume'],
+              ['Requirements', 'KYC/AML compliant entity'],
+              ['Regions', 'Global (select jurisdictions)'],
+              ['Contact', 'affiliates@solfort.foundation'],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between py-2 border-b border-[rgba(148,163,184,0.04)] last:border-0">
+                <span className="text-[11px] text-slate-500">{k}</span>
+                <span className="text-[11px] font-semibold text-slate-300">{v}</span>
+              </div>
+            ))}
+          </div>
+          <a href={AFFILIATES_URL} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#F7931A]/10 border border-[#F7931A]/20 text-[#F7931A] font-bold text-sm hover:bg-[#F7931A]/15 transition-all active:scale-[0.98]">
+            <ExternalLink className="w-4 h-4" /> Apply as Sales Partner
+          </a>
+        </div>
+      )}
+
+      {/* Buy SOF Section */}
+      {activeSection === 'buy' && (
+        <div className="px-4 space-y-3">
+          <div className="glass-card rounded-2xl p-4 border border-[#00d4aa]/15">
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2">Buy from SolFort Distributor</p>
+            <p className="text-[12px] text-slate-300 leading-relaxed mb-3">
+              SOF tokens can be purchased directly via authorized SolFort distributors, or on decentralized exchanges such as Raydium.
+            </p>
+            {[
+              ['DEX', 'Raydium, Jupiter Aggregator'],
+              ['Contract', `${CONTRACT.slice(0, 10)}...${CONTRACT.slice(-6)}`],
+              ['Network', 'Solana Mainnet'],
+              ['Min. Purchase', 'No minimum'],
+            ].map(([k, v]) => (
+              <div key={k} className="flex justify-between py-2 border-b border-[rgba(148,163,184,0.04)] last:border-0">
+                <span className="text-[11px] text-slate-500">{k}</span>
+                <span className="text-[11px] font-semibold text-slate-300">{v}</span>
+              </div>
+            ))}
+          </div>
+          <a href={RAYDIUM_URL} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-gradient-to-r from-[#9945FF] to-[#00d4aa] text-white font-bold text-sm hover:opacity-90 transition-all active:scale-[0.98]">
+            <Zap className="w-4 h-4" /> Buy SOF on Raydium
+          </a>
+          <Link to={createPageUrl('Swap')}
+            className="flex items-center justify-center gap-2 py-3.5 rounded-2xl border border-[#00d4aa]/20 bg-[#00d4aa]/10 text-[#00d4aa] font-bold text-sm hover:bg-[#00d4aa]/15 transition-all">
+            <Zap className="w-4 h-4" /> Swap SOF on SOFDex
+          </Link>
         </div>
       )}
 
