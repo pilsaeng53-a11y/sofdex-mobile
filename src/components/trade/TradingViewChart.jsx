@@ -18,7 +18,10 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
   const [loading, setLoading]      = useState(true);
   const [error, setError]          = useState(false);
   const containerId = useRef(`tv_${Math.random().toString(36).slice(2)}`).current;
-  const tvSymbol = (SYMBOL_MAP[symbol] !== undefined ? SYMBOL_MAP[symbol] : `BINANCE:${symbol}USDT`) || `BINANCE:${symbol}USDT`;
+  // If the symbol already contains a colon (e.g. "NASDAQ:AAPL"), use it directly
+  const tvSymbol = symbol.includes(':')
+    ? symbol
+    : (SYMBOL_MAP[symbol] !== undefined ? SYMBOL_MAP[symbol] : `BINANCE:${symbol}USDT`) || `BINANCE:${symbol}USDT`;
 
   const buildWidget = useCallback(() => {
     if (!window.TradingView || !containerRef.current) return;
