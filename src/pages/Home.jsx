@@ -8,6 +8,8 @@ import MarketCategories from '../components/home/MarketCategories';
 import QuickAccess from '../components/home/QuickAccess';
 import NewsPreview from '../components/home/NewsPreview';
 import AISentimentCard from '../components/home/AISentimentCard';
+import GlobalIndicators from '../components/home/GlobalIndicators';
+import SmartDiscovery from '../components/home/SmartDiscovery';
 import PredictionPreview from '../components/home/PredictionPreview';
 import ReferralPreview from '../components/home/ReferralPreview';
 import AIOpportunityCard from '../components/home/AIOpportunityCard';

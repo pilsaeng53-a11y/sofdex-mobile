@@ -64,16 +64,15 @@ const DEMO_WALLETS = [
 export default function GovernanceDetail() {
   const navigate = useNavigate();
   const { t } = useLang();
-  const STORAGE_KEY = `sofdex_votes_${id}`;
-  const [voted, setVoted] = useState(() => {
-    try { return localStorage.getItem(STORAGE_KEY) || null; } catch { return null; }
-  });
-  const [activeTab, setActiveTab] = useState('overview');
-
   const params = new URLSearchParams(window.location.search);
   const id = parseInt(params.get('id') || '1');
   const proposal = GOVERNANCE_PROPOSALS.find(p => p.id === id) || GOVERNANCE_PROPOSALS[0];
   const STORAGE_KEY = `sofdex_votes_${id}`;
+
+  const [voted, setVoted] = useState(() => {
+    try { return localStorage.getItem(STORAGE_KEY) || null; } catch { return null; }
+  });
+  const [activeTab, setActiveTab] = useState('overview');
 
   const config = STATUS_CONFIG[proposal.status] || STATUS_CONFIG.active;
   const Icon = config.icon;
