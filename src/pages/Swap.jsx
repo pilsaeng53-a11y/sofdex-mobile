@@ -35,11 +35,11 @@ const SWAP_ASSETS = [
 const STABLE_SYMBOLS = ['USDT', 'USDC'];
 
 const RECENT_PAIRS = [
-  { from: 'SOL', to: 'USDT' },
-  { from: 'BTC', to: 'USDT' },
-  { from: 'SOF', to: 'USDT' },
-  { from: 'GOLD-T', to: 'USDT' },
-  { from: 'ETH', to: 'USDC' },
+  { from: 'SOL',   to: 'USDT' },
+  { from: 'BTC',   to: 'USDT' },
+  { from: 'SOF',   to: 'USDT' },
+  { from: 'AAPLx', to: 'USDT' },
+  { from: 'GLDx',  to: 'USDC' },
 ];
 
 const CATEGORY_COLORS = {

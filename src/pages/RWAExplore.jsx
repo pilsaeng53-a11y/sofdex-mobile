@@ -14,10 +14,11 @@ import RWAYieldDashboard from '../components/rwa/RWAYieldDashboard';
 const MAIN_TABS = ['All', 'Real Estate', 'Commodities', 'Gold', 'Equities', 'xStocks', 'Yield', 'Art / Collectibles', 'Infrastructure', 'Energy'];
 
 const categoryStats = {
-  'Real Estate': { count: 5, value: '$9.2B', icon: Building2, color: '#8b5cf6' },
-  'Commodity':   { count: RWA_MARKETS.filter(a => a.type === 'Commodity').length, value: '$21.4B', icon: Package, color: '#f59e0b' },
-  'Treasury':    { count: RWA_MARKETS.filter(a => a.type === 'Treasury').length, value: '$53.5B', icon: BarChart2, color: '#3b82f6' },
-  'Equity':      { count: RWA_MARKETS.filter(a => a.type === 'Equity').length, value: '$18.0B', icon: BarChart2, color: '#00d4aa' },
+  'Real Estate':  { count: 5,  value: '$9.2B',  icon: Building2, color: '#8b5cf6' },
+  'Commodities':  { count: RWA_MARKETS.filter(a => a.type === 'Commodity').length, value: '$21.4B', icon: Package, color: '#f59e0b' },
+  'xStocks':      { count: TRADFI_MARKETS.length, value: '$82B',  icon: BarChart2, color: '#60a5fa' },
+  'Equities':     { count: RWA_MARKETS.filter(a => a.type === 'Equity').length, value: '$18.0B', icon: BarChart2, color: '#00d4aa' },
+  'Yield':        { count: 8,  value: '$53.5B', icon: TrendingUp, color: '#22c55e' },
   'Art / Collectibles': { count: ART_MARKETS.length, value: '$852M', icon: Palette, color: '#ec4899' },
 };
 
