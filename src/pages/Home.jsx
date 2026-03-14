@@ -30,7 +30,9 @@ export default function Home() {
       <MarketOverview />
       <QuickAccess />
       <AISentimentCard />
+      <GlobalIndicators />
       <AIOpportunityCard />
+      <SmartDiscovery />
       <FeaturedBanner />
       <TrendingAssets />
       <ActivityStream />
