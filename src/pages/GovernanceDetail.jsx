@@ -65,9 +65,9 @@ export default function GovernanceDetail() {
   const navigate = useNavigate();
   const { t } = useLang();
   const params = new URLSearchParams(window.location.search);
-  const id = parseInt(params.get('id') || '1');
-  const proposal = GOVERNANCE_PROPOSALS.find(p => p.id === id) || GOVERNANCE_PROPOSALS[0];
-  const STORAGE_KEY = `sofdex_votes_${id}`;
+  const proposalId = parseInt(params.get('id') || '1');
+  const proposal = GOVERNANCE_PROPOSALS.find(p => p.id === proposalId) || GOVERNANCE_PROPOSALS[0];
+  const STORAGE_KEY = `sofdex_votes_${proposalId}`;
 
   const [voted, setVoted] = useState(() => {
     try { return localStorage.getItem(STORAGE_KEY) || null; } catch { return null; }
