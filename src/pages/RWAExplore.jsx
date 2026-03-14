@@ -177,7 +177,7 @@ export default function RWAExplore() {
           <h3 className="text-sm font-bold text-white mb-3">Categories</h3>
           <div className="grid grid-cols-2 gap-2.5">
             {Object.entries(categoryStats).map(([type, stats]) => (
-              <button key={type} onClick={() => setActiveTab(type)}>
+              <button key={type} onClick={() => setActiveTab(type)} className="text-left">
                 <RWACategoryCard type={type} count={stats.count} totalValue={stats.value} />
               </button>
             ))}
