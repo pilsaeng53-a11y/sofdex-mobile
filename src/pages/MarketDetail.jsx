@@ -64,7 +64,7 @@ export default function MarketDetail() {
 
       {/* TradingView Chart */}
       <div className="px-4 mb-5">
-        <TradingViewChart symbol={asset.symbol} height={320} />
+        <TradingViewChart symbol={asset.tvSymbol || asset.symbol} height={320} />
       </div>
 
       {/* Stats grid */}
