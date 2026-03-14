@@ -7,20 +7,29 @@ import { useLang } from '../components/shared/LanguageContext';
 import { useSOFPrice } from '../components/shared/useSOFPrice';
 
 const SWAP_ASSETS = [
-  { symbol: 'SOL',    name: 'Solana',                  category: 'crypto', icon: '◎',  color: '#9945FF' },
-  { symbol: 'BTC',    name: 'Bitcoin',                 category: 'crypto', icon: '₿',  color: '#F7931A' },
-  { symbol: 'ETH',    name: 'Ethereum',                category: 'crypto', icon: 'Ξ',  color: '#627EEA' },
-  { symbol: 'SOF',    name: 'SolFort',                 category: 'sof',    icon: 'SF', color: '#00d4aa' },
-  { symbol: 'JUP',    name: 'Jupiter',                 category: 'crypto', icon: 'J',  color: '#00BFFF' },
-  { symbol: 'RNDR',   name: 'Render',                  category: 'crypto', icon: 'R',  color: '#FF4D4D' },
-  { symbol: 'BONK',   name: 'Bonk',                    category: 'crypto', icon: '🐶', color: '#F0A500' },
-  { symbol: 'USDT',   name: 'Tether USD',              category: 'stable', icon: '₮',  color: '#26A17B' },
-  { symbol: 'USDC',   name: 'USD Coin',                category: 'stable', icon: '$',  color: '#2775CA' },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold',          category: 'rwa',    icon: '🥇', color: '#FFD700' },
-  { symbol: 'TBILL',  name: 'US Treasury Bill',        category: 'rwa',    icon: '🏛',  color: '#4CAF50' },
-  { symbol: 'RE-NYC', name: 'NYC Real Estate Fund',    category: 'rwa',    icon: '🏙',  color: '#9B59B6' },
-  { symbol: 'SP500-T',name: 'S&P 500 Tokenized',       category: 'rwa',    icon: '📈', color: '#3B82F6' },
-  { symbol: 'TSLA-T', name: 'Tesla Tokenized',         category: 'rwa',    icon: 'T',  color: '#CC0000' },
+  // Crypto Spot
+  { symbol: 'SOL',    name: 'Solana',               category: 'crypto',  assetType: 'Crypto Spot',        icon: '◎',  color: '#9945FF' },
+  { symbol: 'BTC',    name: 'Bitcoin',              category: 'crypto',  assetType: 'Crypto Spot',        icon: '₿',  color: '#F7931A' },
+  { symbol: 'ETH',    name: 'Ethereum',             category: 'crypto',  assetType: 'Crypto Spot',        icon: 'Ξ',  color: '#627EEA' },
+  { symbol: 'JUP',    name: 'Jupiter',              category: 'crypto',  assetType: 'Crypto Spot',        icon: 'J',  color: '#00BFFF' },
+  { symbol: 'RNDR',   name: 'Render',               category: 'crypto',  assetType: 'Crypto Spot',        icon: 'R',  color: '#FF4D4D' },
+  { symbol: 'BONK',   name: 'Bonk',                 category: 'crypto',  assetType: 'Crypto Spot',        icon: '🐶', color: '#F0A500' },
+  // SOFDex native
+  { symbol: 'SOF',    name: 'SolFort Token',        category: 'sof',     assetType: 'SOFDex Native',      icon: 'SF', color: '#00d4aa' },
+  // Stablecoins
+  { symbol: 'USDT',   name: 'Tether USD',           category: 'stable',  assetType: 'Stablecoin',         icon: '₮',  color: '#26A17B' },
+  { symbol: 'USDC',   name: 'USD Coin',             category: 'stable',  assetType: 'Stablecoin',         icon: '$',  color: '#2775CA' },
+  // RWA
+  { symbol: 'GOLD-T', name: 'Tokenized Gold',       category: 'rwa',     assetType: 'RWA · Commodity',    icon: '🥇', color: '#FFD700' },
+  { symbol: 'TBILL',  name: 'US Treasury Bill',     category: 'rwa',     assetType: 'RWA · Treasury',     icon: '🏛',  color: '#4CAF50' },
+  { symbol: 'RE-NYC', name: 'NYC Real Estate Fund', category: 'rwa',     assetType: 'RWA · Real Estate',  icon: '🏙',  color: '#9B59B6' },
+  { symbol: 'SP500-T',name: 'S&P 500 Tokenized',   category: 'rwa',     assetType: 'RWA · Equity',       icon: '📈', color: '#3B82F6' },
+  // xStocks
+  { symbol: 'AAPLx',  name: 'Apple (xStock)',       category: 'xstock',  assetType: 'Tokenized Equity',   icon: '🍎', color: '#60a5fa' },
+  { symbol: 'TSLAx',  name: 'Tesla (xStock)',       category: 'xstock',  assetType: 'Tokenized Equity',   icon: 'T',  color: '#CC0000' },
+  { symbol: 'NVDAx',  name: 'NVIDIA (xStock)',      category: 'xstock',  assetType: 'Tokenized Equity',   icon: 'N',  color: '#76b900' },
+  { symbol: 'SPYx',   name: 'S&P 500 ETF (xETF)',  category: 'xstock',  assetType: 'Tokenized ETF',      icon: '📊', color: '#8b5cf6' },
+  { symbol: 'GLDx',   name: 'Gold ETF (xETF)',     category: 'xstock',  assetType: 'Tokenized ETF',      icon: '🥇', color: '#FFD700' },
 ];
 
 const STABLE_SYMBOLS = ['USDT', 'USDC'];
@@ -41,10 +50,11 @@ const CATEGORY_COLORS = {
 };
 
 const CATEGORY_LABELS = {
-  crypto: 'Crypto',
-  stable: 'Stablecoin',
-  rwa:    'RWA',
-  sof:    'SOFDex',
+  crypto:  'Crypto Spot',
+  stable:  'Stablecoin',
+  rwa:     'RWA',
+  sof:     'SOFDex',
+  xstock:  'Tokenized',
 };
 
 function AssetIcon({ asset, size = 'md' }) {
@@ -67,7 +77,7 @@ function AssetSelector({ selected, onChange, exclude }) {
     (a.symbol.toLowerCase().includes(search.toLowerCase()) ||
      a.name.toLowerCase().includes(search.toLowerCase()))
   );
-  const grouped = ['sof', 'crypto', 'rwa', 'stable'].map(cat => ({
+  const grouped = ['sof', 'crypto', 'rwa', 'xstock', 'stable'].map(cat => ({
     cat,
     items: filtered.filter(a => a.category === cat),
   })).filter(g => g.items.length);
@@ -122,6 +132,7 @@ function AssetSelector({ selected, onChange, exclude }) {
                       <div className="text-left flex-1">
                         <p className="text-sm font-semibold text-white">{asset.symbol}</p>
                         <p className="text-[10px] text-slate-500">{asset.name}</p>
+                        {asset.assetType && <p className="text-[9px] text-slate-600">{asset.assetType}</p>}
                       </div>
                       <span className={`text-[10px] font-medium ${CATEGORY_COLORS[asset.category]}`}>{CATEGORY_LABELS[asset.category]}</span>
                     </button>
@@ -158,6 +169,7 @@ export default function Swap() {
       RNDR: 8.92, BONK: 0.0000234,
       'GOLD-T': 2341.80, TBILL: 100.24, 'RE-NYC': 52.40,
       'SP500-T': 5842.30, 'TSLA-T': 248.90,
+      AAPLx: 227.50, TSLAx: 248.90, NVDAx: 892.40, SPYx: 584.20, GLDx: 232.40,
     };
     return fallbacks[asset.symbol] ?? 1;
   }, [getLiveAsset]);
