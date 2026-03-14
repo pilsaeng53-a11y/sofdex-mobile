@@ -130,6 +130,60 @@ export const translations = {
     order_balance:'Bal:', order_leverage:'Leverage', order_lowRisk:'Low Risk', order_highRisk:'High Risk',
     order_estEntry:'Est. Entry', order_positionSize:'Position Size', order_liqPrice:'Liq. Price',
     order_tradingFee:'Trading Fee', order_openLong:'Open Long', order_openShort:'Open Short',
+    // Institutional
+    inst_restricted:'Restricted Access', inst_gate_title:'Institutional Hub', inst_gate_desc:'This section is restricted to approved institutional wallets. Apply at solfort.foundation to request access.',
+    inst_gate_includes:'This section includes', inst_apply_access:'Apply for Institutional Access', inst_demo_preview:'Preview as Demo', inst_demo_note:'Demo mode — data is illustrative only',
+    inst_feat_liquidity:'Aggregated Liquidity & Smart Order Routing', inst_feat_routing:'Routing Overview across 6+ venues',
+    inst_feat_otc:'OTC Desk — block trades from $100K+', inst_feat_risk:'Institutional Risk Dashboard',
+    inst_feat_registry:'On-Chain Asset Registry for RWA', inst_feat_depth:'Market Depth & Fill Analysis',
+    inst_dashboard_title:'Institutional Dashboard', inst_approved_access:'Approved Access', inst_demo_mode:'Demo Mode',
+    inst_stat_aum:'Assets Under Mgmt', inst_stat_venues:'Liquidity Venues', inst_stat_latency:'Avg Latency',
+    inst_tab_liquidity:'Liquidity', inst_tab_otc:'OTC Desk', inst_tab_risk:'Risk', inst_tab_registry:'Registry',
+    // Risk
+    risk_score_title:'Portfolio Risk Score', risk_level_moderate:'Moderate Risk', risk_score_desc:'Risk is calculated across position concentration, leverage, asset volatility, and sector exposure.',
+    risk_concentration_high:'Concentration High', risk_liquidity_ok:'Liquidity OK',
+    risk_exposure_title:'Exposure by Asset Class', risk_limits_title:'Position Limits & Stop-Loss Framework',
+    risk_max_single:'Max Single Asset', risk_max_sector:'Max Sector Exposure', risk_max_portfolio:'Max Portfolio Size', risk_stop_loss:'Stop-Loss Trigger',
+    risk_concentration_title:'Concentration Risk', risk_concentration_note:'Herfindahl-Hirschman Index applied to current portfolio. Score above 0.25 triggers review.',
+    risk_alerts_title:'Portfolio Risk Alerts',
+    risk_alert_concentration:'High concentration in', risk_alert_drawdown:'BTC drawdown exceeds 8% threshold for', risk_alert_limit:'Approaching sector limit for',
+    // Liquidity
+    liq_depth_title:'Aggregated Liquidity Depth', liq_total_depth:'Total Depth', liq_venues:'Venues', liq_avg_fill:'Avg Fill Rate',
+    liq_venues_title:'Liquidity Venue Breakdown', liq_routing_title:'Smart Order Routing Rules',
+    liq_rule_best_price:'Best Price Routing', liq_rule_split_order:'Order Splitting', liq_rule_slippage_cap:'Slippage Cap', liq_rule_fee_routing:'Fee Optimization',
+    liq_routing_note:'Smart routing is illustrative. Live execution requires approved institutional wallet connection.',
+    // OTC
+    otc_title:'OTC Desk', otc_desk_live:'Desk Live', otc_desc:'Block trades for institutional counterparties. Minimum size varies by asset class.',
+    otc_tab_pairs:'Pairs', otc_tab_recent:'Recent', otc_tab_contact:'Contact',
+    otc_min_size:'Min Size', otc_spread:'Indicative Spread', otc_settlement:'Settlement',
+    otc_demo_data_note:'Sample data — not real trade history', otc_contact_title:'Contact OTC Desk',
+    otc_contact_desc:'For block trades, custom RFQ, or institutional onboarding, reach out via solfort.foundation.',
+    otc_contact_cta:'Reach OTC Desk',
+    // Registry
+    reg_title:'On-Chain Asset Registry', reg_total_assets:'assets listed', reg_filter_all:'All Classes',
+    reg_custody:'Custody / Structure', reg_token_structure:'Token Structure', reg_back_registry:'Back to Registry',
+    reg_key_details:'Registry Details', reg_registry_id:'Registry ID', reg_asset_class:'Asset Class',
+    reg_custody_structure:'Custody & Legal Structure', reg_custody_note:'Assets are held by regulated custodians or within bankruptcy-remote SPVs. Token holders have beneficial ownership through the token structure.',
+    reg_inst_note_title:'Institutional Note', reg_docs_title:'Reference Documents',
+    reg_doc_token:'Token Structure Reference', reg_doc_legal:'Legal Documents', reg_doc_risk:'Risk Disclosure',
+    reg_contact_team:'Contact Registry Team', reg_status_verified:'Verified', reg_status_pending:'Pending',
+    // Asset names
+    reg_asset_re1:'Manhattan Commercial Tower — Class A', reg_asset_re2:'Singapore Mixed-Use Development',
+    reg_asset_art1:'Picasso — Blue Period Masterwork', reg_asset_gold1:'LBMA Gold — Physical Allocated',
+    reg_asset_comm1:'Chicago Wheat — CME Warehouse Receipt', reg_asset_stk1:'AAPL Tokenized — Mirror Stock',
+    reg_asset_stk2:'SPY ETF Token — T+0 Settlement',
+    // Asset class labels
+    reg_class_realestate:'Real Estate', reg_class_art:'Art / Collectibles', reg_class_gold:'Gold',
+    reg_class_commodities:'Commodities', reg_class_stocks:'Tokenized Stocks / ETFs',
+    // Institutional notes per class
+    inst_note_realestate:'Real estate tokens represent fractional beneficial ownership in a bankruptcy-remote SPV holding the underlying property. Legal opinion available upon request.',
+    inst_note_art:'Art tokens represent authenticated fractional ownership with provenance documentation. Valuation updated quarterly by independent appraisers.',
+    inst_note_gold:'Physical gold fully allocated in LBMA-approved vaults. Quarterly audit reports available. Redemption in minimum 400oz bars for verified institutional accounts.',
+    inst_note_commodities:'Commodity tokens are backed by warehouse receipts from CME-certified facilities. Subject to seasonal pricing and storage fee adjustments.',
+    inst_note_stocks:'Tokenized equity mirrors economic exposure only — not direct equity ownership. Dividends are passed through net of withholding taxes.',
+    inst_note_generic:'This asset undergoes independent verification. Full due diligence package available upon institutional KYC approval.',
+    // Menu
+    menu_institutional:'Institutional',
   },
 
   ko: {
