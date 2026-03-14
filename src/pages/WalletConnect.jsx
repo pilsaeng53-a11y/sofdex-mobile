@@ -19,6 +19,7 @@ export default function WalletConnect() {
   const [connecting, setConnecting] = useState(null);
 
   const handleConnect = (wallet) => {
+    // eslint-disable-next-line no-unused-vars
     setConnecting(wallet.name);
     setTimeout(() => {
       setConnecting(null);
