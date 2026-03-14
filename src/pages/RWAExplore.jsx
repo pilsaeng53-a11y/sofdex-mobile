@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Search, Shield, Globe, ArrowRight, Building2, Package, BarChart2, Palette } from 'lucide-react';
-import { RWA_MARKETS } from '../components/shared/MarketData';
+import { Search, Shield, Globe, ArrowRight, Building2, Package, BarChart2, Palette, TrendingUp, Zap } from 'lucide-react';
+import { RWA_MARKETS, TRADFI_MARKETS } from '../components/shared/MarketData';
 import { LANDMARK_RE, ART_MARKETS } from '../components/shared/RWAData';
 import RWACategoryCard from '../components/rwa/RWACategoryCard';
 import RWAAssetCard from '../components/rwa/RWAAssetCard';
 import PropertyCard from '../components/rwa/PropertyCard';
 import RWAOverviewDashboard from '../components/rwa/RWAOverviewDashboard';
+import XStocksPanel from '../components/rwa/XStocksPanel';
+import RWAYieldDashboard from '../components/rwa/RWAYieldDashboard';
 
-const MAIN_TABS = ['All', 'Real Estate', 'Commodities', 'Gold', 'Equities', 'Art / Collectibles'];
+const MAIN_TABS = ['All', 'Real Estate', 'Commodities', 'Gold', 'Equities', 'xStocks', 'Yield', 'Art / Collectibles', 'Infrastructure', 'Energy'];
 
 const categoryStats = {
   'Real Estate': { count: 5, value: '$9.2B', icon: Building2, color: '#8b5cf6' },
@@ -32,6 +34,40 @@ export default function RWAExplore() {
       return (
         <div className="space-y-4">
           {filtered.map(p => <PropertyCard key={p.symbol} property={p} />)}
+        </div>
+      );
+    }
+
+    if (activeTab === 'xStocks') {
+      return <XStocksPanel />;
+    }
+
+    if (activeTab === 'Yield') {
+      return <RWAYieldDashboard />;
+    }
+
+    if (activeTab === 'Infrastructure') {
+      const infra = RWA_MARKETS.filter(a => a.type === 'Treasury' || a.symbol.includes('INFRA'));
+      return (
+        <div className="space-y-3">
+          {infra.length === 0 && (
+            <div className="glass-card rounded-2xl p-6 text-center">
+              <Zap className="w-8 h-8 text-[#06b6d4] mx-auto mb-2" />
+              <p className="text-sm font-bold text-white mb-1">Infrastructure RWA</p>
+              <p className="text-[11px] text-slate-500">Coming soon — infrastructure bond tokens and project financing assets will be listed here.</p>
+            </div>
+          )}
+          {infra.map(a => <RWAAssetCard key={a.symbol} asset={a} />)}
+        </div>
+      );
+    }
+
+    if (activeTab === 'Energy') {
+      return (
+        <div className="glass-card rounded-2xl p-6 text-center">
+          <TrendingUp className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
+          <p className="text-sm font-bold text-white mb-1">Energy RWA</p>
+          <p className="text-[11px] text-slate-500">Renewable energy project tokens coming soon. Proposal SFD-007 is currently being voted on.</p>
         </div>
       );
     }
@@ -69,7 +105,7 @@ export default function RWAExplore() {
     let base = RWA_MARKETS;
     if (activeTab === 'Gold') base = RWA_MARKETS.filter(a => a.symbol === 'GOLD-T');
     else if (activeTab === 'Commodities') base = RWA_MARKETS.filter(a => a.type === 'Commodity');
-    else if (activeTab === 'Equities') base = RWA_MARKETS.filter(a => a.type === 'Equity');
+    else if (activeTab === 'Equities') base = [...RWA_MARKETS.filter(a => a.type === 'Equity'), ...TRADFI_MARKETS.slice(0, 4)];
     else if (activeTab === 'All') {
       // Mix: property cards first, then RWA
       const filteredRE = LANDMARK_RE.filter(p =>
