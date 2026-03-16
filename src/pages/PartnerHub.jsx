@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useUserType } from '../components/shared/UserTypeContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Users, TrendingUp, Award, Gift, Map, GitBranch, BarChart3, ExternalLink, Copy, Share2, CheckCircle2, Crown, Star, Zap, Wallet, ChevronRight } from 'lucide-react';
@@ -27,6 +28,7 @@ const QUICK_LINKS = [
 
 export default function PartnerHub() {
   const [copied, setCopied] = useState(false);
+  const { isPartnerApproved, applyForPartner, isPartnerPending } = useUserType();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(MY_LINK).catch(() => {});
@@ -35,6 +37,62 @@ export default function PartnerHub() {
   };
 
   const grade = GRADE_CONFIG['Gold'];
+
+  // Non-approved: show apply page
+  if (!isPartnerApproved) {
+    return (
+      <div className="px-4 py-4 space-y-4 pb-8">
+        <div className="text-center pt-8 pb-4">
+          <div className="w-16 h-16 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center mx-auto mb-4">
+            <Crown className="w-8 h-8 text-amber-400" />
+          </div>
+          <h1 className="text-xl font-bold text-white mb-2">Become a SolFort Distributor</h1>
+          <p className="text-sm text-slate-400 max-w-xs mx-auto leading-relaxed">Join our global partner network and earn commissions from your team's trading volume.</p>
+        </div>
+
+        <div className="space-y-3">
+          {Object.entries(GRADE_CONFIG).map(([grade, cfg]) => (
+            <div key={grade} className={`${cfg.bg} border ${cfg.border} rounded-2xl p-4 flex items-center justify-between`}>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">{cfg.badge}</span>
+                <div>
+                  <p className={`text-sm font-bold ${cfg.color}`}>{grade} Partner</p>
+                  <p className="text-xs text-slate-500">Earn {cfg.commission} commission</p>
+                </div>
+              </div>
+              <span className={`text-lg font-black ${cfg.color}`}>{cfg.commission}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-[#151c2e] rounded-2xl border border-[rgba(148,163,184,0.08)] p-4 space-y-3">
+          <h3 className="text-sm font-bold text-white">How it works</h3>
+          {['Apply and get approved as a distributor', 'Share your referral link with your network', 'Earn commission from your team's trading volume', 'Advance tiers for higher commission rates'].map((step, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-[#00d4aa]/20 text-[#00d4aa] text-[10px] font-bold flex items-center justify-center flex-shrink-0">{i + 1}</div>
+              <p className="text-xs text-slate-400">{step}</p>
+            </div>
+          ))}
+        </div>
+
+        {isPartnerPending ? (
+          <div className="w-full py-4 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-center">
+            <p className="text-sm font-bold text-amber-400">⏳ Application Under Review</p>
+            <p className="text-xs text-slate-500 mt-1">You'll be notified once approved. Usually 1-2 business days.</p>
+          </div>
+        ) : (
+          <button onClick={applyForPartner}
+            className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#00d4aa] to-[#06b6d4] text-black font-bold text-sm flex items-center justify-center gap-2">
+            <Star className="w-4 h-4" /> Apply as Distributor
+          </button>
+        )}
+        <a href={AFFILIATES_URL} target="_blank" rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-[rgba(148,163,184,0.1)] text-slate-400 font-semibold text-sm">
+          <ExternalLink className="w-4 h-4" /> Learn More at solfort.foundation
+        </a>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 py-4 space-y-4 pb-8">
