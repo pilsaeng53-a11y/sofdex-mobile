@@ -56,6 +56,7 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_solfortPage',    page: 'SolFort',       icon: Star },
       { labelKey: 'menu_swapSof',        page: 'Swap',          icon: ArrowDownUp },
       { labelKey: 'menu_institutional',  page: 'Institutional', icon: Shield },
+      { labelKey: 'menu_referralHub',    page: 'Referral',      icon: Gift },
     ],
   },
   {
