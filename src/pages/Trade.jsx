@@ -139,33 +139,35 @@ export default function Trade() {
       </div>
 
       {/* Trade tabs */}
-      <div className="flex px-4 gap-1 mb-3">
+      <div className="flex px-4 gap-1 mb-3 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {[
-          { val: 'Order', key: 'trade_order' },
-          { val: 'Orderbook', key: 'trade_orderbook' },
-          { val: 'Trades', key: 'trade_trades' },
-          { val: 'Positions', key: 'trade_positions' },
+          { val: 'Order', label: 'Order' },
+          { val: 'Orderbook', label: 'Book' },
+          { val: 'Trades', label: 'Trades' },
+          { val: 'Positions', label: 'Positions' },
+          { val: 'Calculator', label: 'Calc' },
         ].map(item => (
           <button
             key={item.val}
             onClick={() => setTab(item.val)}
-            className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-all ${
+            className={`flex-shrink-0 flex-1 min-w-[52px] py-2 rounded-xl text-xs font-semibold transition-all ${
               tab === item.val
                 ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
                 : 'text-slate-500 bg-[#151c2e] border border-transparent'
             }`}
           >
-            {t(item.key)}
+            {item.label}
           </button>
         ))}
       </div>
 
       {/* Tab content */}
       <div className="px-4 pb-6">
-        {tab === 'Order' && <OrderPanel asset={{ ...baseAsset, price, change }} />}
+        {tab === 'Order' && <OrderPanel asset={{ ...baseAsset, price, change, maxLeverage: baseAsset.maxLeverage }} />}
         {tab === 'Orderbook' && <OrderBook price={price} />}
         {tab === 'Trades' && <RecentTrades price={price} />}
         {tab === 'Positions' && <PositionsPanel />}
+        {tab === 'Calculator' && <PositionCalculator price={price} symbol={symbol} maxLeverage={baseAsset.maxLeverage || 20} />}
       </div>
     </div>
   );
