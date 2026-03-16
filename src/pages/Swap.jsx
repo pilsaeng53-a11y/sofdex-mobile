@@ -149,8 +149,6 @@ function AssetSelector({ selected, onChange, exclude }) {
 
 export default function Swap() {
   const { t } = useLang();
-  const { getLiveAsset } = useMarketData();
-  const sofLive = useSOFPrice();
 
   const [fromAsset, setFromAsset] = useState(SWAP_ASSETS.find(a => a.symbol === 'SOL'));
   const [toAsset, setToAsset] = useState(SWAP_ASSETS.find(a => a.symbol === 'USDT'));
@@ -158,15 +156,16 @@ export default function Swap() {
   const [slippage, setSlippage] = useState(0.5);
   const [swapped, setSwapped] = useState(false);
 
+  // **CHART PRICES ARE MASTER** — use for all swap calculations
+  const fromChartPrice = useChartPrice(fromAsset.symbol);
+  const toChartPrice = useChartPrice(toAsset.symbol);
+
   const getPrice = useCallback((asset) => {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
-    // SOF: use live DexScreener price
-    if (asset.symbol === 'SOF') return sofLive.price || 0.0001;
-    // All other assets: live Binance/CoinGecko price, fallback to MarketData static
-    const live = getLiveAsset?.(asset.symbol);
-    if (live?.price) return live.price;
-    return getMarketBySymbol(asset.symbol)?.price ?? 1;
-  }, [getLiveAsset, sofLive.price]);
+    // All assets: use chart price as master source
+    const chartPrice = asset.symbol === fromAsset.symbol ? fromChartPrice : toChartPrice;
+    return chartPrice.price ?? (getMarketBySymbol(asset.symbol)?.price ?? 1);
+  }, [fromAsset.symbol, toAsset.symbol, fromChartPrice, toChartPrice]);
 
   const fromPrice = getPrice(fromAsset);
   const toPrice = getPrice(toAsset);
