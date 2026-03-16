@@ -27,7 +27,7 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
   const noChartAvailable = tvSymbol === null;
 
   const buildWidget = useCallback(() => {
-    if (!window.TradingView || !containerRef.current) return;
+    if (noChartAvailable || !window.TradingView || !containerRef.current) return;
     // Always clear previous widget DOM before rebuilding
     if (widgetRef.current) {
       try { widgetRef.current.remove?.(); } catch { /* ignore */ }
