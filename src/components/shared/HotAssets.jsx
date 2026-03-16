@@ -9,6 +9,12 @@ import { formatPrice } from './MarketData';
 // Static metadata for hot assets — price/change come from live engine
 const HOT_ASSET_META = [
   {
+    symbol: 'SOF', name: 'SolFort Token',
+    reason: 'Native SOFDex platform token. Governance, fee discounts, staking rewards, and launchpad access utility.',
+    tag: 'Platform Token', tagColor: 'text-[#00d4aa] bg-[#00d4aa]/10 border-[#00d4aa]/20',
+    icon: 'SF', iconBg: 'bg-[#00d4aa]/20',
+  },
+  {
     symbol: 'SOL', name: 'Solana',
     reason: 'Unusual trading volume spike detected. Whale accumulation pattern forming with 3x normal inflow.',
     tag: 'Whale Activity', tagColor: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
@@ -31,12 +37,6 @@ const HOT_ASSET_META = [
     reason: 'AI narrative momentum continuing. GPU compute demand driving unusual volume surge.',
     tag: 'AI Narrative', tagColor: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
     icon: 'R', iconBg: 'bg-blue-500/20',
-  },
-  {
-    symbol: 'ETH', name: 'Ethereum',
-    reason: 'High volatility session. Liquidation cascade cleared large longs. Potential reversal zone forming.',
-    tag: 'Liq. Cascade', tagColor: 'text-red-400 bg-red-400/10 border-red-400/20',
-    icon: 'Ξ', iconBg: 'bg-red-500/20',
   },
 ];
 
