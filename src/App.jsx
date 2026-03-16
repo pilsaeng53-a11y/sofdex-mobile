@@ -11,6 +11,13 @@ import Institutional from './pages/Institutional';
 import AssetRegistryDetail from './pages/AssetRegistryDetail';
 import WalletPage from './pages/Wallet';
 import Swap from './pages/Swap';
+import TradingTools from './pages/TradingTools';
+import MarketHeatmap from './pages/MarketHeatmap';
+import AssetDiscovery from './pages/AssetDiscovery';
+import StrategyMarketplace from './pages/StrategyMarketplace';
+import ReputationScore from './pages/ReputationScore';
+import WhatsNew from './pages/WhatsNew';
+import AIWealthManager from './pages/AIWealthManager';
 import SolFort from './pages/SolFort';
 import GovernanceDetail from './pages/GovernanceDetail';
 import DocLegalDocuments from './pages/DocLegalDocuments';
@@ -81,6 +88,13 @@ const AuthenticatedApp = () => {
       <Route path="/Institutional" element={<LayoutWrapper currentPageName="Institutional"><Institutional /></LayoutWrapper>} />
       <Route path="/AssetRegistryDetail" element={<LayoutWrapper currentPageName="AssetRegistryDetail"><AssetRegistryDetail /></LayoutWrapper>} />
       <Route path="/Wallet" element={<LayoutWrapper currentPageName="Wallet"><WalletPage /></LayoutWrapper>} />
+      <Route path="/TradingTools" element={<LayoutWrapper currentPageName="TradingTools"><TradingTools /></LayoutWrapper>} />
+      <Route path="/MarketHeatmap" element={<LayoutWrapper currentPageName="MarketHeatmap"><MarketHeatmap /></LayoutWrapper>} />
+      <Route path="/AssetDiscovery" element={<LayoutWrapper currentPageName="AssetDiscovery"><AssetDiscovery /></LayoutWrapper>} />
+      <Route path="/StrategyMarketplace" element={<LayoutWrapper currentPageName="StrategyMarketplace"><StrategyMarketplace /></LayoutWrapper>} />
+      <Route path="/ReputationScore" element={<LayoutWrapper currentPageName="ReputationScore"><ReputationScore /></LayoutWrapper>} />
+      <Route path="/WhatsNew" element={<LayoutWrapper currentPageName="WhatsNew"><WhatsNew /></LayoutWrapper>} />
+      <Route path="/AIWealthManager" element={<LayoutWrapper currentPageName="AIWealthManager"><AIWealthManager /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
