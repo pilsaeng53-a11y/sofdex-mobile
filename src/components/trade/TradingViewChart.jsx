@@ -22,7 +22,9 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
   const containerId = useRef(`tv_${Math.random().toString(36).slice(2)}`).current;
 
   // Resolve the TradingView symbol — never fall back to market cap
-  const tvSymbol = getTVSymbol(symbol) ?? `BINANCE:${symbol}USDT`;
+  // For illiquid RWA with no public TV feed, we show a valuation note instead of wrong chart
+  const tvSymbol = getTVSymbol(symbol);
+  const noChartAvailable = tvSymbol === null;
 
   const buildWidget = useCallback(() => {
     if (!window.TradingView || !containerRef.current) return;
