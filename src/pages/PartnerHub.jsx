@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useUserType } from '../components/shared/UserTypeContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Users, TrendingUp, Award, Gift, Map, GitBranch, BarChart3, ExternalLink, Copy, Share2, CheckCircle2, Crown, Star, Zap, Wallet, ChevronRight } from 'lucide-react';
+import { Users, TrendingUp, Award, Gift, Map, GitBranch, BarChart3, ExternalLink, Copy, Share2, CheckCircle2, Crown, Star, Zap, Wallet, ChevronRight, Lock } from 'lucide-react';
 import SolFortLogo from '../components/shared/SolFortLogo';
 
 const AFFILIATES_URL = 'https://www.solfort.foundation/affiliates';
