@@ -36,6 +36,9 @@ import MyTeam from './pages/MyTeam';
 import SolFort from './pages/SolFort';
 import CopyTraderDetail from './pages/CopyTraderDetail';
 import BeginnerDashboard from './pages/BeginnerDashboard';
+import StrategyDetail from './pages/StrategyDetail';
+import StrategyCreator from './pages/StrategyCreator';
+import StrategyLeaderboard from './pages/StrategyLeaderboard';
 import GovernanceDetail from './pages/GovernanceDetail';
 import FundingRates from './pages/FundingRates';
 import OpenInterest from './pages/OpenInterest';
@@ -133,6 +136,9 @@ const AuthenticatedApp = () => {
       <Route path="/RegionalDistributor" element={<LayoutWrapper currentPageName="RegionalDistributor"><RegionalDistributor /></LayoutWrapper>} />
       <Route path="/MyTeam" element={<LayoutWrapper currentPageName="MyTeam"><MyTeam /></LayoutWrapper>} />
       <Route path="/AnalyticsIntelligence" element={<LayoutWrapper currentPageName="AnalyticsIntelligence"><AnalyticsIntelligence /></LayoutWrapper>} />
+      <Route path="/StrategyDetail" element={<LayoutWrapper currentPageName="StrategyDetail"><StrategyDetail /></LayoutWrapper>} />
+      <Route path="/StrategyCreator" element={<LayoutWrapper currentPageName="StrategyCreator"><StrategyCreator /></LayoutWrapper>} />
+      <Route path="/StrategyLeaderboard" element={<LayoutWrapper currentPageName="StrategyLeaderboard"><StrategyLeaderboard /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
