@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart, Building2, ShieldCheck } from 'lucide-react';
+import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
-import { useChartPrice } from '../components/shared/useChartPrice';
-import { formatPrice } from '../components/shared/MarketData';
+import CryptoHoldingsSection from '../components/portfolio/CryptoHoldingsSection';
+import RWAHoldingsSection from '../components/portfolio/RWAHoldingsSection';
 
 const holdings = [
   { symbol: 'SOL', name: 'Solana', amount: '24.82', value: '$4,648.54', change: 5.23, type: 'crypto' },
