@@ -3,6 +3,7 @@ import { Flame, TrendingUp, TrendingDown, Zap, Eye, ArrowRight } from 'lucide-re
 import { Link } from 'react-router-dom';
 import { useLang } from './LanguageContext';
 import { useLiveMarkets } from './useLiveMarket';
+import { useSOFPrice, formatSOFPrice } from './useSOFPrice';
 import { formatPrice } from './MarketData';
 
 // Static metadata for hot assets — price/change come from live engine
