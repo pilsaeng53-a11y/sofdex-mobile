@@ -77,11 +77,11 @@ export default function Trade() {
         {/* Stats bar */}
         <div className="flex gap-5 overflow-x-auto pb-0.5" style={{ scrollbarWidth: 'none' }}>
           {[
-            { label: t('trade_24hHigh'), value: `$${h24High}`, color: 'text-white' },
-            { label: t('trade_24hLow'), value: `$${h24Low}`, color: 'text-white' },
+            { label: t('trade_24hHigh'), value: `$${(price_display * 1.028).toFixed(2)}`, color: 'text-white' },
+            { label: t('trade_24hLow'), value: `$${(price_display * 0.972).toFixed(2)}`, color: 'text-white' },
             { label: t('trade_volume'), value: baseAsset.volume || '—', color: 'text-white' },
             { label: t('trade_funding'), value: `${fundingPositive ? '+' : ''}${fundingVal.toFixed(4)}%`, color: fundingPositive ? 'text-emerald-400' : 'text-red-400' },
-            { label: 'Open Int.', value: formatOI(oiRaw), color: 'text-white' },
+            { label: 'Open Int.', value: formatOI(price_display * ((symbol.charCodeAt(0) % 8) + 4) * 12500), color: 'text-white' },
             { label: 'L/S Ratio', value: `${longPct}/${shortPct}`, color: longPct >= 50 ? 'text-emerald-400' : 'text-red-400' },
           ].map(stat => (
             <div key={stat.label} className="flex-shrink-0">
