@@ -1,5 +1,14 @@
-import React, { useState } from 'react';
-import { Users, TrendingUp, TrendingDown, Star, Copy, Shield, Award } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, TrendingUp, TrendingDown, Star, Copy, Shield, Award, Clock } from 'lucide-react';
+
+const FEED_DATA = [
+  { trader: 'CryptoWhale_X', handle: '@whaleX', asset: 'SOL', dir: 'Long', entry: '$182.40', roi: '+14.2%', time: '2m ago', positive: true, avatar: 'CW' },
+  { trader: 'DefiQuant', handle: '@dfquant', asset: 'BTC', dir: 'Long', entry: '$91,200', roi: '+6.8%', time: '8m ago', positive: true, avatar: 'DQ' },
+  { trader: 'SolanaKing', handle: '@solking', asset: 'RNDR', dir: 'Long', entry: '$8.92', roi: '+18.4%', time: '14m ago', positive: true, avatar: 'SK' },
+  { trader: 'RWA_Pro', handle: '@rwapro', asset: 'RE-DXB', dir: 'Long', entry: '$122.50', roi: '+3.1%', time: '22m ago', positive: true, avatar: 'RP' },
+  { trader: 'LeverageLord', handle: '@levlord', asset: 'ETH', dir: 'Short', entry: '$3,890', roi: '-4.2%', time: '31m ago', positive: false, avatar: 'LL' },
+  { trader: 'CryptoWhale_X', handle: '@whaleX', asset: 'JUP', dir: 'Long', entry: '$1.18', roi: '+9.4%', time: '45m ago', positive: true, avatar: 'CW' },
+];
 
 const TRADERS = [
   {
