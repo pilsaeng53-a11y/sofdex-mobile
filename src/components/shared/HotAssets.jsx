@@ -89,3 +89,58 @@ export default function HotAssets({ compact = false }) {
     </div>
   );
 }
+
+function HotAssetItem({ asset, index, expanded, setExpanded }) {
+  // **CHART PRICE IS MASTER** for Hot Assets display
+  const { price, change24h, isLive } = useChartPrice(asset.symbol);
+  const displayPrice = price;
+  const displayChange = change24h ?? 0;
+
+  return (
+    <div>
+      <button
+        className="w-full px-4 py-3 flex items-center gap-3 hover:bg-[#1a2340]/50 transition-colors text-left"
+        onClick={() => setExpanded(expanded === index ? null : index)}
+      >
+        <div className={`w-9 h-9 rounded-xl ${asset.iconBg} flex items-center justify-center text-sm font-black text-white flex-shrink-0`}>
+          {asset.icon}
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-0.5">
+            <span className="text-sm font-bold text-white">{asset.symbol}</span>
+            <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-lg border ${asset.tagColor}`}>{asset.tag}</span>
+          </div>
+          <p className="text-xs text-slate-500 truncate">{asset.name}</p>
+        </div>
+
+        <div className="text-right flex-shrink-0">
+          <p className="text-sm font-bold text-white">
+            {displayPrice != null ? `$${asset.symbol === 'SOF' ? formatSOFPrice(displayPrice) : formatPriceUtil(displayPrice)}` : '—'}
+          </p>
+          <div className={`flex items-center justify-end gap-0.5 text-xs font-semibold ${displayChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {displayChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            {displayChange >= 0 ? '+' : ''}{displayChange.toFixed(2)}%
+          </div>
+        </div>
+      </button>
+
+      {expanded === index && (
+        <div className="px-4 pb-3 mx-4 mb-2 bg-[#0a0e1a] rounded-xl border border-[rgba(148,163,184,0.06)]">
+          <div className="flex items-start gap-2 py-2.5">
+            <Zap className="w-3.5 h-3.5 text-[#00d4aa] flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-slate-300 leading-relaxed">{asset.reason}</p>
+          </div>
+          <div className="flex items-center justify-between pt-2 border-t border-[rgba(148,163,184,0.06)]">
+            <span className="text-[10px] text-slate-500">
+              Live: <span className="text-[#00d4aa]">{isLive ? '●' : '○'}</span>
+              {displayPrice != null && <span className="text-slate-300 ml-1">${asset.symbol === 'SOF' ? formatSOFPrice(displayPrice) : formatPriceUtil(displayPrice)}</span>}
+            </span>
+            <Link to={`/Trade?symbol=${asset.symbol}`} className="flex items-center gap-1 text-[10px] font-semibold text-[#00d4aa] hover:text-[#06b6d4]">
+              <Eye className="w-3 h-3" /> Trade {asset.symbol}
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
