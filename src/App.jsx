@@ -104,6 +104,8 @@ const AuthenticatedApp = () => {
       <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/BeginnerDashboard" element={<LayoutWrapper currentPageName="BeginnerDashboard"><BeginnerDashboard /></LayoutWrapper>} />
       <Route path="/GovernanceDetail" element={<LayoutWrapper currentPageName="GovernanceDetail"><GovernanceDetail /></LayoutWrapper>} />
+      <Route path="/FundingRates" element={<LayoutWrapper currentPageName="FundingRates"><FundingRates /></LayoutWrapper>} />
+      <Route path="/OpenInterest" element={<LayoutWrapper currentPageName="OpenInterest"><OpenInterest /></LayoutWrapper>} />
       <Route path="/LaunchpadDetail" element={<LayoutWrapper currentPageName="LaunchpadDetail"><LaunchpadDetail /></LayoutWrapper>} />
       <Route path="/Announcements" element={<LayoutWrapper currentPageName="Announcements"><Announcements /></LayoutWrapper>} />
       <Route path="/Institutional" element={<LayoutWrapper currentPageName="Institutional"><Institutional /></LayoutWrapper>} />
