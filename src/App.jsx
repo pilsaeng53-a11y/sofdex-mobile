@@ -37,6 +37,8 @@ import SolFort from './pages/SolFort';
 import CopyTraderDetail from './pages/CopyTraderDetail';
 import BeginnerDashboard from './pages/BeginnerDashboard';
 import GovernanceDetail from './pages/GovernanceDetail';
+import FundingRates from './pages/FundingRates';
+import OpenInterest from './pages/OpenInterest';
 import DocLegalDocuments from './pages/DocLegalDocuments';
 import DocTokenStructure from './pages/DocTokenStructure';
 import DocRiskDisclosure from './pages/DocRiskDisclosure';
