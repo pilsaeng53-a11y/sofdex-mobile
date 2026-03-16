@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Share2, TrendingUp, TrendingDown, Activity, BarChart3, Clock } from 'lucide-react';
 import { getMarketBySymbol, formatPrice, formatChange } from '../components/shared/MarketData';
-import { useMarketData } from '../components/shared/MarketDataProvider';
-import { getTVSymbol } from '../components/shared/symbolMap';
+import { useChartPrice } from '../components/shared/useChartPrice';
 import TradingViewChart from '../components/trade/TradingViewChart.jsx';
 
 export default function MarketDetail() {
@@ -12,10 +11,11 @@ export default function MarketDetail() {
   const navigate = useNavigate();
   const asset = getMarketBySymbol(symbol);
   const [orderType, setOrderType] = useState('market');
-  const { getLiveAsset } = useMarketData();
-  const live = getLiveAsset(symbol);
-  const displayPrice  = live.available ? live.price  : asset?.price;
-  const displayChange = live.available ? live.change : asset?.change;
+  
+  // **CHART PRICE IS MASTER**
+  const { price, change24h } = useChartPrice(symbol);
+  const displayPrice  = price ?? asset?.price;
+  const displayChange = change24h ?? asset?.change;
   const isPositive = (displayChange ?? 0) >= 0;
 
   if (!asset) {
