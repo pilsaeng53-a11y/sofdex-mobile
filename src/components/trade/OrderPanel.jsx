@@ -101,11 +101,11 @@ export default function OrderPanel({ asset }) {
         ))}
       </div>
 
-      {/* Limit price input */}
-      {orderType !== 'market' && (
+      {/* Limit / Stop price input */}
+      {(orderType === 'limit' || orderType === 'stop') && (
         <div className="mb-3">
           <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">
-            {orderType === 'limit' ? t('order_limitPrice') : t('order_stopPrice')}
+            {orderType === 'limit' ? 'Limit Price' : 'Stop Price'}
           </label>
           <input
             type="number"
@@ -114,6 +114,37 @@ export default function OrderPanel({ asset }) {
             onChange={(e) => setLimitPrice(e.target.value)}
             className="w-full h-11 px-4 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30"
           />
+        </div>
+      )}
+
+      {/* Trailing stop % */}
+      {orderType === 'trailing' && (
+        <div className="mb-3">
+          <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Trail Distance (%)</label>
+          <input
+            type="number"
+            placeholder="1.5"
+            value={trailPct}
+            onChange={(e) => setTrailPct(e.target.value)}
+            className="w-full h-11 px-4 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30"
+          />
+          <p className="text-[10px] text-slate-600 mt-1">Order triggers {trailPct}% from peak price</p>
+        </div>
+      )}
+
+      {/* Iceberg visible size */}
+      {orderType === 'iceberg' && (
+        <div className="mb-3 grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Limit Price</label>
+            <input type="number" placeholder={basePrice?.toFixed(2)} value={limitPrice} onChange={e => setLimitPrice(e.target.value)}
+              className="w-full h-11 px-3 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30" />
+          </div>
+          <div>
+            <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Visible ({icebergPct}%)</label>
+            <input type="number" placeholder="20" value={icebergPct} onChange={e => setIcebergPct(e.target.value)}
+              className="w-full h-11 px-3 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30" />
+          </div>
         </div>
       )}
 
