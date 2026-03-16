@@ -237,6 +237,11 @@ export default function Portfolio() {
           {rwaHoldings.map((h, i) => {
             const live = getLiveAsset(h.symbol);
             const liveChange = live.available ? live.change : h.change;
+            const livePrice  = live.available ? live.price  : null;
+            // Recalculate holding value from live chart price if available
+            const liveValue  = livePrice && h.tokens && !isNaN(parseFloat(h.tokens))
+              ? `$${formatPrice(parseFloat(h.tokens.replace(/,/g, '')) * livePrice)}`
+              : h.value;
             return (
             <div key={i} className="p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -252,7 +257,7 @@ export default function Portfolio() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs font-semibold text-white">{showBalance ? h.value : '••••'}</p>
+                <p className="text-xs font-semibold text-white">{showBalance ? liveValue : '••••'}</p>
                 <p className={`text-[11px] font-medium ${liveChange > 0 ? 'text-emerald-400' : liveChange < 0 ? 'text-red-400' : 'text-slate-500'}`}>
                   {liveChange > 0 ? '+' : ''}{liveChange.toFixed ? liveChange.toFixed(2) : liveChange}%
                 </p>
