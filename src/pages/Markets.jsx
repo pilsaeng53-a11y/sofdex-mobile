@@ -39,7 +39,7 @@ function MarketRow({ asset, watchlist = [], onToggleWatch }) {
         </div>
 
         <div className="w-14 flex-shrink-0">
-          <MiniChart positive={positive} />
+          <MiniChart data={sparkline} positive={positive} />
         </div>
 
         <div className="text-right flex-shrink-0">
