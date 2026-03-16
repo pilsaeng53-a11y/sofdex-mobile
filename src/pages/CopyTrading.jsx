@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Users, Copy, TrendingUp, Shield, Star, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, Copy, TrendingUp, Shield, Star, CheckCircle2, ExternalLink } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 const TRADERS = [
@@ -152,9 +153,12 @@ export default function CopyTrading() {
               </div>
             </div>
 
-            {/* Description */}
-            <div className="px-3.5 pb-3.5">
-              <p className="text-[10px] text-slate-500 leading-snug">{trader.desc}</p>
+            {/* Description + detail link */}
+            <div className="px-3.5 pb-3.5 flex items-center justify-between gap-2">
+              <p className="text-[10px] text-slate-500 leading-snug flex-1">{trader.desc}</p>
+              <Link to={`/CopyTraderDetail?id=${trader.rank}`} className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#1a2340] text-slate-400 border border-[rgba(148,163,184,0.08)] hover:text-[#00d4aa] hover:border-[#00d4aa]/20 transition-all text-[10px] font-semibold">
+                <ExternalLink className="w-3 h-3" /> Profile
+              </Link>
             </div>
           </div>
         ))}

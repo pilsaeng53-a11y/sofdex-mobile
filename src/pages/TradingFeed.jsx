@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TrendingUp, TrendingDown, Heart, UserPlus, Copy, MessageSquare, Filter, Search } from 'lucide-react';
+import CommentSection from '../components/community/CommentSection';
 
 const MOCK_POSTS = [
   { id: 1, trader_name: 'CryptoWhale99', avatar: 'CW', color: '#00d4aa', asset: 'BTC/USDT', direction: 'long', entry_price: 61200, exit_price: 67800, roi: 10.78, likes: 142, comments: 23, followers_copied: 18, time: '2h ago', note: 'Held through the dip, textbook breakout.' },
@@ -139,10 +140,7 @@ export default function TradingFeed() {
                   <Heart className="w-4 h-4" fill={likedIds.has(post.id) ? 'currentColor' : 'none'} />
                   <span>{post.likes}</span>
                 </button>
-                <button className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-[#00d4aa] transition-colors">
-                  <MessageSquare className="w-4 h-4" />
-                  <span>{post.comments}</span>
-                </button>
+                <CommentSection postId={post.id} />
               </div>
               <Link to={`/TraderProfile?id=${post.id}`}>
                 <button className="flex items-center gap-1.5 px-3 py-1.5 bg-[#00d4aa]/10 border border-[#00d4aa]/20 rounded-lg text-xs font-semibold text-[#00d4aa] hover:bg-[#00d4aa]/20 transition-all">
