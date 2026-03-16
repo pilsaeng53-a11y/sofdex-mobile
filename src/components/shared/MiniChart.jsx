@@ -25,9 +25,10 @@ export default function MiniChart({ data, positive = true, height = 24, width = 
       .join(' ');
   }, [data, positive, height, width]);
 
-  const isPos  = data && data.length >= 2
-    ? data[data.length - 1] >= data[0]
-    : positive;
+  // No real data — render nothing
+  if (!path) return <svg width={width} height={height} className={className} />;
+
+  const isPos  = data[data.length - 1] >= data[0];
   const color  = isPos ? '#22c55e' : '#ef4444';
   const gradId = `mg-${isPos ? 'g' : 'r'}-${width}`;
 
