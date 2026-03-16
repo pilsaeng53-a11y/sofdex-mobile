@@ -5,6 +5,7 @@ import { ArrowDownUp, ChevronDown, Info, Zap, Clock, TrendingUp, X, Search } fro
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { useLang } from '../components/shared/LanguageContext';
 import { useSOFPrice } from '../components/shared/useSOFPrice';
+import { getMarketBySymbol } from '../components/shared/MarketData';
 
 const SWAP_ASSETS = [
   // Crypto Spot
