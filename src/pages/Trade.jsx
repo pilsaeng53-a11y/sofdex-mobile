@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { ALL_MARKETS, CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
-import TradingViewChart from '../components/trade/TradingViewChart';
+import TradingViewChart from '../components/trade/TradingViewChart.jsx';
 import AILeverageCard from '../components/trading/AILeverageCard';
 import AIMarketPanel from '../components/shared/AIMarketPanel';
 import OrderPanel from '../components/trade/OrderPanel';
