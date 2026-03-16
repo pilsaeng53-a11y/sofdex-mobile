@@ -113,28 +113,54 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
     document.head.appendChild(script);
   }, [tvSymbol, interval, buildWidget]);
 
-  // Illiquid RWA — no public market price feed available
+  // No public TradingView feed — SOF (DEX-only) or illiquid RWA
   if (noChartAvailable) {
+    const isSOF = symbol === 'SOF';
+    const RAYDIUM_URL = `https://raydium.io/swap/?inputMint=4qNEbbP5b3sEAxPxnzGzVtjvEjP2e4raGWJnyRm3z9A3&outputMint=Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB`;
     return (
       <div className="glass-card rounded-2xl overflow-hidden" style={{ height: height + 52 }}>
         <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-[rgba(148,163,184,0.06)]">
           <span className="text-[11px] text-slate-500 font-semibold">Price Chart · {symbol}</span>
           <div className="ml-auto flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            <span className="text-[10px] text-slate-500">Valuation Model</span>
+            <span className="text-[10px] text-slate-500">{isSOF ? 'DEX Feed' : 'Valuation Model'}</span>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-3 text-center px-6" style={{ height }}>
-          <div className="w-12 h-12 rounded-2xl bg-[#8b5cf6]/10 flex items-center justify-center">
-            <span className="text-2xl">🏛️</span>
-          </div>
-          <div>
-            <p className="text-sm font-bold text-white mb-1">Illiquid RWA Asset</p>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              {symbol} does not have a real-time public market price feed.<br />
-              Valuation is based on periodic appraisals and benchmark indices.
-            </p>
-          </div>
+          {isSOF ? (
+            <>
+              <div className="w-12 h-12 rounded-2xl bg-[#9945FF]/10 flex items-center justify-center">
+                <span className="text-2xl">⚡</span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white mb-1">SOF Live Chart</p>
+                <p className="text-xs text-slate-500 leading-relaxed mb-3">
+                  SOF trades on Raydium DEX.<br />View real-time price chart on-chain.
+                </p>
+                <a
+                  href={RAYDIUM_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#9945FF]/15 border border-[#9945FF]/30 text-[#9945FF] text-xs font-bold hover:bg-[#9945FF]/25 transition-all"
+                >
+                  View on Raydium →
+                </a>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="w-12 h-12 rounded-2xl bg-[#8b5cf6]/10 flex items-center justify-center">
+                <span className="text-2xl">🏛️</span>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-white mb-1">Illiquid RWA Asset</p>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  {symbol} does not have a real-time public market price feed.<br />
+                  Valuation is based on periodic appraisals and benchmark indices.
+                </p>
+              </div>
+            </>
+          )}
         </div>
       </div>
     );
