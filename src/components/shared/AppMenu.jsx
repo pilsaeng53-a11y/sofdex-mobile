@@ -51,6 +51,7 @@ const NAV_SECTIONS = [
     items: [
       { labelKey: 'menu_news',        page: 'News',      icon: Newspaper },
       { labelKey: 'menu_analytics',   page: 'Analytics', icon: PieChart },
+      { labelKey: 'menu_aiIntelHub',  page: 'AnalyticsIntelligence', icon: Brain },
       { labelKey: 'menu_whatsNew',    page: 'WhatsNew',  icon: Sparkles },
       { labelKey: 'menu_alerts',      page: 'Alerts',    icon: Bell },
     ],
