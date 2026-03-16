@@ -36,9 +36,9 @@ function LayoutInner({ children, currentPageName }) {
                     <Menu className="w-4 h-4 text-slate-400" />
                   </button>
                   <Link to={createPageUrl('Home')}>
-                    <div className="flex items-center gap-1.5">
-                      <SolFortLogo size={24} className="rounded-md" />
-                      <span className="text-sm font-bold text-white tracking-tight">SOF<span className="gradient-text">Dex</span></span>
+                    <div className="flex items-center gap-2">
+                      <SolFortLogo size={26} variant="symbol" className="rounded-full" />
+                      <img src={LOGO_FONT_URL} alt="SOLFORT" className="h-5 object-contain" />
                     </div>
                   </Link>
                 </div>
