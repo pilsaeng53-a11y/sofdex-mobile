@@ -25,6 +25,13 @@ import Traders from './pages/Traders';
 import MyPosts from './pages/MyPosts';
 import Rewards from './pages/Rewards';
 import UniversalPortfolio from './pages/UniversalPortfolio';
+import PartnerHub from './pages/PartnerHub';
+import DownlineTree from './pages/DownlineTree';
+import CommissionDist from './pages/CommissionDist';
+import RankProgress from './pages/RankProgress';
+import TeamLeaderboard from './pages/TeamLeaderboard';
+import RegionalDistributor from './pages/RegionalDistributor';
+import MyTeam from './pages/MyTeam';
 import SolFort from './pages/SolFort';
 import GovernanceDetail from './pages/GovernanceDetail';
 import DocLegalDocuments from './pages/DocLegalDocuments';
@@ -109,6 +116,13 @@ const AuthenticatedApp = () => {
       <Route path="/MyPosts" element={<LayoutWrapper currentPageName="MyPosts"><MyPosts /></LayoutWrapper>} />
       <Route path="/Rewards" element={<LayoutWrapper currentPageName="Rewards"><Rewards /></LayoutWrapper>} />
       <Route path="/UniversalPortfolio" element={<LayoutWrapper currentPageName="UniversalPortfolio"><UniversalPortfolio /></LayoutWrapper>} />
+      <Route path="/PartnerHub" element={<LayoutWrapper currentPageName="PartnerHub"><PartnerHub /></LayoutWrapper>} />
+      <Route path="/DownlineTree" element={<LayoutWrapper currentPageName="DownlineTree"><DownlineTree /></LayoutWrapper>} />
+      <Route path="/CommissionDist" element={<LayoutWrapper currentPageName="CommissionDist"><CommissionDist /></LayoutWrapper>} />
+      <Route path="/RankProgress" element={<LayoutWrapper currentPageName="RankProgress"><RankProgress /></LayoutWrapper>} />
+      <Route path="/TeamLeaderboard" element={<LayoutWrapper currentPageName="TeamLeaderboard"><TeamLeaderboard /></LayoutWrapper>} />
+      <Route path="/RegionalDistributor" element={<LayoutWrapper currentPageName="RegionalDistributor"><RegionalDistributor /></LayoutWrapper>} />
+      <Route path="/MyTeam" element={<LayoutWrapper currentPageName="MyTeam"><MyTeam /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

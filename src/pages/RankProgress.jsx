@@ -14,7 +14,8 @@ const CURRENT_METRICS = {
   activeUsers: 28,
 };
 
-function Metric({ label, current, target, color, icon: Icon }) {
+function Metric({ label, current, target, color, icon: MetricIcon }) {
+  const Icon = MetricIcon;
   const pct = Math.min(100, Math.round((current / target) * 100));
   return (
     <div className="bg-[#0a0e1a] rounded-xl p-3 space-y-2">
