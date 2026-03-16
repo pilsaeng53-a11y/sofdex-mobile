@@ -8,6 +8,7 @@ import TickerStrip from './components/shared/TickerStrip';
 import AppMenu from './components/shared/AppMenu';
 import { MarketDataProvider } from './components/shared/MarketDataProvider';
 import { LanguageProvider } from './components/shared/LanguageContext';
+import SolFortLogo from './components/shared/SolFortLogo';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
@@ -35,9 +36,7 @@ function LayoutInner({ children, currentPageName }) {
                   </button>
                   <Link to={createPageUrl('Home')}>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center">
-                        <span className="text-[9px] font-black text-white">SF</span>
-                      </div>
+                      <SolFortLogo size={24} className="rounded-md" />
                       <span className="text-sm font-bold text-white tracking-tight">SOF<span className="gradient-text">Dex</span></span>
                     </div>
                   </Link>

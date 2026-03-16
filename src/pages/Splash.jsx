@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LOGO_URL } from '../components/shared/SolFortLogo';
 
 export default function Splash() {
   const navigate = useNavigate();
@@ -42,8 +43,8 @@ export default function Splash() {
             className="mb-8"
           >
             <div className="relative">
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center shadow-2xl shadow-[#00d4aa]/20">
-                <span className="text-3xl font-black text-white tracking-tight">SF</span>
+              <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-2xl shadow-[#00d4aa]/20 flex items-center justify-center bg-[#0d1520]">
+                <img src={LOGO_URL} alt="SolFort" className="w-20 h-20 object-contain" />
               </div>
               <div className="absolute -inset-2 rounded-3xl border border-[#00d4aa]/20 animate-pulse" />
             </div>
