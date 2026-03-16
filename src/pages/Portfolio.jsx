@@ -234,7 +234,10 @@ export default function Portfolio() {
           <h3 className="text-sm font-bold text-white">{t('portfolio_rwaHoldings')}</h3>
         </div>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-          {rwaHoldings.map((h, i) => (
+          {rwaHoldings.map((h, i) => {
+            const live = getLiveAsset(h.symbol);
+            const liveChange = live.available ? live.change : h.change;
+            return (
             <div key={i} className="p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-[#1a1040] flex items-center justify-center text-[9px] font-bold text-[#8b5cf6]">
@@ -250,12 +253,13 @@ export default function Portfolio() {
               </div>
               <div className="text-right">
                 <p className="text-xs font-semibold text-white">{showBalance ? h.value : '••••'}</p>
-                <p className={`text-[11px] font-medium ${h.change > 0 ? 'text-emerald-400' : h.change < 0 ? 'text-red-400' : 'text-slate-500'}`}>
-                  {h.change > 0 ? '+' : ''}{h.change}%
+                <p className={`text-[11px] font-medium ${liveChange > 0 ? 'text-emerald-400' : liveChange < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                  {liveChange > 0 ? '+' : ''}{liveChange.toFixed ? liveChange.toFixed(2) : liveChange}%
                 </p>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       )}
