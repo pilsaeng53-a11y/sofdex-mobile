@@ -129,8 +129,8 @@ export default function HotAssets({ compact = false }) {
                   </div>
                   <div className="flex items-center justify-between pt-2 border-t border-[rgba(148,163,184,0.06)]">
                     <span className="text-[10px] text-slate-500">
-                      Live: <span className="text-[#00d4aa]">{live.available ? '●' : '○'}</span>
-                      {price != null && <span className="text-slate-300 ml-1">${formatPrice(price)}</span>}
+                      Live: <span className="text-[#00d4aa]">{asset.symbol === 'SOF' ? (sofLive.error ? '○' : '●') : (live.available ? '●' : '○')}</span>
+                      {price != null && <span className="text-slate-300 ml-1">${asset.symbol === 'SOF' ? formatSOFPrice(price) : formatPrice(price)}</span>}
                     </span>
                     <Link to={`/Trade?symbol=${asset.symbol}`} className="flex items-center gap-1 text-[10px] font-semibold text-[#00d4aa] hover:text-[#06b6d4]">
                       <Eye className="w-3 h-3" /> Trade {asset.symbol}
