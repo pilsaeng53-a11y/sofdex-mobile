@@ -14,11 +14,13 @@ export default function OrderPanel({ asset }) {
   const [amount, setAmount] = useState('');
   const [limitPrice, setLimitPrice] = useState('');
   const [leverage, setLeverage] = useState(10);
+  const [collateral, setCollateral] = useState(getCollateralAsset('USDT'));
 
   const basePrice = asset?.price || 0;
   const parsedAmount = parseFloat(amount) || 0;
   const entryPrice = orderType === 'limit' && limitPrice ? parseFloat(limitPrice) : basePrice;
-  const positionSize = parsedAmount * leverage;
+  const { effectiveUSD: effectiveMargin } = getCollateralValue(collateral, parsedAmount || collateral.balance * 0.5);
+  const positionSize = effectiveMargin * leverage;
   const fee = positionSize * 0.0005;
   const liqDistance = 1 / leverage;
   const liqPrice = side === 'buy'
