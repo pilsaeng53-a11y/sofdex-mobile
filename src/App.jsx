@@ -31,6 +31,7 @@ import CommissionDist from './pages/CommissionDist';
 import RankProgress from './pages/RankProgress';
 import TeamLeaderboard from './pages/TeamLeaderboard';
 import RegionalDistributor from './pages/RegionalDistributor';
+import AnalyticsIntelligence from './pages/AnalyticsIntelligence';
 import MyTeam from './pages/MyTeam';
 import SolFort from './pages/SolFort';
 import CopyTraderDetail from './pages/CopyTraderDetail';
