@@ -193,6 +193,15 @@ export const translations = {
     menu_marketHeatmap: 'Market Heatmap',
     menu_reputationScore: 'Reputation Score',
     menu_whatsNew: "What's New",
+    menu_community: 'Community',
+    menu_tradingFeed: 'Trading Feed',
+    menu_discussions: 'Discussions',
+    menu_traders: 'Traders',
+    menu_myPosts: 'My Posts',
+    menu_copyTradeSection: 'Copy Trading',
+    menu_rewards: 'Rewards',
+    menu_universalPortfolio: 'Portfolio Hub',
+    menu_uniPortfolio: 'Universal Portfolio',
   },
 
   ko: {
