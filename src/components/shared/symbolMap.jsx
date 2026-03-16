@@ -1,9 +1,34 @@
 // ── SOFDex display symbol → TradingView ticker (for chart) ───────────────────
 export const SYMBOL_MAP = {
-  // Crypto
+  // Crypto — Large cap
   'BTC':        'BINANCE:BTCUSDT',
   'ETH':        'BINANCE:ETHUSDT',
   'SOL':        'BINANCE:SOLUSDT',
+  // Medium cap
+  'BNB':        'BINANCE:BNBUSDT',
+  'XRP':        'BINANCE:XRPUSDT',
+  'ADA':        'BINANCE:ADAUSDT',
+  'DOGE':       'BINANCE:DOGEUSDT',
+  'AVAX':       'BINANCE:AVAXUSDT',
+  'DOT':        'BINANCE:DOTUSDT',
+  'LINK':       'BINANCE:LINKUSDT',
+  'MATIC':      'BINANCE:MATICUSDT',
+  'LTC':        'BINANCE:LTCUSDT',
+  'ATOM':       'BINANCE:ATOMUSDT',
+  'UNI':        'BINANCE:UNIUSDT',
+  'APT':        'BINANCE:APTUSDT',
+  // Smaller assets
+  'OP':         'BINANCE:OPUSDT',
+  'ARB':        'BINANCE:ARBUSDT',
+  'SUI':        'BINANCE:SUIUSDT',
+  'SEI':        'BINANCE:SEIUSDT',
+  'INJ':        'BINANCE:INJUSDT',
+  'PEPE':       'BINANCE:PEPEUSDT',
+  'TIA':        'BINANCE:TIAUSDT',
+  'NEAR':       'BINANCE:NEARUSDT',
+  'FTM':        'BINANCE:FTMUSDT',
+  'AAVE':       'BINANCE:AAVEUSDT',
+  // Solana ecosystem
   'JUP':        'BINANCE:JUPUSDT',
   'RAY':        'BINANCE:RAYUSDT',
   'RNDR':       'BINANCE:RENDERUSDT',
