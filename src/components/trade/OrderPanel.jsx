@@ -178,6 +178,10 @@ export default function OrderPanel({ asset }) {
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
+          <span className="text-slate-500">Collateral</span>
+          <span className="text-slate-300 font-medium">{collateral.symbol} · ${effectiveMargin.toFixed(0)} effective</span>
+        </div>
+        <div className="flex justify-between text-[11px]">
           <span className="text-slate-500">{t('order_positionSize')}</span>
           <span className="text-slate-300 font-medium">
             {parsedAmount > 0 ? `$${positionSize.toFixed(2)}` : '—'}
