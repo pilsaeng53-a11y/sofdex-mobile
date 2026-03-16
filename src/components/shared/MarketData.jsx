@@ -34,6 +34,8 @@ export const CRYPTO_MARKETS = [
   { symbol: "RNDR", name: "Render",        price: 8.92,     change: 12.34, volume: "412M",  mcap: "4.6B",  category: "crypto", leverage: "25x",  maxLeverage: 25  },
   { symbol: "BONK", name: "Bonk",          price: 0.0000234,change: -4.12, volume: "156M",  mcap: "1.5B",  category: "crypto", leverage: "10x",  maxLeverage: 10  },
   { symbol: "HNT",  name: "Helium",        price: 8.45,     change:  3.67, volume: "89M",   mcap: "1.4B",  category: "crypto", leverage: "15x",  maxLeverage: 15  },
+  // SolFort native token — live price from useSOFPrice
+  { symbol: "SOF",  name: "SolFort Token", price: 0.0001,   change:  0.00, volume: "—",     mcap: "—",     category: "crypto", leverage: "20x",  maxLeverage: 20  },
 ];
 
 export const RWA_MARKETS = [
