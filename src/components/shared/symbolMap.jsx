@@ -34,8 +34,9 @@ export const SYMBOL_MAP = {
   'RNDR':       'BINANCE:RENDERUSDT',
   'BONK':       'BINANCE:BONKUSDT',
   'HNT':        'BINANCE:HNTUSDT',
-  // SOF token — Raydium pool pair (closest public TV representation)
-  'SOF':        'RAYDIUM:SOFUSDT',
+  // SOF token — DEX-only on Raydium, no TradingView-supported exchange feed
+  // Returning null shows the "View on Raydium" valuation notice in TradingViewChart
+  'SOF':        null,
   // Tokenized equities (legacy)
   'AAPL-T':     'NASDAQ:AAPL',
   'MSFT-T':     'NASDAQ:MSFT',
