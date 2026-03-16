@@ -80,6 +80,8 @@ const NAV_SECTIONS = [
     items: [
       { labelKey: 'menu_liquidationFeed', page: 'LiquidationFeed', icon: Flame },
       { labelKey: 'menu_whaleTracker',    page: 'WhaleTracker',    icon: Eye },
+      { label: 'Funding Rates',           page: 'FundingRates',    icon: Zap },
+      { label: 'Open Interest',           page: 'OpenInterest',    icon: BarChart2 },
       { labelKey: 'menu_announcements',   page: 'Announcements',   icon: Bell },
     ],
   },
