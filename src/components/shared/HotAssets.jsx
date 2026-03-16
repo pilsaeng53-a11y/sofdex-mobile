@@ -115,9 +115,9 @@ function HotAssetItem({ asset, index, expanded, setExpanded }) {
         </div>
 
         <div className="text-right flex-shrink-0">
-          <p className="text-sm font-bold text-white">
-            {displayPrice != null ? `$${asset.symbol === 'SOF' ? formatSOFPrice(displayPrice) : formatPriceUtil(displayPrice)}` : '—'}
-          </p>
+         <p className="text-sm font-bold text-white">
+           {displayPrice != null ? `$${asset.symbol === 'SOF' ? formatSOFPrice(displayPrice) : formatPrice(displayPrice)}` : '—'}
+         </p>
           <div className={`flex items-center justify-end gap-0.5 text-xs font-semibold ${displayChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {displayChange >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
             {displayChange >= 0 ? '+' : ''}{displayChange.toFixed(2)}%
