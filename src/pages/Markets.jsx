@@ -5,18 +5,18 @@ import { BarChart3, Search, TrendingUp, TrendingDown, Star, StarOff } from 'luci
 import { useLang } from '../components/shared/LanguageContext';
 import { CRYPTO_MARKETS, RWA_MARKETS, TRADFI_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
 import { useMarketData } from '../components/shared/MarketDataProvider';
+import { useChartPrice } from '../components/shared/useChartPrice';
 import MiniChart from '../components/shared/MiniChart';
 
 const TAB_KEYS = ['markets_all','markets_crypto','markets_rwa','markets_tradfi','markets_gainers','markets_losers','markets_volume','markets_watchlist'];
 const TAB_VALUES = ['All','Crypto','RWA','TradFi','Gainers','Losers','Volume','Watchlist'];
 
 function MarketRow({ asset, watchlist = [], onToggleWatch }) {
-  const { getLiveAsset } = useMarketData();
-  const live = getLiveAsset(asset.symbol);
-  const price     = live.available ? live.price    : asset.price;
-  const change    = live.available ? live.change   : asset.change;
-  const sparkline = live.sparkline ?? null;
-  const positive  = change >= 0;
+  // **CHART PRICE IS MASTER** for Markets list
+  const { price, change24h } = useChartPrice(asset.symbol);
+  const displayPrice = price ?? asset.price;
+  const displayChange = change24h ?? asset.change;
+  const positive  = displayChange >= 0;
   const isWatched = watchlist.includes(asset.symbol);
 
   return (
