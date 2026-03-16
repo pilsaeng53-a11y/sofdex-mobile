@@ -68,18 +68,35 @@ export default function OrderPanel({ asset }) {
       </div>
 
       {/* Order type */}
-      <div className="flex gap-1 mb-4">
-        {[['market','order_market'],['limit','order_limit'],['stop','order_stop']].map(([type, key]) => (
+      <div className="flex gap-1 mb-2 flex-wrap">
+        {[['market','Market'],['limit','Limit'],['stop','Stop'],['trailing','Trailing'],['iceberg','Iceberg']].map(([type, label]) => (
           <button
             key={type}
             onClick={() => setOrderType(type)}
-            className={`px-3 py-1.5 rounded-lg text-[11px] font-medium capitalize transition-all ${
+            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
               orderType === type
                 ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
                 : 'text-slate-500 border border-transparent hover:text-slate-300'
             }`}
           >
-            {t(key)}
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* Advanced flags */}
+      <div className="flex gap-1.5 mb-3">
+        {[['post-only','Post Only'],['reduce-only','Reduce Only']].map(([val, label]) => (
+          <button
+            key={val}
+            onClick={() => setAdvancedType(advancedType === val ? '' : val)}
+            className={`px-2.5 py-1 rounded-lg text-[10px] font-medium transition-all border ${
+              advancedType === val
+                ? 'bg-purple-500/10 text-purple-400 border-purple-400/25'
+                : 'text-slate-600 border-[rgba(148,163,184,0.06)] hover:text-slate-400'
+            }`}
+          >
+            {label}
           </button>
         ))}
       </div>
