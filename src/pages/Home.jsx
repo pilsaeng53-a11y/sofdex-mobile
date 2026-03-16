@@ -1,5 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useLang } from '../components/shared/LanguageContext';
+import { useUserType } from '../components/shared/UserTypeContext';
+import HotAssets from '../components/shared/HotAssets';
 import MarketOverview from '../components/home/MarketOverview';
 import FeaturedBanner from '../components/home/FeaturedBanner';
 import TrendingAssets from '../components/home/TrendingAssets';
@@ -20,17 +23,25 @@ import AdvancedFeaturesPreview from '../components/home/AdvancedFeaturesPreview'
 
 export default function Home() {
   const { t } = useLang();
+  const { userType } = useUserType();
+
   return (
     <div className="min-h-screen">
 
       {/* Welcome section */}
-      <div className="px-4 pt-3 pb-2">
+      <div className="px-4 pt-3 pb-2 flex items-center justify-between">
         <p className="text-slate-500 text-xs font-medium">{t('home_subtitle')}</p>
+        {userType === 'beginner' && (
+          <Link to="/BeginnerDashboard" className="text-[10px] font-bold text-[#00d4aa] bg-[#00d4aa]/10 border border-[#00d4aa]/20 px-2 py-1 rounded-lg hover:bg-[#00d4aa]/20 transition-all">
+            ✨ Beginner Guide
+          </Link>
+        )}
       </div>
 
       <MarketPulseBar />
       <MarketOverview />
       <QuickAccess />
+      <div className="px-4 pb-4"><HotAssets compact /></div>
       <AISentimentCard />
       <GlobalIndicators />
       <AIOpportunityCard />
