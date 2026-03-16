@@ -74,7 +74,7 @@ export default function Trade() {
           </button>
 
           <div className="text-right">
-            <p className="text-lg font-bold text-white font-mono">${formatPrice(price)}</p>
+            <p className="text-lg font-bold text-white font-mono">${symbol === 'SOF' ? formatSOFPrice(price) : formatPrice(price)}</p>
             <div className={`flex items-center justify-end gap-1 text-xs font-semibold ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
               {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
               {formatChange(change)}
