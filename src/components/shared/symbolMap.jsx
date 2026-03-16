@@ -9,6 +9,8 @@ export const SYMBOL_MAP = {
   'RNDR':       'BINANCE:RENDERUSDT',
   'BONK':       'BINANCE:BONKUSDT',
   'HNT':        'BINANCE:HNTUSDT',
+  // SOF token — Raydium pool pair (closest public TV representation)
+  'SOF':        'RAYDIUM:SOFUSDT',
   // Tokenized equities (legacy)
   'AAPL-T':     'NASDAQ:AAPL',
   'MSFT-T':     'NASDAQ:MSFT',
