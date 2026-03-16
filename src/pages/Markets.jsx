@@ -39,16 +39,16 @@ function MarketRow({ asset, watchlist = [], onToggleWatch }) {
         </div>
 
         <div className="w-14 flex-shrink-0">
-          <MiniChart data={sparkline} positive={positive} />
-        </div>
+           <MiniChart data={null} positive={positive} />
+         </div>
 
-        <div className="text-right flex-shrink-0">
-          <p className="text-sm font-bold text-white">${formatPrice(price)}</p>
-          <div className={`flex items-center justify-end gap-0.5 text-[11px] font-semibold ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
-            {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-            {formatChange(change)}
-          </div>
-        </div>
+         <div className="text-right flex-shrink-0">
+           <p className="text-sm font-bold text-white">${formatPrice(displayPrice)}</p>
+           <div className={`flex items-center justify-end gap-0.5 text-[11px] font-semibold ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
+             {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+             {formatChange(displayChange)}
+           </div>
+         </div>
       </div>
     </Link>
   );
