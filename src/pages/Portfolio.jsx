@@ -7,20 +7,7 @@ import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area
 import CryptoHoldingsSection from '../components/portfolio/CryptoHoldingsSection';
 import RWAHoldingsSection from '../components/portfolio/RWAHoldingsSection';
 
-const holdings = [
-  { symbol: 'SOL', name: 'Solana', amount: '24.82', value: '$4,648.54', change: 5.23, type: 'crypto' },
-  { symbol: 'USDC', name: 'USD Coin', amount: '12,450', value: '$12,450.00', change: 0, type: 'crypto' },
-  { symbol: 'BTC', name: 'Bitcoin', amount: '0.045', value: '$4,429.15', change: 2.14, type: 'crypto' },
-  { symbol: 'TBILL', name: 'US T-Bill Token', amount: '25', value: '$2,506.00', change: 0.02, type: 'rwa' },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold', amount: '1.2', value: '$2,810.16', change: 0.87, type: 'rwa' },
-];
 
-const rwaHoldings = [
-  { symbol: 'RE-MHT-1', name: 'Manhattan Prime Tower', tokens: '120', value: '$29,700.00', change: 1.24, yield: 6.8, verified: true },
-  { symbol: 'RE-SGP-1', name: 'Marina Bay Tower', tokens: '50', value: '$9,930.00', change: 1.67, yield: 5.4, verified: true },
-  { symbol: 'TBILL', name: 'US Treasury Bill Token', tokens: '25', value: '$2,506.00', change: 0.02, yield: 5.12, verified: true },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold', tokens: '1.2', value: '$2,810.00', change: 0.87, yield: 0, verified: false },
-];
 
 const positions = [
   { pair: 'SOL-PERP', side: 'Long', leverage: '10x', size: '$2,450', pnl: '+$126.80', pnlPercent: '+5.17%', positive: true },
