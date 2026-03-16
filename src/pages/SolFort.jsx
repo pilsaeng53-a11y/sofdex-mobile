@@ -175,24 +175,9 @@ export default function SolFort() {
               <ArrowUpRight className="w-4 h-4 text-[#9945FF] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </div>
           </div>
-          {/* Fake sparkline */}
-          <div className="px-4 pb-3">
-            <svg viewBox="0 0 300 40" className="w-full h-8" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#9945FF" />
-                  <stop offset="100%" stopColor="#00d4aa" />
-                </linearGradient>
-              </defs>
-              <polyline
-                points="0,30 30,25 60,28 90,18 120,22 150,12 180,16 210,8 240,11 270,5 300,3"
-                fill="none"
-                stroke="url(#lineGrad)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          <div className="px-4 pb-3 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-[10px] text-slate-500">Live chart on Raydium DEX</span>
           </div>
         </a>
       </div>
