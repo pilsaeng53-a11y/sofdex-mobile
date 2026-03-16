@@ -60,7 +60,6 @@ function generatePortfolioData(period) {
 
 export default function Portfolio() {
   const { t } = useLang();
-  const { getLiveAsset } = useMarketData();
   const [showBalance, setShowBalance] = useState(true);
   const [tab, setTab] = useState('All');
   const [chartPeriod, setChartPeriod] = useState('7D');
