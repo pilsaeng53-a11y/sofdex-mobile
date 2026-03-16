@@ -205,6 +205,13 @@ export default function LiquidationFeed() {
             </div>
           </div>
 
+          {/* Price-level heatmap for selected asset */}
+          {selectedAsset !== 'ALL' && (
+            <div className="mb-4">
+              <LiqHeatmap asset={selectedAsset} price={PRICES[selectedAsset]} />
+            </div>
+          )}
+
           <button onClick={() => setPaused(v => !v)}
             className={`w-full mb-4 py-2 rounded-xl text-xs font-semibold border transition-all ${paused ? 'bg-[#00d4aa]/10 text-[#00d4aa] border-[#00d4aa]/20' : 'bg-[#151c2e] text-slate-400 border-[rgba(148,163,184,0.08)]'}`}>
             {paused ? '▶ Resume Feed' : '⏸ Pause Feed'}
