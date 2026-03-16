@@ -30,12 +30,15 @@ const QUICK_LINKS = [
 ];
 
 // Role-based access helper
-// Admin (app builder) = always full access
-// Distributor (approved partner) = full hub minus global admin controls
-// Trader = apply only
-// User = apply + buy from distributor only
-function usePartnerRole(user, isPartnerApproved) {
-  const isAdmin = user?.role === 'admin';
+function usePartnerRole(isPartnerApproved) {
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    base44.auth.me().then(u => {
+      if (u?.role === 'admin') setIsAdmin(true);
+    }).catch(() => {});
+  }, []);
+
   const isDistributor = isPartnerApproved || isAdmin;
   return { isAdmin, isDistributor };
 }
