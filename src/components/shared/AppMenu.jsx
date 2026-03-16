@@ -145,7 +145,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
         }`}
       >
         <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#00d4aa]' : 'text-slate-500 group-hover:text-[#00d4aa]'}`} />
-        <span className="text-sm font-medium">{t(item.labelKey)}</span>
+        <span className="text-sm font-medium">{item.label || t(item.labelKey)}</span>
       </Link>
     );
   };
