@@ -9,7 +9,7 @@ import AppMenu from './components/shared/AppMenu';
 import { MarketDataProvider } from './components/shared/MarketDataProvider';
 import { LanguageProvider } from './components/shared/LanguageContext';
 import { UserTypeProvider } from './components/shared/UserTypeContext';
-import SolFortLogo from './components/shared/SolFortLogo';
+import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 

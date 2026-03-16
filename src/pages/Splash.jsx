@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LOGO_URL } from '../components/shared/SolFortLogo';
+import { LOGO_3D_URL, LOGO_FONT_URL } from '../components/shared/SolFortLogo';
 
 export default function Splash() {
   const navigate = useNavigate();
