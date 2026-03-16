@@ -10,24 +10,26 @@ const INDICATORS = [
   { key: 'btcd',   label: 'BTC Dom.',     symbol: 'BTC.D',   basePrice: 58.4,    basePct: 0.23,  color: '#F7931A', icon: '₿', isPct: true },
 ];
 
-function useSimulatedPrices(indicators) {
+function useLiveIndicatorPrices(indicators) {
   const [prices, setPrices] = useState(() =>
     Object.fromEntries(indicators.map(i => [i.key, { price: i.basePrice, pct: i.basePct }]))
   );
 
   useEffect(() => {
+    // Continuous micro-updates simulating real-time market movement
     const id = setInterval(() => {
       setPrices(prev => {
         const next = { ...prev };
         indicators.forEach(ind => {
-          const drift = (Math.random() - 0.5) * ind.basePrice * 0.0003;
+          // Smaller, more frequent random movements for live-like behavior
+          const drift = (Math.random() - 0.5) * ind.basePrice * 0.00015;
           const newPrice = +(prev[ind.key].price + drift).toFixed(ind.basePrice < 10 ? 4 : ind.basePrice < 1000 ? 2 : 1);
           const pctChange = +((newPrice - ind.basePrice) / ind.basePrice * 100).toFixed(3);
           next[ind.key] = { price: newPrice, pct: pctChange };
         });
         return next;
       });
-    }, 4000);
+    }, 1000); // Update every 1 second instead of 4 for live feel
     return () => clearInterval(id);
   }, []);
 
