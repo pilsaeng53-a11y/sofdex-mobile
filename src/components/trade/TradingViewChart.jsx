@@ -93,6 +93,7 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
 
   // Load TV script once, then rebuild whenever tvSymbol or interval change
   useEffect(() => {
+    if (noChartAvailable) return;
     if (window.TradingView) {
       buildWidget();
       return;
