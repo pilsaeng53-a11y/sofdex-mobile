@@ -1,6 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Zap, Info } from 'lucide-react';
 import { useLang } from '../shared/LanguageContext';
+import CollateralSelector from './CollateralSelector';
+import { getCollateralAsset, getCollateralValue } from './CollateralEngine';
 
 const leverageOptions = [1, 2, 5, 10, 25, 50, 100];
 const pctButtons = ['25%', '50%', '75%', 'Max'];

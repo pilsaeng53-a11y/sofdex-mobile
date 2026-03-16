@@ -1,16 +1,24 @@
 import React from 'react';
 
-const LOGO_URL = 'https://artificial-crimson-pmz2ll22jb.edgeone.app/%EC%86%94%ED%8F%AC%ED%8A%B8%20%EB%A1%9C%EA%B3%A0.jpg';
+// Token symbol (circular castle icon — classic gold version)
+export const LOGO_URL = 'https://media.base44.com/images/public/69adcc4764afafa4c2760a52/c6b24748f_SolFort_Token_Symbol_Cropped.png';
 
-export default function SolFortLogo({ size = 28, className = '' }) {
+// 3D neon logo — for splash / hero sections
+export const LOGO_3D_URL = 'https://media.base44.com/images/public/69adcc4764afafa4c2760a52/602900a9f_SolFort_3D_Logo.png';
+
+// Font logo (SOLFORT word-mark gradient) — for headers / banners
+export const LOGO_FONT_URL = 'https://media.base44.com/images/public/69adcc4764afafa4c2760a52/cf29ac0b6_SolFort_Font_Logo.png';
+
+export default function SolFortLogo({ size = 28, className = '', variant = 'symbol' }) {
+  const src = variant === 'font' ? LOGO_FONT_URL : variant === '3d' ? LOGO_3D_URL : LOGO_URL;
   return (
     <img
-      src={LOGO_URL}
+      src={src}
       alt="SolFort"
       width={size}
       height={size}
-      className={`object-contain rounded-lg ${className}`}
-      style={{ width: size, height: size }}
+      className={`object-contain ${variant === 'symbol' ? 'rounded-full' : ''} ${className}`}
+      style={{ width: size, height: 'auto' }}
     />
   );
 }
