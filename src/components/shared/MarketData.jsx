@@ -1,13 +1,39 @@
 // Shared mock market data for the app
 export const CRYPTO_MARKETS = [
-  { symbol: "SOL", name: "Solana", price: 187.42, change: 5.23, volume: "2.8B", mcap: "82.1B", category: "crypto", leverage: "50x" },
-  { symbol: "BTC", name: "Bitcoin", price: 98425.50, change: 2.14, volume: "38.2B", mcap: "1.93T", category: "crypto", leverage: "100x" },
-  { symbol: "ETH", name: "Ethereum", price: 3842.18, change: -1.32, volume: "15.6B", mcap: "462B", category: "crypto", leverage: "75x" },
-  { symbol: "JUP", name: "Jupiter", price: 1.24, change: 8.71, volume: "890M", mcap: "1.7B", category: "crypto", leverage: "20x" },
-  { symbol: "RAY", name: "Raydium", price: 5.83, change: -2.45, volume: "245M", mcap: "1.1B", category: "crypto", leverage: "20x" },
-  { symbol: "RNDR", name: "Render", price: 8.92, change: 12.34, volume: "412M", mcap: "4.6B", category: "crypto", leverage: "25x" },
-  { symbol: "BONK", name: "Bonk", price: 0.0000234, change: -4.12, volume: "156M", mcap: "1.5B", category: "crypto", leverage: "10x" },
-  { symbol: "HNT", name: "Helium", price: 8.45, change: 3.67, volume: "89M", mcap: "1.4B", category: "crypto", leverage: "15x" },
+  // Large cap — up to 100x
+  { symbol: "BTC",  name: "Bitcoin",       price: 98425.50, change:  2.14, volume: "38.2B", mcap: "1.93T", category: "crypto", leverage: "100x", maxLeverage: 100 },
+  { symbol: "ETH",  name: "Ethereum",      price: 3842.18,  change: -1.32, volume: "15.6B", mcap: "462B",  category: "crypto", leverage: "100x", maxLeverage: 100 },
+  { symbol: "SOL",  name: "Solana",        price: 187.42,   change:  5.23, volume: "2.8B",  mcap: "82.1B", category: "crypto", leverage: "100x", maxLeverage: 100 },
+  // Medium cap — up to 50x
+  { symbol: "BNB",  name: "BNB",           price: 412.30,   change:  1.45, volume: "1.9B",  mcap: "62.4B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "XRP",  name: "XRP",           price: 0.592,    change:  3.21, volume: "3.1B",  mcap: "33.1B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "ADA",  name: "Cardano",       price: 0.612,    change: -0.87, volume: "780M",  mcap: "21.8B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "DOGE", name: "Dogecoin",      price: 0.182,    change:  4.11, volume: "2.2B",  mcap: "26.4B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "AVAX", name: "Avalanche",     price: 38.50,    change: -2.14, volume: "890M",  mcap: "15.9B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "DOT",  name: "Polkadot",      price: 9.84,     change:  1.22, volume: "345M",  mcap: "13.5B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "LINK", name: "Chainlink",     price: 18.72,    change:  2.89, volume: "678M",  mcap: "11.2B", category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "MATIC",name: "Polygon",       price: 0.894,    change: -1.56, volume: "456M",  mcap: "8.9B",  category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "LTC",  name: "Litecoin",      price: 112.40,   change:  0.78, volume: "567M",  mcap: "8.4B",  category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "ATOM", name: "Cosmos",        price: 10.23,    change: -0.34, volume: "234M",  mcap: "3.8B",  category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "UNI",  name: "Uniswap",       price: 12.45,    change:  3.67, volume: "312M",  mcap: "7.4B",  category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  { symbol: "APT",  name: "Aptos",         price: 14.82,    change:  5.43, volume: "423M",  mcap: "6.8B",  category: "crypto", leverage: "50x",  maxLeverage: 50  },
+  // Smaller assets — up to 20–25x
+  { symbol: "OP",   name: "Optimism",      price: 2.34,     change:  6.12, volume: "345M",  mcap: "3.1B",  category: "crypto", leverage: "25x",  maxLeverage: 25  },
+  { symbol: "ARB",  name: "Arbitrum",      price: 1.12,     change:  4.78, volume: "289M",  mcap: "4.5B",  category: "crypto", leverage: "25x",  maxLeverage: 25  },
+  { symbol: "SUI",  name: "Sui",           price: 3.82,     change:  8.92, volume: "567M",  mcap: "9.8B",  category: "crypto", leverage: "25x",  maxLeverage: 25  },
+  { symbol: "SEI",  name: "Sei",           price: 0.612,    change:  3.45, volume: "189M",  mcap: "2.4B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "INJ",  name: "Injective",     price: 28.40,    change: -1.23, volume: "234M",  mcap: "2.9B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "PEPE", name: "Pepe",          price: 0.0000124,change:  9.87, volume: "1.2B",  mcap: "5.2B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "TIA",  name: "Celestia",      price: 8.92,     change:  2.34, volume: "145M",  mcap: "1.8B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "NEAR", name: "NEAR Protocol", price: 7.82,     change: -0.89, volume: "278M",  mcap: "8.4B",  category: "crypto", leverage: "25x",  maxLeverage: 25  },
+  { symbol: "FTM",  name: "Fantom",        price: 0.892,    change:  5.67, volume: "234M",  mcap: "2.5B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "AAVE", name: "Aave",          price: 142.30,   change:  2.45, volume: "189M",  mcap: "2.1B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  // Solana ecosystem
+  { symbol: "JUP",  name: "Jupiter",       price: 1.24,     change:  8.71, volume: "890M",  mcap: "1.7B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "RAY",  name: "Raydium",       price: 5.83,     change: -2.45, volume: "245M",  mcap: "1.1B",  category: "crypto", leverage: "20x",  maxLeverage: 20  },
+  { symbol: "RNDR", name: "Render",        price: 8.92,     change: 12.34, volume: "412M",  mcap: "4.6B",  category: "crypto", leverage: "25x",  maxLeverage: 25  },
+  { symbol: "BONK", name: "Bonk",          price: 0.0000234,change: -4.12, volume: "156M",  mcap: "1.5B",  category: "crypto", leverage: "10x",  maxLeverage: 10  },
+  { symbol: "HNT",  name: "Helium",        price: 8.45,     change:  3.67, volume: "89M",   mcap: "1.4B",  category: "crypto", leverage: "15x",  maxLeverage: 15  },
 ];
 
 export const RWA_MARKETS = [
