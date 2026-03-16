@@ -22,5 +22,3 @@ export default function SolFortLogo({ size = 28, className = '', variant = 'symb
     />
   );
 }
-
-export { LOGO_URL };
