@@ -58,7 +58,7 @@ export default function Trade() {
                 <span className="text-base font-bold text-white">{symbol}-PERP</span>
                 <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${showPicker ? 'rotate-180' : ''}`} />
               </div>
-              <span className="text-[10px] text-slate-500">{t('trade_perpetual')} · {t('trade_upTo')} {baseAsset.leverage || '50x'}</span>
+              <span className="text-[10px] text-slate-500">{t('trade_perpetual')} · {t('trade_upTo')} {baseAsset.leverage || '20x'}</span>
             </div>
           </button>
 
