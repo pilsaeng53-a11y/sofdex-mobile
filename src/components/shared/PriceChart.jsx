@@ -13,7 +13,7 @@
  *   basePrice / positive — accepted but IGNORED (legacy compat, removed fake data)
  */
 import React from 'react';
-import TradingViewChart from '../trade/TradingViewChart';
+import TradingViewChart from '../trade/TradingViewChart.jsx';
 
 export default function PriceChart({ symbol = 'BTC', height = 280 }) {
   return <TradingViewChart symbol={symbol} height={height} />;
