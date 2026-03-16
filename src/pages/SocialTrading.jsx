@@ -53,7 +53,7 @@ const riskColor = {
 const rankColors = ['text-yellow-400', 'text-slate-300', 'text-amber-600'];
 
 export default function SocialTrading() {
-  const [tab, setTab] = useState('leaderboard');
+  const [tab, setTab] = useState('feed');
 
   return (
     <div className="min-h-screen px-4 pt-4 pb-6">
@@ -79,7 +79,7 @@ export default function SocialTrading() {
 
       {/* Tabs */}
       <div className="flex gap-1.5 mb-4">
-        {['leaderboard', 'following'].map(t => (
+        {['feed', 'leaderboard', 'following'].map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -91,6 +91,43 @@ export default function SocialTrading() {
           </button>
         ))}
       </div>
+
+      {tab === 'feed' && (
+        <div className="space-y-2.5">
+          {FEED_DATA.map((f, i) => (
+            <div key={i} className="glass-card rounded-2xl p-3.5">
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-[#1a2340] flex items-center justify-center text-[10px] font-black text-[#00d4aa] flex-shrink-0">{f.avatar}</div>
+                  <div>
+                    <p className="text-xs font-bold text-white">{f.trader}</p>
+                    <p className="text-[10px] text-slate-500">{f.handle}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 text-[9px] text-slate-600">
+                  <Clock className="w-2.5 h-2.5" />{f.time}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${f.dir === 'Long' ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'}`}>{f.dir}</span>
+                <span className="text-xs font-bold text-white">{f.asset}</span>
+                <span className="text-[10px] text-slate-500">@ {f.entry}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className={`text-sm font-black ${f.positive ? 'text-emerald-400' : 'text-red-400'}`}>{f.roi} ROI</span>
+                <div className="flex gap-1.5">
+                  <button className="px-2.5 py-1 rounded-lg bg-[#00d4aa]/10 border border-[#00d4aa]/20 text-[#00d4aa] text-[10px] font-bold hover:bg-[#00d4aa]/20 transition-all flex items-center gap-1">
+                    <Copy className="w-2.5 h-2.5" />Copy
+                  </button>
+                  <button className="px-2.5 py-1 rounded-lg bg-[#151c2e] border border-[rgba(148,163,184,0.1)] text-slate-400 text-[10px] font-semibold hover:border-[#00d4aa]/20 transition-all flex items-center gap-1">
+                    <Star className="w-2.5 h-2.5" />Follow
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {tab === 'leaderboard' && (
         <div className="space-y-3">
