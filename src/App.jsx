@@ -39,6 +39,11 @@ import BeginnerDashboard from './pages/BeginnerDashboard';
 import StrategyDetail from './pages/StrategyDetail';
 import StrategyCreator from './pages/StrategyCreator';
 import StrategyLeaderboard from './pages/StrategyLeaderboard';
+import StrategyVaults from './pages/StrategyVaults';
+import VaultDetail from './pages/VaultDetail';
+import StrategyIndexFunds from './pages/StrategyIndexFunds';
+import IndexFundDetail from './pages/IndexFundDetail';
+import MyStrategyInvestments from './pages/MyStrategyInvestments';
 import GovernanceDetail from './pages/GovernanceDetail';
 import FundingRates from './pages/FundingRates';
 import OpenInterest from './pages/OpenInterest';
@@ -139,6 +144,11 @@ const AuthenticatedApp = () => {
       <Route path="/StrategyDetail" element={<LayoutWrapper currentPageName="StrategyDetail"><StrategyDetail /></LayoutWrapper>} />
       <Route path="/StrategyCreator" element={<LayoutWrapper currentPageName="StrategyCreator"><StrategyCreator /></LayoutWrapper>} />
       <Route path="/StrategyLeaderboard" element={<LayoutWrapper currentPageName="StrategyLeaderboard"><StrategyLeaderboard /></LayoutWrapper>} />
+      <Route path="/StrategyVaults" element={<LayoutWrapper currentPageName="StrategyVaults"><StrategyVaults /></LayoutWrapper>} />
+      <Route path="/VaultDetail" element={<LayoutWrapper currentPageName="VaultDetail"><VaultDetail /></LayoutWrapper>} />
+      <Route path="/StrategyIndexFunds" element={<LayoutWrapper currentPageName="StrategyIndexFunds"><StrategyIndexFunds /></LayoutWrapper>} />
+      <Route path="/IndexFundDetail" element={<LayoutWrapper currentPageName="IndexFundDetail"><IndexFundDetail /></LayoutWrapper>} />
+      <Route path="/MyStrategyInvestments" element={<LayoutWrapper currentPageName="MyStrategyInvestments"><MyStrategyInvestments /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
