@@ -252,9 +252,27 @@ export default function OrderPanel({ asset }) {
         <div className="flex justify-between text-[11px]">
           <span className="text-slate-500">{t('order_tradingFee')}</span>
           <span className="text-slate-300 font-medium">
-            {parsedAmount > 0 ? `$${fee.toFixed(4)}` : '0.05%'}
+            {parsedAmount > 0 ? `$${fee.toFixed(4)}` : (advancedType === 'post-only' ? '0.00% (maker)' : '0.05%')}
           </span>
         </div>
+        {advancedType && (
+          <div className="flex justify-between text-[11px]">
+            <span className="text-slate-500">Order Flag</span>
+            <span className="text-purple-400 font-medium capitalize">{advancedType}</span>
+          </div>
+        )}
+        {orderType === 'trailing' && (
+          <div className="flex justify-between text-[11px]">
+            <span className="text-slate-500">Trail Distance</span>
+            <span className="text-slate-300 font-medium">{trailPct}%</span>
+          </div>
+        )}
+        {orderType === 'iceberg' && (
+          <div className="flex justify-between text-[11px]">
+            <span className="text-slate-500">Visible Size</span>
+            <span className="text-slate-300 font-medium">{icebergPct}% of total</span>
+          </div>
+        )}
       </div>
 
       {/* Submit */}
