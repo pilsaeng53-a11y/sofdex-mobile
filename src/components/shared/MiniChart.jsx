@@ -1,24 +1,16 @@
 import React, { useMemo } from 'react';
 
 /**
- * MiniChart — renders a sparkline.
- * Pass `data` (array of numbers) for real price points,
- * or `positive` (bool) to render a random trend fallback.
+ * MiniChart — renders a sparkline from real price data only.
+ * Pass `data` (array of numbers) for real price points.
+ * If no real data is available, renders nothing.
+ * RULE: Never renders fake/random data.
  */
 export default function MiniChart({ data, positive = true, height = 24, width = 60, className = '' }) {
   const path = useMemo(() => {
+    // Only render if we have real price data
     let pts = data && data.length >= 2 ? data : null;
-
-    if (!pts) {
-      // Fallback: generate random trend
-      let value = 50;
-      pts = [];
-      for (let i = 0; i < 20; i++) {
-        value += (Math.random() - (positive ? 0.4 : 0.6)) * 8;
-        value = Math.max(10, Math.min(90, value));
-        pts.push(value);
-      }
-    }
+    if (!pts) return null;
 
     const min    = Math.min(...pts);
     const max    = Math.max(...pts);
