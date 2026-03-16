@@ -10,7 +10,7 @@ import RecentTrades from '../components/trade/RecentTrades';
 import PositionsPanel from '../components/trade/PositionsPanel';
 import { TrendingUp, TrendingDown, ChevronDown } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
-import PositionCalculator from '../components/trade/PositionCalculator';
+import PositionCalculator from '../components/trade/PositionCalculator.jsx';
 
 export default function Trade() {
   const urlParams = new URLSearchParams(window.location.search);
