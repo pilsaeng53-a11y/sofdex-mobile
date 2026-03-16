@@ -184,6 +184,15 @@ export const translations = {
     inst_note_generic:'This asset undergoes independent verification. Full due diligence package available upon institutional KYC approval.',
     // Menu
     menu_institutional:'Institutional',
+    menu_wallet: 'Wallet',
+    menu_aiTools: 'AI & Tools',
+    menu_aiWealthManager: 'AI Wealth Manager',
+    menu_tradingTools: 'Trading Tools',
+    menu_strategyMkt: 'Strategy Marketplace',
+    menu_assetDiscovery: 'Asset Discovery',
+    menu_marketHeatmap: 'Market Heatmap',
+    menu_reputationScore: 'Reputation Score',
+    menu_whatsNew: "What's New",
   },
 
   ko: {
