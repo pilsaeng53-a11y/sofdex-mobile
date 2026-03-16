@@ -111,6 +111,33 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
     document.head.appendChild(script);
   }, [tvSymbol, interval, buildWidget]);
 
+  // Illiquid RWA — no public market price feed available
+  if (noChartAvailable) {
+    return (
+      <div className="glass-card rounded-2xl overflow-hidden" style={{ height: height + 52 }}>
+        <div className="flex items-center gap-1 px-3 pt-3 pb-2 border-b border-[rgba(148,163,184,0.06)]">
+          <span className="text-[11px] text-slate-500 font-semibold">Price Chart · {symbol}</span>
+          <div className="ml-auto flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            <span className="text-[10px] text-slate-500">Valuation Model</span>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-3 text-center px-6" style={{ height }}>
+          <div className="w-12 h-12 rounded-2xl bg-[#8b5cf6]/10 flex items-center justify-center">
+            <span className="text-2xl">🏛️</span>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-white mb-1">Illiquid RWA Asset</p>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              {symbol} does not have a real-time public market price feed.<br />
+              Valuation is based on periodic appraisals and benchmark indices.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
       {/* Timeframe selector */}
