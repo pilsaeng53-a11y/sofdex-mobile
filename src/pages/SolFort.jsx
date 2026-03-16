@@ -63,21 +63,14 @@ export default function SolFort() {
         }} />
 
         <div className="relative px-4 pt-8 pb-6">
-          {/* Emblem */}
+          {/* Custom SolFort Token Image */}
           <div className="flex justify-center mb-6">
-            <div className="relative">
-              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#9945FF] via-[#00d4aa] to-[#06b6d4] p-0.5 shadow-2xl" style={{ boxShadow: '0 0 60px rgba(153,69,255,0.4), 0 0 30px rgba(0,212,170,0.3)' }}>
-                <div className="w-full h-full rounded-3xl bg-[#0d1220] flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-3xl font-black text-white tracking-tighter leading-none">SF</p>
-                    <p className="text-[8px] font-bold text-[#00d4aa] tracking-[0.2em] mt-0.5">SOLFORT</p>
-                  </div>
-                </div>
-              </div>
-              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#9945FF] flex items-center justify-center">
-                <Zap className="w-2.5 h-2.5 text-white" />
-              </div>
-            </div>
+            <img 
+              src="https://media.base44.com/images/public/69adcc4764afafa4c2760a52/d2214e2ea_SolFort_Token_Symbol_Cropped.png"
+              alt="SolFort Token"
+              className="w-32 h-32 object-contain"
+              style={{ filter: 'drop-shadow(0 0 30px rgba(153,69,255,0.3)) drop-shadow(0 0 60px rgba(0,212,170,0.2))' }}
+            />
           </div>
 
           {/* Title */}
