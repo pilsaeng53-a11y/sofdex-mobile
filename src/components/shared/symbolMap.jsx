@@ -107,3 +107,20 @@ export function getBinanceSymbol(sofSymbol) {
 export function getCoinGeckoId(sofSymbol) {
   return COINGECKO_ID[sofSymbol] ?? null;
 }
+
+/**
+ * Returns the TradingView chart symbol for any SOFDex asset symbol.
+ * - If the symbol already has a colon (e.g. "NASDAQ:AAPL"), returns it directly.
+ * - Checks SYMBOL_MAP first, then falls back to Binance USDT pair for crypto.
+ * - Returns null for assets without a known chart source (illiquid RWA).
+ */
+export function getTVSymbol(sofSymbol) {
+  if (!sofSymbol) return null;
+  if (sofSymbol.includes(':')) return sofSymbol; // already qualified
+  const mapped = SYMBOL_MAP[sofSymbol];
+  if (mapped !== undefined) return mapped; // null is intentional (illiquid RWA)
+  // Unknown crypto — attempt Binance pair
+  const bn = BINANCE_TICKER[sofSymbol];
+  if (bn) return `BINANCE:${bn}`;
+  return null;
+}
