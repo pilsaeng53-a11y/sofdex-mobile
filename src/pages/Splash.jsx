@@ -50,16 +50,15 @@ export default function Splash() {
             </div>
           </motion.div>
 
-          {/* Brand name */}
-          <motion.h1
+          {/* Brand name — font logo */}
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: phase >= 1 ? 1 : 0, y: phase >= 1 ? 0 : 20 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="text-4xl font-black tracking-tight mb-2"
+            className="mb-2"
           >
-            <span className="text-white">SOF</span>
-            <span className="gradient-text">Dex</span>
-          </motion.h1>
+            <img src={LOGO_FONT_URL} alt="SOLFORT" className="h-12 object-contain" />
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -67,7 +66,7 @@ export default function Splash() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-slate-500 text-sm font-medium tracking-widest uppercase mb-12"
           >
-            by SolFort
+            Multi-Asset DEX on Solana
           </motion.p>
 
           {/* Tagline */}
