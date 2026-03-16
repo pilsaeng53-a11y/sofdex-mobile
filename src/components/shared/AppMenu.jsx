@@ -8,7 +8,7 @@ import {
   BarChart2, Users, BookOpen, Rocket, Zap,
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
-  Trophy, Copy, Layers
+  Trophy, Copy, Layers, GitBranch, DollarSign, Award
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 
@@ -92,6 +92,18 @@ const NAV_SECTIONS = [
     ],
   },
   {
+    labelKey: 'menu_partnerHub',
+    items: [
+      { labelKey: 'menu_partnerHubMain',    page: 'PartnerHub',          icon: Star },
+      { labelKey: 'menu_downlineTree',      page: 'DownlineTree',         icon: GitBranch },
+      { labelKey: 'menu_commissionDist',    page: 'CommissionDist',       icon: DollarSign },
+      { labelKey: 'menu_rankProgress',      page: 'RankProgress',         icon: Award },
+      { labelKey: 'menu_teamLeaderboard',   page: 'TeamLeaderboard',      icon: BarChart3 },
+      { labelKey: 'menu_regionalDist',      page: 'RegionalDistributor',  icon: MapPin },
+      { labelKey: 'menu_myTeam',            page: 'MyTeam',               icon: Users },
+    ],
+  },
+  {
     labelKey: 'menu_liveFeed',
     items: [
       { labelKey: 'menu_liquidationFeed',  page: 'LiquidationFeed', icon: Flame },
@@ -166,9 +178,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[rgba(148,163,184,0.06)]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center">
-              <span className="text-xs font-black text-white">SF</span>
-            </div>
+            <SolFortLogo size={32} className="rounded-lg" />
             <span className="text-base font-bold text-white">SOF<span className="gradient-text">Dex</span></span>
           </div>
           <button

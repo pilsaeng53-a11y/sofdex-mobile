@@ -202,6 +202,14 @@ export const translations = {
     menu_rewards: 'Rewards',
     menu_universalPortfolio: 'Portfolio Hub',
     menu_uniPortfolio: 'Universal Portfolio',
+    menu_partnerHub: 'Partner Hub',
+    menu_partnerHubMain: 'Partner Dashboard',
+    menu_downlineTree: 'Downline Tree',
+    menu_commissionDist: 'Commission',
+    menu_rankProgress: 'Rank Progress',
+    menu_teamLeaderboard: 'Team Leaderboard',
+    menu_regionalDist: 'Regional',
+    menu_myTeam: 'My Team',
   },
 
   ko: {
