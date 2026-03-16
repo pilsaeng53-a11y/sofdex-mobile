@@ -134,7 +134,7 @@ function HotAssetItem({ asset, index, expanded, setExpanded }) {
           <div className="flex items-center justify-between pt-2 border-t border-[rgba(148,163,184,0.06)]">
             <span className="text-[10px] text-slate-500">
               Live: <span className="text-[#00d4aa]">{isLive ? '●' : '○'}</span>
-              {displayPrice != null && <span className="text-slate-300 ml-1">${asset.symbol === 'SOF' ? formatSOFPrice(displayPrice) : formatPriceUtil(displayPrice)}</span>}
+              {displayPrice != null && <span className="text-slate-300 ml-1">${asset.symbol === 'SOF' ? formatSOFPrice(displayPrice) : formatPrice(displayPrice)}</span>}
             </span>
             <Link to={`/Trade?symbol=${asset.symbol}`} className="flex items-center gap-1 text-[10px] font-semibold text-[#00d4aa] hover:text-[#06b6d4]">
               <Eye className="w-3 h-3" /> Trade {asset.symbol}
