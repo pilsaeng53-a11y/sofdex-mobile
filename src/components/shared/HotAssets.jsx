@@ -65,8 +65,6 @@ function MiniSparkline({ data, change }) {
 export default function HotAssets({ compact = false }) {
   const { t } = useLang();
   const [expanded, setExpanded] = useState(null);
-  const sofLive = useSOFPrice();
-  const liveMap = useLiveMarkets(HOT_SYMBOLS);
 
   return (
     <div className="bg-[#151c2e] rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
@@ -82,13 +80,9 @@ export default function HotAssets({ compact = false }) {
       </div>
 
       <div className="divide-y divide-[rgba(148,163,184,0.04)]">
-        {HOT_ASSET_META.slice(0, compact ? 3 : 5).map((asset, i) => {
-          // SOF: use live DexScreener price, others use Binance
-          const isSof = asset.symbol === 'SOF';
-          const live = isSof ? { price: sofLive.price, change: sofLive.change24h, sparkline: null } : (liveMap[asset.symbol] || {});
-          const price    = live.price   ?? null;
-          const change   = live.change  ?? 0;
-          const sparkline = live.sparkline;
+        {HOT_ASSET_META.slice(0, compact ? 3 : 5).map((asset, i) => (
+          <HotAssetItem key={asset.symbol} asset={asset} index={i} expanded={expanded} setExpanded={setExpanded} />
+        ))}
 
           return (
             <div key={asset.symbol}>
