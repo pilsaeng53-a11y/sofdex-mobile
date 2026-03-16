@@ -65,7 +65,7 @@ export default function MarketDetail() {
 
       {/* TradingView Chart — always uses price chart, never market cap */}
       <div className="px-4 mb-5">
-        <TradingViewChart symbol={asset.tvSymbol || symbol} height={320} />
+        <TradingViewChart symbol={symbol} height={320} />
       </div>
 
       {/* Stats grid */}
