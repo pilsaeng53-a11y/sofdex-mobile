@@ -260,10 +260,8 @@ function DistributorDashboard({ isAdmin, applyForPartner, isPartnerPending }) {
 
 // ─── Main Export ────────────────────────────────────────────────────────────
 export default function PartnerHub() {
-  const { isPartnerApproved, applyForPartner, isPartnerPending, userType } = useUserType();
-  const { user } = useAuth();
-
-  const { isAdmin, isDistributor } = usePartnerRole(user, isPartnerApproved);
+  const { isPartnerApproved, applyForPartner, isPartnerPending } = useUserType();
+  const { isAdmin, isDistributor } = usePartnerRole(isPartnerApproved);
 
   // Admin and approved distributors see full dashboard
   if (isDistributor) {
