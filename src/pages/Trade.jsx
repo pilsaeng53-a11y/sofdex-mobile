@@ -3,6 +3,7 @@ import { useMarketData } from '../components/shared/MarketDataProvider';
 import { ALL_MARKETS, CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
 import TradingViewChart from '../components/trade/TradingViewChart';
 import AILeverageCard from '../components/trading/AILeverageCard';
+import AIMarketPanel from '../components/shared/AIMarketPanel';
 import OrderPanel from '../components/trade/OrderPanel';
 import OrderBook from '../components/trade/OrderBook';
 import RecentTrades from '../components/trade/RecentTrades';
@@ -107,6 +108,11 @@ export default function Trade() {
       {/* AI Leverage Card */}
       <div className="px-4 pb-3">
         <AILeverageCard symbol={symbol} />
+      </div>
+
+      {/* AI Market Panel */}
+      <div className="px-4 pb-3">
+        <AIMarketPanel symbol={symbol} />
       </div>
 
       {/* Trade tabs */}
