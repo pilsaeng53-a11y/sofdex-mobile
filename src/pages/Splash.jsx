@@ -19,8 +19,9 @@ export default function Splash() {
     <div className="fixed inset-0 bg-[#0a0e1a] flex flex-col items-center justify-center overflow-hidden z-50">
       {/* Background effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#00d4aa]/5 blur-[120px]" />
-        <div className="absolute bottom-1/3 left-1/3 w-[300px] h-[300px] rounded-full bg-[#3b82f6]/5 blur-[100px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-[#8b5cf6]/8 blur-[120px]" />
+        <div className="absolute bottom-1/3 left-1/3 w-[300px] h-[300px] rounded-full bg-[#00d4aa]/6 blur-[100px]" />
+        <div className="absolute top-2/3 right-1/4 w-[200px] h-[200px] rounded-full bg-[#06b6d4]/5 blur-[80px]" />
       </div>
 
       {/* Grid overlay */}
