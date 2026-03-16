@@ -81,39 +81,43 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
     }
   }, [tvSymbol, interval, height, containerId, noChartAvailable]);
 
-  // When symbol or interval changes: clear DOM + reset loading flag immediately
+  // Rebuild widget whenever symbol or interval changes
   useEffect(() => {
     if (noChartAvailable) return;
     setLoading(true);
     setError(false);
-    if (widgetRef.current) {
-      try { widgetRef.current.remove?.(); } catch { /* ignore */ }
-      widgetRef.current = null;
-    }
-    if (containerRef.current) containerRef.current.innerHTML = '';
-  }, [tvSymbol, interval, noChartAvailable]);
 
-  // Load TV script once, then rebuild whenever tvSymbol or interval change
-  useEffect(() => {
-    if (noChartAvailable) return;
-    if (window.TradingView) {
-      buildWidget();
-      return;
-    }
-    // Check if script already in DOM (concurrent mounts)
-    if (document.querySelector('script[src*="tv.js"]')) {
-      const check = setInterval(() => {
-        if (window.TradingView) { clearInterval(check); buildWidget(); }
-      }, 100);
-      return () => clearInterval(check);
-    }
-    const script   = document.createElement('script');
-    script.src     = 'https://s3.tradingview.com/tv.js';
-    script.async   = true;
-    script.onload  = buildWidget;
-    script.onerror = () => { setError(true); setLoading(false); };
-    document.head.appendChild(script);
-  }, [tvSymbol, interval, buildWidget]);
+    const init = () => {
+      if (window.TradingView) {
+        buildWidget();
+        return;
+      }
+      // Script already injected but not ready yet
+      if (document.querySelector('script[src*="tv.js"]')) {
+        const check = setInterval(() => {
+          if (window.TradingView) { clearInterval(check); buildWidget(); }
+        }, 100);
+        return () => clearInterval(check);
+      }
+      // First load — inject script
+      const script   = document.createElement('script');
+      script.src     = 'https://s3.tradingview.com/tv.js';
+      script.async   = true;
+      script.onload  = buildWidget;
+      script.onerror = () => { setError(true); setLoading(false); };
+      document.head.appendChild(script);
+    };
+
+    const cleanup = init();
+    return () => {
+      if (typeof cleanup === 'function') cleanup();
+      if (widgetRef.current) {
+        try { widgetRef.current.remove?.(); } catch { /* ignore */ }
+        widgetRef.current = null;
+      }
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tvSymbol, interval, noChartAvailable]);
 
   // No public TradingView feed — SOF (DEX-only) or illiquid RWA
   if (noChartAvailable) {
