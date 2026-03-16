@@ -63,9 +63,9 @@ export default function MarketDetail() {
         <p className="text-[11px] text-slate-500">Last updated · <span className="text-emerald-400">Live</span></p>
       </div>
 
-      {/* TradingView Chart */}
+      {/* TradingView Chart — always uses price chart, never market cap */}
       <div className="px-4 mb-5">
-        <TradingViewChart symbol={asset.tvSymbol || asset.symbol} height={320} />
+        <TradingViewChart symbol={asset.tvSymbol || symbol} height={320} />
       </div>
 
       {/* Stats grid */}
