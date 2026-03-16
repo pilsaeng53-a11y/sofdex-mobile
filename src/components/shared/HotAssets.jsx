@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import React, { useState } from 'react';
 import { Flame, TrendingUp, TrendingDown, Zap, Eye, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLang } from './LanguageContext';
