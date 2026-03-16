@@ -19,12 +19,21 @@ export default function Trade() {
   const [tab, setTab] = useState('Order');
   const [showPicker, setShowPicker] = useState(false);
   const { getLiveAsset } = useMarketData();
+  const sofLive = useSOFPrice();
 
   const { t } = useLang();
   const baseAsset = ALL_MARKETS.find(a => a.symbol === symbol) || CRYPTO_MARKETS[0];
   const live = getLiveAsset(symbol);
-  const price = live.available ? live.price : baseAsset.price;
-  const change = live.available ? live.change : baseAsset.change;
+  
+  // SOF: use live DexScreener price, otherwise use live Binance or fallback to static
+  let price, change;
+  if (symbol === 'SOF') {
+    price = sofLive.price || baseAsset.price;
+    change = sofLive.change24h ?? baseAsset.change;
+  } else {
+    price = live.available ? live.price : baseAsset.price;
+    change = live.available ? live.change : baseAsset.change;
+  }
   const positive = change >= 0;
 
   // Deterministic funding rate from symbol (stable seed)
