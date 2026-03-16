@@ -28,9 +28,9 @@ export default function OrderPanel({ asset }) {
     : entryPrice * (1 + liqDistance * 0.9);
 
   const handlePct = (pct) => {
-    const balance = 1200; // mock balance
+    const balance = collateral.balance;
     const val = pct === 'Max' ? balance : balance * (parseInt(pct) / 100);
-    setAmount(val.toFixed(2));
+    setAmount(val.toFixed(4));
   };
 
   return (
