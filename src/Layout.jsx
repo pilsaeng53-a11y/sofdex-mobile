@@ -8,6 +8,7 @@ import TickerStrip from './components/shared/TickerStrip';
 import AppMenu from './components/shared/AppMenu';
 import { MarketDataProvider } from './components/shared/MarketDataProvider';
 import { LanguageProvider } from './components/shared/LanguageContext';
+import { UserTypeProvider } from './components/shared/UserTypeContext';
 import SolFortLogo from './components/shared/SolFortLogo';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
@@ -75,7 +76,9 @@ function LayoutInner({ children, currentPageName }) {
 export default function Layout({ children, currentPageName }) {
   return (
     <LanguageProvider>
-      <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
+      <UserTypeProvider>
+        <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
+      </UserTypeProvider>
     </LanguageProvider>
   );
 }
