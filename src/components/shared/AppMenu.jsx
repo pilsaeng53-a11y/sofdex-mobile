@@ -11,6 +11,7 @@ import {
   Trophy, Copy, Layers, GitBranch, DollarSign, Award
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
+import SolFortLogo from './SolFortLogo';
 
 const NAV_SECTIONS = [
   {
