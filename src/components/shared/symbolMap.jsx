@@ -58,14 +58,16 @@ export const SYMBOL_MAP = {
   'IWMx':       'AMEX:IWM',
   'GLDx':       'AMEX:GLD',
   'SLVx':       'AMEX:SLV',
+  // RWA Equities
+  'SP500-T':    'SP:SPX',
+  'TSLA-T':     'NASDAQ:TSLA',
+  'RE-NYC':     'TVC:CSUSHPINSA',
+  'RE-DXB':     'TVC:CSUSHPINSA',
   // Commodities & macro
   'GOLD-T':     'OANDA:XAUUSD',
   'CRUDE-T':    'NYMEX:CL1!',
   'TBILL':      'TVC:US10Y',
   'EURO-B':     'TVC:EURUSD',
-  // Legacy RE symbols (kept for backwards compat)
-  'RE-NYC':     null,
-  'RE-DXB':     null,
   // Landmark Real Estate — use benchmark index proxies
   'RE-MHT-1':   'TVC:CSUSHPINSA',   // Case-Shiller US Home Price Index (closest public RE bench)
   'RE-DXB-1':   null,                // No public TV symbol for Dubai; chart uses internal series
