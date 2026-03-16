@@ -13,9 +13,10 @@ const TAB_VALUES = ['All','Crypto','RWA','TradFi','Gainers','Losers','Volume','W
 function MarketRow({ asset, watchlist = [], onToggleWatch }) {
   const { getLiveAsset } = useMarketData();
   const live = getLiveAsset(asset.symbol);
-  const price = live.available ? live.price : asset.price;
-  const change = live.available ? live.change : asset.change;
-  const positive = change >= 0;
+  const price     = live.available ? live.price    : asset.price;
+  const change    = live.available ? live.change   : asset.change;
+  const sparkline = live.sparkline ?? null;
+  const positive  = change >= 0;
   const isWatched = watchlist.includes(asset.symbol);
 
   return (
