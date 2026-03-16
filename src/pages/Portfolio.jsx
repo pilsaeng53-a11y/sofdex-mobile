@@ -175,85 +175,8 @@ export default function Portfolio() {
         ))}
       </div>
 
-      {/* Crypto Holdings */}
-      {(tab === 'All' || tab === 'Crypto') && (
-      <div className="px-4 mb-5">
-        <h3 className="text-sm font-bold text-white mb-3">{t('portfolio_cryptoHoldings')}</h3>
-        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-          {holdings.filter(h => tab === 'All' ? true : h.type === 'crypto').map((h, i) => {
-            const live = getLiveAsset(h.symbol);
-            const liveChange = live.available ? live.change : h.change;
-            const livePrice  = live.available ? live.price  : null;
-            // Recalculate holding value if live price available
-            const liveValue  = livePrice && h.amount && !isNaN(parseFloat(h.amount))
-              ? `$${formatPrice(parseFloat(h.amount.replace(/,/g, '')) * livePrice)}`
-              : h.value;
-            return (
-            <div key={i} className="p-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[#1a2340] flex items-center justify-center text-[10px] font-bold text-[#00d4aa]">
-                  {h.symbol.slice(0, 2)}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-white">{h.symbol}</p>
-                  <p className="text-[11px] text-slate-500">{h.amount}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-sm font-semibold text-white">{showBalance ? liveValue : '••••'}</p>
-                <p className={`text-[11px] font-medium ${liveChange > 0 ? 'text-emerald-400' : liveChange < 0 ? 'text-red-400' : 'text-slate-500'}`}>
-                  {liveChange > 0 ? '+' : ''}{liveChange.toFixed(2)}%
-                </p>
-              </div>
-            </div>
-            );
-          })}
-        </div>
-      </div>
-      )}
-
-      {/* RWA Holdings */}
-      {(tab === 'All' || tab === 'RWA') && (
-      <div className="px-4 mb-5">
-        <div className="flex items-center gap-2 mb-3">
-          <Building2 className="w-4 h-4 text-[#8b5cf6]" />
-          <h3 className="text-sm font-bold text-white">{t('portfolio_rwaHoldings')}</h3>
-        </div>
-        <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-          {rwaHoldings.map((h, i) => {
-            const live = getLiveAsset(h.symbol);
-            const liveChange = live.available ? live.change : h.change;
-            const livePrice  = live.available ? live.price  : null;
-            // Recalculate holding value from live chart price if available
-            const liveValue  = livePrice && h.tokens && !isNaN(parseFloat(h.tokens))
-              ? `$${formatPrice(parseFloat(h.tokens.replace(/,/g, '')) * livePrice)}`
-              : h.value;
-            return (
-            <div key={i} className="p-3.5 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-[#1a1040] flex items-center justify-center text-[9px] font-bold text-[#8b5cf6]">
-                  {h.symbol.slice(0, 3)}
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <p className="text-xs font-semibold text-white">{h.name}</p>
-                    {h.verified && <ShieldCheck className="w-3 h-3 text-[#00d4aa]" />}
-                  </div>
-                  <p className="text-[11px] text-slate-500">{h.tokens} tokens {h.yield > 0 ? `· ${h.yield}% yield` : ''}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="text-xs font-semibold text-white">{showBalance ? liveValue : '••••'}</p>
-                <p className={`text-[11px] font-medium ${liveChange > 0 ? 'text-emerald-400' : liveChange < 0 ? 'text-red-400' : 'text-slate-500'}`}>
-                  {liveChange > 0 ? '+' : ''}{liveChange.toFixed ? liveChange.toFixed(2) : liveChange}%
-                </p>
-              </div>
-            </div>
-            );
-          })}
-        </div>
-      </div>
-      )}
+      <CryptoHoldingsSection showBalance={showBalance} tab={tab} />
+      <RWAHoldingsSection showBalance={showBalance} tab={tab} />
 
       {/* Active positions */}
       <div className={tab !== 'All' && tab !== 'Positions' ? 'hidden' : 'px-4 mb-5'}>
