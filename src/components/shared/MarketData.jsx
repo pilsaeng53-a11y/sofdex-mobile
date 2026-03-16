@@ -223,6 +223,7 @@ export function getMarketBySymbol(symbol) {
 }
 
 export function formatPrice(price) {
+  if (price == null || isNaN(price)) return '—';
   if (price >= 1000) return price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   if (price >= 1) return price.toFixed(2);
   if (price >= 0.01) return price.toFixed(4);
@@ -230,6 +231,7 @@ export function formatPrice(price) {
 }
 
 export function formatChange(change) {
+  if (change == null || isNaN(change)) return '—';
   const sign = change >= 0 ? "+" : "";
   return `${sign}${change.toFixed(2)}%`;
 }
