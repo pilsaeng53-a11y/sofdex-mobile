@@ -2,9 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Flame, TrendingUp, TrendingDown, Play, Pause, RotateCcw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-const ASSETS = ['BTC', 'ETH', 'SOL', 'BNB', 'JUP', 'RNDR', 'RAY', 'BONK', 'AVAX', 'HNT'];
+const ASSETS = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP', 'ADA', 'DOGE', 'AVAX', 'DOT', 'LINK', 'MATIC', 'LTC', 'ARB', 'OP', 'SUI', 'INJ', 'PEPE', 'NEAR', 'AAVE', 'JUP'];
 const EXCHANGES = ['Binance', 'OKX', 'Bybit', 'dYdX', 'Hyperliquid', 'BitMEX'];
-const PRICES = { BTC: 98425, ETH: 3842, SOL: 187, BNB: 412, JUP: 1.24, RNDR: 8.92, RAY: 5.83, BONK: 0.0000234, AVAX: 38.5, HNT: 8.45 };
+const PRICES = {
+  BTC: 98425, ETH: 3842, SOL: 187, BNB: 412, XRP: 0.592, ADA: 0.612, DOGE: 0.182,
+  AVAX: 38.5, DOT: 9.84, LINK: 18.72, MATIC: 0.894, LTC: 112.4, ARB: 1.12, OP: 2.34,
+  SUI: 3.82, INJ: 28.4, PEPE: 0.0000124, NEAR: 7.82, AAVE: 142.3, JUP: 1.24,
+};
 
 const REPLAY_PERIODS = ['24h', '7d', '30d'];
 
