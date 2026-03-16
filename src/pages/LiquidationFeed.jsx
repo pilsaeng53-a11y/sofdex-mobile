@@ -1,6 +1,55 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Flame, TrendingUp, TrendingDown, Play, Pause, RotateCcw } from 'lucide-react';
+import { Flame, TrendingUp, TrendingDown, Play, Pause, RotateCcw, Map } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+
+function LiqHeatmap({ asset, price }) {
+  if (!price) return null;
+  // Generate 8 price levels above and below current price
+  const levels = Array.from({ length: 16 }, (_, i) => {
+    const offset = (i - 8) * price * 0.005; // 0.5% steps
+    const lvlPrice = price + offset;
+    const seed = Math.abs(Math.round(offset * 100)) % 100;
+    const longs = seed * 1.2 + 20;
+    const shorts = (100 - seed) * 0.8 + 10;
+    return { price: lvlPrice, longs, shorts, total: longs + shorts };
+  });
+  const maxTotal = Math.max(...levels.map(l => l.total));
+
+  return (
+    <div className="bg-[#151c2e] rounded-2xl border border-[rgba(148,163,184,0.08)] p-4">
+      <div className="flex items-center gap-2 mb-3">
+        <Map className="w-3.5 h-3.5 text-orange-400" />
+        <span className="text-xs font-bold text-white">{asset} Liquidation Heatmap</span>
+        <span className="text-[10px] text-slate-500 ml-auto">by price level</span>
+      </div>
+      <div className="space-y-0.5">
+        {levels.map((lvl, i) => {
+          const isCurrent = i === 7 || i === 8;
+          const barPct = (lvl.total / maxTotal) * 100;
+          const longPct = (lvl.longs / lvl.total) * barPct;
+          const shortPct = barPct - longPct;
+          return (
+            <div key={i} className={`flex items-center gap-2 px-1 py-0.5 rounded ${isCurrent ? 'bg-[#00d4aa]/5 border border-[#00d4aa]/15' : ''}`}>
+              <span className={`text-[9px] font-mono w-20 flex-shrink-0 ${isCurrent ? 'text-[#00d4aa]' : 'text-slate-600'}`}>
+                ${lvl.price >= 1 ? lvl.price.toFixed(2) : lvl.price.toFixed(6)}
+                {isCurrent ? ' ◀' : ''}
+              </span>
+              <div className="flex-1 h-3 bg-[#0a0e1a] rounded overflow-hidden flex">
+                <div className="bg-red-500/70 rounded-l" style={{ width: `${longPct}%` }} />
+                <div className="bg-emerald-500/70 rounded-r" style={{ width: `${shortPct}%` }} />
+              </div>
+              <span className="text-[9px] text-slate-600 w-10 text-right flex-shrink-0">${(lvl.total * (PRICES[asset] || 100) * 0.001).toFixed(0)}K</span>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex gap-4 mt-2">
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-red-500/70" /><span className="text-[9px] text-slate-500">Long Liq</span></div>
+        <div className="flex items-center gap-1"><div className="w-2 h-2 rounded bg-emerald-500/70" /><span className="text-[9px] text-slate-500">Short Liq</span></div>
+      </div>
+    </div>
+  );
+}
 
 const ASSETS = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP', 'ADA', 'DOGE', 'AVAX', 'DOT', 'LINK', 'MATIC', 'LTC', 'ARB', 'OP', 'SUI', 'INJ', 'PEPE', 'NEAR', 'AAVE', 'JUP'];
 const EXCHANGES = ['Binance', 'OKX', 'Bybit', 'dYdX', 'Hyperliquid', 'BitMEX'];
