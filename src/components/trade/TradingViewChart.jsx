@@ -40,7 +40,7 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
     try {
       widgetRef.current = new window.TradingView.widget({
         container_id:        containerId,
-        symbol:              tvSymbol,
+        symbol:              tvSymbol ?? `BINANCE:SOLUSDT`,
         interval,
         width:               '100%',
         height,
