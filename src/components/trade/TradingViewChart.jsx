@@ -34,18 +34,17 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
       widgetRef.current = null;
     }
     containerRef.current.innerHTML = '';
-    setLoading(false);
     setError(false);
 
     try {
       widgetRef.current = new window.TradingView.widget({
         container_id:        containerId,
-        symbol:              tvSymbol ?? `BINANCE:SOLUSDT`,
+        symbol:              tvSymbol,
         interval,
         width:               '100%',
         height,
         theme:               'dark',
-        style:               '1',           // Candlestick — shows PRICE, not market cap
+        style:               '1',           // Candlestick
         locale:              'en',
         toolbar_bg:          '#0a0e1a',
         hide_top_toolbar:    false,
@@ -56,6 +55,7 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
         save_image:          false,
         backgroundColor:     '#0a0e1a',
         gridColor:           'rgba(148,163,184,0.04)',
+        autosize:            false,
         overrides: {
           'paneProperties.background':                          '#0a0e1a',
           'paneProperties.backgroundType':                      'solid',
@@ -69,8 +69,10 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
           'mainSeriesProperties.candleStyle.borderDownColor':   '#ef4444',
           'mainSeriesProperties.candleStyle.wickUpColor':       '#22c55e',
           'mainSeriesProperties.candleStyle.wickDownColor':     '#ef4444',
-          // Ensure no market cap study is auto-added
           'mainSeriesProperties.showPriceLine':                 true,
+        },
+        onChartReady: () => {
+          setLoading(false);
         },
       });
     } catch {
