@@ -37,7 +37,7 @@ function useLiveIndicatorPrices(indicators) {
 }
 
 export default function GlobalIndicators() {
-  const prices = useSimulatedPrices(INDICATORS);
+  const prices = useLiveIndicatorPrices(INDICATORS);
 
   return (
     <div className="px-4 mb-5">
