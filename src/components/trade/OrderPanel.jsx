@@ -92,11 +92,14 @@ export default function OrderPanel({ asset }) {
         </div>
       )}
 
-      {/* Collateral input */}
+      {/* Collateral selector */}
+      <CollateralSelector selected={collateral} onSelect={setCollateral} amount={parsedAmount} />
+
+      {/* Collateral amount input */}
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-[11px] text-slate-500 font-medium">{t('order_collateral')}</label>
-          <span className="text-[11px] text-slate-500">{t('order_balance')} <span className="text-slate-300 font-medium">$1,200</span></span>
+          <label className="text-[11px] text-slate-500 font-medium">{t('order_collateral')} Amount</label>
+          <span className="text-[11px] text-slate-500">{t('order_balance')} <span className="text-slate-300 font-medium">{collateral.balance.toLocaleString()} {collateral.symbol}</span></span>
         </div>
         <input
           type="number"
