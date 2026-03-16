@@ -6,7 +6,8 @@ import {
   ChevronRight, ChevronDown, Newspaper, Building2, MapPin,
   Settings, HelpCircle, FileText, Archive, Shield,
   BarChart2, Users, BookOpen, Rocket, Zap,
-  Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star
+  Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
+  Wrench, Compass, Sparkles, Brain
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 
@@ -23,6 +24,19 @@ const NAV_SECTIONS = [
     ],
   },
   {
+    labelKey: 'menu_aiTools',
+    items: [
+      { labelKey: 'menu_aiIntelligence',   page: 'AIIntelligence',    icon: Activity },
+      { labelKey: 'menu_aiWealthManager',  page: 'AIWealthManager',   icon: Brain },
+      { labelKey: 'menu_tradingTools',     page: 'TradingTools',      icon: Wrench },
+      { labelKey: 'menu_strategyMkt',      page: 'StrategyMarketplace', icon: BookOpen },
+      { labelKey: 'menu_assetDiscovery',   page: 'AssetDiscovery',    icon: Compass },
+      { labelKey: 'menu_marketHeatmap',    page: 'MarketHeatmap',     icon: BarChart3 },
+      { labelKey: 'menu_reputationScore',  page: 'ReputationScore',   icon: Shield },
+      { labelKey: 'menu_whatsNew',         page: 'WhatsNew',          icon: Sparkles },
+    ],
+  },
+  {
     labelKey: 'menu_discover',
     items: [
       { labelKey: 'menu_news',             page: 'News',            icon: Newspaper },
@@ -30,7 +44,6 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_realEstate',       page: 'RealEstate',      icon: MapPin },
       { labelKey: 'menu_analytics',        page: 'Analytics',       icon: PieChart },
       { labelKey: 'menu_launchpad',        page: 'Launchpad',       icon: Rocket },
-      { labelKey: 'menu_aiIntelligence',   page: 'AIIntelligence',  icon: Activity },
       { labelKey: 'menu_predictionMarket', page: 'PredictionMarket',icon: BarChart2 },
       { labelKey: 'menu_alerts',           page: 'Alerts',          icon: Bell },
       { labelKey: 'menu_leaderboard',      page: 'Leaderboard',     icon: BarChart3 },

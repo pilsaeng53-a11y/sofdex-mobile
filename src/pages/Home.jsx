@@ -16,6 +16,7 @@ import AIOpportunityCard from '../components/home/AIOpportunityCard';
 import ActivityStream from '../components/home/ActivityStream';
 import LaunchpadPreview from '../components/home/LaunchpadPreview';
 import MarketPulseBar from '../components/shared/MarketPulseBar';
+import AdvancedFeaturesPreview from '../components/home/AdvancedFeaturesPreview';
 
 export default function Home() {
   const { t } = useLang();
@@ -33,6 +34,7 @@ export default function Home() {
       <AISentimentCard />
       <GlobalIndicators />
       <AIOpportunityCard />
+      <AdvancedFeaturesPreview />
       <SmartDiscovery />
       <LaunchpadPreview />
       <FeaturedBanner />
