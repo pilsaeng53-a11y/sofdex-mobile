@@ -77,10 +77,11 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
       setError(true);
       setLoading(false);
     }
-  }, [tvSymbol, interval, height, containerId]);
+  }, [tvSymbol, interval, height, containerId, noChartAvailable]);
 
   // When symbol or interval changes: clear DOM + reset loading flag immediately
   useEffect(() => {
+    if (noChartAvailable) return;
     setLoading(true);
     setError(false);
     if (widgetRef.current) {
@@ -88,7 +89,7 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
       widgetRef.current = null;
     }
     if (containerRef.current) containerRef.current.innerHTML = '';
-  }, [tvSymbol, interval]);
+  }, [tvSymbol, interval, noChartAvailable]);
 
   // Load TV script once, then rebuild whenever tvSymbol or interval change
   useEffect(() => {
