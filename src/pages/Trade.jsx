@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { ALL_MARKETS, CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
 import TradingViewChart from '../components/trade/TradingViewChart';
+import AILeverageCard from '../components/trading/AILeverageCard';
 import OrderPanel from '../components/trade/OrderPanel';
 import OrderBook from '../components/trade/OrderBook';
 import RecentTrades from '../components/trade/RecentTrades';
@@ -101,6 +102,11 @@ export default function Trade() {
       {/* Chart */}
       <div className="px-4 pt-3 pb-3">
         <TradingViewChart symbol={symbol} height={275} />
+      </div>
+
+      {/* AI Leverage Card */}
+      <div className="px-4 pb-3">
+        <AILeverageCard symbol={symbol} />
       </div>
 
       {/* Trade tabs */}
