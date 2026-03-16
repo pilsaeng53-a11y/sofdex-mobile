@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart, Building2, ShieldCheck } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
-import { useMarketData } from '../components/shared/MarketDataProvider';
+import { useChartPrice } from '../components/shared/useChartPrice';
 import { formatPrice } from '../components/shared/MarketData';
 
 const holdings = [
