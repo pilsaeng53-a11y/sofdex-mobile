@@ -180,7 +180,7 @@ export default function OrderPanel({ asset }) {
       {/* Leverage */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
-          <label className="text-[11px] text-slate-500 font-medium">{t('order_leverage')}</label>
+          <label className="text-[11px] text-slate-500 font-medium">{t('order_leverage')} <span className="text-slate-600">max {maxLev}x</span></label>
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-bold text-[#00d4aa]">{leverage}x</span>
             {parsedAmount > 0 && (
@@ -190,12 +190,12 @@ export default function OrderPanel({ asset }) {
             )}
           </div>
         </div>
-        <div className="flex gap-1">
-          {leverageOptions.map(lev => (
+        <div className="flex gap-1 flex-wrap">
+          {getLeverageOptions(maxLev).map(lev => (
             <button
               key={lev}
               onClick={() => setLeverage(lev)}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] font-semibold transition-all ${
+              className={`flex-1 min-w-[28px] py-1.5 rounded-lg text-[10px] font-semibold transition-all ${
                 leverage === lev
                   ? 'bg-[#00d4aa]/15 text-[#00d4aa] border border-[#00d4aa]/20'
                   : 'bg-[#0d1220] text-slate-500 border border-transparent hover:text-slate-300'
@@ -210,10 +210,10 @@ export default function OrderPanel({ asset }) {
           <div
             className="h-full rounded-full transition-all"
             style={{
-              width: `${(leverage / 100) * 100}%`,
-              background: leverage <= 10
+              width: `${(leverage / maxLev) * 100}%`,
+              background: leverage <= maxLev * 0.2
                 ? '#22c55e'
-                : leverage <= 25
+                : leverage <= maxLev * 0.5
                 ? '#f59e0b'
                 : '#ef4444'
             }}
