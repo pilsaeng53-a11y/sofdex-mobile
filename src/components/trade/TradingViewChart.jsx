@@ -70,21 +70,22 @@ export default function TradingViewChart({ symbol = 'SOL', height = 340 }) {
     }
   }, [tvSymbol, interval, height, containerId]);
 
-  // Load TV script once
+  // Reset state when symbol changes so no stale chart is shown
+  useEffect(() => {
+    setLoading(true);
+    setError(false);
+    if (containerRef.current) containerRef.current.innerHTML = '';
+  }, [tvSymbol]);
+
+  // Load TV script once, rebuild on symbol/interval change
   useEffect(() => {
     if (window.TradingView) { buildWidget(); return; }
-
     const script = document.createElement('script');
     script.src   = 'https://s3.tradingview.com/tv.js';
     script.async = true;
     script.onload  = buildWidget;
     script.onerror = () => { setError(true); setLoading(false); };
     document.head.appendChild(script);
-  }, []);
-
-  // Rebuild on symbol / interval change
-  useEffect(() => {
-    if (window.TradingView) buildWidget();
   }, [tvSymbol, interval]);
 
   return (

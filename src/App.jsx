@@ -33,6 +33,7 @@ import TeamLeaderboard from './pages/TeamLeaderboard';
 import RegionalDistributor from './pages/RegionalDistributor';
 import MyTeam from './pages/MyTeam';
 import SolFort from './pages/SolFort';
+import CopyTraderDetail from './pages/CopyTraderDetail';
 import GovernanceDetail from './pages/GovernanceDetail';
 import DocLegalDocuments from './pages/DocLegalDocuments';
 import DocTokenStructure from './pages/DocTokenStructure';
@@ -96,6 +97,7 @@ const AuthenticatedApp = () => {
       <Route path="/DocRiskDisclosure" element={<LayoutWrapper currentPageName="DocRiskDisclosure"><DocRiskDisclosure /></LayoutWrapper>} />
       <Route path="/Swap" element={<LayoutWrapper currentPageName="Swap"><Swap /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
+      <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/GovernanceDetail" element={<LayoutWrapper currentPageName="GovernanceDetail"><GovernanceDetail /></LayoutWrapper>} />
       <Route path="/LaunchpadDetail" element={<LayoutWrapper currentPageName="LaunchpadDetail"><LaunchpadDetail /></LayoutWrapper>} />
       <Route path="/Announcements" element={<LayoutWrapper currentPageName="Announcements"><Announcements /></LayoutWrapper>} />
