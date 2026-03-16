@@ -18,6 +18,13 @@ import StrategyMarketplace from './pages/StrategyMarketplace';
 import ReputationScore from './pages/ReputationScore';
 import WhatsNew from './pages/WhatsNew';
 import AIWealthManager from './pages/AIWealthManager';
+import TradingFeed from './pages/TradingFeed';
+import TraderProfile from './pages/TraderProfile';
+import Discussions from './pages/Discussions';
+import Traders from './pages/Traders';
+import MyPosts from './pages/MyPosts';
+import Rewards from './pages/Rewards';
+import UniversalPortfolio from './pages/UniversalPortfolio';
 import SolFort from './pages/SolFort';
 import GovernanceDetail from './pages/GovernanceDetail';
 import DocLegalDocuments from './pages/DocLegalDocuments';
@@ -95,6 +102,13 @@ const AuthenticatedApp = () => {
       <Route path="/ReputationScore" element={<LayoutWrapper currentPageName="ReputationScore"><ReputationScore /></LayoutWrapper>} />
       <Route path="/WhatsNew" element={<LayoutWrapper currentPageName="WhatsNew"><WhatsNew /></LayoutWrapper>} />
       <Route path="/AIWealthManager" element={<LayoutWrapper currentPageName="AIWealthManager"><AIWealthManager /></LayoutWrapper>} />
+      <Route path="/TradingFeed" element={<LayoutWrapper currentPageName="TradingFeed"><TradingFeed /></LayoutWrapper>} />
+      <Route path="/TraderProfile" element={<LayoutWrapper currentPageName="TraderProfile"><TraderProfile /></LayoutWrapper>} />
+      <Route path="/Discussions" element={<LayoutWrapper currentPageName="Discussions"><Discussions /></LayoutWrapper>} />
+      <Route path="/Traders" element={<LayoutWrapper currentPageName="Traders"><Traders /></LayoutWrapper>} />
+      <Route path="/MyPosts" element={<LayoutWrapper currentPageName="MyPosts"><MyPosts /></LayoutWrapper>} />
+      <Route path="/Rewards" element={<LayoutWrapper currentPageName="Rewards"><Rewards /></LayoutWrapper>} />
+      <Route path="/UniversalPortfolio" element={<LayoutWrapper currentPageName="UniversalPortfolio"><UniversalPortfolio /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
