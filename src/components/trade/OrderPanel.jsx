@@ -4,16 +4,24 @@ import { useLang } from '../shared/LanguageContext';
 import CollateralSelector from './CollateralSelector';
 import { getCollateralAsset, getCollateralValue } from './CollateralEngine';
 
-const leverageOptions = [1, 2, 5, 10, 25, 50, 100];
 const pctButtons = ['25%', '50%', '75%', 'Max'];
+
+function getLeverageOptions(maxLev) {
+  const presets = [1, 2, 5, 10, 25, 50, 75, 100];
+  return presets.filter(l => l <= maxLev);
+}
 
 export default function OrderPanel({ asset }) {
   const { t } = useLang();
+  const maxLev = asset?.maxLeverage || 20;
   const [side, setSide] = useState('buy');
   const [orderType, setOrderType] = useState('market');
+  const [advancedType, setAdvancedType] = useState('');  // post-only, reduce-only, trailing, iceberg
   const [amount, setAmount] = useState('');
   const [limitPrice, setLimitPrice] = useState('');
-  const [leverage, setLeverage] = useState(10);
+  const [trailPct, setTrailPct] = useState('1.5');
+  const [icebergPct, setIcebergPct] = useState('20');
+  const [leverage, setLeverage] = useState(Math.min(10, maxLev));
   const [collateral, setCollateral] = useState(getCollateralAsset('USDT'));
 
   const basePrice = asset?.price || 0;
