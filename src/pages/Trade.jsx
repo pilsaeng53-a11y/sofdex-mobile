@@ -159,13 +159,13 @@ export default function Trade() {
       </div>
 
       {/* Tab content */}
-      <div className="px-4 pb-6">
-        {tab === 'Order' && <OrderPanel asset={{ ...baseAsset, price, change, maxLeverage: baseAsset.maxLeverage }} />}
-        {tab === 'Orderbook' && <OrderBook price={price} />}
-        {tab === 'Trades' && <RecentTrades price={price} />}
-        {tab === 'Positions' && <PositionsPanel />}
-        {tab === 'Calculator' && <PositionCalculator price={price} symbol={symbol} maxLeverage={baseAsset.maxLeverage || 20} />}
-      </div>
+       <div className="px-4 pb-6">
+         {tab === 'Order' && <OrderPanel asset={{ ...baseAsset, price: price_display, change, maxLeverage: baseAsset.maxLeverage }} />}
+         {tab === 'Orderbook' && <OrderBook price={price_display} />}
+         {tab === 'Trades' && <RecentTrades price={price_display} />}
+         {tab === 'Positions' && <PositionsPanel />}
+         {tab === 'Calculator' && <PositionCalculator price={price_display} symbol={symbol} maxLeverage={baseAsset.maxLeverage || 20} />}
+       </div>
     </div>
   );
 }
