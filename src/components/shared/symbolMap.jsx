@@ -59,8 +59,6 @@ export const SYMBOL_MAP = {
   'GLDx':       'AMEX:GLD',
   'SLVx':       'AMEX:SLV',
   // RWA Equities
-  'SP500-T':    'SP:SPX',
-  'TSLA-T':     'NASDAQ:TSLA',
   'RE-NYC':     'TVC:CSUSHPINSA',
   'RE-DXB':     'TVC:CSUSHPINSA',
   // Commodities & macro
