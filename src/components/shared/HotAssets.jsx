@@ -65,6 +65,7 @@ function MiniSparkline({ data, change }) {
 export default function HotAssets({ compact = false }) {
   const { t } = useLang();
   const [expanded, setExpanded] = useState(null);
+  const sofLive = useSOFPrice();
   const liveMap = useLiveMarkets(HOT_SYMBOLS);
 
   return (
