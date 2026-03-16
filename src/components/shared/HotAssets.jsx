@@ -83,7 +83,9 @@ export default function HotAssets({ compact = false }) {
 
       <div className="divide-y divide-[rgba(148,163,184,0.04)]">
         {HOT_ASSET_META.slice(0, compact ? 3 : 5).map((asset, i) => {
-          const live = liveMap[asset.symbol] || {};
+          // SOF: use live DexScreener price, others use Binance
+          const isSof = asset.symbol === 'SOF';
+          const live = isSof ? { price: sofLive.price, change: sofLive.change24h, sparkline: null } : (liveMap[asset.symbol] || {});
           const price    = live.price   ?? null;
           const change   = live.change  ?? 0;
           const sparkline = live.sparkline;
