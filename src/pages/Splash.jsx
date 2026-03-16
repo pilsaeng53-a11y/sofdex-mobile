@@ -43,8 +43,8 @@ export default function Splash() {
             className="mb-8"
           >
             <div className="relative">
-              <div className="w-24 h-24 rounded-2xl overflow-hidden shadow-2xl shadow-[#00d4aa]/20 flex items-center justify-center bg-[#0d1520]">
-                <img src={LOGO_URL} alt="SolFort" className="w-20 h-20 object-contain" />
+              <div className="w-28 h-28 rounded-full overflow-hidden shadow-2xl shadow-[#8b5cf6]/30 flex items-center justify-center bg-transparent">
+                <img src={LOGO_3D_URL} alt="SolFort" className="w-28 h-28 object-contain" />
               </div>
               <div className="absolute -inset-2 rounded-3xl border border-[#00d4aa]/20 animate-pulse" />
             </div>
