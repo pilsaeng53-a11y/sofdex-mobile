@@ -226,6 +226,7 @@ export const translations = {
     menu_applyDistributor: 'Apply as Distributor',
     menu_partnerLocked: 'Partner features locked',
     menu_partnerPending: 'Application pending review',
+    menu_aiIntelHub: 'AI Intelligence Hub',
     // Hot assets & AI panel
     hot_assets: 'Hot Assets',
     ai_market_panel: 'AI Market Insight',
