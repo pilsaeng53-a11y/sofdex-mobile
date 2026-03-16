@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { MessageSquare, Heart, Plus, Pin, ChevronRight } from 'lucide-react';
+import AssetSentimentVote from '../components/shared/AssetSentimentVote';
+import CommentSection from '../components/community/CommentSection';
 
 const CHANNELS = [
   { key: 'market', label: '📊 Market Discussion', desc: 'Price action, macro trends' },
@@ -67,6 +69,18 @@ export default function Discussions() {
         ))}
       </div>
 
+      {/* Sentiment Voting */}
+      {channel === 'market' && (
+        <div className="space-y-2">
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Community Sentiment</p>
+          <div className="grid grid-cols-1 gap-2">
+            {['BTC', 'ETH', 'SOL'].map(sym => (
+              <AssetSentimentVote key={sym} symbol={sym} compact />
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Posts */}
       <div className="space-y-3">
         {posts.map(post => (
@@ -96,15 +110,9 @@ export default function Discussions() {
                   <Heart className="w-3.5 h-3.5" fill={likedIds.has(post.id) ? 'currentColor' : 'none'} />
                   {post.likes + (likedIds.has(post.id) ? 1 : 0)}
                 </button>
-                <button className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#00d4aa]">
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  {post.replies} replies
-                </button>
               </div>
-              <button className="flex items-center gap-1 text-xs text-slate-400 hover:text-[#00d4aa]">
-                View thread <ChevronRight className="w-3 h-3" />
-              </button>
             </div>
+            <CommentSection postId={post.id} />
           </div>
         ))}
       </div>
