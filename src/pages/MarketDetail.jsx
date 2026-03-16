@@ -4,7 +4,7 @@ import { ArrowLeft, Star, Share2, TrendingUp, TrendingDown, Activity, BarChart3,
 import { getMarketBySymbol, formatPrice, formatChange } from '../components/shared/MarketData';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { getTVSymbol } from '../components/shared/symbolMap';
-import TradingViewChart from '../components/trade/TradingViewChart';
+import TradingViewChart from '../components/trade/TradingViewChart.jsx';
 
 export default function MarketDetail() {
   const urlParams = new URLSearchParams(window.location.search);
