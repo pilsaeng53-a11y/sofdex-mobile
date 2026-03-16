@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Flame, TrendingUp, TrendingDown, Zap, Eye, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLang } from './LanguageContext';
-import { useLiveMarkets } from './useLiveMarket';
-import { useSOFPrice, formatSOFPrice } from './useSOFPrice';
-import { formatPrice } from './MarketData';
+import { useChartPrice } from './useChartPrice';
+import { formatSOFPrice, formatPrice } from './useSOFPrice';
+import { formatPrice as formatPriceUtil } from './MarketData';
 
 // Static metadata for hot assets — price/change come from live engine
 const HOT_ASSET_META = [
