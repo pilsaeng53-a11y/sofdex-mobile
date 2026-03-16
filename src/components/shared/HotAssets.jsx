@@ -112,7 +112,7 @@ export default function HotAssets({ compact = false }) {
 
                 <div className="text-right flex-shrink-0">
                   <p className="text-sm font-bold text-white">
-                    {price != null ? `$${formatPrice(price)}` : '—'}
+                    {price != null ? `$${asset.symbol === 'SOF' ? formatSOFPrice(price) : formatPrice(price)}` : '—'}
                   </p>
                   <div className={`flex items-center justify-end gap-0.5 text-xs font-semibold ${change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {change >= 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
