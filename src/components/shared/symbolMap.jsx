@@ -84,6 +84,7 @@ export const BINANCE_TICKER = {
   'RNDR': 'RENDERUSDT',
   'BONK': 'BONKUSDT',
   'HNT':  'HNTUSDT',
+  'RAY':  'RAYUSDT',
 };
 
 // ── SOFDex symbol → CoinGecko coin ID (fallback REST feed) ────────────────────
