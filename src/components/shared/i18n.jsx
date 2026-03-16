@@ -300,6 +300,14 @@ export const translations = {
     inst_note_generic:'이 자산은 독립적 검증을 받습니다. 기관 KYC 승인 후 실사 패키지를 제공합니다.',
     menu_institutional:'기관',
     menu_wallet:'지갑',
+    menu_aiTools: 'AI & 도구',
+    menu_aiWealthManager: 'AI 자산관리자',
+    menu_tradingTools: '트레이딩 도구',
+    menu_strategyMkt: '전략 마켓플레이스',
+    menu_assetDiscovery: '자산 발견',
+    menu_marketHeatmap: '시장 히트맵',
+    menu_reputationScore: '평판 점수',
+    menu_whatsNew: '새로운 기능',
   },
 
   ja: {
