@@ -194,7 +194,15 @@ export default function Portfolio() {
       <div className="px-4 mb-5">
         <h3 className="text-sm font-bold text-white mb-3">{t('portfolio_cryptoHoldings')}</h3>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-          {holdings.filter(h => tab === 'All' ? true : h.type === 'crypto').map((h, i) => (
+          {holdings.filter(h => tab === 'All' ? true : h.type === 'crypto').map((h, i) => {
+            const live = getLiveAsset(h.symbol);
+            const liveChange = live.available ? live.change : h.change;
+            const livePrice  = live.available ? live.price  : null;
+            // Recalculate holding value if live price available
+            const liveValue  = livePrice && h.amount && !isNaN(parseFloat(h.amount))
+              ? `$${formatPrice(parseFloat(h.amount.replace(/,/g, '')) * livePrice)}`
+              : h.value;
+            return (
             <div key={i} className="p-3.5 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-[#1a2340] flex items-center justify-center text-[10px] font-bold text-[#00d4aa]">
@@ -206,13 +214,14 @@ export default function Portfolio() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-sm font-semibold text-white">{showBalance ? h.value : '••••'}</p>
-                <p className={`text-[11px] font-medium ${h.change > 0 ? 'text-emerald-400' : h.change < 0 ? 'text-red-400' : 'text-slate-500'}`}>
-                  {h.change > 0 ? '+' : ''}{h.change}%
+                <p className="text-sm font-semibold text-white">{showBalance ? liveValue : '••••'}</p>
+                <p className={`text-[11px] font-medium ${liveChange > 0 ? 'text-emerald-400' : liveChange < 0 ? 'text-red-400' : 'text-slate-500'}`}>
+                  {liveChange > 0 ? '+' : ''}{liveChange.toFixed(2)}%
                 </p>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       )}
