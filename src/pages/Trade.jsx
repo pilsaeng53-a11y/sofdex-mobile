@@ -37,12 +37,7 @@ export default function Trade() {
   const longPct = lsBase;
   const shortPct = 100 - lsBase;
 
-  // Open interest (deterministic seed based on symbol + price)
-  const oiRaw = price * ((symbol.charCodeAt(0) % 8) + 4) * 12500;
   const formatOI = (v) => v >= 1e9 ? `$${(v/1e9).toFixed(2)}B` : `$${(v/1e6).toFixed(0)}M`;
-
-  const h24High = (price * 1.028).toFixed(2);
-  const h24Low = (price * 0.972).toFixed(2);
 
   return (
     <div className="min-h-screen">
