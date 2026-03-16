@@ -76,15 +76,28 @@ export default function Trade() {
           {[
             { label: t('trade_24hHigh'), value: `$${h24High}`, color: 'text-white' },
             { label: t('trade_24hLow'), value: `$${h24Low}`, color: 'text-white' },
-            { label: t('trade_volume'), value: baseAsset.volume || '2.8B', color: 'text-white' },
+            { label: t('trade_volume'), value: baseAsset.volume || '—', color: 'text-white' },
             { label: t('trade_funding'), value: `${fundingPositive ? '+' : ''}${fundingVal.toFixed(4)}%`, color: fundingPositive ? 'text-emerald-400' : 'text-red-400' },
-            { label: t('trade_marketCap'), value: baseAsset.mcap || '—', color: 'text-white' },
+            { label: 'Open Int.', value: formatOI(oiRaw), color: 'text-white' },
+            { label: 'L/S Ratio', value: `${longPct}/${shortPct}`, color: longPct >= 50 ? 'text-emerald-400' : 'text-red-400' },
           ].map(stat => (
             <div key={stat.label} className="flex-shrink-0">
               <p className="text-[10px] text-slate-500">{stat.label}</p>
               <p className={`text-[11px] font-semibold ${stat.color}`}>{stat.value}</p>
             </div>
           ))}
+        </div>
+
+        {/* Long/Short ratio bar */}
+        <div className="mt-2">
+          <div className="flex rounded-full overflow-hidden h-1">
+            <div className="bg-emerald-500 transition-all" style={{ width: `${longPct}%` }} />
+            <div className="bg-red-500 flex-1" />
+          </div>
+          <div className="flex justify-between text-[9px] mt-0.5">
+            <span className="text-emerald-400">Long {longPct}%</span>
+            <span className="text-red-400">Short {shortPct}%</span>
+          </div>
         </div>
       </div>
 
