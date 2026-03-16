@@ -67,7 +67,7 @@ export default function PartnerHub() {
 
         <div className="bg-[#151c2e] rounded-2xl border border-[rgba(148,163,184,0.08)] p-4 space-y-3">
           <h3 className="text-sm font-bold text-white">How it works</h3>
-          {['Apply and get approved as a distributor', 'Share your referral link with your network', 'Earn commission from your team's trading volume', 'Advance tiers for higher commission rates'].map((step, i) => (
+          {['Apply and get approved as a distributor', 'Share your referral link with your network', 'Earn commission from your team trading volume', 'Advance tiers for higher commission rates'].map((step, i) => (
             <div key={i} className="flex items-start gap-3">
               <div className="w-5 h-5 rounded-full bg-[#00d4aa]/20 text-[#00d4aa] text-[10px] font-bold flex items-center justify-center flex-shrink-0">{i + 1}</div>
               <p className="text-xs text-slate-400">{step}</p>
