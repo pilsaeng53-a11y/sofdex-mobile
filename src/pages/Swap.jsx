@@ -161,19 +161,13 @@ export default function Swap() {
 
   const getPrice = useCallback((asset) => {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
+    // SOF: use live DexScreener price
     if (asset.symbol === 'SOF') return sofLive.price || 0.0001;
+    // All other assets: live Binance/CoinGecko price, fallback to MarketData static
     const live = getLiveAsset?.(asset.symbol);
     if (live?.price) return live.price;
-    // fallback static prices
-    const fallbacks = {
-      SOL: 187.42, BTC: 98425.5, ETH: 3842.18, JUP: 1.24,
-      RNDR: 8.92, BONK: 0.0000234,
-      'GOLD-T': 2341.80, TBILL: 100.24, 'RE-NYC': 52.40,
-      'SP500-T': 5842.30, 'TSLA-T': 248.90,
-      AAPLx: 227.50, TSLAx: 248.90, NVDAx: 892.40, SPYx: 584.20, GLDx: 232.40,
-    };
-    return fallbacks[asset.symbol] ?? 1;
-  }, [getLiveAsset]);
+    return getMarketBySymbol(asset.symbol)?.price ?? 1;
+  }, [getLiveAsset, sofLive.price]);
 
   const fromPrice = getPrice(fromAsset);
   const toPrice = getPrice(toAsset);
