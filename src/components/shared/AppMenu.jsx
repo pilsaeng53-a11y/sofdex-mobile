@@ -7,7 +7,8 @@ import {
   Settings, HelpCircle, FileText, Archive, Shield,
   BarChart2, Users, BookOpen, Rocket, Zap,
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
-  Wrench, Compass, Sparkles, Brain
+  Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
+  Trophy, Copy, Layers
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 
@@ -58,12 +59,36 @@ const NAV_SECTIONS = [
     ],
   },
   {
+    labelKey: 'menu_community',
+    items: [
+      { labelKey: 'menu_tradingFeed',   page: 'TradingFeed',   icon: Activity },
+      { labelKey: 'menu_discussions',   page: 'Discussions',   icon: MessageSquare },
+      { labelKey: 'menu_traders',       page: 'Traders',       icon: Users },
+      { labelKey: 'menu_myPosts',       page: 'MyPosts',       icon: Star },
+    ],
+  },
+  {
+    labelKey: 'menu_copyTradeSection',
+    items: [
+      { labelKey: 'menu_copyTrading',    page: 'CopyTrading',   icon: Copy },
+      { labelKey: 'menu_socialTrading',  page: 'SocialTrading', icon: TrendingUp },
+      { labelKey: 'menu_leaderboard',    page: 'Leaderboard',   icon: Trophy },
+      { labelKey: 'menu_rewards',        page: 'Rewards',       icon: Gift },
+    ],
+  },
+  {
+    labelKey: 'menu_universalPortfolio',
+    items: [
+      { labelKey: 'menu_uniPortfolio',  page: 'UniversalPortfolio', icon: Layers },
+      { labelKey: 'menu_earnStaking',   page: 'Earn',               icon: Zap },
+      { labelKey: 'menu_referralHub',   page: 'Referral',           icon: Rocket },
+    ],
+  },
+  {
     labelKey: 'menu_earnSocial',
     items: [
-      { labelKey: 'menu_earnStaking',   page: 'Earn',          icon: Zap },
-      { labelKey: 'menu_copyTrading',   page: 'CopyTrading',   icon: Users },
-      { labelKey: 'menu_socialTrading', page: 'SocialTrading', icon: Users },
-      { labelKey: 'menu_referralHub',   page: 'Referral',      icon: Rocket },
+      { labelKey: 'menu_wallet',        page: 'Wallet',        icon: Wallet },
+      { labelKey: 'menu_announcements', page: 'Announcements', icon: Bell },
     ],
   },
   {
