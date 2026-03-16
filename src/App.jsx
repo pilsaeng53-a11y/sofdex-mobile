@@ -16,6 +16,7 @@ import MarketHeatmap from './pages/MarketHeatmap';
 import AssetDiscovery from './pages/AssetDiscovery';
 import StrategyMarketplace from './pages/StrategyMarketplace';
 import ReputationScore from './pages/ReputationScore';
+import Home from './pages/Home';
 import WhatsNew from './pages/WhatsNew';
 import AIWealthManager from './pages/AIWealthManager';
 import TradingFeed from './pages/TradingFeed';
@@ -88,8 +89,8 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={
-        <LayoutWrapper currentPageName={mainPageKey}>
-          <MainPage />
+        <LayoutWrapper currentPageName="Home">
+          <Home />
         </LayoutWrapper>
       } />
       {Object.entries(Pages).map(([path, Page]) => (
