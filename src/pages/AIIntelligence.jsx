@@ -498,7 +498,7 @@ export default function AIIntelligence() {
               <span className="w-1.5 h-1.5 rounded-full bg-violet-400 pulse-dot" />
             </div>
             <div className="glass-card rounded-2xl p-3 mb-1 border border-violet-400/10">
-              <p className="text-[10px] text-slate-500">Tracking large wallet movements and exchange flows. Data sourced from on-chain analytics.</p>
+              <p className="text-[10px] text-slate-500">{t('ai_trackingLargeWallets')}</p>
             </div>
             {SMART_MONEY.map((tx, i) => (
               <div key={i} className="glass-card rounded-2xl p-3.5 flex items-center justify-between">
