@@ -148,10 +148,21 @@ export default function WalletPage() {
           <Wallet className="w-5 h-5 text-[#00d4aa]" />
           <h1 className="text-xl font-bold text-white">Wallet</h1>
         </div>
-        <button onClick={() => setShowBal(!showBal)}
-          className="w-9 h-9 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)]">
-          {showBal ? <Eye className="w-4 h-4 text-slate-400" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              // Trigger balance refresh
+              window.location.reload();
+            }}
+            disabled={loading}
+            className="w-9 h-9 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 disabled:opacity-50 transition-all">
+            <RotateCw className={`w-4 h-4 text-slate-400 ${loading ? 'animate-spin' : ''}`} />
+          </button>
+          <button onClick={() => setShowBal(!showBal)}
+            className="w-9 h-9 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)]">
+            {showBal ? <Eye className="w-4 h-4 text-slate-400" /> : <EyeOff className="w-4 h-4 text-slate-400" />}
+          </button>
+        </div>
       </div>
 
       {/* Address bar */}
