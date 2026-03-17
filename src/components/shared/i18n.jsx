@@ -455,6 +455,14 @@ export const translations = {
     ai_liveYield: 'Live 10Y yield — tracks TVC:US10Y / Yahoo ^TNX in real time',
     ai_disclaimer: 'AI analysis is for informational purposes only and does not guarantee returns.',
     ai_disclaimerNote: 'Users remain responsible for all investment decisions.',
+    // Additional detailed UI labels
+    ai_readMore: 'Read More',
+    ai_seeDetails: 'See Details',
+    ai_keySignals: 'Key Signals',
+    ai_relatedNews: 'Related News',
+    ai_aiReasoning: 'AI Reasoning',
+    ai_riskFactors: 'Risk Factors',
+    ai_marketContext: 'Market Context',
     },
 
   ko: {
