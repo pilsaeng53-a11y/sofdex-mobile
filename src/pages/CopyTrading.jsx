@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Copy, TrendingUp, Shield, Star, CheckCircle2, ExternalLink } from 'lucide-react';
+import { Users, Copy, TrendingUp, Shield, Star, CheckCircle2, ExternalLink, Wallet } from 'lucide-react';
+import { useWallet } from '../components/shared/WalletContext';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 
 const TRADERS = [
@@ -66,8 +67,12 @@ function MiniChart({ data }) {
 
 export default function CopyTrading() {
   const [copying, setCopying] = useState({});
+  const { isConnected, requireWallet } = useWallet();
 
-  const toggle = (rank) => setCopying(prev => ({ ...prev, [rank]: !prev[rank] }));
+  const toggle = (rank) => {
+    if (!requireWallet()) return;
+    setCopying(prev => ({ ...prev, [rank]: !prev[rank] }));
+  };
 
   return (
     <div className="min-h-screen pb-6">
@@ -125,9 +130,11 @@ export default function CopyTrading() {
                 className={`flex items-center gap-1 px-3 py-1.5 rounded-xl text-[10px] font-bold border transition-all ${
                   copying[trader.rank]
                     ? 'bg-[#00d4aa] text-white border-[#00d4aa] shadow-lg shadow-[#00d4aa]/20'
+                    : !isConnected
+                    ? 'bg-[#0d1220] text-slate-400 border-[rgba(148,163,184,0.1)] opacity-75'
                     : 'bg-[#00d4aa]/10 text-[#00d4aa] border-[#00d4aa]/20 hover:bg-[#00d4aa]/20'
                 }`}>
-                {copying[trader.rank] ? <CheckCircle2 className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />}
+                {copying[trader.rank] ? <CheckCircle2 className="w-2.5 h-2.5" /> : !isConnected ? <Wallet className="w-2.5 h-2.5" /> : <Copy className="w-2.5 h-2.5" />}
                 {copying[trader.rank] ? 'Copying' : 'Copy'}
               </button>
             </div>

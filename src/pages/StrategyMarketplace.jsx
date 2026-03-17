@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { BookOpen, TrendingUp, Star, Lock, ChevronRight } from 'lucide-react';
+import { BookOpen, TrendingUp, Star, Lock, ChevronRight, Wallet } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EXAMPLE_STRATEGIES } from '../components/strategies/StrategyExampleData';
+import { useWallet } from '../components/shared/WalletContext';
 
 export default function StrategyMarketplace() {
   const [sortBy, setSortBy] = useState('reputation');
   const [filterRisk, setFilterRisk] = useState('all');
+  const { isConnected, requireWallet } = useWallet();
 
   const riskColor = {
     'very-low': 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
@@ -127,9 +129,15 @@ export default function StrategyMarketplace() {
 
               {/* Buttons */}
               <div className="flex gap-2">
-                <button className="flex-1 px-3 py-2 bg-[#00d4aa]/10 border border-[#00d4aa]/20 text-[#00d4aa] text-[11px] font-semibold rounded-lg hover:bg-[#00d4aa]/20 transition-all flex items-center justify-center gap-1">
-                  <Lock className="w-3 h-3" />
-                  Subscribe
+                <button
+                  onClick={(e) => { e.preventDefault(); requireWallet(); }}
+                  className={`flex-1 px-3 py-2 text-[11px] font-semibold rounded-lg transition-all flex items-center justify-center gap-1 ${
+                    isConnected
+                      ? 'bg-[#00d4aa]/10 border border-[#00d4aa]/20 text-[#00d4aa] hover:bg-[#00d4aa]/20'
+                      : 'bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-slate-400 opacity-75'
+                  }`}>
+                  {isConnected ? <Lock className="w-3 h-3" /> : <Wallet className="w-3 h-3" />}
+                  {isConnected ? 'Subscribe' : 'Connect'}
                 </button>
                 <button className="flex-1 px-3 py-2 bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-slate-400 text-[11px] font-semibold rounded-lg hover:border-[#00d4aa]/30 transition-all flex items-center justify-center gap-1">
                   Performance
