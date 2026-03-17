@@ -63,8 +63,8 @@ function FakeQR({ data }) {
 export default function WalletPage() {
   const navigate = useNavigate();
   const { t } = useLang();
-  const { isConnected } = useWallet();
-  const [walletAddress] = useState(DEMO_ADDRESS);
+  const { isConnected, address, disconnect, requireWallet } = useWallet();
+  const walletAddress = address || DEMO_ADDRESS;
   const [tab, setTab] = useState('overview'); // overview | send | receive | history
   const [showBal, setShowBal] = useState(true);
   const [copied, setCopied] = useState(false);
