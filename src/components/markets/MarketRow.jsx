@@ -26,8 +26,10 @@ export default function MarketRow({ asset }) {
   const { getLiveAsset } = useMarketData();
   const live = getLiveAsset(asset.symbol);
 
-  const price     = live.available ? live.price     : asset.price;
-  const change    = live.available ? live.change    : asset.change;
+  // Commodity assets: return null until live data arrives (never show stale static seed)
+  const isCommodity = COMMODITY_SYMBOLS.has(asset.symbol);
+  const price  = live.available ? live.price  : (isCommodity ? null : asset.price);
+  const change = live.available ? live.change : (isCommodity ? 0   : asset.change);
   const sparkline = live.sparkline ?? null;
   const isPositive = change >= 0;
   const gradient  = symbolColors[asset.symbol] || 'from-slate-600 to-slate-500';
