@@ -1016,10 +1016,34 @@ export const translations = {
   },
 
   zh: {
-    nav_home:'首页', nav_markets:'市场', nav_trade:'交易', nav_portfolio:'投资组合', nav_more:'更多', nav_swap:'兑换',
-    menu_swap:'兑换', menu_solfort:'SOLFORT', menu_solfortPage:'SolFort 中心', menu_swapSof:'兑换 SOF',
-    menu_exchange:'交易所', menu_discover:'发现', menu_earnSocial:'赚取 & 社交', menu_liveFeed:'实时动态', menu_dao:'DAO', menu_account:'账户',
-    menu_home:'首页', menu_markets:'市场', menu_trade:'交易', menu_portfolio:'投资组合',
+    nav_home:'首页', nav_markets:'市场', nav_trade:'交易', nav_portfolio:'投资组合', nav_more:'更多',
+    nav_ai: 'AI', nav_activity: '活动',
+    // Menu sections
+    menu_futures: '期货', menu_trading: '交易', menu_aiTools: 'AI & 工具', menu_community: '社区', menu_portfolio_hub: '投资组合 & 钱包',
+    menu_news_section: '新闻 & 分析', menu_launchpad_section: '发射台 & RWA', menu_liveFeed: '实时动态', menu_dao: 'DAO',
+    menu_account: '账户', menu_partnerHub: '合作伙伴中心',
+    // Individual menu items
+    menu_home:'首页', menu_markets:'市场', menu_trade:'交易', menu_portfolio:'投资组合', menu_wallet: '钱包',
+    menu_futuresDashboard: '期货仪表板', menu_futuresTrade: '期货交易', menu_futuresMarketWatch: '市场监测',
+    menu_futuresPositions: '仓位', menu_globalMarkets: '全球市场', menu_copyTrading: '跟单交易',
+    menu_marketHeatmap: '市场热力图', menu_swap: '兑换',
+    menu_aiIntelligence: 'AI情报', menu_aiWealthManager: 'AI财富管理', menu_strategyMkt: '策略市场',
+    menu_strategyVaults: '策略金库', menu_strategyFunds: '策略ETF', menu_assetDiscovery: '资产发现',
+    menu_tradingTools: '交易工具', menu_tradingFeed: '交易动态', menu_discussions: '讨论', menu_traders: '交易者',
+    menu_leaderboard: '排行榜', menu_rewards: '奖励', menu_uniPortfolio: '通用投资组合', menu_myStrategyInv: '我的投资',
+    menu_earnStaking: '赚取 / 质押', menu_referralHub: '推荐中心', menu_news: '新闻', menu_analytics: '分析',
+    menu_aiIntelHub: 'AI情报中心', menu_whatsNew: '新功能', menu_alerts: '警报', menu_launchpad: '发射台',
+    menu_predictionMarket: '预测市场', menu_rwaMarkets: 'RWA市场', menu_realEstate: '房地产',
+    menu_liquidationFeed: '清算动态', menu_whaleTracker: '鲸鱼追踪', menu_fundingRates: '资金费率',
+    menu_openInterest: '未平仓量', menu_announcements: '公告', menu_solfortPage: 'SolFort 中心',
+    menu_institutional: '机构', menu_reputationScore: '信誉评分',
+    // Partner & governance sections
+    menu_partnerHubMain: '合作伙伴仪表板', menu_downlineTree: '下线树', menu_commissionDist: '佣金',
+    menu_rankProgress: '等级进度', menu_teamLeaderboard: '团队排行榜', menu_regionalDist: '地区',
+    menu_myTeam: '我的团队', menu_applyDistributor: '申请分销商', menu_partnerLocked: '合作伙伴功能已锁定',
+    menu_partnerPending: '申请审核中', menu_governance: '治理',
+    // Account menu
+    menu_settings: '设置', menu_support: '支持', menu_notifications: '通知', menu_activity: '活动',
     menu_news:'新闻', menu_rwaMarkets:'RWA市场', menu_realEstate:'房地产', menu_analytics:'分析', menu_launchpad:'发射台',
     menu_earnStaking:'赚取/质押', menu_socialTrading:'社交交易', menu_copyTrading:'跟单交易', menu_referralHub:'推荐中心',
     menu_liquidationFeed:'清算动态', menu_whaleTracker:'鲸鱼追踪器', menu_governance:'治理',
