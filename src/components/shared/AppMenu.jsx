@@ -144,9 +144,12 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
       <Link
         to={createPageUrl(item.page)}
         onClick={onClose}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
-          isActive ? 'bg-[#00d4aa]/10 text-[#00d4aa]' : 'text-slate-300 hover:text-white hover:bg-[#151c2e]'
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+          isActive
+            ? 'bg-[#00d4aa]/10 text-[#00d4aa]'
+            : 'text-slate-300 hover:text-white hover:bg-[#151c2e]'
         }`}
+        style={isActive ? { boxShadow: '0 0 0 1px rgba(0,212,170,0.15), inset 0 0 20px rgba(0,212,170,0.04)' } : {}}
       >
         <Icon className={`w-4 h-4 flex-shrink-0 transition-colors ${isActive ? 'text-[#00d4aa]' : 'text-slate-500 group-hover:text-[#00d4aa]'}`} />
         <span className="text-sm font-medium">{item.label || t(item.labelKey)}</span>
@@ -163,8 +166,11 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
       />
 
       <div
-        className="relative w-72 max-w-[85vw] h-full bg-[#0d1220] border-r border-[rgba(148,163,184,0.08)] flex flex-col overflow-y-auto transition-transform duration-300"
-        style={{ transform: visible ? 'translateX(0)' : 'translateX(-100%)' }}
+        className="relative w-72 max-w-[85vw] h-full bg-[#0d1220] border-r border-[rgba(148,163,184,0.07)] flex flex-col overflow-y-auto transition-transform duration-300"
+        style={{
+          transform: visible ? 'translateX(0)' : 'translateX(-100%)',
+          boxShadow: visible ? '4px 0 40px rgba(0,0,0,0.6), 4px 0 80px rgba(0,0,0,0.3)' : 'none',
+        }}
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-5 pb-4 border-b border-[rgba(148,163,184,0.06)]">
