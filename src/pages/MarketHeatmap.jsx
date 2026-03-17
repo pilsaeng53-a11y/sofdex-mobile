@@ -192,11 +192,13 @@ function TileDetail({ asset, liveChange, livePrice, aiScore, onTrade, onClose })
               {change >= 0 ? '+' : ''}{change.toFixed(2)}%
             </p>
             <p className="text-sm text-slate-300">
-              ${price >= 1000
-                ? price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                : price >= 1 ? price.toFixed(2)
-                : price >= 0.01 ? price.toFixed(4)
-                : price.toFixed(8)}
+              {price != null
+                ? `$${price >= 1000
+                    ? price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    : price >= 1 ? price.toFixed(2)
+                    : price >= 0.01 ? price.toFixed(4)
+                    : price.toFixed(8)}`
+                : <span className="text-slate-600 animate-pulse">Loading…</span>}
             </p>
           </div>
         </div>
