@@ -37,7 +37,9 @@ export default function MarketRow({ asset }) {
 
   return (
     <Link to={createPageUrl('MarketDetail') + `?symbol=${asset.symbol}`}>
-      <div className="flex items-center gap-3 py-3 px-3.5 hover:bg-[#151c2e] rounded-xl transition-all group">
+      <div className="flex items-center gap-3 py-3 px-3.5 rounded-xl transition-all duration-200 group hover:bg-[#151c2e]" style={{ transition: 'background 0.18s ease, box-shadow 0.18s ease' }}
+        onMouseEnter={e => e.currentTarget.style.boxShadow = 'inset 0 0 0 1px rgba(0,212,170,0.08), 0 2px 12px rgba(0,0,0,0.2)'}
+        onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
         <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0 shadow-md`}>
           <span className="text-[10px] font-black text-white">{asset.symbol.slice(0, 3)}</span>
         </div>
@@ -54,13 +56,16 @@ export default function MarketRow({ asset }) {
         <div className="text-right flex-shrink-0 min-w-[80px]">
           {price != null ? (
             <>
-              <p className="text-sm font-bold text-white">${formatPrice(price)}</p>
-              <p className={`text-[11px] font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+              <p className="text-sm font-bold text-white tabular-nums">${formatPrice(price)}</p>
+              <p className={`text-[11px] font-semibold tabular-nums ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
                 {formatChange(change)}
               </p>
             </>
           ) : (
-            <p className="text-sm font-bold text-slate-600 animate-pulse">—</p>
+            <div className="space-y-1">
+              <div className="skeleton h-4 w-16 rounded" />
+              <div className="skeleton h-3 w-10 rounded" />
+            </div>
           )}
         </div>
       </div>
