@@ -48,6 +48,7 @@ import MyStrategyInvestments from './pages/MyStrategyInvestments';
 import GovernanceDetail from './pages/GovernanceDetail';
 import FundingRates from './pages/FundingRates';
 import OpenInterest from './pages/OpenInterest';
+import Portfolio from './pages/Portfolio';
 import DocLegalDocuments from './pages/DocLegalDocuments';
 import MacroDetail from './pages/MacroDetail';
 import DocTokenStructure from './pages/DocTokenStructure';
