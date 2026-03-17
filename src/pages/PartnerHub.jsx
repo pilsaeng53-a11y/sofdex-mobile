@@ -7,6 +7,9 @@ import { Users, TrendingUp, Award, Gift, Map, GitBranch, BarChart3, ExternalLink
 import SolFortLogo from '../components/shared/SolFortLogo';
 import DistributorMap from '../components/partner/DistributorMap';
 import DistributorLeaderboard from '../components/partner/DistributorLeaderboard';
+import CryptoStrategyReferral from '../components/partner/CryptoStrategyReferral';
+import GlobalMarketsReferral from '../components/partner/GlobalMarketsReferral';
+import SOFSalesPartnerDashboard from '../components/partner/SOFSalesPartnerDashboard';
 
 const AFFILIATES_URL = 'https://www.solfort.foundation/affiliates';
 
@@ -114,7 +117,7 @@ const TEAM_STRUCTURE = [
 
 function DistributorDashboard({ isAdmin, applyForPartner, isPartnerPending }) {
   const [copied, setCopied] = useState(false);
-  const [section, setSection] = useState('dashboard'); // dashboard | map | leaderboard
+  const [section, setSection] = useState('dashboard'); // dashboard | map | leaderboard | referral | sof-sales
   const grade = GRADE_CONFIG['Gold'];
 
   const handleCopy = () => {
@@ -141,16 +144,18 @@ function DistributorDashboard({ isAdmin, applyForPartner, isPartnerPending }) {
       </div>
 
       {/* Section Nav */}
-      <div className="flex gap-1 bg-[#0a0e1a] rounded-xl p-1">
+      <div className="flex gap-1 bg-[#0a0e1a] rounded-xl p-1 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
         {[
           { key: 'dashboard', label: '📊 Dashboard' },
+          { key: 'referral', label: '🔗 Referral' },
           { key: 'map', label: '🗺️ Map' },
           { key: 'leaderboard', label: '🏆 Leaders' },
+          { key: 'sof-sales', label: '💎 SOF Sales' },
         ].map(s => (
           <button
             key={s.key}
             onClick={() => setSection(s.key)}
-            className={`flex-1 py-2 rounded-lg text-[10px] font-bold transition-all ${
+            className={`flex-shrink-0 py-2 px-3 rounded-lg text-[10px] font-bold transition-all ${
               section === s.key ? 'bg-[#151c2e] text-white border border-[rgba(148,163,184,0.1)]' : 'text-slate-500'
             }`}
           >
@@ -316,9 +321,26 @@ function DistributorDashboard({ isAdmin, applyForPartner, isPartnerPending }) {
           <DistributorLeaderboard />
         </div>
       )}
-    </div>
-  );
-}
+
+      {/* ── Referral (Two Independent Systems) ── */}
+      {section === 'referral' && (
+        <div className="space-y-6">
+          <div className="space-y-4">
+            <CryptoStrategyReferral />
+          </div>
+          <div className="border-t border-[rgba(148,163,184,0.08)] pt-6">
+            <GlobalMarketsReferral />
+          </div>
+        </div>
+      )}
+
+      {/* ── SOF Sales Partner (Approval-Based) ── */}
+      {section === 'sof-sales' && (
+        <SOFSalesPartnerDashboard />
+      )}
+      </div>
+      );
+      }
 
 // ─── Main Export ────────────────────────────────────────────────────────────
 export default function PartnerHub() {
