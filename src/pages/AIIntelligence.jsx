@@ -222,12 +222,22 @@ const LIQUIDATION_ZONES = [
   { asset: 'ETH', longCluster: '$3,400–$3,500',    shortCluster: '$4,100–$4,300',     risk: 'Med',  longSize: '$180M', shortSize: '$210M' },
 ];
 
+// RWA_VALUATIONS — current price is always derived from live market data at render time
+// fair/status/pct are AI model outputs (informational), NOT used as the main price display
 const RWA_VALUATIONS = [
-  { symbol: 'RE-NYC', name: 'NYC Real Estate', fair: '$58.20', current: '$52.40', status: 'Undervalued', pct: '+10.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'DCF model on 2024 rental yields + cap rate compression' },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold',  fair: '$2,290', current: '$2,341', status: 'Overvalued',  pct: '-2.2%',  color: 'text-red-400',    bg: 'bg-red-400/10',    basis: 'Spot gold price parity check vs. XAUUSD' },
-  { symbol: 'TBILL',  name: 'US T-Bill Token', fair: '$100.28',current: '$100.24',status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Yield-to-maturity NAV calculation' },
-  { symbol: 'RE-DXB', name: 'Dubai RE',        fair: '$148.00',current: '$124.50',status: 'Undervalued', pct: '+18.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'CBRE Dubai property index + yield spread model' },
+  { symbol: 'RE-NYC', name: 'NYC Real Estate', fairRaw: 58.20,  status: 'Undervalued', pct: '+10.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'DCF model on 2024 rental yields + cap rate compression' },
+  { symbol: 'GOLD-T', name: 'Tokenized Gold',  fairRaw: 3290,   status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Spot gold price parity check vs. XAUUSD — tracks live spot price' },
+  { symbol: 'TBILL',  name: 'US T-Bill Token', fairRaw: 100.28, status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Yield-to-maturity NAV calculation' },
+  { symbol: 'RE-DXB', name: 'Dubai RE',        fairRaw: 148.00, status: 'Undervalued', pct: '+18.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'CBRE Dubai property index + yield spread model' },
 ];
+
+// Helper: format a number as a price string
+function fmtLivePrice(p) {
+  if (p == null) return '—';
+  if (p >= 1000) return `$${p.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  if (p >= 1)    return `$${p.toFixed(2)}`;
+  return `$${p.toFixed(4)}`;
+}
 
 const OPPORTUNITY_SCANNER = [
   { asset: 'JUP',    type: 'Volume Spike',        detail: '8.4x above 30d avg',         signal: 'Watch for breakout',     color: 'text-violet-400',  bg: 'bg-violet-400/10',  factors: ['Volume spike', 'Price momentum', 'Narrative strength'] },
