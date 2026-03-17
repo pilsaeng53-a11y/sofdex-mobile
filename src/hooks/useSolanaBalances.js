@@ -114,13 +114,10 @@ export function useSolanaBalances(walletAddress) {
           SOF: { balance: 0, value: 0 },
         });
       } catch (err) {
-        setError(err.message || 'Failed to fetch balances');
-        setBalances({
-          SOL: { balance: 0, value: 0 },
-          USDC: { balance: 0, value: 0 },
-          USDT: { balance: 0, value: 0 },
-          SOF: { balance: 0, value: 0 },
-        });
+        console.error('Balance fetch error:', err);
+        setError(err.message || 'Failed to fetch wallet balances. Please try again.');
+        // On error, do NOT show fake data - set balances to null
+        setBalances(null);
       } finally {
         setLoading(false);
       }
