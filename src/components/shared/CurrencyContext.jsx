@@ -39,8 +39,12 @@ export const CurrencyProvider = ({ children }) => {
     };
 
     fetchRates();
-    // Refresh every 5 minutes
-    const interval = setInterval(fetchRates, 5 * 60 * 1000);
+    // Refresh every 20 seconds for real-time price synchronization
+    // When rates change, all components using useCurrency() re-render automatically
+    // This ensures displayed prices update instantly when either:
+    // 1. Asset prices change (from MarketDataProvider)
+    // 2. Exchange rates change (from this interval)
+    const interval = setInterval(fetchRates, 20 * 1000);
     return () => clearInterval(interval);
   }, []);
 
