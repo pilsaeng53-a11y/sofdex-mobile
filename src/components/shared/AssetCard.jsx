@@ -65,13 +65,19 @@ export default function AssetCard({ asset, compact = false }) {
         </div>
         <p className="text-sm font-semibold text-slate-100 mb-0.5">{asset.symbol}</p>
         <p className="text-[11px] text-slate-500 mb-2">{asset.name}</p>
-        <p className="text-lg font-bold text-white mb-1">${formatPrice(price)}</p>
-        <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-          isPositive ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'
-        }`}>
-          {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-          {formatChange(change)}
-        </div>
+        {price != null ? (
+          <>
+            <p className="text-lg font-bold text-white mb-1">${formatPrice(price)}</p>
+            <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+              isPositive ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'
+            }`}>
+              {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {formatChange(change)}
+            </div>
+          </>
+        ) : (
+          <p className="text-lg font-bold text-slate-600 animate-pulse mb-1">—</p>
+        )}
       </div>
     </Link>
   );
