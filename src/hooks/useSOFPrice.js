@@ -143,33 +143,43 @@ export function useSOFPrice(autoRefreshInterval = 10000) {
 
   // Swap output calculation
   const calculateOutput = useCallback((inputAmount, inputToken, outputToken) => {
-    if (!sofData.price) return 0;
+    // Check if price is valid
+    if (sofData.price === null || sofData.price === undefined || sofData.price <= 0) {
+      return 0; // Return 0 only if no valid price
+    }
     
     if (outputToken === 'SOF') {
-      return inputAmount / sofData.price;
+      const output = inputAmount / sofData.price;
+      return isNaN(output) ? 0 : output;
     }
     if (inputToken === 'SOF') {
-      return inputAmount * sofData.price;
+      const output = inputAmount * sofData.price;
+      return isNaN(output) ? 0 : output;
     }
     return inputAmount;
   }, [sofData.price]);
 
   // Portfolio value calculation
   const calculatePortfolio = useCallback((sofHolding) => {
-    return sofHolding * sofData.price;
+    if (sofData.price === null || sofData.price === undefined || sofData.price <= 0) {
+      return 0;
+    }
+    const value = sofHolding * sofData.price;
+    return isNaN(value) ? 0 : value;
   }, [sofData.price]);
 
   return {
     // Price data
-    sofPrice: sofData.price || 0,
+    sofPrice: sofData.price || null,
     change24h: sofData.change24h || 0,
     volume24h: sofData.volume24h || 0,
     liquidity: sofData.liquidity || 0,
     source: sofData.source || 'unknown',
+    poolAddress: sofData.poolAddress || null,
 
     // State
     loading,
-    error,
+    error: error || sofData.error,
 
     // Actions
     refresh,
