@@ -1,15 +1,19 @@
 /**
  * MarketDataProvider — unified live data engine for SOFDex.
  *
- * Strategy (layered, fastest first):
- * 1. CoinGecko REST — fires immediately on mount to populate data fast.
- * 2. Binance WebSocket @ticker stream — overlays real-time ticks as they arrive.
- *    Ticks are buffered and flushed to state every 500 ms to avoid render storms.
- * 3. Binance REST klines — sparkline data (1h candles, refreshed every 30 min).
- * 4. Auto-reconnect with exponential back-off on WS disconnect.
- * 5. CoinGecko polling fallback every 30 s if WS is not delivering data.
- * 6. Commodity REST polling — fetches live Gold/Oil/commodity prices from
- *    free public APIs every 60 s to keep RWA commodity assets in sync with charts.
+ * LIVE PRICE SOURCES:
+ * 1. Binance WebSocket @ticker — real-time crypto prices
+ * 2. CoinGecko REST — initial crypto load + 30s polling fallback
+ * 3. Yahoo Finance (via allorigins proxy) + Stooq CSV fallback
+ *    — covers ALL non-crypto assets: commodities, xStocks, xETFs, RWA
+ * 4. Metals.live — gold/silver spot (no-auth, CORS-allowed)
+ * 5. Frankfurter.app — EUR/USD FX rate (CORS-allowed)
+ *
+ * ARCHITECTURE RULE:
+ * Every non-crypto asset symbol is in NON_CRYPTO_SYMBOLS.
+ * Every component that calls getLiveAsset() for a non-crypto symbol
+ * must NOT fall back to the static seed in MarketData — it must wait
+ * for the live price from this provider.
  */
 import React, {
   createContext, useContext,
@@ -35,25 +39,78 @@ const CG_TO_SOF = {};
 CG_PAIRS.forEach(p => { CG_TO_SOF[p.cg] = p.sof; });
 
 // ── Context ───────────────────────────────────────────────────────────────────
-const defaultCtx = { liveData: {}, sparklines: {}, getLiveAsset: () => ({ available: false, price: null, change: null, sparkline: null }) };
+const defaultCtx = {
+  liveData: {},
+  sparklines: {},
+  getLiveAsset: () => ({ available: false, price: null, change: null, sparkline: null }),
+};
 export const MarketDataContext = createContext(defaultCtx);
 export const useMarketData = () => useContext(MarketDataContext);
 
-// ── Commodity / liquid-RWA symbol config ──────────────────────────────────────
-// Uses frankfurter.app (FX), open-source metal price APIs, and allorigins CORS
-// proxy for Yahoo Finance — all browser-accessible without API keys.
-const COMMODITY_CONFIG = {
-  'GOLD-T':   { yahoo: 'GC=F',       fallback: 3300   },
-  'SILVER-T': { yahoo: 'SI=F',       fallback: 33     },
-  'CRUDE-T':  { yahoo: 'CL=F',       fallback: 67     },
-  'SP500-T':  { yahoo: '%5EGSPC',    fallback: 5600   },
-  'TBILL':    { yahoo: '%5ETNX',     fallback: 4.25   },
-  'EURO-B':   { yahoo: 'EURUSD%3DX', fallback: 1.085  },
+// ── ALL non-crypto asset config — Yahoo Finance symbol, Stooq fallback ────────
+// Every asset here gets live price polling. Static seeds in MarketData are
+// only used for layout/metadata, NEVER for displayed prices.
+const NON_CRYPTO_CONFIG = {
+  // Liquid commodity-style RWA
+  'GOLD-T':   { yahoo: 'GC=F',       stooq: 'xauusd'  },
+  'SILVER-T': { yahoo: 'SI=F',       stooq: 'xagusd'  },
+  'CRUDE-T':  { yahoo: 'CL=F',       stooq: 'clusd'   },
+  'SP500-T':  { yahoo: '%5EGSPC',    stooq: 'spx'     },
+  'TBILL':    { yahoo: '%5ETNX',     stooq: 'tnx.b'   },
+  'EURO-B':   { yahoo: 'EURUSD%3DX', stooq: 'eurusd'  },
+  // Illiquid RWA — tokenized equities / real estate
+  'TSLA-T':   { yahoo: 'TSLA',       stooq: 'tsla.us' },
+  'RE-NYC':   { yahoo: 'VNQ',        stooq: 'vnq.us'  },   // proxy: Vanguard Real Estate ETF
+  'RE-DXB':   { yahoo: 'VNQ',        stooq: 'vnq.us'  },   // same proxy (no public DXB feed)
+  // xStocks — Tech
+  'AAPLx':    { yahoo: 'AAPL',       stooq: 'aapl.us' },
+  'MSFTx':    { yahoo: 'MSFT',       stooq: 'msft.us' },
+  'GOOGLx':   { yahoo: 'GOOGL',      stooq: 'googl.us'},
+  'AMZNx':    { yahoo: 'AMZN',       stooq: 'amzn.us' },
+  'METAx':    { yahoo: 'META',       stooq: 'meta.us' },
+  'NVDAx':    { yahoo: 'NVDA',       stooq: 'nvda.us' },
+  'TSLAx':    { yahoo: 'TSLA',       stooq: 'tsla.us' },
+  'NFLXx':    { yahoo: 'NFLX',       stooq: 'nflx.us' },
+  'AMDx':     { yahoo: 'AMD',        stooq: 'amd.us'  },
+  'INTCx':    { yahoo: 'INTC',       stooq: 'intc.us' },
+  'TSMx':     { yahoo: 'TSM',        stooq: 'tsm.us'  },
+  // xStocks — Finance
+  'JPMx':     { yahoo: 'JPM',        stooq: 'jpm.us'  },
+  'BACx':     { yahoo: 'BAC',        stooq: 'bac.us'  },
+  'GSx':      { yahoo: 'GS',         stooq: 'gs.us'   },
+  'BRKx':     { yahoo: 'BRK-B',      stooq: 'brk_b.us'},
+  // xStocks — Consumer
+  'DISx':     { yahoo: 'DIS',        stooq: 'dis.us'  },
+  'NIKEx':    { yahoo: 'NKE',        stooq: 'nke.us'  },
+  'SBUXx':    { yahoo: 'SBUX',       stooq: 'sbux.us' },
+  'MCDx':     { yahoo: 'MCD',        stooq: 'mcd.us'  },
+  // xStocks — Industrial
+  'CATx':     { yahoo: 'CAT',        stooq: 'cat.us'  },
+  'BAx':      { yahoo: 'BA',         stooq: 'ba.us'   },
+  'GEx':      { yahoo: 'GE',         stooq: 'ge.us'   },
+  // xStocks — Healthcare
+  'JNJx':     { yahoo: 'JNJ',        stooq: 'jnj.us'  },
+  'PFEx':     { yahoo: 'PFE',        stooq: 'pfe.us'  },
+  'MRKx':     { yahoo: 'MRK',        stooq: 'mrk.us'  },
+  // xStocks — Energy
+  'XOMx':     { yahoo: 'XOM',        stooq: 'xom.us'  },
+  'CVXx':     { yahoo: 'CVX',        stooq: 'cvx.us'  },
+  // xETFs
+  'SPYx':     { yahoo: 'SPY',        stooq: 'spy.us'  },
+  'QQQx':     { yahoo: 'QQQ',        stooq: 'qqq.us'  },
+  'VTIx':     { yahoo: 'VTI',        stooq: 'vti.us'  },
+  'DIAx':     { yahoo: 'DIA',        stooq: 'dia.us'  },
+  'IWMx':     { yahoo: 'IWM',        stooq: 'iwm.us'  },
+  'GLDx':     { yahoo: 'GLD',        stooq: 'gld.us'  },
+  'SLVx':     { yahoo: 'SLV',        stooq: 'slv.us'  },
 };
 
-// Exported set — all components that call getLiveAsset directly must check this
-// and return null (not the stale static seed) while live data hasn't arrived yet.
-export const COMMODITY_SYMBOLS = new Set(Object.keys(COMMODITY_CONFIG));
+/**
+ * COMMODITY_SYMBOLS — exported set of ALL non-crypto symbols.
+ * Every component must check this set and NOT fall back to the static
+ * MarketData seed price for any symbol in this set.
+ */
+export const COMMODITY_SYMBOLS = new Set(Object.keys(NON_CRYPTO_CONFIG));
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 export function MarketDataProvider({ children }) {
@@ -65,14 +122,13 @@ export function MarketDataProvider({ children }) {
   const reconnectRef   = useRef(null);
   const flushRef       = useRef(null);
   const cgPollRef      = useRef(null);
-  const commPollRef    = useRef(null);
-  const wsAliveRef     = useRef(false);   // tracks if WS is delivering data
+  const ncPollRef      = useRef(null);
+  const wsAliveRef     = useRef(false);
   const retryCount     = useRef(0);
   const alive          = useRef(true);
-  // Track previous commodity prices to compute 24h change
-  const prevCommodity  = useRef({});
+  const prevPrices     = useRef({});
 
-  // ── CoinGecko REST (initial fast load + fallback polling) ─────────────────
+  // ── CoinGecko REST (crypto — initial + fallback polling) ──────────────────
   async function fetchCoinGecko() {
     if (!alive.current || CG_IDS.length === 0) return;
     const ids = CG_IDS.join(',');
@@ -87,13 +143,8 @@ export function MarketDataProvider({ children }) {
     CG_PAIRS.forEach(({ sof, cg }) => {
       const d = data[cg];
       if (!d) return;
-      // Only write CoinGecko data if WS hasn't given us fresher data for this symbol
       if (!bufferRef.current[sof] && !wsAliveRef.current) {
-        patch[sof] = {
-          available: true,
-          price:     d.usd,
-          change:    d.usd_24h_change ?? 0,
-        };
+        patch[sof] = { available: true, price: d.usd, change: d.usd_24h_change ?? 0 };
       }
     });
     if (Object.keys(patch).length > 0) {
@@ -101,17 +152,12 @@ export function MarketDataProvider({ children }) {
     }
   }
 
-  // ── Commodity price fetch (RWA assets — Gold, Oil, S&P500, etc.) ────────
-  // Strategy: try two CORS-accessible paths for each symbol.
-  //   1. allorigins.win proxy → Yahoo Finance v8 (same price as TradingView)
-  //   2. stooq.com CSV (direct, CORS-allowed)
-  // First success wins. On total failure, keep last known price.
+  // ── Yahoo Finance via allorigins proxy ────────────────────────────────────
   async function fetchOneYahoo(yahooSym) {
-    const encoded = yahooSym; // already url-encoded in config
     const yUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(
-      `https://query1.finance.yahoo.com/v8/finance/chart/${encoded}?interval=1d&range=2d`
+      `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSym}?interval=1d&range=2d`
     )}`;
-    const res = await fetch(yUrl, { signal: AbortSignal.timeout(10000) });
+    const res = await fetch(yUrl, { signal: AbortSignal.timeout(12000) });
     if (!res.ok) throw new Error('allorigins non-200');
     const json = await res.json();
     const meta = json?.chart?.result?.[0]?.meta;
@@ -123,22 +169,11 @@ export function MarketDataProvider({ children }) {
     return { price: close, change };
   }
 
-  // Stooq symbol map — direct CORS fallback
-  const STOOQ_MAP = {
-    'GOLD-T':   'xauusd',
-    'SILVER-T': 'xagusd',
-    'CRUDE-T':  'clusd',
-    'SP500-T':  'spx',
-    'TBILL':    'tnx.b',
-    'EURO-B':   'eurusd',
-  };
-
-  async function fetchOneStooq(sofSym) {
-    const s = STOOQ_MAP[sofSym];
-    if (!s) throw new Error('no stooq sym');
+  // ── Stooq CSV — direct CORS fallback ─────────────────────────────────────
+  async function fetchOneStooq(stooqSym) {
     const res = await fetch(
-      `https://stooq.com/q/l/?s=${s}&f=sd2t2ohlcv&h&e=csv`,
-      { signal: AbortSignal.timeout(8000) }
+      `https://stooq.com/q/l/?s=${stooqSym}&f=sd2t2ohlcv&h&e=csv`,
+      { signal: AbortSignal.timeout(10000) }
     );
     if (!res.ok) throw new Error('stooq non-200');
     const text = await res.text();
@@ -152,37 +187,30 @@ export function MarketDataProvider({ children }) {
     return { price: close, change };
   }
 
-  // ── Metals.live — free, no-auth, CORS-allowed API for gold & silver ────
+  // ── Metals.live — best source for gold & silver ───────────────────────────
   async function fetchMetals() {
     try {
       const res = await fetch('https://metals.live/api/v1/spot', { signal: AbortSignal.timeout(8000) });
       if (!res.ok) throw new Error('metals non-200');
-      const data = await res.json(); // [{ metal: 'gold', price: 3300.xx }, ...]
+      const data = await res.json();
       const patch = {};
       data.forEach(item => {
-        if (item.metal === 'gold' && item.price) {
-          const prev = prevCommodity.current['GOLD-T'];
+        const sym = item.metal === 'gold' ? 'GOLD-T' : item.metal === 'silver' ? 'SILVER-T' : null;
+        if (sym && item.price) {
+          const prev = prevPrices.current[sym];
           const change = prev ? ((item.price - prev) / prev) * 100 : 0;
-          patch['GOLD-T'] = { available: true, price: item.price, change };
-          prevCommodity.current['GOLD-T'] = item.price;
-        }
-        if (item.metal === 'silver' && item.price) {
-          const prev = prevCommodity.current['SILVER-T'];
-          const change = prev ? ((item.price - prev) / prev) * 100 : 0;
-          patch['SILVER-T'] = { available: true, price: item.price, change };
-          prevCommodity.current['SILVER-T'] = item.price;
+          patch[sym] = { available: true, price: item.price, change };
+          prevPrices.current[sym] = item.price;
         }
       });
       if (Object.keys(patch).length > 0 && alive.current) {
         setLiveData(prev => ({ ...prev, ...patch }));
       }
       return Object.keys(patch);
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
-  // ── Frankfurter.app — free CORS-allowed FX rates ─────────────────────
+  // ── Frankfurter.app — EUR/USD FX ─────────────────────────────────────────
   async function fetchFX() {
     try {
       const res = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', { signal: AbortSignal.timeout(8000) });
@@ -190,44 +218,54 @@ export function MarketDataProvider({ children }) {
       const data = await res.json();
       const rate = data?.rates?.USD;
       if (!rate) throw new Error('no rate');
-      const prev = prevCommodity.current['EURO-B'];
+      const prev = prevPrices.current['EURO-B'];
       const change = prev ? ((rate - prev) / prev) * 100 : 0;
-      prevCommodity.current['EURO-B'] = rate;
+      prevPrices.current['EURO-B'] = rate;
       if (alive.current) {
         setLiveData(prev => ({ ...prev, 'EURO-B': { available: true, price: rate, change } }));
       }
       return ['EURO-B'];
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   }
 
-  async function fetchCommodityPrices() {
+  // ── Fetch ALL non-crypto assets in parallel batches ───────────────────────
+  async function fetchAllNonCrypto() {
     if (!alive.current) return;
 
-    // Fire metals.live and FX fetches in parallel (these are the most reliable)
+    // Fast dedicated sources first
     const [metalsHit, fxHit] = await Promise.all([fetchMetals(), fetchFX()]);
     const alreadyCovered = new Set([...metalsHit, ...fxHit]);
 
-    // For remaining symbols (crude, S&P500, TBILL) try Yahoo proxy then stooq
-    const remaining = Object.entries(COMMODITY_CONFIG).filter(([sym]) => !alreadyCovered.has(sym));
+    // Remaining assets — fetch in parallel (Yahoo → Stooq fallback)
+    const remaining = Object.entries(NON_CRYPTO_CONFIG).filter(([sym]) => !alreadyCovered.has(sym));
     if (remaining.length === 0) return;
 
     const patch = {};
-    await Promise.all(
-      remaining.map(async ([sofSym, cfg]) => {
-        try {
-          let result;
-          try { result = await fetchOneYahoo(cfg.yahoo); }
-          catch { result = await fetchOneStooq(sofSym); }
-          patch[sofSym] = { available: true, price: result.price, change: result.change };
-          prevCommodity.current[sofSym] = result.price;
-        } catch {
-          const prev = prevCommodity.current[sofSym];
-          if (prev) patch[sofSym] = { available: true, price: prev, change: 0 };
-        }
-      })
-    );
+
+    // Batch into groups of 8 to avoid overwhelming the proxy
+    const BATCH = 8;
+    for (let i = 0; i < remaining.length; i += BATCH) {
+      if (!alive.current) break;
+      const batch = remaining.slice(i, i + BATCH);
+      await Promise.all(
+        batch.map(async ([sofSym, cfg]) => {
+          try {
+            let result;
+            try   { result = await fetchOneYahoo(cfg.yahoo); }
+            catch { result = await fetchOneStooq(cfg.stooq); }
+            patch[sofSym] = { available: true, price: result.price, change: result.change };
+            prevPrices.current[sofSym] = result.price;
+          } catch {
+            // Keep last known price if both sources fail
+            const prev = prevPrices.current[sofSym];
+            if (prev != null) {
+              patch[sofSym] = { available: true, price: prev, change: 0 };
+            }
+            // If no previous price, leave as unavailable — component shows loading
+          }
+        })
+      );
+    }
 
     if (Object.keys(patch).length > 0 && alive.current) {
       setLiveData(prev => ({ ...prev, ...patch }));
@@ -301,25 +339,18 @@ export function MarketDataProvider({ children }) {
   useEffect(() => {
     alive.current = true;
 
-    // Layer 1: immediate CoinGecko fetch so UI shows data right away
+    // Crypto: immediate CoinGecko + WebSocket
     fetchCoinGecko();
-    // Layer 2: sparklines
     fetchSparklines();
-    // Layer 3: WebSocket for real-time ticks
     connectWS();
     startFlush();
-    // Layer 4a: metals.live + FX — fastest reliable sources, fire immediately
-    fetchMetals();
-    fetchFX();
-    // Layer 4b: full commodity poll (crude, S&P500, TBILL + metals fallback)
-    fetchCommodityPrices();
 
-    // CoinGecko polling every 30 s — acts as WS fallback
-    cgPollRef.current = setInterval(fetchCoinGecko, 30_000);
-    // Sparkline refresh every 30 min
-    const spTimer = setInterval(fetchSparklines, 30 * 60 * 1000);
-    // Commodity polling every 30 s (metals + FX update frequently)
-    commPollRef.current = setInterval(fetchCommodityPrices, 30_000);
+    // Non-crypto: fire immediately, then poll every 30s
+    fetchAllNonCrypto();
+
+    cgPollRef.current  = setInterval(fetchCoinGecko,      30_000);
+    ncPollRef.current  = setInterval(fetchAllNonCrypto,   30_000);
+    const spTimer      = setInterval(fetchSparklines, 30 * 60_000);
 
     return () => {
       alive.current = false;
@@ -327,7 +358,7 @@ export function MarketDataProvider({ children }) {
       clearTimeout(reconnectRef.current);
       clearInterval(flushRef.current);
       clearInterval(cgPollRef.current);
-      clearInterval(commPollRef.current);
+      clearInterval(ncPollRef.current);
       clearInterval(spTimer);
     };
   }, []);
