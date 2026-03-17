@@ -386,7 +386,7 @@ export default function AIIntelligence() {
         <p className="text-[11px] text-slate-500">{t('ai_poweredBy')}</p>
       </div>
 
-      {/* Overall Sentiment Banner */}
+      {/* Overall Sentiment Banner — live dynamic */}
       <div className="px-4 mb-4">
         <div className="relative overflow-hidden glass-card rounded-2xl p-4 border border-[#00d4aa]/10">
           <div className="absolute top-0 right-0 w-32 h-32 bg-[#00d4aa]/5 rounded-full blur-2xl" />
@@ -395,22 +395,25 @@ export default function AIIntelligence() {
               <div>
                 <p className="text-[10px] text-slate-500 font-medium mb-1">{t('ai_marketSentiment')}</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-2xl font-black text-emerald-400">{AI_SENTIMENT.label}</span>
-                  <span className="px-2 py-0.5 rounded-lg bg-emerald-400/10 text-emerald-400 text-[10px] font-bold border border-emerald-400/20">
-                    {AI_SENTIMENT.confidence} {t('ai_confidence')}
+                  <span className={`text-2xl font-black ${sentimentStyle}`}>{overallSentiment.label}</span>
+                  <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold border ${
+                    overallSentiment.label === 'Bullish' ? 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20'
+                    : overallSentiment.label === 'Bearish' ? 'bg-red-400/10 text-red-400 border-red-400/20'
+                    : 'bg-slate-400/10 text-slate-400 border-slate-400/20'}`}>
+                    {overallSentiment.confidence} {t('ai_confidence')}
                   </span>
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-black text-white">{AI_SENTIMENT.score}</p>
+                <p className="text-3xl font-black text-white">{overallSentiment.score}</p>
                 <p className="text-[10px] text-slate-500">/ 100</p>
               </div>
             </div>
             <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden mb-3">
-              <div className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400" style={{ width: `${AI_SENTIMENT.score}%` }} />
+              <div className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400" style={{ width: `${overallSentiment.score}%` }} />
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed mb-2">{AI_SENTIMENT.explanation}</p>
-            <ReasoningCard factors={AI_SENTIMENT.factors} risk={null} basis={AI_SENTIMENT.reasoning} />
+            <p className="text-[11px] text-slate-400 leading-relaxed mb-2">{overallSentiment.explanation}</p>
+            <ReasoningCard factors={overallSentiment.factors} risk={null} basis={overallSentiment.reasoning} />
           </div>
         </div>
       </div>
