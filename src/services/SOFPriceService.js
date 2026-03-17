@@ -105,11 +105,13 @@ export async function getSOFPriceFromPool(retryAttempt = 0) {
 }
 
 /**
- * Actively fetch SOF price from Dexscreener pool
+ * Actively fetch SOF price from Dexscreener pool with fallback to last-known-price
  * Primary source: Exact pool address on Solana Raydium
  * 
- * If fetch succeeds: Returns live market data
- * If fetch fails: Returns error state (NOT 0, NOT "No liquidity data")
+ * Behavior:
+ * - If fetch succeeds: Returns live market data
+ * - If fetch fails but has cached price: Returns cached price with 'delayed' status
+ * - If both fail: Returns error state (NOT 0, NOT "No liquidity data")
  * 
  * Auto-called every 3 seconds by useSOFPrice hook
  */
@@ -122,20 +124,31 @@ export async function fetchSOFPrice() {
     return result;
   }
 
-  // ✗ Dexscreener API failed - return error state
+  // ✗ Dexscreener API failed - check if we have a cached price
+  if (lastValidPrice && lastValidPrice.price) {
+    console.warn('[SOF] Using last-known price due to API failure');
+    return {
+      ...lastValidPrice,
+      apiStatus: 'delayed', // Mark as not live but still valid
+      timestamp: Date.now(),
+      source: 'dexscreener_cached',
+    };
+  }
+
+  // ✗ No API response AND no cached price - return error state
   // DO NOT return 0, DO NOT return "No liquidity data"
-  // Instead return null and let component handle it
   return {
     price: null,
     priceNative: null,
     change24h: null,
     volume24h: null,
     liquidity: null,
+    transactions: { buy24h: 0, sell24h: 0 },
     source: 'dexscreener_failed',
     poolAddress: SOF_POOL_ADDRESS,
     timestamp: Date.now(),
     apiStatus: 'error',
-    error: 'Unable to fetch SOF price from Dexscreener. Pool may have no liquidity or API is unavailable.',
+    error: 'Unable to fetch SOF price. Retrying...',
   };
 }
 
