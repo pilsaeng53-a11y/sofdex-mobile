@@ -45,27 +45,27 @@ export default function Account() {
   return (
     <div className="px-4 py-6 max-w-lg mx-auto space-y-5 pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Account</h1>
+       <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">{t('profile_title')}</h1>
         <button 
           onClick={() => disconnect()}
           className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-red-400 hover:bg-red-400/10 transition-all border border-red-400/20">
           <LogOut className="w-3.5 h-3.5" />
-          Disconnect
+          {t('profile_disconnectWallet')}
         </button>
       </div>
 
       {/* Wallet Info */}
       <div className="glass-card rounded-2xl p-5 space-y-4">
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Connected Wallet</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">{t('profile_connectedWallet')}</p>
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">Provider</span>
+              <span className="text-xs text-slate-400">{t('wallet_provider_label')}</span>
               <span className="text-xs font-semibold text-white capitalize">{walletName}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-xs text-slate-400">Network</span>
+              <span className="text-xs text-slate-400">{t('wallet_network_label')}</span>
               <span className="text-xs font-semibold text-[#00d4aa]">Solana (Mainnet)</span>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function Account() {
 
         {/* Address */}
         <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Wallet Address</p>
+          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">{t('wallet_address_label')}</p>
           <div className="bg-[#05070d] rounded-lg px-3 py-2.5 flex items-center gap-2">
             <code className="text-[11px] font-mono text-slate-300 flex-1 truncate">{shortAddress}</code>
             <button
