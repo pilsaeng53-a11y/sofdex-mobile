@@ -279,10 +279,14 @@ export default function StrategyCreator() {
 
           {/* Withdraw */}
           {creatorData.withdrawable > 0 && (
-            <button className="w-full px-4 py-3 bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 font-semibold rounded-xl hover:bg-emerald-400/20 transition-all flex items-center justify-center gap-2">
+            <WalletGatedButton
+              className="w-full px-4 py-3 bg-emerald-400/10 border border-emerald-400/20 text-emerald-400 font-semibold rounded-xl hover:bg-emerald-400/20 transition-all flex items-center justify-center gap-2"
+              requireWallet={true}
+              onClick={() => {}}
+            >
               <ArrowUpRight className="w-4 h-4" />
               Withdraw ${creatorData.withdrawable.toFixed(2)}
-            </button>
+            </WalletGatedButton>
           )}
         </div>
       )}
