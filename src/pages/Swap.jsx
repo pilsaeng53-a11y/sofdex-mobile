@@ -264,13 +264,22 @@ export default function Swap() {
           <div className="flex items-center gap-3">
             <AssetSelector selected={toAsset} onChange={setToAsset} exclude={fromAsset.symbol} />
             <div className="flex-1 text-right">
-              <p className="text-2xl font-bold text-[#00d4aa]">
-                {toAmount || <span className="text-slate-700">0.00</span>}
-              </p>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                ≈ ${toAmount && !isNaN(toAmount) ? (parseFloat(toAmount) * toPrice).toLocaleString('en', { maximumFractionDigits: 2 }) : '0.00'}
-              </p>
-            </div>
+               <p className="text-2xl font-bold text-[#00d4aa]">
+                 {toAmount ? (
+                   toAmount
+                 ) : toPrice <= 0 || !fromChartPrice.isLive ? (
+                   <span className="text-amber-400 text-sm">Price unavailable</span>
+                 ) : (
+                   <span className="text-slate-700">0.00</span>
+                 )}
+               </p>
+               <p className="text-[11px] text-slate-500 mt-0.5">
+                 {toAmount && !isNaN(toAmount)
+                   ? `≈ $${(parseFloat(toAmount) * toPrice).toLocaleString('en', { maximumFractionDigits: 2 })}`
+                   : '—'
+                 }
+               </p>
+             </div>
           </div>
         </div>
       </div>
