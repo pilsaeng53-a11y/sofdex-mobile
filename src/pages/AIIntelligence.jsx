@@ -312,8 +312,9 @@ export default function AIIntelligence() {
       const live = liveData[sym];
       const base = ALL_MARKETS_FLAT.find(m => m.symbol === sym);
       const liveAvailable = !!live?.available;
+      const isCommodity = COMMODITY_SYMBOLS.has(sym);
       const change = liveAvailable ? live.change : (base?.change ?? 0);
-      const price  = liveAvailable ? live.price  : (base?.price  ?? null);
+      const price  = liveAvailable ? live.price  : (isCommodity ? null : (base?.price ?? null));
       result[sym] = buildAssetSignal(sym, change, price, liveAvailable, base);
     });
     return result;
