@@ -547,10 +547,34 @@ export const translations = {
     },
 
   ko: {
-    nav_home:'홈', nav_markets:'마켓', nav_trade:'트레이드', nav_portfolio:'포트폴리오', nav_more:'더보기', nav_swap:'스왑',
-    menu_swap:'스왑', menu_solfort:'솔포트', menu_solfortPage:'SolFort 허브', menu_swapSof:'SOF 스왑',
-    menu_exchange:'거래소', menu_discover:'탐색', menu_earnSocial:'적립 & 소셜', menu_liveFeed:'실시간 피드', menu_dao:'DAO', menu_account:'계정',
-    menu_home:'홈', menu_markets:'마켓', menu_trade:'트레이드', menu_portfolio:'포트폴리오',
+    nav_home:'홈', nav_markets:'마켓', nav_trade:'트레이드', nav_portfolio:'포트폴리오', nav_more:'더보기',
+    nav_ai: 'AI', nav_activity: '활동',
+    // Menu sections
+    menu_futures: '선물', menu_trading: '트레이딩', menu_aiTools: 'AI & 도구', menu_community: '커뮤니티', menu_portfolio_hub: '포트폴리오 & 지갑',
+    menu_news_section: '뉴스 & 분석', menu_launchpad_section: '런치패드 & RWA', menu_liveFeed: '실시간 피드', menu_dao: 'DAO',
+    menu_account: '계정', menu_partnerHub: '파트너 허브',
+    // Individual menu items
+    menu_home:'홈', menu_markets:'마켓', menu_trade:'트레이드', menu_portfolio:'포트폴리오', menu_wallet: '지갑',
+    menu_futuresDashboard: '선물 대시보드', menu_futuresTrade: '선물 거래', menu_futuresMarketWatch: '시장 감시',
+    menu_futuresPositions: '포지션', menu_globalMarkets: '글로벌 마켓', menu_copyTrading: '카피 트레이딩',
+    menu_marketHeatmap: '시장 히트맵', menu_swap: '스왑',
+    menu_aiIntelligence: 'AI 인텔리전스', menu_aiWealthManager: 'AI 자산관리자', menu_strategyMkt: '전략 마켓플레이스',
+    menu_strategyVaults: '전략 볼트', menu_strategyFunds: '전략 ETF', menu_assetDiscovery: '자산 발견',
+    menu_tradingTools: '트레이딩 도구', menu_tradingFeed: '트레이딩 피드', menu_discussions: '토론', menu_traders: '트레이더',
+    menu_leaderboard: '리더보드', menu_rewards: '보상', menu_uniPortfolio: '유니버설 포트폴리오', menu_myStrategyInv: '내 투자',
+    menu_earnStaking: '적립 / 스테이킹', menu_referralHub: '추천 허브', menu_news: '뉴스', menu_analytics: '분석',
+    menu_aiIntelHub: 'AI 인텔리전스 허브', menu_whatsNew: '새로운 기능', menu_alerts: '알림', menu_launchpad: '런치패드',
+    menu_predictionMarket: '예측 시장', menu_rwaMarkets: 'RWA 마켓', menu_realEstate: '부동산',
+    menu_liquidationFeed: '청산 피드', menu_whaleTracker: '고래 추적기', menu_fundingRates: '펀딩 비율',
+    menu_openInterest: '미결제약정', menu_announcements: '공지사항', menu_solfortPage: 'SolFort 허브',
+    menu_institutional: '기관', menu_reputationScore: '평판 점수',
+    // Partner & governance sections
+    menu_partnerHubMain: '파트너 대시보드', menu_downlineTree: '다운라인 트리', menu_commissionDist: '수수료',
+    menu_rankProgress: '랭크 진행', menu_teamLeaderboard: '팀 리더보드', menu_regionalDist: '지역',
+    menu_myTeam: '내 팀', menu_applyDistributor: '디스트리뷰터 신청', menu_partnerLocked: '파트너 기능 잠김',
+    menu_partnerPending: '신청 검토 중', menu_governance: '거버넌스',
+    // Account menu
+    menu_settings: '설정', menu_support: '지원', menu_notifications: '알림', menu_activity: '활동',
     menu_news:'뉴스', menu_rwaMarkets:'RWA 시장', menu_realEstate:'부동산', menu_analytics:'분석', menu_launchpad:'런치패드',
     menu_earnStaking:'적립 / 스테이킹', menu_socialTrading:'소셜 트레이딩', menu_copyTrading:'카피 트레이딩', menu_referralHub:'추천 허브',
     menu_liquidationFeed:'청산 피드', menu_whaleTracker:'고래 추적기', menu_governance:'거버넌스', menu_announcements:'공지사항',
