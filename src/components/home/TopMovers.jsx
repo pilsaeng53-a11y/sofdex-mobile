@@ -4,6 +4,7 @@ import { useMarketData } from '../shared/MarketDataProvider';
 import MiniChart from '../shared/MiniChart';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import AnimatedPrice from '../shared/AnimatedPrice';
 
 const ALL_ASSETS = [...CRYPTO_MARKETS, ...RWA_MARKETS];
 
@@ -97,21 +98,42 @@ export default function TopMovers() {
               const isPos = asset.change >= 0;
               return (
                 <Link key={asset.symbol} to={createPageUrl('MarketDetail') + `?symbol=${asset.symbol}`}>
-                  <div className="flex items-center justify-between p-3.5 transition-all duration-200 hover:bg-[#1a2340] group/row" style={{ transition: 'background 0.18s ease' }}>
+                  <div
+                    className="flex items-center justify-between p-3.5 group/row stagger-item"
+                    style={{ animationDelay: `${i * 0.05}s` }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = '#1a2340';
+                      e.currentTarget.style.paddingLeft = '18px';
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = '';
+                      e.currentTarget.style.paddingLeft = '';
+                    }}
+                    onMouseDown={e => { e.currentTarget.style.transform = 'scale(0.99)'; }}
+                    onMouseUp={e => { e.currentTarget.style.transform = ''; }}
+                  >
                     <div className="flex items-center gap-3">
-                      <span className="text-[11px] text-slate-600 font-medium w-4">{i + 1}</span>
+                      <span className="text-[11px] text-slate-600 font-medium w-4 num-highlight">{i + 1}</span>
                       <div>
-                        <p className="text-sm font-semibold text-slate-100 group-hover/row:text-[#00d4aa] transition-colors">{asset.symbol}</p>
+                        <p className="text-sm font-semibold text-slate-100 group-hover/row:text-[#00d4aa] fluid">{asset.symbol}</p>
                         <p className="text-[11px] text-slate-500">{asset.name}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-4">
                       <MiniChart data={asset.sparkline} positive={isPos} width={60} height={24} />
                       <div className="text-right min-w-[80px]">
-                        <p className="text-sm font-semibold text-slate-100">${formatPrice(asset.price)}</p>
-                        <p className={`text-[11px] font-medium ${isPos ? 'text-emerald-400' : 'text-red-400'}`}>
-                          {isPos ? '+' : ''}{asset.change.toFixed(2)}%
-                        </p>
+                        <AnimatedPrice
+                          value={asset.price}
+                          prefix="$"
+                          formatter={formatPrice}
+                          className="text-sm font-semibold text-slate-100 num-highlight block"
+                        />
+                        <AnimatedPrice
+                          value={asset.change}
+                          formatter={v => `${v >= 0 ? '+' : ''}${v.toFixed(2)}%`}
+                          className={`text-[11px] font-medium num-highlight ${isPos ? 'text-emerald-400' : 'text-red-400'}`}
+                          flashOnly
+                        />
                       </div>
                     </div>
                   </div>
