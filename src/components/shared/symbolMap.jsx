@@ -87,11 +87,13 @@ export const SYMBOL_MAP = {
   // RWA Equities
   'RE-NYC':     'TVC:CSUSHPINSA',
   'RE-DXB':     'TVC:CSUSHPINSA',
-  // Commodities & macro
-  'GOLD-T':     'OANDA:XAUUSD',
-  'CRUDE-T':    'NYMEX:CL1!',
-  'TBILL':      'TVC:US10Y',
-  'EURO-B':     'TVC:EURUSD',
+  // Liquid commodity-style RWA — all mapped to market price feeds (NEVER market cap)
+  'GOLD-T':     'OANDA:XAUUSD',      // Spot gold — market price
+  'SILVER-T':   'OANDA:XAGUSD',      // Spot silver — market price
+  'CRUDE-T':    'NYMEX:CL1!',        // WTI crude oil futures — market price
+  'SP500-T':    'SP:SPX',            // S&P 500 index — market price
+  'TBILL':      'TVC:US10Y',         // US 10Y yield — market price
+  'EURO-B':     'TVC:EURUSD',        // EUR/USD FX rate — market price
   // Landmark Real Estate — use benchmark index proxies
   'RE-MHT-1':   'TVC:CSUSHPINSA',   // Case-Shiller US Home Price Index (closest public RE bench)
   'RE-DXB-1':   null,                // No public TV symbol for Dubai; chart uses internal series
