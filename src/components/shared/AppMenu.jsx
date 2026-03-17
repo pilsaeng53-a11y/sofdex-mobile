@@ -14,7 +14,7 @@ import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
 import SolFortLogo from './SolFortLogo';
 
-// Priority-ordered navigation
+// Priority-ordered navigation — grouped by real user intent
 const NAV_SECTIONS = [
   {
     labelKey: 'menu_trading',
@@ -22,18 +22,20 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_trade',        page: 'Trade',        icon: TrendingUp },
       { labelKey: 'menu_copyTrading',  page: 'CopyTrading',  icon: Copy },
       { labelKey: 'menu_markets',      page: 'Markets',      icon: BarChart3 },
+      { labelKey: 'menu_marketHeatmap',page: 'MarketHeatmap',icon: Flame },
       { labelKey: 'menu_swap',         page: 'Swap',         icon: ArrowDownUp },
     ],
   },
   {
     labelKey: 'menu_aiTools',
     items: [
-      { labelKey: 'menu_aiIntelligence',  page: 'AIIntelligence',     icon: Activity },
-      { labelKey: 'menu_aiWealthManager', page: 'AIWealthManager',    icon: Brain },
-      { labelKey: 'menu_tradingTools',    page: 'TradingTools',       icon: Wrench },
-      { labelKey: 'menu_strategyMkt',     page: 'StrategyMarketplace',icon: BookOpen },
-      { labelKey: 'menu_assetDiscovery',  page: 'AssetDiscovery',     icon: Compass },
-      { labelKey: 'menu_marketHeatmap',   page: 'MarketHeatmap',      icon: BarChart3 },
+      { labelKey: 'menu_aiIntelligence',  page: 'AIIntelligence',      icon: Brain },
+      { labelKey: 'menu_aiWealthManager', page: 'AIWealthManager',     icon: Sparkles },
+      { labelKey: 'menu_strategyMkt',     page: 'StrategyMarketplace', icon: BookOpen },
+      { labelKey: 'menu_strategyVaults',  page: 'StrategyVaults',      icon: Layers },
+      { labelKey: 'menu_strategyFunds',   page: 'StrategyIndexFunds',  icon: PieChart },
+      { labelKey: 'menu_assetDiscovery',  page: 'AssetDiscovery',      icon: Compass },
+      { labelKey: 'menu_tradingTools',    page: 'TradingTools',        icon: Wrench },
     ],
   },
   {
@@ -47,23 +49,24 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    labelKey: 'menu_news_section',
-    items: [
-      { labelKey: 'menu_news',        page: 'News',      icon: Newspaper },
-      { labelKey: 'menu_analytics',   page: 'Analytics', icon: PieChart },
-      { labelKey: 'menu_aiIntelHub',  page: 'AnalyticsIntelligence', icon: Brain },
-      { labelKey: 'menu_whatsNew',    page: 'WhatsNew',  icon: Sparkles },
-      { labelKey: 'menu_alerts',      page: 'Alerts',    icon: Bell },
-    ],
-  },
-  {
     labelKey: 'menu_portfolio_hub',
     items: [
       { labelKey: 'menu_portfolio',      page: 'Portfolio',          icon: Layers },
       { labelKey: 'menu_wallet',         page: 'Wallet',             icon: Wallet },
       { labelKey: 'menu_uniPortfolio',   page: 'UniversalPortfolio', icon: PieChart },
+      { labelKey: 'menu_myStrategyInv',  page: 'MyStrategyInvestments', icon: Star },
       { labelKey: 'menu_earnStaking',    page: 'Earn',               icon: Zap },
       { labelKey: 'menu_referralHub',    page: 'Referral',           icon: Gift },
+    ],
+  },
+  {
+    labelKey: 'menu_news_section',
+    items: [
+      { labelKey: 'menu_news',        page: 'News',                  icon: Newspaper },
+      { labelKey: 'menu_analytics',   page: 'Analytics',             icon: PieChart },
+      { labelKey: 'menu_aiIntelHub',  page: 'AnalyticsIntelligence', icon: Brain },
+      { labelKey: 'menu_whatsNew',    page: 'WhatsNew',              icon: Sparkles },
+      { labelKey: 'menu_alerts',      page: 'Alerts',                icon: Bell },
     ],
   },
   {
@@ -80,17 +83,17 @@ const NAV_SECTIONS = [
     items: [
       { labelKey: 'menu_liquidationFeed', page: 'LiquidationFeed', icon: Flame },
       { labelKey: 'menu_whaleTracker',    page: 'WhaleTracker',    icon: Eye },
-      { label: 'Funding Rates',           page: 'FundingRates',    icon: Zap },
-      { label: 'Open Interest',           page: 'OpenInterest',    icon: BarChart2 },
+      { labelKey: 'menu_fundingRates',    page: 'FundingRates',    icon: Zap },
+      { labelKey: 'menu_openInterest',    page: 'OpenInterest',    icon: BarChart2 },
       { labelKey: 'menu_announcements',   page: 'Announcements',   icon: Bell },
     ],
   },
   {
     labelKey: 'menu_solfort',
     items: [
-      { labelKey: 'menu_solfortPage',   page: 'SolFort',       icon: Star },
-      { labelKey: 'menu_institutional', page: 'Institutional', icon: Shield },
-      { labelKey: 'menu_reputationScore', page: 'ReputationScore', icon: Award },
+      { labelKey: 'menu_solfortPage',     page: 'SolFort',          icon: Star },
+      { labelKey: 'menu_institutional',   page: 'Institutional',    icon: Shield },
+      { labelKey: 'menu_reputationScore', page: 'ReputationScore',  icon: Award },
     ],
   },
 ];
