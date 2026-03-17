@@ -87,11 +87,11 @@ export default function Account() {
       </div>
 
       {/* Portfolio Summary */}
-      <div className="space-y-2">
-        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">Portfolio Summary</p>
+       <div className="space-y-2">
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">{t('portfolio_performance')}</p>
         <div className="glass-card rounded-2xl p-4 space-y-3">
           <div>
-            <p className="text-[11px] text-slate-500 mb-1">Total Value</p>
+            <p className="text-[11px] text-slate-500 mb-1">{t('portfolio_totalBalance')}</p>
             <p className="text-2xl font-bold text-[#00d4aa] num-large">
               {loading ? '...' : formatPriceRealtime(totalValue, displayCurrency, exchangeRates)}
             </p>
