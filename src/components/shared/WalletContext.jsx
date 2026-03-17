@@ -74,20 +74,35 @@ export function WalletProvider({ children }) {
     const provider = wallets[key];
 
     if (!provider) {
-      // Wallet not installed — open install page
-      const urls = {
-        phantom: 'https://phantom.app',
-        solflare: 'https://solflare.com',
-        backpack: 'https://backpack.app',
-      };
-      if (urls[key]) window.open(urls[key], '_blank');
-      throw new Error(`${name} is not installed`);
+      // Wallet not installed — throw error without redirect
+      throw new Error(`${name} wallet is not installed. Please install the ${name} extension and try again.`);
     }
 
     try {
-      const resp = await provider.connect();
-      const addr = resp?.publicKey?.toString() || provider.publicKey?.toString();
-      if (!addr) throw new Error('No public key returned');
+      let resp;
+      let addr;
+
+      // Handle Backpack specific connection flow
+      if (key === 'backpack' && window.backpack) {
+        try {
+          resp = await window.backpack.connect();
+          addr = resp?.publicKey?.toString();
+        } catch (backpackErr) {
+          // If connect fails, try the provider method
+          if (provider.connect) {
+            resp = await provider.connect();
+            addr = resp?.publicKey?.toString();
+          } else {
+            throw backpackErr;
+          }
+        }
+      } else {
+        // Standard wallet connection for Phantom, Solflare
+        resp = await provider.connect();
+        addr = resp?.publicKey?.toString() || provider.publicKey?.toString();
+      }
+
+      if (!addr) throw new Error(`${name} did not return a wallet address`);
 
       const newState = { isConnected: true, address: addr, walletName: name };
       setWalletState(newState);
@@ -102,7 +117,9 @@ export function WalletProvider({ children }) {
 
       return addr;
     } catch (err) {
-      if (err.code === 4001) throw new Error('Connection rejected by user');
+      if (err.code === 4001 || err.message?.includes('rejected')) {
+        throw new Error('Connection rejected by user');
+      }
       throw err;
     }
   }, []);
