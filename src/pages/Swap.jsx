@@ -6,6 +6,7 @@ import { useLang } from '../components/shared/LanguageContext';
 import { useChartPrice } from '../components/shared/useChartPrice';
 import { useSOFPrice } from '../hooks/useSOFPrice';
 import { getMarketBySymbol } from '../components/shared/MarketData';
+import { useWallet } from '../components/shared/WalletContext';
 
 const SWAP_ASSETS = [
   // Crypto Spot
