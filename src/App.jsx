@@ -157,6 +157,7 @@ const AuthenticatedApp = () => {
       <Route path="/MacroDetail" element={<LayoutWrapper currentPageName="MacroDetail"><MacroDetail /></LayoutWrapper>} />
       <Route path="/Portfolio" element={<LayoutWrapper currentPageName="Portfolio"><Portfolio /></LayoutWrapper>} />
       <Route path="/Account" element={<LayoutWrapper currentPageName="Account"><Account /></LayoutWrapper>} />
+      <Route path="/Activity" element={<LayoutWrapper currentPageName="Activity"><Activity /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
