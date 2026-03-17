@@ -227,42 +227,46 @@ export default function WalletPage() {
                 )}
               </div>
 
-          {/* Asset list */}
-          <div>
-            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2.5">Assets</p>
-            <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-              {ASSETS.map((asset, i) => {
-                const total = asset.spot + asset.futures + asset.rwa;
-                const isLocked = asset.locked > 0;
-                return (
-                  <div key={i} className="p-3.5 flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-[#1a2340] flex items-center justify-center text-[10px] font-bold text-[#00d4aa] flex-shrink-0">
-                      {asset.symbol.slice(0, 2)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-semibold text-white">{asset.symbol}</p>
-                        {isLocked && (
-                          <span className="flex items-center gap-0.5 text-[9px] font-bold text-amber-400 bg-amber-400/10 px-1.5 py-0.5 rounded-lg border border-amber-400/20">
-                            <Lock className="w-2 h-2" /> Locked
-                          </span>
+          {/* Asset list - Real balances */}
+          {balances && (
+            <div>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2.5">Solana Assets</p>
+              <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
+                {['SOL', 'USDC', 'USDT', 'SOF'].map((symbol) => {
+                  const bal = balances[symbol];
+                  const price = prices[symbol] || 0;
+                  const value = bal.value;
+                  return (
+                    <div key={symbol} className="p-3.5 flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-lg bg-[#1a2340] flex items-center justify-center text-[10px] font-bold text-[#00d4aa] flex-shrink-0">
+                        {symbol.slice(0, 2)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white">{symbol}</p>
+                        <p className="text-[11px] text-slate-500">
+                          {price > 0 ? `$${price.toFixed(2)}/unit` : 'Price unavailable'}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold text-white">
+                          {showBal
+                            ? bal.balance > 0
+                              ? bal.balance < 100
+                                ? bal.balance.toFixed(4)
+                                : bal.balance.toLocaleString(undefined, { maximumFractionDigits: 2 })
+                              : '0'
+                            : '••••'}
+                        </p>
+                        {showBal && value > 0 && (
+                          <p className="text-[10px] text-[#00d4aa]">≈ ${value.toFixed(2)}</p>
                         )}
                       </div>
-                      <p className="text-[11px] text-slate-500">{asset.name}</p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-white">
-                        {showBal ? (total > 0 ? (total < 100 ? total.toFixed(4) : total.toLocaleString(undefined, { maximumFractionDigits: 2 })) : '—') : '••••'}
-                      </p>
-                      {asset.locked > 0 && showBal && (
-                        <p className="text-[10px] text-amber-400">{asset.locked} locked</p>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Quick action buttons */}
           <div className="grid grid-cols-2 gap-3 pt-1">
