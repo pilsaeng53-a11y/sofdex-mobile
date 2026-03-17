@@ -34,14 +34,14 @@ export function useChartPrice(symbol) {
       change24h = live.change;
       isLive    = true;
     } else if (COMMODITY_SYMBOLS.has(symbol)) {
-      // Commodity RWA: return null until live data arrives.
-      // This prevents the stale static seed (e.g. 3300 for gold) from ever
-      // displaying while the chart already shows the real live price (~4900+).
+      // Non-crypto (RWA / TradFi / xStocks / xETFs): return null until live
+      // data arrives from Yahoo Finance polling. Never use static seed —
+      // the chart shows the real market price, the list must match exactly.
       price     = null;
       change24h = 0;
       isLive    = false;
     } else {
-      // Regular crypto — static seed is close enough while WS loads
+      // Pure crypto — static seed is close enough while WS connects
       const base = getMarketBySymbol(symbol);
       price     = base?.price ?? null;
       change24h = base?.change ?? 0;
