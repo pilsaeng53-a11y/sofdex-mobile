@@ -113,7 +113,7 @@ export default function SolFort() {
             {[
               {
                 label: 'Token Price',
-                value: loading ? '…' : error ? 'Fetching price...' : sofPrice ? `$${sofPrice.toFixed(sofPrice < 0.01 ? 8 : sofPrice < 1 ? 6 : 4)}` : '—',
+                value: loading ? '…' : error ? 'Fetching price...' : formattedPrice,
                 change: change24h != null ? `${change24h >= 0 ? '+' : ''}${change24h.toFixed(2)}%` : null,
                 positive: change24h >= 0,
               },
