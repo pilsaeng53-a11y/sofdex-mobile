@@ -353,8 +353,59 @@ export default function Swap() {
             : 'bg-[#151c2e] text-slate-600 cursor-not-allowed'
         }`}
       >
-        {!fromAmount || parseFloat(fromAmount) <= 0 ? 'Enter Amount' : `Swap ${fromAsset.symbol} → ${toAsset.symbol}`}
+        {!fromAmount || parseFloat(fromAmount) <= 0 
+          ? 'Enter Amount' 
+          : isConnected 
+            ? `Swap ${fromAsset.symbol} → ${toAsset.symbol}`
+            : 'Connect Wallet to Swap'}
       </button>
+
+      {/* Swap Confirmation Modal (Preview Only) */}
+      {showConfirmation && (
+        <div className="fixed inset-0 z-50 flex items-end">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowConfirmation(false)} />
+          <div className="relative w-full max-w-lg mx-auto bg-[#0d1220] rounded-t-3xl p-6 space-y-4 border-t border-[rgba(148,163,184,0.1)]">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">Swap Preview</h3>
+              <button onClick={() => setShowConfirmation(false)} className="text-slate-500 hover:text-white">✕</button>
+            </div>
+
+            <div className="glass-card rounded-2xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">From</span>
+                <span className="text-white font-semibold">{fromAmount} {fromAsset.symbol}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-slate-400">To</span>
+                <span className="text-[#00d4aa] font-semibold">{toAmount} {toAsset.symbol}</span>
+              </div>
+              <div className="border-t border-[rgba(148,163,184,0.06)] pt-3">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-500">Price Impact</span>
+                  <span className={parseFloat(priceImpact) > 1 ? 'text-amber-400' : 'text-emerald-400'}>{priceImpact}%</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 text-center py-2">
+              Backend execution integration required to complete this swap. This is a preview only.
+            </p>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="flex-1 py-3 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-slate-300 font-semibold hover:border-[#00d4aa]/30 transition-all">
+                Cancel
+              </button>
+              <button
+                disabled={true}
+                className="flex-1 py-3 rounded-xl bg-[#00d4aa]/20 border border-[#00d4aa]/30 text-slate-400 font-semibold cursor-not-allowed opacity-60">
+                Confirm (Coming Soon)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Recent Pairs */}
       <div>
