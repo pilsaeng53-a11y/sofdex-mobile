@@ -17,7 +17,8 @@ let globalSOFTimestamp = 0;
 let globalError = null;
 let subscribers = [];
 
-const CACHE_TTL = 10 * 1000; // 10 seconds
+const CACHE_TTL = 2 * 1000; // 2 seconds (aggressive cache for live updates)
+const AUTO_REFRESH_INTERVAL = 3000; // 3 seconds - keep price very fresh
 
 /**
  * Subscribe to SOF price updates
