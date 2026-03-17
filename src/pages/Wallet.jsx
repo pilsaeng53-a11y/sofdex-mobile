@@ -13,31 +13,12 @@ import { useWallet } from '../components/shared/WalletContext';
 import { useSolanaBalances } from '../hooks/useSolanaBalances';
 import WalletTabs from '../components/wallet/WalletTabs';
 
-// ── Simulated wallet state (mirrors WalletConnect page logic) ──────────────
-const DEMO_ADDRESS = '7xKXtg2QzMLmE4ipAnZBmFQXE3v5bHaP9mN4pQ';
-
+// ── Supported networks ──────────────────────────────────────────────────
 const NETWORKS = [
   { id: 'sol',  label: 'Solana (SPL)',        fee: '0.000005 SOL',   feeUsd: '~$0.001', time: '< 1s' },
   { id: 'erc20',label: 'Ethereum (ERC20)',     fee: '0.0018 ETH',     feeUsd: '~$6.40',  time: '~2 min' },
   { id: 'trc20',label: 'Tron (TRC20)',         fee: '1 USDT',         feeUsd: '~$1.00',  time: '~1 min' },
   { id: 'bep20',label: 'BNB Smart Chain (BEP20)', fee: '0.0003 BNB', feeUsd: '~$0.18',  time: '~30s' },
-];
-
-const ASSETS = [
-  { symbol: 'USDC',  name: 'USD Coin',     spot: 12450.00, futures: 5000.00, rwa: 0,        locked: 0 },
-  { symbol: 'SOL',   name: 'Solana',       spot: 24.82,    futures: 5.00,    rwa: 0,        locked: 2.00 },
-  { symbol: 'USDT',  name: 'Tether',       spot: 3200.00,  futures: 1000.00, rwa: 0,        locked: 0 },
-  { symbol: 'BTC',   name: 'Bitcoin',      spot: 0.045,    futures: 0.01,    rwa: 0,        locked: 0 },
-  { symbol: 'TBILL', name: 'US T-Bill',    spot: 0,        futures: 0,       rwa: 2506.00,  locked: 2506.00 },
-  { symbol: 'GOLD-T',name: 'Tokenized Gold',spot: 0,       futures: 0,       rwa: 2810.00,  locked: 0 },
-];
-
-const HISTORY = [
-  { id: 1, type: 'receive', asset: 'USDC',  amount: '+5,000', network: 'Solana (SPL)',   date: '2026-03-13 14:22', status: 'completed', fee: '$0.001', hash: '4uJx…pQ8' },
-  { id: 2, type: 'send',    asset: 'SOL',   amount: '-2.5',   network: 'Solana (SPL)',   date: '2026-03-12 09:05', status: 'completed', fee: '$0.001', hash: '9mAb…kL3' },
-  { id: 3, type: 'send',    asset: 'USDT',  amount: '-500',   network: 'Tron (TRC20)',   date: '2026-03-10 18:44', status: 'completed', fee: '$1.00',  hash: 'TRX…92c' },
-  { id: 4, type: 'receive', asset: 'BTC',   amount: '+0.045', network: 'Ethereum (ERC20)',date:'2026-03-08 11:30', status: 'completed', fee: '$6.40',  hash: '0xA1…77d' },
-  { id: 5, type: 'send',    asset: 'USDC',  amount: '-1,200', network: 'BNB Chain (BEP20)',date:'2026-03-06 07:15',status: 'pending',   fee: '$0.18',  hash: '0xBB…33f' },
 ];
 
 // ── Simple QR-code-style display (CSS grid, no external lib) ─────────────
