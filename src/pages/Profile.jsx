@@ -15,6 +15,9 @@ export default function Profile() {
   const [showLangPicker, setShowLangPicker] = useState(false);
 
   const handleCopy = () => {
+    if (address) {
+      navigator.clipboard.writeText(address).catch(() => {});
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
