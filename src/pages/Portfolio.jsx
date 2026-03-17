@@ -164,8 +164,8 @@ export default function Portfolio() {
                      {showBalances ? asset.balance.toFixed(4) : '••••'}
                    </p>
                    <p className="text-[10px] text-slate-500">
-                     {showBalances ? `${formatPrice(asset.value, displayCurrency, exchangeRates)} (${percentage}%)` : '••••'}
-                   </p>
+                      {showBalances ? `${formatPriceRealtime(asset.value, displayCurrency, exchangeRates)} (${percentage}%)` : '••••'}
+                    </p>
                  </div>
               </div>
             );
