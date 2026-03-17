@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Zap, Info } from 'lucide-react';
+import { Zap, Info, Wallet } from 'lucide-react';
 import { useLang } from '../shared/LanguageContext';
+import { useWallet } from '../shared/WalletContext';
 import CollateralSelector from './CollateralSelector';
 import { getCollateralAsset, getCollateralValue } from './CollateralEngine';
 
@@ -13,6 +14,7 @@ function getLeverageOptions(maxLev) {
 
 export default function OrderPanel({ asset }) {
   const { t } = useLang();
+  const { isConnected, requireWallet } = useWallet();
   const maxLev = asset?.maxLeverage || 20;
   const [side, setSide] = useState('buy');
   const [orderType, setOrderType] = useState('market');
@@ -276,17 +278,27 @@ export default function OrderPanel({ asset }) {
       </div>
 
       {/* Submit */}
-      <button
-        className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-all shadow-lg flex items-center justify-center gap-2 ${
-          side === 'buy'
-            ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/20'
-            : 'bg-red-500 hover:bg-red-400 shadow-red-500/20'
-        }`}
-      >
-        <Zap className="w-4 h-4" />
-        {side === 'buy' ? t('order_openLong') : t('order_openShort')}
-        {parsedAmount > 0 && ` · $${positionSize.toFixed(0)}`}
-      </button>
+      {isConnected ? (
+        <button
+          className={`w-full py-3.5 rounded-xl font-bold text-sm text-white transition-all shadow-lg flex items-center justify-center gap-2 ${
+            side === 'buy'
+              ? 'bg-emerald-500 hover:bg-emerald-400 shadow-emerald-500/20'
+              : 'bg-red-500 hover:bg-red-400 shadow-red-500/20'
+          }`}
+        >
+          <Zap className="w-4 h-4" />
+          {side === 'buy' ? t('order_openLong') : t('order_openShort')}
+          {parsedAmount > 0 && ` · $${positionSize.toFixed(0)}`}
+        </button>
+      ) : (
+        <button
+          onClick={() => requireWallet()}
+          className="w-full py-3.5 rounded-xl font-bold text-sm text-slate-300 border border-[rgba(148,163,184,0.15)] bg-[#0d1220] hover:border-[#00d4aa]/30 hover:text-white transition-all flex items-center justify-center gap-2 opacity-80"
+        >
+          <Wallet className="w-4 h-4 text-[#00d4aa]" />
+          Connect Wallet to Trade
+        </button>
+      )}
     </div>
   );
 }
