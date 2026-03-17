@@ -399,9 +399,9 @@ export default function WalletPage() {
           {/* Asset + Network selector */}
           <div className="glass-card rounded-2xl p-4 space-y-3">
             <div>
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Asset</p>
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Asset (Solana SPL)</p>
               <div className="grid grid-cols-3 gap-1.5">
-                {['USDC', 'SOL', 'USDT', 'BTC', 'TBILL', 'GOLD-T'].map(sym => (
+                {['SOL', 'USDC', 'USDT'].map(sym => (
                   <button key={sym} onClick={() => setRcvAsset(sym)}
                     className={`py-2 rounded-xl text-xs font-semibold border transition-all ${
                       rcvAsset === sym
