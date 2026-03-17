@@ -12,16 +12,16 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchSOFPrice } from '@/services/SOFPriceService';
 
 // Shared state across all hook instances (ensures sync)
-// Initialize with fallback values to NEVER show blank/dash
+// TEMPORARY FIXED PRICE: $4.00 USD (no live fetching)
 let globalSOFPrice = {
-  price: 0.0245,
-  priceNative: 0.0245,
-  change24h: 2.5,
-  volume24h: 4850000,
-  liquidity: 2500000,
-  transactions: { buy24h: 1250, sell24h: 850 },
-  source: 'dexscreener_fallback',
-  apiStatus: 'initializing',
+  price: 4.00,
+  priceNative: 4.00,
+  change24h: 0,
+  volume24h: 8500000,
+  liquidity: 5000000,
+  transactions: { buy24h: 2500, sell24h: 1500 },
+  source: 'fixed_temporary',
+  apiStatus: 'fixed',
   timestamp: Date.now(),
 };
 let globalSOFTimestamp = 0;
