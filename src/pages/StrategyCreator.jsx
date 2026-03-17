@@ -162,9 +162,13 @@ export default function StrategyCreator() {
                     </span>
                   </div>
                 </div>
-                <button className="px-3 py-1.5 bg-blue-400/10 border border-blue-400/20 text-blue-400 text-[10px] font-semibold rounded-xl hover:bg-blue-400/20">
+                <WalletGatedButton
+                  className="px-3 py-1.5 bg-blue-400/10 border border-blue-400/20 text-blue-400 text-[10px] font-semibold rounded-xl hover:bg-blue-400/20"
+                  requireWallet={true}
+                  onClick={() => {}}
+                >
                   Manage
-                </button>
+                </WalletGatedButton>
               </div>
             </div>
           ))}
