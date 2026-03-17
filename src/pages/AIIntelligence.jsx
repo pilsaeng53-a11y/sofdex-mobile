@@ -613,7 +613,7 @@ export default function AIIntelligence() {
               <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden mb-3">
                 <div className="h-full rounded-full bg-gradient-to-r from-emerald-400 via-amber-400 to-red-400" style={{ width: `${PORTFOLIO_ADVISOR.riskScore}%` }} />
               </div>
-              <ReasoningCard factors={PORTFOLIO_ADVISOR.factors} risk="Portfolio risk score is indicative only. Market conditions change rapidly." />
+              <ReasoningCard factors={PORTFOLIO_ADVISOR.factors} risk={t('ai_portfolioRiskIndicative')} t={t} />
             </div>
             <div className="glass-card rounded-2xl p-4">
               <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-3">{t('ai_aiSuggestions')}</p>
