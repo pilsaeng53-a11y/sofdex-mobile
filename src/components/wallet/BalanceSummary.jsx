@@ -6,7 +6,7 @@ import { Eye, EyeOff, RotateCw } from 'lucide-react';
 export default function BalanceSummary({ compact = false, showRefresh = true }) {
   const { isConnected, address } = useWallet();
   const { balances, prices, loading } = useSolanaBalances(isConnected ? address : null);
-  const [showBal, setShowBal] = React.useState(true);
+  const [showBal, setShowBal] = useState(true);
 
   if (!isConnected || !balances) {
     return (
