@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import { formatPrice, formatChange } from '../shared/MarketData';
 import { useMarketData, COMMODITY_SYMBOLS } from '../shared/MarketDataProvider';
 import MiniChart from '../shared/MiniChart';
-import AnimatedPrice from './AnimatedPrice';
+import AnimatedPrice from '../shared/AnimatedPrice';
 
 const symbolColors = {
   SOL:  'from-[#9945FF] to-[#14F195]',
