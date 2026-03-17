@@ -90,26 +90,34 @@ function generateFallbackHistory(currentPrice) {
 }
 
 export default function SOFChartDEX({ timeframe = '1h', height = 300, showVolume = false }) {
-  const { sofPrice, loading } = useSOFPrice();
+  const { sofPrice, loading, error } = useSOFPrice();
   const [chartData, setChartData] = useState([]);
   const [chartLoading, setChartLoading] = useState(true);
+  const [chartError, setChartError] = useState(null);
 
   // Fetch price history on mount
   useEffect(() => {
     (async () => {
       setChartLoading(true);
+      setChartError(null);
+      
       const history = await fetchSOFPriceHistory(timeframe);
       
-      if (history.length === 0) {
-        // Fallback to generated data
-        setChartData(generateFallbackHistory(sofPrice));
+      if (history === null) {
+        // API failed - show error, not fallback
+        setChartError('No liquidity data');
+        setChartData([]);
+      } else if (history.length === 0) {
+        // Empty response - show error
+        setChartError('No price history available');
+        setChartData([]);
       } else {
         setChartData(history);
       }
       
       setChartLoading(false);
     })();
-  }, [timeframe, sofPrice]);
+  }, [timeframe]);
 
   if (loading || chartLoading) {
     return (
@@ -118,6 +126,17 @@ export default function SOFChartDEX({ timeframe = '1h', height = 300, showVolume
         style={{ height: `${height}px` }}
       >
         <div className="text-sm text-slate-400">Loading SOF chart...</div>
+      </div>
+    );
+  }
+
+  if (chartError || error) {
+    return (
+      <div 
+        className="w-full bg-[#0f1525] rounded-xl border border-[rgba(148,163,184,0.08)] flex items-center justify-center"
+        style={{ height: `${height}px` }}
+      >
+        <div className="text-sm text-red-400">{chartError || error || 'No liquidity data'}</div>
       </div>
     );
   }
