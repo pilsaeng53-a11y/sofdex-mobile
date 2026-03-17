@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLang } from '../components/shared/LanguageContext';
 import { useUserType } from '../components/shared/UserTypeContext';
+import { getUserTierLabel, getTierBadgeClass, FEATURE_DESCRIPTIONS } from '../lib/roleVisibility';
 import HotAssets from '../components/shared/HotAssets';
 import MarketOverview from '../components/home/MarketOverview';
 import FeaturedBanner from '../components/home/FeaturedBanner';
