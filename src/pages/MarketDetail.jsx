@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Share2, TrendingUp, TrendingDown, Activity, BarChart3, Clock } from 'lucide-react';
 import { getMarketBySymbol, formatPrice, formatChange } from '../components/shared/MarketData';
 import { useChartPrice } from '../components/shared/useChartPrice';
+import { COMMODITY_SYMBOLS } from '../components/shared/MarketDataProvider';
 import TradingViewChart from '../components/trade/TradingViewChart.jsx';
 
 export default function MarketDetail() {
