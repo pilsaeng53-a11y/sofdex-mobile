@@ -93,42 +93,47 @@ export function MarketDataProvider({ children }) {
     }
   }
 
-  // ── Commodity price fetch via stooq.com (free, no key required) ─────────
-  // Stooq returns a small CSV: Date,Time,Open,High,Low,Close,Volume
-  // We parse Close as the current price and derive change from previous close.
+  // ── Commodity price fetch (RWA assets — Gold, Oil, S&P500) ──────────────
+  // Uses stooq.com free CSV API. Falls back to prev price if request fails.
+  // stooq CSV format: Symbol,Date,Time,Open,High,Low,Close,Volume
   async function fetchCommodityPrices() {
-    if (!alive.current) return;
-    const entries = Object.entries(COMMODITY_CONFIG);
-    const results = await Promise.all(
-      entries.map(([, cfg]) =>
-        fetch(`https://stooq.com/q/l/?s=${cfg.stooq}&f=sd2t2ohlcv&h&e=csv`)
-          .then(r => r.text())
-          .catch(() => null)
-      )
-    );
     if (!alive.current) return;
 
     const patch = {};
-    entries.forEach(([sofSym, cfg], i) => {
-      const text = results[i];
-      if (!text) return;
-      // CSV lines: header + data row
-      const lines = text.trim().split('\n');
-      if (lines.length < 2) return;
-      const cols = lines[1].split(',');
-      // Format: Symbol,Date,Time,Open,High,Low,Close,Volume
-      const close = parseFloat(cols[6]);
-      const open  = parseFloat(cols[3]);
-      if (!close || isNaN(close)) return;
 
-      // 24h change: (close - open) / open * 100
-      const change = open && !isNaN(open) ? ((close - open) / open) * 100 : 0;
+    // Fetch each commodity independently so one failure doesn't block others
+    await Promise.all(
+      Object.entries(COMMODITY_CONFIG).map(async ([sofSym, cfg]) => {
+        try {
+          const res = await fetch(
+            `https://stooq.com/q/l/?s=${cfg.stooq}&f=sd2t2ohlcv&h&e=csv`,
+            { signal: AbortSignal.timeout(8000) }
+          );
+          if (!res.ok) throw new Error('non-200');
+          const text = await res.text();
+          const lines = text.trim().split('\n');
+          if (lines.length < 2) throw new Error('no data');
+          const cols = lines[1].split(',');
+          // Symbol,Date,Time,Open,High,Low,Close,Volume  → indices 3,6
+          const close = parseFloat(cols[6]);
+          const open  = parseFloat(cols[3]);
+          if (!close || isNaN(close)) throw new Error('bad price');
+          const change = open && !isNaN(open) ? ((close - open) / open) * 100 : 0;
+          patch[sofSym] = { available: true, price: close, change };
+          prevCommodity.current[sofSym] = close;
+        } catch {
+          // If stooq fails, keep the last known price if we have one;
+          // otherwise mark as unavailable so static fallback from MarketData is used
+          const prev = prevCommodity.current[sofSym];
+          if (prev) {
+            patch[sofSym] = { available: true, price: prev, change: 0 };
+          }
+          // No patch entry → getLiveAsset returns available:false → UI falls back to static mock
+        }
+      })
+    );
 
-      patch[sofSym] = { available: true, price: close, change };
-      prevCommodity.current[sofSym] = close;
-    });
-
-    if (Object.keys(patch).length > 0) {
+    if (Object.keys(patch).length > 0 && alive.current) {
       setLiveData(prev => ({ ...prev, ...patch }));
     }
   }
