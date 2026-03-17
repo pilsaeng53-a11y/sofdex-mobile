@@ -10,8 +10,7 @@
  * - Market cap is NEVER used as a price source anywhere in the app.
  */
 
-import { useEffect, useState, useRef } from 'react';
-import { useMarketData } from './MarketDataProvider';
+import { useMarketData, COMMODITY_SYMBOLS } from './MarketDataProvider';
 import { useSOFPrice } from './useSOFPrice';
 import { getMarketBySymbol } from './MarketData';
 
