@@ -5,7 +5,7 @@ import {
   TrendingUp, Zap, Shield, Globe, BarChart3, Users,
   ArrowUpRight, ExternalLink, Copy, Check, ChevronRight, Layers, Crown, Star
 } from 'lucide-react';
-import { useSOFPrice } from '../hooks/useSOFPrice';
+import { useSOFPriceWithCurrency } from '../hooks/useSOFPriceWithCurrency';
 
 const PLATFORM_FEATURES = [
   { icon: BarChart3, color: '#00d4aa', title: 'Multi-Asset DEX',       desc: 'Trade crypto, RWA, tokenized equities and commodities on a single platform.' },
