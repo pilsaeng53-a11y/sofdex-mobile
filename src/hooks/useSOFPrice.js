@@ -74,12 +74,13 @@ async function refreshSOFPrice() {
  */
 export function useSOFPrice(autoRefreshInterval = 10000) {
   const [sofData, setSOFData] = useState(() => globalSOFPrice || {
-    price: 0,
+    price: null,
     change24h: 0,
     volume24h: 0,
     liquidity: 0,
     source: 'uninitialized',
     timestamp: null,
+    error: null,
   });
 
   const [loading, setLoading] = useState(!globalSOFPrice);
