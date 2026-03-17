@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { ArrowLeft, Wallet, Check, ExternalLink, Shield, Zap, Building2, Vote, Copy } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useWallet } from '../components/shared/WalletContext';
 
 const wallets = [
   { name: 'Phantom',       icon: '👻', desc: 'Most popular Solana wallet', color: 'from-[#AB9FF2] to-[#7B61FF]' },
@@ -15,7 +16,8 @@ const wallets = [
 
 export default function WalletConnect() {
   const navigate = useNavigate();
-  const [connected, setConnected] = useState(false);
+  const { connect, isConnected } = useWallet();
+  const [connected, setConnected] = useState(isConnected);
   const [connecting, setConnecting] = useState(null);
 
   const handleConnect = (wallet) => {
@@ -23,7 +25,7 @@ export default function WalletConnect() {
     setTimeout(() => {
       setConnecting(null);
       setConnected(true);
-      try { localStorage.setItem('sofdex_wallet_connected', '1'); } catch {}
+      connect(wallet.name);
     }, 1500);
   };
 
