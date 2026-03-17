@@ -222,7 +222,7 @@ export default function WalletPage() {
                  <div key={i} className="glass-card rounded-2xl p-4">
                    <p className="text-[10px] text-slate-500 mb-1">{tile.label}</p>
                    <p className={`text-lg font-bold ${tile.color}`}>
-                     {showBal ? (tile.val !== undefined ? formatPrice(tile.val, displayCurrency, exchangeRates) : `${tile.bal.toFixed(4)} ${tile.label}`) : '••••'}
+                     {showBal ? (tile.val !== undefined ? formatPriceRealtime(tile.val, displayCurrency, exchangeRates) : `${tile.bal.toFixed(4)} ${tile.label}`) : '••••'}
                    </p>
                  </div>
                ))}
