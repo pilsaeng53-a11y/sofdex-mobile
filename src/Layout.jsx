@@ -28,7 +28,7 @@ function LayoutInner({ children, currentPageName }) {
 
   return (
     <MarketDataProvider>
-      <div className="min-h-screen bg-[#0a0e1a] text-slate-100 max-w-lg mx-auto relative">
+      <div className="min-h-screen text-slate-100 max-w-lg mx-auto relative" style={{ background: '#05070d' }}>
         {showShell && <AnimatedBackground direction={sentiment} />}
         {showShell && (
           <>
