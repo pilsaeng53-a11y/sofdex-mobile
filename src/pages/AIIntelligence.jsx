@@ -561,8 +561,8 @@ export default function AIIntelligence() {
               <span className="text-[10px] text-slate-600">· {t('ai_unusualActivity')}</span>
             </div>
             {volatilityAlerts.length === 0 && (
-              <div className="glass-card rounded-2xl p-4 text-center text-[11px] text-slate-500">No significant volatility detected across tracked assets.</div>
-            )}
+               <div className="glass-card rounded-2xl p-4 text-center text-[11px] text-slate-500">{t('ai_noVolatilityDetected')}</div>
+             )}
             {volatilityAlerts.map((a, i) => (
               <div key={i} className={`glass-card rounded-2xl p-4 border ${a.border}`}>
                 <div className="flex items-center justify-between mb-2">
