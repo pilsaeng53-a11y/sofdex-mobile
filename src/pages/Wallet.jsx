@@ -4,10 +4,11 @@ import { createPageUrl } from '@/utils';
 import {
   Wallet, Send, Download, Clock, Copy, Check, ChevronDown,
   ArrowUpRight, ArrowDownLeft, ArrowLeftRight, Lock, Eye, EyeOff,
-  QrCode, AlertCircle, Zap, Shield
+  QrCode, AlertCircle, Zap, Shield, RotateCw
 } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import { useWallet } from '../components/shared/WalletContext';
+import { useSolanaBalances } from '../hooks/useSolanaBalances';
 
 // ── Simulated wallet state (mirrors WalletConnect page logic) ──────────────
 const DEMO_ADDRESS = '7xKXtg2QzMLmE4ipAnZBmFQXE3v5bHaP9mN4pQ';
