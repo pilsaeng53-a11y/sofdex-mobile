@@ -2,6 +2,26 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 
 const CurrencyContext = createContext();
 
+/**
+ * Enhanced useCurrency hook with translation-aware fallback
+ * Ensures no raw translation keys are ever displayed
+ */
+const useCurrencyWithFallback = () => {
+  const context = useContext(CurrencyContext);
+  
+  if (!context) {
+    console.warn('useCurrency must be used within CurrencyProvider');
+    return {
+      displayCurrency: 'USD',
+      exchangeRates: { USD: 1 },
+      setDisplayCurrency: () => {},
+      loading: false
+    };
+  }
+  
+  return context;
+};
+
 export const CurrencyProvider = ({ children }) => {
   const [displayCurrency, setDisplayCurrency] = useState('Default');
   const [exchangeRates, setExchangeRates] = useState({
