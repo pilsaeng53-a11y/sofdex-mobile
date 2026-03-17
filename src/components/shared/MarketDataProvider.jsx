@@ -148,21 +148,74 @@ export function MarketDataProvider({ children }) {
     return { price: close, change };
   }
 
+  // ── Metals.live — free, no-auth, CORS-allowed API for gold & silver ────
+  async function fetchMetals() {
+    try {
+      const res = await fetch('https://metals.live/api/v1/spot', { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error('metals non-200');
+      const data = await res.json(); // [{ metal: 'gold', price: 3300.xx }, ...]
+      const patch = {};
+      data.forEach(item => {
+        if (item.metal === 'gold' && item.price) {
+          const prev = prevCommodity.current['GOLD-T'];
+          const change = prev ? ((item.price - prev) / prev) * 100 : 0;
+          patch['GOLD-T'] = { available: true, price: item.price, change };
+          prevCommodity.current['GOLD-T'] = item.price;
+        }
+        if (item.metal === 'silver' && item.price) {
+          const prev = prevCommodity.current['SILVER-T'];
+          const change = prev ? ((item.price - prev) / prev) * 100 : 0;
+          patch['SILVER-T'] = { available: true, price: item.price, change };
+          prevCommodity.current['SILVER-T'] = item.price;
+        }
+      });
+      if (Object.keys(patch).length > 0 && alive.current) {
+        setLiveData(prev => ({ ...prev, ...patch }));
+      }
+      return Object.keys(patch);
+    } catch {
+      return [];
+    }
+  }
+
+  // ── Frankfurter.app — free CORS-allowed FX rates ─────────────────────
+  async function fetchFX() {
+    try {
+      const res = await fetch('https://api.frankfurter.app/latest?from=EUR&to=USD', { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error('fx non-200');
+      const data = await res.json();
+      const rate = data?.rates?.USD;
+      if (!rate) throw new Error('no rate');
+      const prev = prevCommodity.current['EURO-B'];
+      const change = prev ? ((rate - prev) / prev) * 100 : 0;
+      prevCommodity.current['EURO-B'] = rate;
+      if (alive.current) {
+        setLiveData(prev => ({ ...prev, 'EURO-B': { available: true, price: rate, change } }));
+      }
+      return ['EURO-B'];
+    } catch {
+      return [];
+    }
+  }
+
   async function fetchCommodityPrices() {
     if (!alive.current) return;
-    const patch = {};
 
+    // Fire metals.live and FX fetches in parallel (these are the most reliable)
+    const [metalsHit, fxHit] = await Promise.all([fetchMetals(), fetchFX()]);
+    const alreadyCovered = new Set([...metalsHit, ...fxHit]);
+
+    // For remaining symbols (crude, S&P500, TBILL) try Yahoo proxy then stooq
+    const remaining = Object.entries(COMMODITY_CONFIG).filter(([sym]) => !alreadyCovered.has(sym));
+    if (remaining.length === 0) return;
+
+    const patch = {};
     await Promise.all(
-      Object.entries(COMMODITY_CONFIG).map(async ([sofSym, cfg]) => {
+      remaining.map(async ([sofSym, cfg]) => {
         try {
-          // Try Yahoo via allorigins proxy first (exact TradingView parity)
           let result;
-          try {
-            result = await fetchOneYahoo(cfg.yahoo);
-          } catch {
-            // Fallback to stooq direct
-            result = await fetchOneStooq(sofSym);
-          }
+          try { result = await fetchOneYahoo(cfg.yahoo); }
+          catch { result = await fetchOneStooq(sofSym); }
           patch[sofSym] = { available: true, price: result.price, change: result.change };
           prevCommodity.current[sofSym] = result.price;
         } catch {
