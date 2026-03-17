@@ -76,10 +76,15 @@ export const CurrencyProvider = ({ children }) => {
     }
   }, []);
 
-  // Save currency preference
-  const updateDisplayCurrency = (currency) => {
+  // Save currency preference and track manual override
+  const updateDisplayCurrency = (currency, isManualOverride = true) => {
     setDisplayCurrency(currency);
     localStorage.setItem('displayCurrency', currency);
+    
+    // Track if this is a manual user choice (vs. region auto-default)
+    if (isManualOverride) {
+      localStorage.setItem('sofdex_currency_manual', 'true');
+    }
   };
 
   return (
