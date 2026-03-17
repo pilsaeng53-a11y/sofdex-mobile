@@ -294,11 +294,14 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
 
         {/* Footer */}
         <div className="px-5 py-4 border-t border-[rgba(148,163,184,0.06)]">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
-            <span className="text-[10px] text-slate-500">{t('common_allSystems')}</span>
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
+              <span className="text-[10px] text-slate-500">{t('common_allSystems')}</span>
+            </div>
+            <Link to="/Profile" onClick={onClose} className="text-[10px] text-slate-600 hover:text-slate-400 transition-colors">{t('menu_settings')}</Link>
           </div>
-          <p className="text-[10px] text-slate-700">SOFDex v2.0 · Built on Solana · Institutional Grade</p>
+          <p className="text-[10px] text-slate-700">SOFDex v2.1 · Solana · Institutional Grade</p>
         </div>
       </div>
     </div>
