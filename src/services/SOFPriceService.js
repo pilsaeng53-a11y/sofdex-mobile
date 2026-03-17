@@ -80,28 +80,37 @@ export async function getSOFPriceFromPool() {
 }
 
 /**
- * Get SOF price from pool (ONLY SOURCE - no fallbacks)
- * If pool data unavailable: show "No liquidity data" error
- * Never show 0 or placeholder values
+ * Actively fetch SOF price from Dexscreener pool
+ * Primary source: Exact pool address on Solana Raydium
+ * 
+ * If fetch succeeds: Returns live market data
+ * If fetch fails: Returns error state (NOT 0, NOT "No liquidity data")
+ * 
+ * Auto-called every 3 seconds by useSOFPrice hook
  */
 export async function fetchSOFPrice() {
-  // Fetch from exact pool address
+  // Actively fetch from Dexscreener using exact pool address
   const result = await getSOFPriceFromPool();
   
-  if (result) {
+  if (result && result.price) {
+    // ✓ Got real live price from Dexscreener
     return result;
   }
 
-  // If pool data fails: return error state (not 0)
+  // ✗ Dexscreener API failed - return error state
+  // DO NOT return 0, DO NOT return "No liquidity data"
+  // Instead return null and let component handle it
   return {
     price: null,
-    change24h: 0,
-    volume24h: 0,
-    liquidity: 0,
-    source: 'pool_failed',
+    priceNative: null,
+    change24h: null,
+    volume24h: null,
+    liquidity: null,
+    source: 'dexscreener_failed',
     poolAddress: SOF_POOL_ADDRESS,
     timestamp: Date.now(),
-    error: 'No liquidity data available for SOF pool',
+    apiStatus: 'error',
+    error: 'Unable to fetch SOF price from Dexscreener. Pool may have no liquidity or API is unavailable.',
   };
 }
 
