@@ -749,11 +749,11 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_rwaValuation')}</p>
             </div>
             {RWA_VALUATIONS.map((r, i) => {
-              // Live price is always master — same feed as TradingView chart
+              // Live price is always master — same feed as TradingView chart.
+              // Never fall back to static seed for commodity assets.
               const liveEntry = liveData[r.symbol];
-              const baseAsset = getMarketBySymbol(r.symbol);
-              const livePrice = liveEntry?.available ? liveEntry.price : (baseAsset?.price ?? null);
-              const currentStr = fmtLivePrice(livePrice);
+              const livePrice = liveEntry?.available ? liveEntry.price : null;
+              const currentStr = livePrice != null ? fmtLivePrice(livePrice) : '—';
               // These are live-market assets (chart price = app price), so fair value IS the live price
               const fairStr = livePrice ? fmtLivePrice(livePrice) : '—';
               const gapStr = '0.0%';
