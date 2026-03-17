@@ -463,6 +463,52 @@ export const translations = {
     ai_aiReasoning: 'AI Reasoning',
     ai_riskFactors: 'Risk Factors',
     ai_marketContext: 'Market Context',
+    // Wallet
+    wallet_balance: 'Total Balance',
+    wallet_connect: 'Connect Wallet',
+    wallet_connected: 'Connected',
+    wallet_disconnect: 'Disconnect',
+    transaction_deposit: 'Deposit',
+    transaction_withdrawal: 'Withdrawal',
+    transaction_transfer: 'Transfer',
+    transaction_trade: 'Trade',
+    transaction_pending: 'Pending',
+    transaction_completed: 'Completed',
+    transaction_failed: 'Failed',
+    // Strategy
+    strategy_create: 'Create Strategy',
+    strategy_explore: 'Explore Strategies',
+    strategy_subscribe: 'Subscribe',
+    strategy_unsubscribe: 'Unsubscribe',
+    strategy_description: 'Description',
+    strategy_logic: 'Logic',
+    strategy_benefits: 'Benefits',
+    strategy_risks: 'Risks',
+    // Governance
+    gov_proposal: 'Proposal',
+    gov_vote: 'Vote',
+    gov_voting_power: 'Voting Power',
+    // News & Activity
+    news_headline: 'Headline',
+    news_summary: 'Summary',
+    activity_history: 'Activity History',
+    activity_empty: 'No activity yet',
+    // Status & States
+    status_active: 'Active',
+    status_inactive: 'Inactive',
+    status_pending: 'Pending',
+    status_completed: 'Completed',
+    status_loading: 'Loading...',
+    status_error: 'Error',
+    // Errors
+    error_connection_failed: 'Connection failed',
+    error_something_went_wrong: 'Something went wrong',
+    error_try_again: 'Please try again',
+    error_network_error: 'Network error',
+    // Placeholders
+    input_search: 'Search...',
+    input_amount: 'Enter amount',
+    input_address: 'Enter address',
     },
 
   ko: {
