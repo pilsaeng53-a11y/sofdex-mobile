@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart, Info, RefreshCw } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import { useMarketData } from '../components/shared/MarketDataProvider';
-import { CRYPTO_MARKETS, RWA_MARKETS } from '../components/shared/MarketData';
+import { CRYPTO_MARKETS, RWA_MARKETS, getMarketBySymbol } from '../components/shared/MarketData';
 
 // ── Static per-asset context (narratives, sector, risk notes) ─────────────────
 const ASSET_CONTEXT = {
