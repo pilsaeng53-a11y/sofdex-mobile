@@ -164,7 +164,9 @@ export default function Swap() {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
     // All assets: use chart price as master source
     const chartPrice = asset.symbol === fromAsset.symbol ? fromChartPrice : toChartPrice;
-    return chartPrice.price ?? (getMarketBySymbol(asset.symbol)?.price ?? 1);
+    const price = chartPrice.price ?? (getMarketBySymbol(asset.symbol)?.price ?? null);
+    // Never return 0 or undefined — only valid price or null
+    return price && price > 0 ? price : 1;
   }, [fromAsset.symbol, toAsset.symbol, fromChartPrice, toChartPrice]);
 
   const fromPrice = getPrice(fromAsset);
