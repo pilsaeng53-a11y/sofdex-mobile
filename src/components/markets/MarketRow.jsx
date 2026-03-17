@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { formatPrice, formatChange } from '../shared/MarketData';
 import { useMarketData, COMMODITY_SYMBOLS } from '../shared/MarketDataProvider';
 import MiniChart from '../shared/MiniChart';
+import AnimatedPrice from './AnimatedPrice';
 
 const symbolColors = {
   SOL:  'from-[#9945FF] to-[#14F195]',
@@ -37,15 +38,31 @@ export default function MarketRow({ asset }) {
 
   return (
     <Link to={createPageUrl('MarketDetail') + `?symbol=${asset.symbol}`}>
-      <div className="flex items-center gap-3 py-3 px-3.5 rounded-xl transition-all duration-200 group hover:bg-[#151c2e]" style={{ transition: 'background 0.18s ease, box-shadow 0.18s ease' }}
-        onMouseEnter={e => e.currentTarget.style.boxShadow = 'inset 0 0 0 1px rgba(0,212,170,0.08), 0 2px 12px rgba(0,0,0,0.2)'}
-        onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}>
-        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0 shadow-md`}>
+      <div
+        className="flex items-center gap-3 py-3 px-3.5 rounded-xl group stagger-item fluid"
+        style={{ '--hover-bg': '#151c2e' }}
+        onMouseEnter={e => {
+          e.currentTarget.style.background = '#151c2e';
+          e.currentTarget.style.boxShadow = 'inset 0 0 0 1px rgba(0,212,170,0.09), 0 4px 20px rgba(0,0,0,0.25)';
+          e.currentTarget.style.transform = 'translateX(2px)';
+        }}
+        onMouseLeave={e => {
+          e.currentTarget.style.background = '';
+          e.currentTarget.style.boxShadow = '';
+          e.currentTarget.style.transform = '';
+        }}
+        onMouseDown={e => { e.currentTarget.style.transform = 'translateX(1px) scale(0.99)'; }}
+        onMouseUp={e => { e.currentTarget.style.transform = 'translateX(2px)'; }}
+      >
+        <div
+          className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 fluid-fast`}
+          style={{ transition: 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease' }}
+        >
           <span className="text-[10px] font-black text-white">{asset.symbol.slice(0, 3)}</span>
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <span className="text-sm font-bold text-white group-hover:text-[#00d4aa] transition-colors truncate">{asset.symbol}</span>
+            <span className="text-sm font-bold text-white group-hover:text-[#00d4aa] fluid truncate">{asset.symbol}</span>
             <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md ${catLabel.color}`}>{catLabel.label}</span>
           </div>
           <p className="text-[11px] text-slate-500 truncate">{asset.name}</p>
@@ -56,10 +73,18 @@ export default function MarketRow({ asset }) {
         <div className="text-right flex-shrink-0 min-w-[80px]">
           {price != null ? (
             <>
-              <p className="text-sm font-bold text-white tabular-nums">${formatPrice(price)}</p>
-              <p className={`text-[11px] font-semibold tabular-nums ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-                {formatChange(change)}
-              </p>
+              <AnimatedPrice
+                value={price}
+                prefix="$"
+                formatter={formatPrice}
+                className="text-sm font-bold text-white num-highlight block"
+              />
+              <AnimatedPrice
+                value={change}
+                formatter={v => formatChange(v)}
+                className={`text-[11px] font-semibold num-highlight ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}
+                flashOnly
+              />
             </>
           ) : (
             <div className="space-y-1">
