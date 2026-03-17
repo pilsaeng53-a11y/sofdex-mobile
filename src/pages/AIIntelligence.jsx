@@ -271,10 +271,10 @@ function ReasoningCard({ factors, risk, basis, t }) {
        </button>
       {open && (
         <div className="mt-2 p-2.5 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.06)] space-y-1.5">
-          {basis && <p className="text-[10px] text-slate-500"><span className="text-slate-400 font-semibold">Basis:</span> {basis}</p>}
+          {basis && <p className="text-[10px] text-slate-500"><span className="text-slate-400 font-semibold">{t('ai_basis')}:</span> {basis}</p>}
           {factors?.length > 0 && (
             <div>
-              <p className="text-[10px] text-slate-500 font-semibold mb-1">Market factors used:</p>
+              <p className="text-[10px] text-slate-500 font-semibold mb-1">{t('ai_marketFactors')}:</p>
               {factors.map((f, i) => <p key={i} className="text-[10px] text-slate-600">· {f}</p>)}
             </div>
           )}
