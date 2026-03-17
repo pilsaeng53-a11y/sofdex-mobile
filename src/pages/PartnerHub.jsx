@@ -100,6 +100,18 @@ function ApplyView({ applyForPartner, isPartnerPending }) {
 }
 
 // ─── Full Distributor / Admin Dashboard ────────────────────────────────────
+const SALES_METRICS = [
+  { label: 'This Month', vol: '$842K', comm: '$336', change: '+18.4%', positive: true },
+  { label: 'Last Month', vol: '$712K', comm: '$284', change: '+8.1%', positive: true },
+  { label: 'All-Time', vol: '$2.4M', comm: '$1,248', change: '', positive: true },
+];
+
+const TEAM_STRUCTURE = [
+  { level: 'Direct (L1)', count: 8, vol: '$1.2M', commission: '40%', color: '#00d4aa' },
+  { level: 'Level 2', count: 18, vol: '$780K', commission: '20%', color: '#3b82f6' },
+  { level: 'Level 3', count: 54, vol: '$420K', commission: '10%', color: '#8b5cf6' },
+];
+
 function DistributorDashboard({ isAdmin, applyForPartner, isPartnerPending }) {
   const [copied, setCopied] = useState(false);
   const [section, setSection] = useState('dashboard'); // dashboard | map | leaderboard
