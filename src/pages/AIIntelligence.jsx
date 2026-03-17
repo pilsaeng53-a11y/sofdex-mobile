@@ -638,7 +638,7 @@ export default function AIIntelligence() {
           </>
         )}
 
-        {/* Risk Score */}
+        {/* Risk Score — live dynamic */}
         {tab === 'Risk' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -646,7 +646,7 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_riskScore')}</p>
               <span className="text-[10px] text-slate-600">· {t('ai_assetRisk')}</span>
             </div>
-            {AI_RISK_SCORES.map((r, i) => (
+            {liveRiskScores.map((r, i) => (
               <div key={i} className="glass-card rounded-2xl p-3.5">
                 <div className="flex items-center gap-3 mb-1.5">
                   <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa] flex-shrink-0">
