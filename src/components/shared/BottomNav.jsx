@@ -10,6 +10,7 @@ const TAB_KEYS = [
   { key: 'nav_markets',   page: 'Markets',       icon: BarChart3 },
   { key: 'nav_ai',        page: 'AIIntelligence',icon: Brain },
   { key: 'nav_portfolio', page: 'Portfolio',     icon: Wallet },
+  { key: 'nav_activity',  page: 'Activity',      icon: History },
 ];
 
 export default function BottomNav({ currentPage }) {
