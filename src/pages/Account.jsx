@@ -166,20 +166,20 @@ export default function Account() {
             <span className="text-xs text-slate-400">Solana (Active)</span>
             <span className="flex items-center gap-1.5">
               <div className="w-2 h-2 rounded-full bg-green-400" />
-              <span className="text-[10px] font-semibold text-green-400">Connected</span>
+              <span className="text-[10px] font-semibold text-green-400">{t('status_active')}</span>
             </span>
           </div>
           <div className="flex items-center justify-between opacity-50">
             <span className="text-xs text-slate-400">Ethereum</span>
-            <span className="text-[10px] font-semibold text-slate-500">Coming Soon</span>
+            <span className="text-[10px] font-semibold text-slate-500">{t('coming_soon')}</span>
           </div>
           <div className="flex items-center justify-between opacity-50">
             <span className="text-xs text-slate-400">Tron</span>
-            <span className="text-[10px] font-semibold text-slate-500">Coming Soon</span>
+            <span className="text-[10px] font-semibold text-slate-500">{t('coming_soon')}</span>
           </div>
           <div className="flex items-center justify-between opacity-50">
             <span className="text-xs text-slate-400">BNB Chain</span>
-            <span className="text-[10px] font-semibold text-slate-500">Coming Soon</span>
+            <span className="text-[10px] font-semibold text-slate-500">{t('coming_soon')}</span>
           </div>
         </div>
       </div>
