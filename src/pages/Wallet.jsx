@@ -299,29 +299,23 @@ export default function WalletPage() {
               <div className="glass-card rounded-2xl p-4 space-y-3">
                 <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Asset</p>
                 <div className="grid grid-cols-3 gap-1.5">
-                  {ASSETS.slice(0, 6).map(a => (
-                    <button key={a.symbol} onClick={() => setSendAsset(a.symbol)}
+                  {['SOL', 'USDC', 'USDT'].map(symbol => (
+                    <button key={symbol} onClick={() => setSendAsset(symbol)}
                       className={`py-2 rounded-xl text-xs font-semibold transition-all border ${
-                        sendAsset === a.symbol
+                        sendAsset === symbol
                           ? 'border-[#00d4aa]/30 bg-[#00d4aa]/10 text-[#00d4aa]'
                           : 'border-[rgba(148,163,184,0.06)] text-slate-400'
                       }`}>
-                      {a.symbol}
+                      {symbol}
                     </button>
                   ))}
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-slate-500 px-1">
-                  <span>Available (Spot)</span>
+                  <span>Available Balance</span>
                   <span className="text-white font-semibold">
-                    {availableSend < 100 ? availableSend.toFixed(4) : availableSend.toLocaleString(undefined, { maximumFractionDigits: 2 })} {sendAsset}
+                    {loading ? '...' : availableSend < 100 ? availableSend.toFixed(4) : availableSend.toLocaleString(undefined, { maximumFractionDigits: 2 })} {sendAsset}
                   </span>
                 </div>
-                {selectedAsset.locked > 0 && (
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-400/5 border border-amber-400/20">
-                    <Lock className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                    <p className="text-[10px] text-amber-400">{selectedAsset.locked} {sendAsset} is locked and cannot be transferred.</p>
-                  </div>
-                )}
               </div>
 
               {/* Network selector */}
