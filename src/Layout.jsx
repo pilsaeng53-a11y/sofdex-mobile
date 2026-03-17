@@ -10,6 +10,7 @@ import AppMenu from './components/shared/AppMenu';
 import { MarketDataProvider, useMarketData } from './components/shared/MarketDataProvider';
 import { LanguageProvider } from './components/shared/LanguageContext';
 import { UserTypeProvider } from './components/shared/UserTypeContext';
+import { CurrencyProvider } from './components/shared/CurrencyContext';
 import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
 import AnimatedBackground from './components/shared/AnimatedBackground';
 import { WalletProvider, useWallet } from './components/shared/WalletContext';
