@@ -749,24 +749,17 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_rwaValuation')}</p>
             </div>
             {RWA_VALUATIONS.map((r, i) => {
-              // Live price is master — never use static current price
+              // Live price is always master — same feed as TradingView chart
               const liveEntry = liveData[r.symbol];
               const baseAsset = getMarketBySymbol(r.symbol);
               const livePrice = liveEntry?.available ? liveEntry.price : (baseAsset?.price ?? null);
               const currentStr = fmtLivePrice(livePrice);
-              const fairStr    = fmtLivePrice(r.fairRaw);
-              // Dynamically compute gap vs fair value
-              const gapPct = livePrice && r.fairRaw
-                ? (((r.fairRaw - livePrice) / livePrice) * 100).toFixed(1)
-                : null;
-              const gapStr = gapPct !== null
-                ? (parseFloat(gapPct) >= 0 ? `+${gapPct}%` : `${gapPct}%`)
-                : r.pct;
-              const dynamicStatus = gapPct !== null
-                ? (Math.abs(parseFloat(gapPct)) < 1 ? 'Fair Value' : parseFloat(gapPct) > 0 ? 'Undervalued' : 'Overvalued')
-                : r.status;
-              const dynamicColor = dynamicStatus === 'Fair Value' ? 'text-slate-400' : dynamicStatus === 'Undervalued' ? 'text-emerald-400' : 'text-red-400';
-              const dynamicBg    = dynamicStatus === 'Fair Value' ? 'bg-slate-400/10'  : dynamicStatus === 'Undervalued' ? 'bg-emerald-400/10'  : 'bg-red-400/10';
+              // These are live-market assets (chart price = app price), so fair value IS the live price
+              const fairStr = livePrice ? fmtLivePrice(livePrice) : '—';
+              const gapStr = '0.0%';
+              const dynamicStatus = 'Live Market';
+              const dynamicColor = 'text-[#00d4aa]';
+              const dynamicBg    = 'bg-[#00d4aa]/10';
               return (
                 <div key={i} className="glass-card rounded-2xl p-4">
                   <div className="flex items-center justify-between mb-2">
