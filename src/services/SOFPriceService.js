@@ -4,62 +4,42 @@
  * PERMANENT RULE: All SOF-related data MUST use this service.
  * SOF must never use TradingView or generic market data feeds.
  * 
- * Single source of truth: Raydium/Dexscreener DEX data
- * All SOF features sync from this one data path
+ * SINGLE SOURCE OF TRUTH: Exact Dexscreener Pool Address
+ * Pool: 4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS
+ * All SOF features sync from this ONE pool
  */
 
-const SOF_MINT = "JiP6JdVt7h5XnZBqFiBvXhk3vkCzBEjGqBZ4QrKr4TS"; // SOF token mint
-const RAYDIUM_API = "https://api.raydium.io/v2";
+// EXACT POOL ADDRESS - PRIMARY AND ONLY SOURCE
+const SOF_POOL_ADDRESS = "4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS";
 const DEXSCREENER_API = "https://api.dexscreener.com/latest";
 
 /**
- * Fetch SOF price from Raydium (primary source)
- * Returns: { price, change24h, volume24h, liquidity, timestamp }
+ * Fetch SOF price directly from pool liquidity data via Dexscreener
+ * Uses exact pool address as the single source of truth
+ * Returns: { price, change24h, volume24h, liquidity, timestamp, poolAddress }
  */
-export async function getSOFPriceFromRaydium() {
+export async function getSOFPriceFromPool() {
   try {
-    const response = await fetch(`${RAYDIUM_API}/main/pairs?mint=${SOF_MINT}`);
-    if (!response.ok) throw new Error('Raydium API failed');
+    // Fetch pool data directly using pool address
+    const response = await fetch(
+      `${DEXSCREENER_API}/dex/pairs/solana/${SOF_POOL_ADDRESS}`
+    );
+    
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
     
     const data = await response.json();
-    if (!data.data?.length) throw new Error('No SOF pair found');
-
-    const pair = data.data[0];
-    const price = parseFloat(pair.price) || 0;
-    const change24h = parseFloat(pair.priceChange?.h24) || 0;
-    const volume24h = parseFloat(pair.volume?.h24) || 0;
-    const liquidity = parseFloat(pair.liquidity?.usd) || 0;
-
-    return {
-      price,
-      change24h,
-      volume24h,
-      liquidity,
-      source: 'raydium',
-      timestamp: Date.now(),
-    };
-  } catch (err) {
-    console.warn('[SOF] Raydium fetch failed:', err.message);
-    return null;
-  }
-}
-
-/**
- * Fetch SOF price from Dexscreener (fallback source)
- * Returns: { price, change24h, volume24h, liquidity, timestamp }
- */
-export async function getSOFPriceFromDexscreener() {
-  try {
-    const response = await fetch(
-      `${DEXSCREENER_API}/dex/pairs/solana/${SOF_MINT}`
-    );
-    if (!response.ok) throw new Error('Dexscreener API failed');
-
-    const data = await response.json();
-    if (!data.pair) throw new Error('No SOF pair found');
+    if (!data.pair) throw new Error('No pool data found');
 
     const pair = data.pair;
-    const price = parseFloat(pair.priceUsd) || 0;
+    
+    // Extract price from pool liquidity data
+    const price = parseFloat(pair.priceUsd);
+    
+    // Validate we have a real price
+    if (!price || price <= 0 || isNaN(price)) {
+      throw new Error(`Invalid price from pool: ${price}`);
+    }
+
     const change24h = parseFloat(pair.priceChange?.h24) || 0;
     const volume24h = parseFloat(pair.volume?.h24) || 0;
     const liquidity = parseFloat(pair.liquidity?.usd) || 0;
@@ -69,37 +49,39 @@ export async function getSOFPriceFromDexscreener() {
       change24h,
       volume24h,
       liquidity,
-      source: 'dexscreener',
+      source: 'dexscreener_pool',
+      poolAddress: SOF_POOL_ADDRESS,
       timestamp: Date.now(),
     };
   } catch (err) {
-    console.warn('[SOF] Dexscreener fetch failed:', err.message);
+    console.error('[SOF] Pool fetch failed:', err.message);
     return null;
   }
 }
 
 /**
- * Get SOF price with fallback chain
- * Priority: Raydium → Dexscreener → cached fallback
+ * Get SOF price from pool (ONLY SOURCE - no fallbacks)
+ * If pool data unavailable: show "No liquidity data" error
+ * Never show 0 or placeholder values
  */
 export async function fetchSOFPrice() {
-  // Try Raydium first
-  let result = await getSOFPriceFromRaydium();
-  if (result) return result;
+  // Fetch from exact pool address
+  const result = await getSOFPriceFromPool();
+  
+  if (result) {
+    return result;
+  }
 
-  // Fallback to Dexscreener
-  result = await getSOFPriceFromDexscreener();
-  if (result) return result;
-
-  // Last resort: return default (should rarely happen)
+  // If pool data fails: return error state (not 0)
   return {
-    price: 0,
+    price: null,
     change24h: 0,
     volume24h: 0,
     liquidity: 0,
-    source: 'fallback',
+    source: 'pool_failed',
+    poolAddress: SOF_POOL_ADDRESS,
     timestamp: Date.now(),
-    error: 'Unable to fetch from any source',
+    error: 'No liquidity data available for SOF pool',
   };
 }
 
