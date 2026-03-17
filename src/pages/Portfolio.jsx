@@ -160,13 +160,13 @@ export default function Portfolio() {
                 </div>
 
                 <div className="text-right flex-shrink-0">
-                  <p className="text-sm font-semibold text-white">
-                    {showBalances ? asset.balance.toFixed(4) : '••••'}
-                  </p>
-                  <p className="text-[10px] text-slate-500">
-                    {showBalances ? `$${asset.value.toFixed(2)} (${percentage}%)` : '••••'}
-                  </p>
-                </div>
+                   <p className="text-sm font-semibold text-white">
+                     {showBalances ? asset.balance.toFixed(4) : '••••'}
+                   </p>
+                   <p className="text-[10px] text-slate-500">
+                     {showBalances ? `${formatPrice(asset.value, displayCurrency, exchangeRates)} (${percentage}%)` : '••••'}
+                   </p>
+                 </div>
               </div>
             );
           })}
