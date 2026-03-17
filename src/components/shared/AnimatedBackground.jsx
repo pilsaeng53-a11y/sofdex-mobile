@@ -29,7 +29,7 @@ export default function AnimatedBackground({ direction = 'neutral' }) {
   }[direction] || {};
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden" aria-hidden="true">
+    <div className="fixed inset-0 overflow-hidden" aria-hidden="true" style={{ zIndex: -1, pointerEvents: 'none' }}>
 
       {/* ── Layer 1: Deep dark base ───────────────────────── */}
       <div className="absolute inset-0" style={{ background: '#05070d' }} />
