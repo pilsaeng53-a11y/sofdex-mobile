@@ -5,6 +5,7 @@ import { User, Wallet, LogOut, Copy, Check, RotateCw, AlertCircle } from 'lucide
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useState } from 'react';
+import DisplayCurrencySelector from '../components/settings/DisplayCurrencySelector';
 
 export default function Account() {
   const { isConnected, address, shortAddress, disconnect, walletName } = useWallet();
