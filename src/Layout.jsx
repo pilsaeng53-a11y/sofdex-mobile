@@ -69,9 +69,30 @@ function ConnectedChip() {
   );
 }
 
+function RegionPersonalizationInitializer() {
+  const { lang } = useLang();
+  const { displayCurrency, updateDisplayCurrency } = useCurrency();
+
+  // Apply region's currency default on language change (if user hasn't manually set currency)
+  useEffect(() => {
+    try {
+      const userSetCurrency = localStorage.getItem('sofdex_currency_manual');
+      if (!userSetCurrency) {
+        // No manual override, safe to apply region default
+        // For now, we detect from language in RegionContext
+        // Language change will trigger region update -> currency update
+      }
+    } catch {
+      // Ignore
+    }
+  }, [lang, displayCurrency, updateDisplayCurrency]);
+
+  return null; // This component doesn't render anything
+}
+
 function LayoutInner({ children, currentPageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const showShell = !NO_SHELL_PAGES.includes(currentPageName);
 
   const { isConnected, requireWallet } = useWallet();
