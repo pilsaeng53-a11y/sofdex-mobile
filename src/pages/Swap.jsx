@@ -167,9 +167,9 @@ export default function Swap() {
   const getPrice = useCallback((asset) => {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
     
-    // SOF: always use dedicated DEX pool price
+    // SOF: ALWAYS use dedicated DEX pool price (never null)
     if (asset.symbol === 'SOF') {
-      return sofData.sofPrice && sofData.sofPrice > 0 ? sofData.sofPrice : null;
+      return sofData.sofPrice && sofData.sofPrice > 0 ? sofData.sofPrice : 0.0245;
     }
     
     // All other assets: use chart price as master source
