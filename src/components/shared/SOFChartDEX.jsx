@@ -10,36 +10,53 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Area, Area
 import { useSOFPrice } from '@/hooks/useSOFPrice';
 
 /**
- * Fetch SOF price history from Dexscreener
+ * Fetch SOF price history directly from exact pool address via Dexscreener
+ * Pool: 4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS
  * (Returns candles/prices over time)
  */
 async function fetchSOFPriceHistory(timeframe = '1h') {
   try {
-    // Dexscreener OHLCV endpoint
+    // Exact pool address - single source of truth
+    const POOL_ADDRESS = '4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS';
+    
+    // Dexscreener pool-based OHLCV endpoint with resolution
     const response = await fetch(
-      `https://api.dexscreener.com/latest/dex/pairs/solana/JiP6JdVt7h5XnZBqFiBvXhk3vkCzBEjGqBZ4QrKr4TS?resolution=${timeframe}`
+      `https://api.dexscreener.com/latest/dex/pairs/solana/${POOL_ADDRESS}?resolution=${timeframe}`
     );
     
-    if (!response.ok) throw new Error('Failed to fetch');
+    if (!response.ok) throw new Error(`API error: ${response.status}`);
     
     const data = await response.json();
-    if (!data.pair?.bars) return [];
+    if (!data.pair) throw new Error('Pool data not available');
+    
+    // Check if bars/candles exist
+    const bars = data.pair.bars || data.pair.candles;
+    if (!bars || bars.length === 0) {
+      throw new Error('No price history available');
+    }
 
-    // Convert to chart format
-    return data.pair.bars.map(bar => ({
-      timestamp: new Date(bar.time).getTime(),
-      time: new Date(bar.time).toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }),
-      price: parseFloat(bar.close),
-      high: parseFloat(bar.high),
-      low: parseFloat(bar.low),
-      volume: parseFloat(bar.volume) || 0,
-    }));
+    // Convert to chart format with validation
+    return bars.map(bar => {
+      const closePrice = parseFloat(bar.close);
+      if (isNaN(closePrice) || closePrice <= 0) {
+        return null;
+      }
+      
+      return {
+        timestamp: new Date(bar.time || bar.T).getTime(),
+        time: new Date(bar.time || bar.T).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        price: closePrice,
+        high: parseFloat(bar.high) || closePrice,
+        low: parseFloat(bar.low) || closePrice,
+        volume: parseFloat(bar.volume) || 0,
+      };
+    }).filter(d => d !== null); // Remove invalid entries
   } catch (err) {
     console.warn('[SOF Chart] Price history fetch failed:', err.message);
-    return [];
+    return null; // Return null, not empty array, to trigger "no data" state
   }
 }
 
