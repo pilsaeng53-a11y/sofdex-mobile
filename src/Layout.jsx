@@ -12,7 +12,7 @@ import { LanguageProvider } from './components/shared/LanguageContext';
 import { UserTypeProvider } from './components/shared/UserTypeContext';
 import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
 import AnimatedBackground from './components/shared/AnimatedBackground';
-import { WalletProvider } from './components/shared/WalletContext';
+import { WalletProvider, useWallet } from './components/shared/WalletContext';
 import ConnectWalletModal from './components/shared/ConnectWalletModal';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
