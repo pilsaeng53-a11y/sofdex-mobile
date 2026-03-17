@@ -13,6 +13,7 @@ import {
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
 import SolFortLogo from './SolFortLogo';
+import { getUserTierLabel, getTierBadgeClass } from '@/lib/roleVisibility';
 
 // Priority-ordered navigation — grouped by real user intent
 const NAV_SECTIONS = [
