@@ -21,6 +21,7 @@ const NAV_SECTIONS = [
     labelKey: 'menu_trading',
     items: [
       { labelKey: 'menu_trade',        page: 'Trade',        icon: TrendingUp },
+      { labelKey: 'menu_globalMarkets',page: 'GlobalMarkets',icon: Globe },
       { labelKey: 'menu_copyTrading',  page: 'CopyTrading',  icon: Copy },
       { labelKey: 'menu_markets',      page: 'Markets',      icon: BarChart3 },
       { labelKey: 'menu_marketHeatmap',page: 'MarketHeatmap',icon: Flame },
