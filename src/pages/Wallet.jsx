@@ -214,18 +214,18 @@ export default function WalletPage() {
           ) : (
             <>
               {balances && [
-                { label: 'SOL',   bal: balances.SOL.balance, color: 'text-[#00d4aa]' },
-                { label: 'USDC',  bal: balances.USDC.balance, color: 'text-blue-400' },
-                { label: 'USDT',  bal: balances.USDT.balance, color: 'text-purple-400' },
-                { label: 'Total (USD)', val: (balances.SOL.value + balances.USDC.value + balances.USDT.value).toFixed(2), color: 'text-[#00d4aa]' },
-              ].map((tile, i) => (
-                <div key={i} className="glass-card rounded-2xl p-4">
-                  <p className="text-[10px] text-slate-500 mb-1">{tile.label}</p>
-                  <p className={`text-lg font-bold ${tile.color}`}>
-                    {showBal ? (tile.val !== undefined ? `$${parseFloat(tile.val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `${tile.bal.toFixed(4)} ${tile.label}`) : '••••'}
-                  </p>
-                </div>
-              ))}
+                 { label: 'SOL',   bal: balances.SOL.balance, color: 'text-[#00d4aa]' },
+                 { label: 'USDC',  bal: balances.USDC.balance, color: 'text-blue-400' },
+                 { label: 'USDT',  bal: balances.USDT.balance, color: 'text-purple-400' },
+                 { label: 'Total (USD)', val: (balances.SOL.value + balances.USDC.value + balances.USDT.value), color: 'text-[#00d4aa]' },
+               ].map((tile, i) => (
+                 <div key={i} className="glass-card rounded-2xl p-4">
+                   <p className="text-[10px] text-slate-500 mb-1">{tile.label}</p>
+                   <p className={`text-lg font-bold ${tile.color}`}>
+                     {showBal ? (tile.val !== undefined ? formatPrice(tile.val, displayCurrency, exchangeRates) : `${tile.bal.toFixed(4)} ${tile.label}`) : '••••'}
+                   </p>
+                 </div>
+               ))}
             </>
           )}
         </div>
