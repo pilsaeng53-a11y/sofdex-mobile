@@ -81,32 +81,35 @@ export default function Profile() {
               <User className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">Trader</h2>
-              <p className="text-[11px] text-slate-500">{t('profile_premiumMember')}</p>
+              <h2 className="text-lg font-bold text-white">{isConnected ? 'Trader' : 'Guest'}</h2>
+              <p className="text-[11px] text-slate-500">{isConnected ? t('profile_premiumMember') : 'Connect wallet to unlock features'}</p>
             </div>
           </div>
-          <div className="bg-[#0d1220] rounded-xl p-3.5">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Wallet className="w-3.5 h-3.5 text-[#00d4aa]" />
-                <span className="text-[11px] text-slate-500 font-medium">{t('profile_connectedWallet')}</span>
+          {isConnected && address && (
+            <div className="bg-[#0d1220] rounded-xl p-3.5">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Wallet className="w-3.5 h-3.5 text-[#00d4aa]" />
+                  <span className="text-[11px] text-slate-500 font-medium">{walletName || 'Solana Wallet'}</span>
+                </div>
+                <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {t('profile_active')}
+                </span>
               </div>
-              <span className="flex items-center gap-1 text-[10px] text-emerald-400 font-medium">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> {t('profile_active')}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-mono text-slate-300">7xKXtg...9mN4pQ</span>
-              <div className="flex gap-1.5">
-                <button onClick={handleCopy} className="w-7 h-7 rounded-lg bg-[#151c2e] flex items-center justify-center">
-                  {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
-                </button>
-                <button className="w-7 h-7 rounded-lg bg-[#151c2e] flex items-center justify-center">
-                  <ExternalLink className="w-3 h-3 text-slate-400" />
-                </button>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-mono text-slate-300">{shortAddress}</span>
+                <div className="flex gap-1.5">
+                  <button onClick={handleCopy} className="w-7 h-7 rounded-lg bg-[#151c2e] flex items-center justify-center hover:bg-[#1a2340] transition-all">
+                    {copied ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3 text-slate-400" />}
+                  </button>
+                  <a href={`https://solscan.io/account/${address}`} target="_blank" rel="noopener noreferrer"
+                    className="w-7 h-7 rounded-lg bg-[#151c2e] flex items-center justify-center hover:bg-[#1a2340] transition-all">
+                    <ExternalLink className="w-3 h-3 text-slate-400" />
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
