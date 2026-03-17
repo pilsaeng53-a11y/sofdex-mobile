@@ -12,6 +12,7 @@ import { formatPrice } from '@/lib/currencyUtils';
 export default function Account() {
   const { isConnected, address, shortAddress, disconnect, walletName } = useWallet();
   const { balances, prices, loading } = useSolanaBalances(isConnected ? address : null);
+  const { displayCurrency, exchangeRates } = useCurrency();
   const [copied, setCopied] = useState(false);
 
   if (!isConnected) {
