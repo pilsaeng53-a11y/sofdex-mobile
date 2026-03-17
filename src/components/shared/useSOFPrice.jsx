@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { base44 } from '@/api/base44Client';
 
 const SOF_CONTRACT = '4qNEbbP5b3sEAxPxnzGzVtjvEjP2e4raGWJnyRm3z9A3';
 
@@ -13,27 +14,47 @@ function notifySubscribers(data) {
 
 async function fetchSOFPrice() {
   try {
-    const res = await window.fetch(
-      `https://api.dexscreener.com/latest/dex/tokens/${SOF_CONTRACT}`
-    );
-    const json = await res.json();
-    // pick the pair with highest liquidity
-    const pairs = json?.pairs || [];
-    const pair = pairs.sort((a, b) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0))[0];
-    if (pair) {
+    // Use backend function with multiple on-chain sources
+    const response = await base44.functions.invoke('getSOFPrice', {});
+    const result = response?.data || {};
+
+    if (result.success && result.price != null && result.price > 0) {
+      // Real on-chain price from Raydium/Jupiter/DexScreener
       notifySubscribers({
-        price: parseFloat(pair.priceUsd) || null,
-        change24h: pair.priceChange?.h24 ?? null,
-        marketCap: pair.fdv ?? pair.marketCap ?? null,
-        volume24h: pair.volume?.h24 ?? null,
+        price: result.price,
+        change24h: result.change24h ?? 0,
+        marketCap: null,
+        volume24h: result.volume24h ?? 0,
         loading: false,
         error: false,
+        source: result.source,
+        liquidity: result.liquidity,
       });
     } else {
-      notifySubscribers({ price: null, change24h: null, marketCap: null, volume24h: null, loading: false, error: true });
+      // No liquidity or error state — show message, never placeholder 0
+      notifySubscribers({
+        price: null,
+        change24h: null,
+        marketCap: null,
+        volume24h: null,
+        loading: false,
+        error: true,
+        errorMessage: result.error || 'No liquidity / price unavailable',
+        source: 'none',
+      });
     }
-  } catch {
-    notifySubscribers({ price: null, change24h: null, marketCap: null, volume24h: null, loading: false, error: true });
+  } catch (err) {
+    console.error('[useSOFPrice] Fetch error:', err.message);
+    notifySubscribers({
+      price: null,
+      change24h: null,
+      marketCap: null,
+      volume24h: null,
+      loading: false,
+      error: true,
+      errorMessage: 'Failed to fetch SOF price',
+      source: 'none',
+    });
   }
 }
 
