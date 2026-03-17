@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { formatPrice, formatChange } from '../shared/MarketData';
-import { useMarketData } from '../shared/MarketDataProvider';
+import { useMarketData, COMMODITY_SYMBOLS } from '../shared/MarketDataProvider';
 import MiniChart from '../shared/MiniChart';
 
 const symbolColors = {
