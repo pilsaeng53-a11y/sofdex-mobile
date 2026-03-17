@@ -172,7 +172,8 @@ function HeatTile({ asset, liveChange, livePrice, aiScore, onTap }) {
 // ── Expanded detail drawer (shown at bottom when tile tapped) ────────────────
 function TileDetail({ asset, liveChange, livePrice, aiScore, onTrade, onClose }) {
   const change = liveChange ?? asset.change;
-  const price  = livePrice  ?? asset.price;
+  const isCommodity = COMMODITY_SYMBOLS.has(asset.symbol);
+  const price  = livePrice  ?? (isCommodity ? null : asset.price);
   const reason = getAIReason(asset.symbol);
 
   return (
