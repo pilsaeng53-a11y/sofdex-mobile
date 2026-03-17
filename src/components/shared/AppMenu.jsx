@@ -119,6 +119,7 @@ const PARTNER_FULL_ITEMS = [
 
 const ACCOUNT_LINK_KEYS = [
   { labelKey: 'menu_account',       page: 'Account',       icon: User },
+  { labelKey: 'menu_activity',      page: 'Activity',      icon: Activity },
   { labelKey: 'menu_notifications', page: 'Notifications', icon: Bell },
   { labelKey: 'menu_settings',      page: 'Profile',       icon: Settings },
   { labelKey: 'menu_support',       page: 'Home',          icon: HelpCircle },
