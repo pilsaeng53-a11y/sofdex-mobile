@@ -18,10 +18,9 @@ import ConnectWalletModal from './components/shared/ConnectWalletModal';
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
 function ConnectedChip() {
-  const { shortAddress, disconnect, walletName } = useWallet();
+  const { shortAddress, disconnect, walletName, address } = useWallet();
   const [copied, setCopied] = useLocalState(false);
   const [open, setOpen] = useLocalState(false);
-  const { address } = useWallet();
 
   const copyAddr = (e) => {
     e.stopPropagation();
