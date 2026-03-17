@@ -17,6 +17,56 @@ import ConnectWalletModal from './components/shared/ConnectWalletModal';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
+function ConnectedChip() {
+  const { shortAddress, disconnect, walletName } = useWallet();
+  const [copied, setCopied] = useLocalState(false);
+  const [open, setOpen] = useLocalState(false);
+  const { address } = useWallet();
+
+  const copyAddr = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(address).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="h-8 px-2.5 rounded-xl flex items-center gap-1.5 transition-all btn-press"
+        style={{ background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.22)', boxShadow: '0 0 12px rgba(0,212,170,0.08)' }}
+      >
+        <div className="w-2 h-2 rounded-full bg-emerald-400 flex-shrink-0" style={{ boxShadow: '0 0 6px rgba(34,197,94,0.9)' }} />
+        <span className="text-[11px] font-bold text-[#00d4aa] font-mono tracking-tight">{shortAddress}</span>
+      </button>
+
+      {open && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-10 z-40 w-44 rounded-2xl overflow-hidden shadow-2xl"
+            style={{ background: 'rgba(10,14,26,0.98)', border: '1px solid rgba(153,69,255,0.15)', boxShadow: '0 16px 48px rgba(0,0,0,0.6)' }}>
+            <div className="px-3.5 py-3 border-b" style={{ borderColor: 'rgba(148,163,184,0.06)' }}>
+              <p className="text-[9px] text-slate-500 mb-0.5 uppercase tracking-wider">{walletName}</p>
+              <p className="text-xs font-mono text-white truncate">{shortAddress}</p>
+            </div>
+            <button onClick={copyAddr}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all">
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? 'Copied!' : 'Copy Address'}
+            </button>
+            <button onClick={() => { disconnect(); setOpen(false); }}
+              className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-xs text-red-400 hover:bg-red-400/5 transition-all">
+              <LogOut className="w-3.5 h-3.5" />
+              Disconnect
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 function LayoutInner({ children, currentPageName }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { t } = useLang();
