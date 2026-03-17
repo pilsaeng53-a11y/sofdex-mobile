@@ -227,10 +227,14 @@ export default function Profile() {
 
       {/* Logout */}
       <div className="px-4 pb-8">
-        <button className="w-full py-3 rounded-xl bg-red-500/10 border border-red-500/15 text-red-400 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all">
-          <LogOut className="w-4 h-4" />
-          {t('profile_disconnectWallet')}
-        </button>
+        {isConnected ? (
+          <button
+            onClick={() => disconnect()}
+            className="w-full py-3 rounded-xl bg-red-500/10 border border-red-500/15 text-red-400 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-red-500/20 transition-all">
+            <LogOut className="w-4 h-4" />
+            {t('profile_disconnectWallet')}
+          </button>
+        ) : null}
         <div className="text-center mt-6">
           <p className="text-[10px] text-slate-600">{t('common_version')}</p>
           <p className="text-[10px] text-slate-700">Powered by SolFort Ecosystem</p>
