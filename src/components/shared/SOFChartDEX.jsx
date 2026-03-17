@@ -60,35 +60,6 @@ async function fetchSOFPriceHistory(timeframe = '1h') {
   }
 }
 
-/**
- * Generate dummy historical data (fallback)
- * In production, use real Dexscreener data
- */
-function generateFallbackHistory(currentPrice) {
-  const now = Date.now();
-  const data = [];
-  
-  for (let i = 48; i >= 0; i--) {
-    const timestamp = now - i * 30 * 60 * 1000; // 30-min candles
-    const variation = (Math.random() - 0.5) * currentPrice * 0.02; // ±1% variation
-    const price = currentPrice + variation;
-    
-    data.push({
-      timestamp,
-      time: new Date(timestamp).toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      }),
-      price: Math.max(0, price),
-      high: price * 1.01,
-      low: price * 0.99,
-      volume: Math.random() * 100000,
-    });
-  }
-  
-  return data;
-}
-
 export default function SOFChartDEX({ timeframe = '1h', height = 300, showVolume = false }) {
   const { sofPrice, loading, error } = useSOFPrice();
   const [chartData, setChartData] = useState([]);
