@@ -55,6 +55,7 @@ import DocLegalDocuments from './pages/DocLegalDocuments';
 import MacroDetail from './pages/MacroDetail';
 import DocTokenStructure from './pages/DocTokenStructure';
 import DocRiskDisclosure from './pages/DocRiskDisclosure';
+import GlobalMarkets from './pages/GlobalMarkets';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
