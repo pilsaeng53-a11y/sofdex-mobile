@@ -282,13 +282,92 @@ function ReasoningCard({ factors, risk, basis }) {
 
 export default function AIIntelligence() {
   const { t } = useLang();
-  const [tab, setTab] = useState('Signals');
+  const [tab, setTab]             = useState('Signals');
+  const [refreshKey, setRefreshKey] = useState(0);
   const [refreshed, setRefreshed] = useState(false);
+  const { liveData }              = useMarketData();
 
-  const handleRefresh = () => {
+  const ALL_MARKETS_FLAT = useMemo(() => [...CRYPTO_MARKETS, ...RWA_MARKETS], []);
+
+  const handleRefresh = useCallback(() => {
     setRefreshed(true);
+    setRefreshKey(k => k + 1);
     setTimeout(() => setRefreshed(false), 1200);
-  };
+  }, []);
+
+  // ── Compute all asset signals dynamically from live data ─────────────────
+  const assetSignals = useMemo(() => {
+    const result = {};
+    SIGNAL_ASSETS.forEach(sym => {
+      const live = liveData[sym];
+      const base = ALL_MARKETS_FLAT.find(m => m.symbol === sym);
+      const liveAvailable = !!live?.available;
+      const change = liveAvailable ? live.change : (base?.change ?? 0);
+      const price  = liveAvailable ? live.price  : (base?.price  ?? null);
+      result[sym] = buildAssetSignal(sym, change, price, liveAvailable, base);
+    });
+    return result;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveData, refreshKey]);
+
+  // ── Overall market sentiment from live leaders ────────────────────────────
+  const overallSentiment = useMemo(
+    () => computeOverallSentiment(liveData, ALL_MARKETS_FLAT),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [liveData, refreshKey]
+  );
+
+  // ── Live-driven volatility alerts ─────────────────────────────────────────
+  const volatilityAlerts = useMemo(() => {
+    return ALL_MARKETS_FLAT
+      .map(a => {
+        const live = liveData[a.symbol];
+        const ch   = live?.available ? live.change : a.change;
+        const absC = Math.abs(ch);
+        if (absC < 3) return null;
+        const level  = absC >= 12 ? 'Extreme' : absC >= 7 ? 'High' : 'Moderate';
+        const color  = absC >= 12 ? 'text-red-400' : absC >= 7 ? 'text-orange-400' : 'text-amber-400';
+        const bg     = absC >= 12 ? 'bg-red-400/8'  : absC >= 7 ? 'bg-orange-400/8'  : 'bg-amber-400/8';
+        const border = absC >= 12 ? 'border-red-400/20' : absC >= 7 ? 'border-orange-400/20' : 'border-amber-400/20';
+        return { asset: a.symbol, level, change: `${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%`, note: `${level} activity · ${absC.toFixed(1)}% 24h move · ${live?.available ? 'Live data' : 'Static fallback'}`, color, bg, border };
+      })
+      .filter(Boolean)
+      .sort((a, b) => Math.abs(parseFloat(b.change)) - Math.abs(parseFloat(a.change)))
+      .slice(0, 6);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveData, refreshKey]);
+
+  // ── Live risk scores (abs volatility → risk level) ────────────────────────
+  const liveRiskScores = useMemo(() => {
+    const RISK_ASSETS = ['BTC', 'SOL', 'GOLD-T', 'TBILL', 'RE-NYC', 'BONK', 'JUP', 'ETH'];
+    return RISK_ASSETS.map(sym => {
+      const live  = liveData[sym];
+      const base  = ALL_MARKETS_FLAT.find(m => m.symbol === sym);
+      const ch    = live?.available ? live.change : (base?.change ?? 0);
+      const absC  = Math.abs(ch);
+      // Risk score: high volatility = high risk for crypto, low for RWA/stable
+      const ctx = ASSET_CONTEXT[sym] || {};
+      const isStable = ctx.sector?.includes('RWA') || sym === 'TBILL';
+      const baseRisk = isStable ? 20 : 40;
+      const riskScore = Math.min(99, Math.round(baseRisk + absC * (isStable ? 1.5 : 3.5)));
+      const label = riskScore >= 80 ? 'Extreme Risk' : riskScore >= 65 ? 'High Volatility' : riskScore >= 45 ? 'Moderate' : riskScore >= 25 ? 'Low Risk' : 'Safe Haven';
+      const color = riskScore >= 80 ? 'text-red-400' : riskScore >= 65 ? 'text-orange-400' : riskScore >= 45 ? 'text-amber-400' : riskScore >= 25 ? 'text-blue-400' : 'text-emerald-400';
+      const bar   = riskScore >= 80 ? 'bg-red-400'   : riskScore >= 65 ? 'bg-orange-400'   : riskScore >= 45 ? 'bg-amber-400'   : riskScore >= 25 ? 'bg-blue-400'   : 'bg-emerald-400';
+      return {
+        asset: sym, score: riskScore, label, color, bar,
+        factors: [
+          `24h change: ${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%`,
+          `Volatility magnitude: ${absC.toFixed(2)}%`,
+          ctx.narrative || 'Monitoring market activity',
+          live?.available ? 'Live data confirmed' : 'Static fallback',
+        ],
+      };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveData, refreshKey]);
+
+  const sentimentStyle = overallSentiment.label === 'Bullish'
+    ? 'text-emerald-400' : overallSentiment.label === 'Bearish' ? 'text-red-400' : 'text-slate-400';
 
   return (
     <div className="min-h-screen pb-6">
