@@ -3,6 +3,8 @@ import { useWallet } from '../components/shared/WalletContext';
 import { useSolanaBalances } from '../hooks/useSolanaBalances';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { useLang } from '../components/shared/LanguageContext';
+import { useCurrency } from '../components/shared/CurrencyContext';
+import { formatPrice } from '@/lib/currencyUtils';
 import { Eye, EyeOff, TrendingUp, TrendingDown, Wallet, ArrowUpRight, ArrowDownLeft, AlertCircle, RotateCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
