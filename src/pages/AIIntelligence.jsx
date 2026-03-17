@@ -676,7 +676,7 @@ export default function AIIntelligence() {
                     </div>
                   </div>
                 </div>
-                <ReasoningCard factors={r.factors} risk={null} />
+                <ReasoningCard factors={r.factors} risk={null} t={t} />
               </div>
             ))}
           </>
