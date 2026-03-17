@@ -424,7 +424,7 @@ export default function AIIntelligence() {
               <div className="h-full rounded-full bg-gradient-to-r from-red-500 via-amber-400 to-emerald-400" style={{ width: `${overallSentiment.score}%` }} />
             </div>
             <p className="text-[11px] text-slate-400 leading-relaxed mb-2">{overallSentiment.explanation}</p>
-            <ReasoningCard factors={overallSentiment.factors} risk={null} basis={overallSentiment.reasoning} />
+            <ReasoningCard factors={overallSentiment.factors} risk={null} basis={overallSentiment.reasoning} t={t} />
           </div>
         </div>
       </div>
