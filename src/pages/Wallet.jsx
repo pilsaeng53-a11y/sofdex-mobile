@@ -199,21 +199,33 @@ export default function WalletPage() {
       {tab === 'overview' && (
         <div className="px-4 space-y-4">
           {/* Balance tiles */}
-          <div className="grid grid-cols-2 gap-2.5">
-            {[
-              { label: 'Spot Wallet',    val: totalSpot,    color: 'text-[#00d4aa]',   prefix: '$' },
-              { label: 'Futures Wallet', val: totalFutures, color: 'text-blue-400',     prefix: '$' },
-              { label: 'RWA Wallet',     val: totalRWA,     color: 'text-purple-400',   prefix: '$' },
-              { label: 'Locked Assets',  val: totalLocked,  color: 'text-amber-400',    prefix: '$' },
-            ].map((tile, i) => (
-              <div key={i} className="glass-card rounded-2xl p-4">
-                <p className="text-[10px] text-slate-500 mb-1">{tile.label}</p>
-                <p className={`text-lg font-bold ${tile.color}`}>
-                  {showBal ? `${tile.prefix}${tile.val.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '••••'}
-                </p>
+              <div className="grid grid-cols-2 gap-2.5">
+                {loading ? (
+                  <div className="col-span-2 glass-card rounded-2xl p-4 flex items-center gap-2 text-slate-500 text-xs">
+                    <RotateCw className="w-4 h-4 animate-spin" /> Loading balances...
+                  </div>
+                ) : error ? (
+                  <div className="col-span-2 glass-card rounded-2xl p-4 rounded-2xl bg-amber-400/5 border border-amber-400/20">
+                    <p className="text-[10px] text-amber-300">{error}</p>
+                  </div>
+                ) : (
+                  <>
+                    {balances && [
+                      { label: 'SOL',   bal: balances.SOL.balance, color: 'text-[#00d4aa]' },
+                      { label: 'USDC',  bal: balances.USDC.balance, color: 'text-blue-400' },
+                      { label: 'USDT',  bal: balances.USDT.balance, color: 'text-purple-400' },
+                      { label: 'Total (USD)', val: (balances.SOL.value + balances.USDC.value + balances.USDT.value).toFixed(2), color: 'text-[#00d4aa]' },
+                    ].map((tile, i) => (
+                      <div key={i} className="glass-card rounded-2xl p-4">
+                        <p className="text-[10px] text-slate-500 mb-1">{tile.label}</p>
+                        <p className={`text-lg font-bold ${tile.color}`}>
+                          {showBal ? (tile.val !== undefined ? `$${parseFloat(tile.val).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : `${tile.bal.toFixed(4)} ${tile.label}`) : '••••'}
+                        </p>
+                      </div>
+                    ))}
+                  </>
+                )}
               </div>
-            ))}
-          </div>
 
           {/* Asset list */}
           <div>
