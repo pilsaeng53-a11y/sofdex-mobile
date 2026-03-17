@@ -149,7 +149,9 @@ const SORT_OPTIONS = [
 // ── Individual tile ───────────────────────────────────────────────────────────
 function HeatTile({ asset, liveChange, livePrice, aiScore, onTap }) {
   const change = liveChange ?? asset.change;
-  const price  = livePrice  ?? asset.price;
+  // For non-crypto assets, never fall back to static seed
+  const isCommodity = COMMODITY_SYMBOLS.has(asset.symbol);
+  const price  = livePrice  ?? (isCommodity ? null : asset.price);
   const badge  = <AiBadge score={aiScore} change={change} />;
 
   return (
