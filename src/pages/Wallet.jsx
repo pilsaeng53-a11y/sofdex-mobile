@@ -151,10 +151,11 @@ export default function WalletPage() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
-              // Trigger balance refresh
+              // Auto-refresh happens every 30s, but manual refresh forces immediate reload
               window.location.reload();
             }}
             disabled={loading}
+            title="Refresh balances"
             className="w-9 h-9 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 disabled:opacity-50 transition-all">
             <RotateCw className={`w-4 h-4 text-slate-400 ${loading ? 'animate-spin' : ''}`} />
           </button>
@@ -165,11 +166,10 @@ export default function WalletPage() {
         </div>
       </div>
 
-      {/* Address bar - Connected Account */}
-      <div className="px-4 mb-4 space-y-2">
-        <div className="text-xs text-slate-500 px-1">Connected Account</div>
+      {/* Address bar */}
+      <div className="px-4 mb-4">
         <div className="glass-card rounded-2xl px-4 py-3 flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot flex-shrink-0" style={{ boxShadow: '0 0 8px rgba(34,197,94,0.9)' }} />
+          <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot flex-shrink-0" />
           <p className="text-xs font-mono text-slate-300 flex-1 truncate">{walletAddress}</p>
           <button onClick={() => copyAddress(walletAddress)}
             className="flex items-center gap-1 text-[10px] font-semibold text-[#00d4aa] bg-[#00d4aa]/10 px-2.5 py-1.5 rounded-lg hover:bg-[#00d4aa]/20 transition-all flex-shrink-0">
