@@ -72,6 +72,8 @@ function LayoutInner({ children, currentPageName }) {
   const { t } = useLang();
   const showShell = !NO_SHELL_PAGES.includes(currentPageName);
 
+  const { isConnected, requireWallet } = useWallet();
+
   // Derive market sentiment from live BTC change
   const { getLiveAsset } = useMarketData();
   const btc = getLiveAsset('BTC');
