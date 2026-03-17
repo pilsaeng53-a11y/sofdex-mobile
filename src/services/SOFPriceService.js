@@ -27,10 +27,10 @@ const RETRY_DELAY = 1000; // 1 second between retries
 /**
  * Fetch SOF price directly from pool liquidity data via Dexscreener API
  * Uses exact pool address as the single source of truth
- * Actively retrieves live data from the Raydium pool
- * Returns: { price, change24h, volume24h, liquidity, priceNative, timestamp, poolAddress }
+ * Actively retrieves live data from the Raydium pool with retry logic
+ * Returns: { price, change24h, volume24h, liquidity, priceNative, timestamp, poolAddress, apiStatus }
  */
-export async function getSOFPriceFromPool() {
+export async function getSOFPriceFromPool(retryAttempt = 0) {
   try {
     // ACTIVE FETCH: Get real-time pool data using exact pool address
     const response = await fetch(
@@ -68,7 +68,9 @@ export async function getSOFPriceFromPool() {
     const liquidity = parseFloat(pair.liquidity?.usd) || 0;
     const txns24h = pair.txns?.h24 || {};
 
-    return {
+    // SUCCESS: Reset failure counter and store as last valid price
+    failureCount = 0;
+    const result = {
       price: priceUsd,
       priceNative: priceNative || priceUsd,
       change24h,
@@ -84,8 +86,20 @@ export async function getSOFPriceFromPool() {
       timestamp: Date.now(),
       apiStatus: 'success',
     };
+    
+    lastValidPrice = result;
+    return result;
   } catch (err) {
-    console.error('[SOF] Dexscreener API fetch failed:', err.message);
+    console.error('[SOF] Dexscreener API fetch failed (attempt ' + (retryAttempt + 1) + '):', err.message);
+    failureCount++;
+    
+    // RETRY LOGIC: If we haven't exceeded retries and have a fallback, retry
+    if (retryAttempt < MAX_RETRIES && lastValidPrice) {
+      console.warn('[SOF] Retrying fetch...');
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return getSOFPriceFromPool(retryAttempt + 1);
+    }
+    
     return null;
   }
 }
