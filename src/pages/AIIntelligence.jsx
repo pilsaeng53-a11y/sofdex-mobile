@@ -225,10 +225,10 @@ const LIQUIDATION_ZONES = [
 // RWA_VALUATIONS — current price is always derived from live market data at render time
 // fair/status/pct are AI model outputs (informational), NOT used as the main price display
 const RWA_VALUATIONS = [
-  { symbol: 'RE-NYC', name: 'NYC Real Estate', fairRaw: 58.20,  status: 'Undervalued', pct: '+10.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'DCF model on 2024 rental yields + cap rate compression' },
-  { symbol: 'GOLD-T', name: 'Tokenized Gold',  fairRaw: 3290,   status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Spot gold price parity check vs. XAUUSD — tracks live spot price' },
-  { symbol: 'TBILL',  name: 'US T-Bill Token', fairRaw: 100.28, status: 'Fair Value',  pct: '0.0%',   color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Yield-to-maturity NAV calculation' },
-  { symbol: 'RE-DXB', name: 'Dubai RE',        fairRaw: 148.00, status: 'Undervalued', pct: '+18.9%', color: 'text-emerald-400', bg: 'bg-emerald-400/10', basis: 'CBRE Dubai property index + yield spread model' },
+  { symbol: 'GOLD-T',  name: 'Tokenized Gold',   fairRaw: null,  status: 'Fair Value',  pct: '0.0%', color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Live spot gold parity — tracks TVC:GOLD / Yahoo GC=F in real time' },
+  { symbol: 'CRUDE-T', name: 'WTI Crude Oil',    fairRaw: null,  status: 'Fair Value',  pct: '0.0%', color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Live WTI futures parity — tracks TVC:USOIL / Yahoo CL=F in real time' },
+  { symbol: 'SP500-T', name: 'S&P 500 Index',    fairRaw: null,  status: 'Fair Value',  pct: '0.0%', color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Live S&P 500 index parity — tracks SP:SPX / Yahoo ^GSPC in real time' },
+  { symbol: 'TBILL',   name: 'US 10Y Treasury',  fairRaw: null,  status: 'Fair Value',  pct: '0.0%', color: 'text-slate-400',  bg: 'bg-slate-400/10',  basis: 'Live 10Y yield — tracks TVC:US10Y / Yahoo ^TNX in real time' },
 ];
 
 // Helper: format a number as a price string
