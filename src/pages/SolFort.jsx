@@ -5,7 +5,7 @@ import {
   TrendingUp, Zap, Shield, Globe, BarChart3, Users,
   ArrowUpRight, ExternalLink, Copy, Check, ChevronRight, Layers, Crown, Star
 } from 'lucide-react';
-import { useSOFPrice, formatSOFPrice, formatMarketCap } from '../components/shared/useSOFPrice';
+import { useSOFPrice } from '../hooks/useSOFPrice';
 
 const PLATFORM_FEATURES = [
   { icon: BarChart3, color: '#00d4aa', title: 'Multi-Asset DEX',       desc: 'Trade crypto, RWA, tokenized equities and commodities on a single platform.' },
@@ -40,7 +40,7 @@ const FOUNDATION_URL = 'https://www.solfort.foundation';
 export default function SolFort() {
   const [copied, setCopied] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
-  const sofPrice = useSOFPrice();
+  const { sofPrice, change24h, volume24h, loading, error } = useSOFPrice();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(CONTRACT).then(() => {
@@ -113,13 +113,13 @@ export default function SolFort() {
             {[
               {
                 label: 'Token Price',
-                value: sofPrice.loading ? '…' : sofPrice.error ? '—' : formatSOFPrice(sofPrice.price),
-                change: sofPrice.change24h != null ? `${sofPrice.change24h >= 0 ? '+' : ''}${sofPrice.change24h.toFixed(2)}%` : null,
-                positive: sofPrice.change24h >= 0,
+                value: loading ? '…' : error ? 'No liquidity data' : sofPrice ? `$${sofPrice.toFixed(sofPrice < 0.01 ? 8 : sofPrice < 1 ? 6 : 4)}` : '—',
+                change: change24h != null ? `${change24h >= 0 ? '+' : ''}${change24h.toFixed(2)}%` : null,
+                positive: change24h >= 0,
               },
               {
-                label: 'Market Cap',
-                value: sofPrice.loading ? '…' : formatMarketCap(sofPrice.marketCap),
+                label: 'Pool Address',
+                value: '4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS'.slice(0, 8) + '...',
                 change: null, positive: null,
               },
               {
@@ -129,7 +129,7 @@ export default function SolFort() {
               },
               {
                 label: '24h Volume',
-                value: sofPrice.loading ? '…' : formatMarketCap(sofPrice.volume24h),
+                value: loading ? '…' : volume24h ? `$${(volume24h / 1000000).toFixed(2)}M` : '—',
                 change: null, positive: null,
               },
             ].map((stat, i) => (
