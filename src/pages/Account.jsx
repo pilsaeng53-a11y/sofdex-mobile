@@ -117,13 +117,13 @@ export default function Account() {
 
       {/* Display Currency Settings */}
        <div className="space-y-2">
-         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">Settings</p>
+         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">{t('menu_settings')}</p>
          <DisplayCurrencySelector />
        </div>
 
       {/* Quick Actions */}
        <div className="space-y-2">
-         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">Quick Links</p>
+         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">{t('common_viewAll')}</p>
         <div className="space-y-2">
           <Link to={createPageUrl('Wallet')} className="block">
             <button className="w-full glass-card rounded-2xl p-3 flex items-center gap-3 hover:border-[#00d4aa]/30 transition-all">
