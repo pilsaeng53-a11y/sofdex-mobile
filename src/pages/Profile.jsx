@@ -8,6 +8,7 @@ import { useWallet } from '../components/shared/WalletContext';
 
 export default function Profile() {
   const { t, lang, setLang, LANGUAGES } = useLang();
+  const { isConnected, address, shortAddress, walletName, disconnect } = useWallet();
   const [copied, setCopied] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [darkMode, setDarkMode] = useState(true);
