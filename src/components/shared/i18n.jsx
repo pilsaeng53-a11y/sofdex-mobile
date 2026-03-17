@@ -509,6 +509,17 @@ export const translations = {
     input_search: 'Search...',
     input_amount: 'Enter amount',
     input_address: 'Enter address',
+    // Account page specific
+    common_copy: 'Copy',
+    common_copied: 'Copied',
+    wallet_provider_label: 'Provider',
+    wallet_network_label: 'Network',
+    wallet_address_label: 'Wallet Address',
+    wallet_description: 'Send, receive & manage assets',
+    portfolio_description: 'View holdings & balances',
+    wallet_network_status: 'Network Status',
+    account_security_notice: 'SOFDex never stores or has access to your private keys. All transactions are signed locally in your wallet.',
+    coming_soon: 'Coming Soon',
     },
 
   ko: {
