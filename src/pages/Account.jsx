@@ -23,10 +23,10 @@ export default function Account() {
         <div className="w-16 h-16 rounded-2xl bg-[#1a2340] flex items-center justify-center mx-auto mb-4">
           <User className="w-8 h-8 text-slate-400" />
         </div>
-        <h2 className="text-xl font-bold mb-2">Account</h2>
-        <p className="text-sm text-slate-400 mb-6">Connect your wallet to manage your account.</p>
+        <h2 className="text-xl font-bold mb-2">{t('profile_title')}</h2>
+        <p className="text-sm text-slate-400 mb-6">{t('wallet_connect_prompt')}</p>
         <Link to={createPageUrl('Wallet')}>
-          <button className="btn-solana px-6 py-2 text-sm rounded-xl">Connect Wallet</button>
+          <button className="btn-solana px-6 py-2 text-sm rounded-xl">{t('common_connect')}</button>
         </Link>
       </div>
     );
