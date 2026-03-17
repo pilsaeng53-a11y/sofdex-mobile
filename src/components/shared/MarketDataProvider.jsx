@@ -39,19 +39,30 @@ const defaultCtx = { liveData: {}, sparklines: {}, getLiveAsset: () => ({ availa
 export const MarketDataContext = createContext(defaultCtx);
 export const useMarketData = () => useContext(MarketDataContext);
 
+// ── Commodity symbol config (RWA assets that need live commodity pricing) ─────
+// Maps SOFDex symbol → { stooqSymbol, fallbackPrice, prevClose }
+const COMMODITY_CONFIG = {
+  'GOLD-T':  { stooq: 'xauusd', fallback: 3300 },
+  'CRUDE-T': { stooq: 'clusd',  fallback: 78   },
+  'SP500-T': { stooq: 'spx',    fallback: 5800  },
+};
+
 // ── Provider ──────────────────────────────────────────────────────────────────
 export function MarketDataProvider({ children }) {
   const [liveData,   setLiveData]   = useState({});
   const [sparklines, setSparklines] = useState({});
 
-  const bufferRef    = useRef({});
-  const wsRef        = useRef(null);
-  const reconnectRef = useRef(null);
-  const flushRef     = useRef(null);
-  const cgPollRef    = useRef(null);
-  const wsAliveRef   = useRef(false);   // tracks if WS is delivering data
-  const retryCount   = useRef(0);
-  const alive        = useRef(true);
+  const bufferRef      = useRef({});
+  const wsRef          = useRef(null);
+  const reconnectRef   = useRef(null);
+  const flushRef       = useRef(null);
+  const cgPollRef      = useRef(null);
+  const commPollRef    = useRef(null);
+  const wsAliveRef     = useRef(false);   // tracks if WS is delivering data
+  const retryCount     = useRef(0);
+  const alive          = useRef(true);
+  // Track previous commodity prices to compute 24h change
+  const prevCommodity  = useRef({});
 
   // ── CoinGecko REST (initial fast load + fallback polling) ─────────────────
   async function fetchCoinGecko() {
