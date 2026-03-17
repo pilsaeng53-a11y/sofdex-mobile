@@ -91,7 +91,7 @@ export default function Account() {
           <div>
             <p className="text-[11px] text-slate-500 mb-1">Total Value</p>
             <p className="text-2xl font-bold text-[#00d4aa] num-large">
-              {loading ? '...' : formatPrice(totalValue, displayCurrency, exchangeRates)}
+              {loading ? '...' : formatPriceRealtime(totalValue, displayCurrency, exchangeRates)}
             </p>
           </div>
 
