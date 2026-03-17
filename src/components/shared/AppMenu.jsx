@@ -19,6 +19,15 @@ import { getUserTierLabel, getTierBadgeClass } from '@/lib/roleVisibility';
 // Priority-ordered navigation — grouped by real user intent
 const NAV_SECTIONS = [
   {
+    labelKey: 'menu_futures',
+    items: [
+      { labelKey: 'menu_futuresDashboard',  page: 'FuturesDashboard',  icon: TrendingDown },
+      { labelKey: 'menu_futuresTrade',      page: 'FuturesTrade',      icon: Briefcase },
+      { labelKey: 'menu_futuresMarketWatch',page: 'FuturesMarketWatch',icon: BarChart3 },
+      { labelKey: 'menu_futuresPositions',  page: 'FuturesPositions',  icon: Activity },
+    ],
+  },
+  {
     labelKey: 'menu_trading',
     items: [
       { labelKey: 'menu_trade',        page: 'Trade',        icon: TrendingUp },
