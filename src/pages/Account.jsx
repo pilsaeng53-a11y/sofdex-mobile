@@ -7,7 +7,7 @@ import { createPageUrl } from '@/utils';
 import { useState } from 'react';
 import DisplayCurrencySelector from '../components/settings/DisplayCurrencySelector';
 import { useCurrency } from '../components/shared/CurrencyContext';
-import { formatPrice } from '@/lib/currencyUtils';
+import { formatPriceRealtime } from '@/lib/realtimeCurrencyUtils';
 
 export default function Account() {
   const { isConnected, address, shortAddress, disconnect, walletName } = useWallet();
