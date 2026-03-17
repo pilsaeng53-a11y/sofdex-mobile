@@ -171,9 +171,17 @@ export default function Swap() {
 
   const fromPrice = getPrice(fromAsset);
   const toPrice = getPrice(toAsset);
-  const rate = toPrice > 0 ? fromPrice / toPrice : 0;
-  const toAmount = fromAmount ? (parseFloat(fromAmount) * rate).toFixed(toPrice < 0.001 ? 8 : toPrice < 1 ? 6 : 2) : '';
-  const priceImpact = fromAmount && parseFloat(fromAmount) > 0
+  
+  // Calculate rate with safeguards — never divide by zero
+  const rate = toPrice > 0 && fromPrice > 0 ? fromPrice / toPrice : 0;
+  
+  // Calculate output amount — must be positive or empty, never 0
+  const toAmount = fromAmount && parseFloat(fromAmount) > 0 && rate > 0
+    ? (parseFloat(fromAmount) * rate).toFixed(toPrice < 0.001 ? 8 : toPrice < 1 ? 6 : 2)
+    : '';
+  
+  // Price impact calculation
+  const priceImpact = fromAmount && parseFloat(fromAmount) > 0 && fromPrice > 0
     ? Math.min(parseFloat(fromAmount) * fromPrice * 0.00002, 2.5).toFixed(3)
     : '0.000';
 
