@@ -23,10 +23,6 @@ export function useChartPrice(symbol) {
   // so price and chart are always in sync.
   let price, change24h, isLive;
 
-  // Commodity RWA symbols that must NEVER show stale static prices —
-  // their live feed is required for accurate display (chart shows ~4900+ for gold, not 3300).
-  const COMMODITY_SYMBOLS = new Set(['GOLD-T', 'SILVER-T', 'CRUDE-T', 'SP500-T', 'TBILL', 'EURO-B']);
-
   if (symbol === 'SOF') {
     price     = sofLive.price    ?? null;
     change24h = sofLive.change24h ?? 0;
