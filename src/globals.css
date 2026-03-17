@@ -15,8 +15,8 @@
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --border-color: rgba(148, 163, 184, 0.1);
-  --glass-bg: rgba(21, 28, 46, 0.72);
-  --glass-border: rgba(0, 212, 170, 0.12);
+  --glass-bg: rgba(10, 14, 26, 0.75);
+  --glass-border: rgba(153, 69, 255, 0.10);
   --green: #22c55e;
   --red: #ef4444;
 
@@ -51,13 +51,15 @@
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--glass-border);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.03), 0 4px 24px rgba(0,0,0,0.4);
   }
 
   .glass-panel {
-    background: rgba(13, 18, 32, 0.75);
+    background: rgba(8, 11, 20, 0.80);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(148, 163, 184, 0.08);
+    border: 1px solid rgba(153, 69, 255, 0.08);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 8px 32px rgba(0,0,0,0.5);
   }
 
   /* ─── Gradient Buttons ──────────────────────────── */
