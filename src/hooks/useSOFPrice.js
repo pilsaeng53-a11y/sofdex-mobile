@@ -94,36 +94,29 @@ export function useSOFPrice(autoRefreshInterval = AUTO_REFRESH_INTERVAL) {
   const refreshIntervalRef = useRef(null);
   const initialFetchDoneRef = useRef(false);
 
-  // INITIAL FETCH: Get price immediately on mount
+  // INITIAL FETCH: Silent fetch in background (never show loading)
   useEffect(() => {
     if (!initialFetchDoneRef.current) {
       initialFetchDoneRef.current = true;
       
-      // Only fetch if cache is stale
+      // Fetch silently in background — no loading state shown to user
       if (!globalSOFPrice || Date.now() - globalSOFTimestamp > CACHE_TTL) {
-        setLoading(true);
         refreshSOFPrice()
           .then(data => {
             setSOFData(data);
-            setLoading(false);
+            // Still use data even if error (fallback values available)
           })
           .catch(err => {
-            console.error('[SOF Hook] Initial fetch failed:', err);
-            setError(err.message || 'Failed to fetch SOF price');
-            setLoading(false);
+            // Silent failure — use fallback data already in state
+            console.warn('[SOF Hook] Background fetch failed (using fallback):', err.message);
           });
-      } else {
-        // Use cached data
-        setSOFData(globalSOFPrice);
-        setError(globalError);
-        setLoading(false);
       }
     }
 
     // Subscribe to global updates (other components may refresh too)
     const unsubscribe = subscribe(({ sofPrice, error }) => {
       if (sofPrice) setSOFData(sofPrice);
-      if (error) setError(error);
+      // Don't set error that would block display
     });
 
     return unsubscribe;
