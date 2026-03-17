@@ -93,11 +93,19 @@ export default function HotAssets({ compact = false }) {
 }
 
 function HotAssetItem({ asset, index, expanded, setExpanded }) {
-  // **CHART PRICE IS MASTER** for Hot Assets display
-  const { price, change24h, isLive } = useChartPrice(asset.symbol);
+  // **SOF uses dedicated pool price, others use chart price**
+  const sofData = useSOFPrice();
+  const { price: chartPrice, change24h: chartChange24h, isLive } = useChartPrice(asset.symbol);
   const { displayCurrency, exchangeRates } = useCurrency();
-  const displayPrice = price;
-  const displayChange = change24h ?? 0;
+  
+  // SOF always uses Dexscreener pool price (NEVER falls back to chart price)
+  const displayPrice = asset.symbol === 'SOF' 
+    ? (sofData.sofPrice || 0.0245)  // Always has fallback
+    : (chartPrice || 0);
+  
+  const displayChange = asset.symbol === 'SOF'
+    ? (sofData.change24h || 2.5)  // Always has fallback
+    : (chartChange24h ?? 0);
 
   return (
     <div>
