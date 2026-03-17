@@ -286,11 +286,13 @@ export default function MarketHeatmap() {
   const selectedEnriched = useMemo(() => {
     if (!selected) return null;
     const live = liveData[selected.symbol];
+    const isCommodity = COMMODITY_SYMBOLS.has(selected.symbol);
     const liveChange = live?.available ? live.change : null;
     const livePrice  = live?.available ? live.price  : null;
-    const change     = liveChange ?? selected.change;
-    const aiScore    = getAIScore(selected.symbol, change, selected.price, selected);
-    return { ...selected, liveChange, livePrice, change, aiScore };
+    const change  = liveChange ?? selected.change;
+    const price   = livePrice  ?? (isCommodity ? null : selected.price);
+    const aiScore = getAIScore(selected.symbol, change ?? 0, price ?? selected.price, selected);
+    return { ...selected, liveChange, livePrice, change, price, aiScore };
   }, [selected, liveData]);
 
   return (
