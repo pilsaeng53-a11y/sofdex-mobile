@@ -43,13 +43,17 @@ export const useMarketData = () => useContext(MarketDataContext);
 // Uses frankfurter.app (FX), open-source metal price APIs, and allorigins CORS
 // proxy for Yahoo Finance — all browser-accessible without API keys.
 const COMMODITY_CONFIG = {
-  'GOLD-T':   { yahoo: 'GC=F',     fallback: 3300   },
-  'SILVER-T': { yahoo: 'SI=F',     fallback: 33     },
-  'CRUDE-T':  { yahoo: 'CL=F',     fallback: 67     },
-  'SP500-T':  { yahoo: '%5EGSPC',  fallback: 5600   },
-  'TBILL':    { yahoo: '%5ETNX',   fallback: 4.25   },
-  'EURO-B':   { yahoo: 'EURUSD%3DX', fallback: 1.085 },
+  'GOLD-T':   { yahoo: 'GC=F',       fallback: 3300   },
+  'SILVER-T': { yahoo: 'SI=F',       fallback: 33     },
+  'CRUDE-T':  { yahoo: 'CL=F',       fallback: 67     },
+  'SP500-T':  { yahoo: '%5EGSPC',    fallback: 5600   },
+  'TBILL':    { yahoo: '%5ETNX',     fallback: 4.25   },
+  'EURO-B':   { yahoo: 'EURUSD%3DX', fallback: 1.085  },
 };
+
+// Exported set — all components that call getLiveAsset directly must check this
+// and return null (not the stale static seed) while live data hasn't arrived yet.
+export const COMMODITY_SYMBOLS = new Set(Object.keys(COMMODITY_CONFIG));
 
 // ── Provider ──────────────────────────────────────────────────────────────────
 export function MarketDataProvider({ children }) {
