@@ -698,7 +698,7 @@ export default function AIIntelligence() {
                 </div>
                 <p className="text-xs font-semibold text-white mb-1.5 leading-snug">{n.headline}</p>
                 <p className="text-[10px] text-slate-500 leading-relaxed mb-1">{n.summary}</p>
-                <ReasoningCard factors={n.factors} risk={null} />
+                <ReasoningCard factors={n.factors} risk={null} t={t} />
               </div>
             ))}
           </>
