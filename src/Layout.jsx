@@ -147,13 +147,15 @@ function LayoutInner({ children, currentPageName }) {
 
 export default function Layout({ children, currentPageName }) {
   return (
-    <LanguageProvider>
-      <UserTypeProvider>
-        <WalletProvider>
-          <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
-          <ConnectWalletModal />
-        </WalletProvider>
-      </UserTypeProvider>
-    </LanguageProvider>
+    <CurrencyProvider>
+      <LanguageProvider>
+        <UserTypeProvider>
+          <WalletProvider>
+            <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
+            <ConnectWalletModal />
+          </WalletProvider>
+        </UserTypeProvider>
+      </LanguageProvider>
+    </CurrencyProvider>
   );
 }
