@@ -196,7 +196,7 @@ export default function Portfolio() {
                 <p className="text-xs font-semibold text-white">{item.symbol}</p>
                 <p className="text-[10px] text-slate-500">{item.name}</p>
               </div>
-              <p className="text-xs font-semibold text-[#00d4aa]">{item.price > 0 ? formatPrice(item.price, displayCurrency, exchangeRates) : 'N/A'}</p>
+              <p className="text-xs font-semibold text-[#00d4aa]">{item.price > 0 ? formatPriceRealtime(item.price, displayCurrency, exchangeRates) : 'N/A'}</p>
             </div>
           ))}
         </div>
