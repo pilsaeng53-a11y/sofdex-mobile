@@ -43,6 +43,73 @@
     border: 1px solid var(--glass-border);
   }
 
+  /* Solana-style glow buttons */
+  .btn-solana {
+    background: linear-gradient(135deg, #00d4aa, #06b6d4);
+    color: white;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(0, 212, 170, 0.25);
+  }
+  .btn-solana:hover {
+    opacity: 0.92;
+    box-shadow: 0 6px 28px rgba(0, 212, 170, 0.35);
+    transform: translateY(-1px);
+  }
+
+  .btn-purple {
+    background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+    color: white;
+    font-weight: 700;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.25);
+    transition: all 0.2s;
+  }
+  .btn-purple:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  /* Gradient border card */
+  .gradient-border {
+    position: relative;
+    background: #151c2e;
+    border-radius: 16px;
+  }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(0, 212, 170, 0.3), rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.2));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /* Hover scale card */
+  .hover-scale {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .hover-scale:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Neon active glow */
+  .active-glow {
+    box-shadow: 0 0 0 1px rgba(0, 212, 170, 0.3), 0 0 20px rgba(0, 212, 170, 0.1);
+  }
+
+  /* Animated gradient border on focus */
+  .focus-glow:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 212, 170, 0.4);
+  }
+
   .gradient-teal {
     background: linear-gradient(135deg, #00d4aa, #06b6d4);
   }
