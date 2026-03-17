@@ -32,16 +32,7 @@ export default function Portfolio() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="px-4 py-8 max-w-lg mx-auto">
-        <div className="text-center py-12">
-          <RotateCw className="w-8 h-8 text-slate-400 mx-auto mb-3 animate-spin" />
-          <p className="text-sm text-slate-400">Loading portfolio data...</p>
-        </div>
-      </div>
-    );
-  }
+
 
   if (!balances) {
     if (error) {
