@@ -261,14 +261,14 @@ function AIDisclaimer() {
   );
 }
 
-function ReasoningCard({ factors, risk, basis }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="mt-2">
-      <button onClick={() => setOpen(v => !v)} className="flex items-center gap-1.5 text-[10px] text-slate-600 hover:text-slate-400 transition-colors">
-        <Brain className="w-3 h-3" />
-        {open ? 'Hide' : 'View'} AI reasoning
-      </button>
+function ReasoningCard({ factors, risk, basis, t }) {
+   const [open, setOpen] = useState(false);
+   return (
+     <div className="mt-2">
+       <button onClick={() => setOpen(v => !v)} className="flex items-center gap-1.5 text-[10px] text-slate-600 hover:text-slate-400 transition-colors">
+         <Brain className="w-3 h-3" />
+         {open ? t('ai_hideReasoning') : t('ai_viewReasoning')} {t('ai_reasoning')}
+       </button>
       {open && (
         <div className="mt-2 p-2.5 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.06)] space-y-1.5">
           {basis && <p className="text-[10px] text-slate-500"><span className="text-slate-400 font-semibold">Basis:</span> {basis}</p>}
