@@ -113,13 +113,13 @@ export default function SolFort() {
             {[
               {
                 label: 'Token Price',
-                value: loading ? '…' : error ? 'No liquidity data' : sofPrice ? `$${sofPrice.toFixed(sofPrice < 0.01 ? 8 : sofPrice < 1 ? 6 : 4)}` : '—',
+                value: loading ? '…' : error ? 'Fetching price...' : sofPrice ? `$${sofPrice.toFixed(sofPrice < 0.01 ? 8 : sofPrice < 1 ? 6 : 4)}` : '—',
                 change: change24h != null ? `${change24h >= 0 ? '+' : ''}${change24h.toFixed(2)}%` : null,
                 positive: change24h >= 0,
               },
               {
-                label: 'Pool Address',
-                value: '4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS'.slice(0, 8) + '...',
+                label: 'Pool Liquidity',
+                value: loading ? '…' : liquidity ? `$${(liquidity / 1000000).toFixed(2)}M` : '—',
                 change: null, positive: null,
               },
               {
