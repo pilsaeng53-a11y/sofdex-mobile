@@ -14,6 +14,7 @@ export default function Portfolio() {
   const { balances, prices, loading } = useSolanaBalances(isConnected ? address : null);
   const { getLiveAsset } = useMarketData();
   const { t } = useLang();
+  const { displayCurrency, exchangeRates } = useCurrency();
   const [showBalances, setShowBalances] = useState(true);
   const [timeframe, setTimeframe] = useState('24h');
 
