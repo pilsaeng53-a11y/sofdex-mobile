@@ -52,15 +52,23 @@ export default function MarketDetail() {
       {/* Price section */}
       <div className="px-4 mb-4">
         <div className="flex items-end gap-3 mb-1">
-          <span className="text-3xl font-bold text-white">${formatPrice(displayPrice)}</span>
-          <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${
-            isPositive ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'
-          }`}>
-            {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-            {formatChange(displayChange ?? 0)}
-          </div>
+          {displayPrice != null ? (
+            <span className="text-3xl font-bold text-white">${formatPrice(displayPrice)}</span>
+          ) : (
+            <span className="text-3xl font-bold text-slate-600 animate-pulse">Loading…</span>
+          )}
+          {displayPrice != null && (
+            <div className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold ${
+              isPositive ? 'bg-emerald-400/10 text-emerald-400' : 'bg-red-400/10 text-red-400'
+            }`}>
+              {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+              {formatChange(displayChange ?? 0)}
+            </div>
+          )}
         </div>
-        <p className="text-[11px] text-slate-500">Last updated · <span className="text-emerald-400">Live</span></p>
+        <p className="text-[11px] text-slate-500">
+          {displayPrice != null ? <>Last updated · <span className="text-emerald-400">Live</span></> : 'Fetching live price…'}
+        </p>
       </div>
 
       {/* TradingView Chart — always uses price chart, never market cap */}
