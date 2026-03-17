@@ -11,12 +11,11 @@ import { createPageUrl } from '@/utils';
 
 export default function Portfolio() {
   const { isConnected, address, shortAddress } = useWallet();
-  const { balances, prices, loading } = useSolanaBalances(isConnected ? address : null);
+  const { balances, loading, error } = useSolanaBalances(isConnected ? address : null);
   const { getLiveAsset } = useMarketData();
   const { t } = useLang();
   const { displayCurrency, exchangeRates } = useCurrency();
   const [showBalances, setShowBalances] = useState(true);
-  const [timeframe, setTimeframe] = useState('24h');
 
   if (!isConnected) {
     return (
@@ -35,34 +34,31 @@ export default function Portfolio() {
     );
   }
 
-
-
-  if (!balances) {
-    if (error) {
-      return (
-        <div className="px-4 py-8 max-w-lg mx-auto">
-          <div className="glass-card rounded-2xl p-6 flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-white mb-1">Unable to Load Balances</p>
-              <p className="text-xs text-slate-400">{error}</p>
-              <button 
-                onClick={() => window.location.reload()} 
-                className="mt-3 text-xs text-[#00d4aa] hover:text-[#00d4aa]/80 font-semibold">
-                Retry
-              </button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-    
-    // Still loading
+  if (loading) {
     return (
       <div className="px-4 py-8 max-w-lg mx-auto">
         <div className="text-center py-12">
           <RotateCw className="w-8 h-8 text-slate-400 mx-auto mb-3 animate-spin" />
           <p className="text-sm text-slate-400">Loading portfolio data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !balances) {
+    return (
+      <div className="px-4 py-8 max-w-lg mx-auto">
+        <div className="glass-card rounded-2xl p-6 flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-semibold text-white mb-1">Unable to Load Portfolio</p>
+            <p className="text-xs text-slate-400">{error || 'Failed to fetch balance data'}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-3 text-xs text-[#00d4aa] hover:text-[#00d4aa]/80 font-semibold">
+              Retry
+            </button>
+          </div>
         </div>
       </div>
     );
