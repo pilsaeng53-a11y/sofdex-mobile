@@ -200,12 +200,16 @@ export default function Swap() {
     setFromAsset(toAsset);
     setToAsset(tmp);
     setFromAmount(toAmount || '');
-    setSwapped(s => !s);
   };
 
   const handleExecute = () => {
     if (!fromAmount || parseFloat(fromAmount) <= 0) return;
-    alert(`Swap ${fromAmount} ${fromAsset.symbol} → ${toAmount} ${toAsset.symbol}\n\nThis is a demo swap.`);
+    if (!isConnected) {
+      requireWallet();
+      return;
+    }
+    // Show preview/confirmation modal
+    setShowConfirmation(true);
   };
 
   return (
