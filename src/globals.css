@@ -319,6 +319,12 @@
     100% { background-position: 200% 0; }
   }
 
+  /* Alias used by inline styles */
+  @keyframes shimmerSlideFast {
+    0%   { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
   /* ─── Animated gradient background shift ────────── */
   @keyframes gradientShift {
     0%   { background-position: 0% 50%; }
