@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { initializePriceEngine } from './services/PriceEngineInitializer';
+import { initializePriceEngine } from './services/PriceEngineInitializer';
 import { useLang } from './components/shared/LanguageContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -97,6 +98,13 @@ function LayoutInner({ children, currentPageName }) {
   const showShell = !NO_SHELL_PAGES.includes(currentPageName);
 
   const { isConnected, requireWallet } = useWallet();
+
+  // Initialize Price Engine once at mount
+  useEffect(() => {
+    initializePriceEngine().catch(err => {
+      console.error('Failed to initialize Price Engine:', err);
+    });
+  }, []);
 
   // Derive market sentiment from live BTC change
   const { getLiveAsset } = useMarketData();
