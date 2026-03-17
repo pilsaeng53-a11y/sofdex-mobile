@@ -198,13 +198,18 @@ export function useSOFPrice(autoRefreshInterval = AUTO_REFRESH_INTERVAL) {
   }, [sofData.price]);
 
   return {
-    // Price data
+    // Live Price Data (from Dexscreener API)
     sofPrice: sofData.price || null,
-    change24h: sofData.change24h || 0,
-    volume24h: sofData.volume24h || 0,
-    liquidity: sofData.liquidity || 0,
+    priceNative: sofData.priceNative || null,
+    change24h: sofData.change24h,
+    volume24h: sofData.volume24h,
+    liquidity: sofData.liquidity,
+    transactions: sofData.transactions || { buy24h: 0, sell24h: 0 },
+    
+    // Source Info
     source: sofData.source || 'unknown',
     poolAddress: sofData.poolAddress || null,
+    apiStatus: sofData.apiStatus || 'idle',
 
     // State
     loading,
