@@ -369,7 +369,7 @@ export default function MarketHeatmap() {
 
       <div className="mt-4 p-3 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.06)]">
         <p className="text-[10px] text-slate-500 text-center">
-          Live prices · Binance WS + CoinGecko · Updates every 500ms · Tap tile to trade
+          Live prices · Binance WS + CoinGecko + Stooq (Gold/Oil/Silver) · Updates every 500ms · Tap tile to trade
         </p>
       </div>
 
