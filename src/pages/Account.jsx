@@ -80,7 +80,7 @@ export default function Account() {
               onClick={() => copyAddress(address)}
               className="flex items-center gap-1 text-[10px] font-semibold text-[#00d4aa] bg-[#00d4aa]/10 px-2 py-1 rounded-lg hover:bg-[#00d4aa]/20 transition-all flex-shrink-0">
               {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-              {copied ? 'Copied' : 'Copy'}
+              {copied ? t('common_copied') : t('common_copy')}
             </button>
           </div>
         </div>
