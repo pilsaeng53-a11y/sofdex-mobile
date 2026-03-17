@@ -39,12 +39,17 @@ const defaultCtx = { liveData: {}, sparklines: {}, getLiveAsset: () => ({ availa
 export const MarketDataContext = createContext(defaultCtx);
 export const useMarketData = () => useContext(MarketDataContext);
 
-// ── Commodity symbol config (RWA assets that need live commodity pricing) ─────
-// Maps SOFDex symbol → { stooqSymbol, fallbackPrice, prevClose }
+// ── Commodity / liquid-RWA symbol config ──────────────────────────────────────
+// These assets use the same live-price logic as crypto, sourced from stooq.com.
+// Only liquid, market-traded assets are listed here.
+// Illiquid RWA (real estate, art) are NOT included — they use static values.
 const COMMODITY_CONFIG = {
-  'GOLD-T':  { stooq: 'xauusd', fallback: 3300 },
-  'CRUDE-T': { stooq: 'clusd',  fallback: 78   },
-  'SP500-T': { stooq: 'spx',    fallback: 5800  },
+  'GOLD-T':  { stooq: 'xauusd',  fallback: 3300  },  // Spot gold XAU/USD
+  'CRUDE-T': { stooq: 'clusd',   fallback: 78    },  // WTI crude oil futures
+  'SP500-T': { stooq: 'spx',     fallback: 5800  },  // S&P 500 index
+  'SILVER-T':{ stooq: 'xagusd',  fallback: 32    },  // Spot silver XAG/USD
+  'TBILL':   { stooq: 'ust10y',  fallback: 100.2 },  // US 10Y Treasury yield proxy
+  'EURO-B':  { stooq: 'eurusd',  fallback: 1.08  },  // EUR/USD FX rate
 };
 
 // ── Provider ──────────────────────────────────────────────────────────────────
