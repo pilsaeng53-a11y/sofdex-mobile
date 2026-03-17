@@ -73,13 +73,16 @@ async function refreshSOFPrice() {
  *   calculatePortfolio: function, // Portfolio valuation helper
  * }
  */
-export function useSOFPrice(autoRefreshInterval = 10000) {
+export function useSOFPrice(autoRefreshInterval = AUTO_REFRESH_INTERVAL) {
   const [sofData, setSOFData] = useState(() => globalSOFPrice || {
     price: null,
-    change24h: 0,
-    volume24h: 0,
-    liquidity: 0,
+    priceNative: null,
+    change24h: null,
+    volume24h: null,
+    liquidity: null,
+    transactions: { buy24h: 0, sell24h: 0 },
     source: 'uninitialized',
+    apiStatus: 'idle',
     timestamp: null,
     error: null,
   });
@@ -87,26 +90,35 @@ export function useSOFPrice(autoRefreshInterval = 10000) {
   const [loading, setLoading] = useState(!globalSOFPrice);
   const [error, setError] = useState(globalError);
   const refreshIntervalRef = useRef(null);
+  const initialFetchDoneRef = useRef(false);
 
-  // Initial fetch
+  // INITIAL FETCH: Get price immediately on mount
   useEffect(() => {
-    if (!globalSOFPrice || Date.now() - globalSOFTimestamp > CACHE_TTL) {
-      setLoading(true);
-      refreshSOFPrice()
-        .then(data => {
-          setSOFData(data);
-          setLoading(false);
-        })
-        .catch(err => {
-          setError(err.message);
-          setLoading(false);
-        });
-    } else {
-      setSOFData(globalSOFPrice);
-      setError(globalError);
+    if (!initialFetchDoneRef.current) {
+      initialFetchDoneRef.current = true;
+      
+      // Only fetch if cache is stale
+      if (!globalSOFPrice || Date.now() - globalSOFTimestamp > CACHE_TTL) {
+        setLoading(true);
+        refreshSOFPrice()
+          .then(data => {
+            setSOFData(data);
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error('[SOF Hook] Initial fetch failed:', err);
+            setError(err.message || 'Failed to fetch SOF price');
+            setLoading(false);
+          });
+      } else {
+        // Use cached data
+        setSOFData(globalSOFPrice);
+        setError(globalError);
+        setLoading(false);
+      }
     }
 
-    // Subscribe to updates
+    // Subscribe to global updates (other components may refresh too)
     const unsubscribe = subscribe(({ sofPrice, error }) => {
       if (sofPrice) setSOFData(sofPrice);
       if (error) setError(error);
@@ -115,14 +127,30 @@ export function useSOFPrice(autoRefreshInterval = 10000) {
     return unsubscribe;
   }, []);
 
-  // Auto-refresh interval
+  // AUTO-REFRESH: Keep price live (3 second intervals)
   useEffect(() => {
-    if (autoRefreshInterval && autoRefreshInterval > 0) {
-      refreshIntervalRef.current = setInterval(() => {
-        refreshSOFPrice().catch(err => console.warn('[SOF] Auto-refresh failed:', err));
-      }, autoRefreshInterval);
+    // Use provided interval or default to 3 seconds
+    const interval = autoRefreshInterval || AUTO_REFRESH_INTERVAL;
+    
+    if (interval && interval > 0) {
+      // Set initial refresh immediately after first render
+      const initialTimeout = setTimeout(() => {
+        refreshSOFPrice().catch(err => {
+          console.warn('[SOF] Auto-refresh failed:', err.message);
+        });
+      }, interval);
 
-      return () => clearInterval(refreshIntervalRef.current);
+      // Then set up recurring interval
+      refreshIntervalRef.current = setInterval(() => {
+        refreshSOFPrice().catch(err => {
+          console.warn('[SOF] Auto-refresh failed:', err.message);
+        });
+      }, interval);
+
+      return () => {
+        clearTimeout(initialTimeout);
+        clearInterval(refreshIntervalRef.current);
+      };
     }
   }, [autoRefreshInterval]);
 
