@@ -85,20 +85,11 @@ async function refreshSOFPrice() {
  * }
  */
 export function useSOFPrice(autoRefreshInterval = AUTO_REFRESH_INTERVAL) {
-  const [sofData, setSOFData] = useState(() => globalSOFPrice || {
-    price: null,
-    priceNative: null,
-    change24h: null,
-    volume24h: null,
-    liquidity: null,
-    transactions: { buy24h: 0, sell24h: 0 },
-    source: 'uninitialized',
-    apiStatus: 'idle',
-    timestamp: null,
-    error: null,
-  });
+  // ALWAYS start with valid data (never null/undefined)
+  const [sofData, setSOFData] = useState(globalSOFPrice);
 
-  const [loading, setLoading] = useState(!globalSOFPrice);
+  // NEVER show loading after initial render (fallback values always available)
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(globalError);
   const refreshIntervalRef = useRef(null);
   const initialFetchDoneRef = useRef(false);
