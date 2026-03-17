@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Eye, EyeOff, PieChart } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
+import { useWallet } from '../components/shared/WalletContext';
+import { useSolanaBalances } from '../hooks/useSolanaBalances';
 import { PieChart as RePieChart, Pie, Cell, ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from 'recharts';
 import CryptoHoldingsSection from '../components/portfolio/CryptoHoldingsSection';
 import RWAHoldingsSection from '../components/portfolio/RWAHoldingsSection';
