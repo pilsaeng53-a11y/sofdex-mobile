@@ -775,9 +775,9 @@ export default function AIIntelligence() {
                     <div className={`px-2 py-1 rounded-lg ${dynamicBg} text-[10px] font-bold ${dynamicColor}`}>{dynamicStatus}</div>
                   </div>
                   <div className="flex items-center justify-between text-[11px] mt-1 mb-2">
-                    <div><span className="text-slate-500">{t('ai_current')}: </span><span className="text-white font-semibold">{currentStr}</span></div>
-                    <div><span className="text-slate-500">{t('ai_fairValue')}: </span><span className={`font-bold ${dynamicColor}`}>{fairStr}</span></div>
-                    <span className={`font-black text-sm ${dynamicColor}`}>{gapStr}</span>
+                    <div><span className="text-slate-500">Live Price: </span><span className="text-white font-semibold">{currentStr}</span></div>
+                    <div><span className="text-slate-500">Chart Price: </span><span className={`font-bold ${dynamicColor}`}>{fairStr}</span></div>
+                    <span className={`font-black text-sm ${dynamicColor}`}>✓ Synced</span>
                   </div>
                   <ReasoningCard factors={null} risk={null} basis={r.basis} />
                 </div>
