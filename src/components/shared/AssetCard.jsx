@@ -39,11 +39,17 @@ export default function AssetCard({ asset, compact = false }) {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-sm font-semibold text-slate-100">${formatPrice(price)}</p>
-              <div className={`flex items-center gap-0.5 justify-end ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-                {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                <span className="text-[11px] font-medium">{formatChange(change)}</span>
-              </div>
+              {price != null ? (
+                <>
+                  <p className="text-sm font-semibold text-slate-100">${formatPrice(price)}</p>
+                  <div className={`flex items-center gap-0.5 justify-end ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                    <span className="text-[11px] font-medium">{formatChange(change)}</span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm font-semibold text-slate-600 animate-pulse">—</p>
+              )}
             </div>
           </div>
         </div>
