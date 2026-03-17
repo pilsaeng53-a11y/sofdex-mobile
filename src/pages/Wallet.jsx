@@ -50,68 +50,11 @@ export default function WalletPage() {
   const { t } = useLang();
   const { displayCurrency, exchangeRates } = useCurrency();
   const { isConnected, address, disconnect, requireWallet } = useWallet();
-  const walletAddress = address || DEMO_ADDRESS;
-  const [tab, setTab] = useState('overview');
   const [showBal, setShowBal] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  // Fetch real Solana balances
+  // Fetch real Solana balances only if connected
   const { balances, prices, loading, error } = useSolanaBalances(isConnected ? address : null);
-
-  // Send form
-  const [sendAsset, setSendAsset] = useState('SOL');
-  const [sendNetwork, setSendNetwork] = useState('sol');
-  const [sendAmount, setSendAmount] = useState('');
-  const [sendDest, setSendDest] = useState('');
-  const [sendConfirmed, setSendConfirmed] = useState(false);
-
-  // Receive
-  const [rcvAsset, setRcvAsset] = useState('SOL');
-  const [rcvNetwork, setRcvNetwork] = useState('sol');
-
-  // Prepare balances for new transaction system
-  const preparedBalances = useMemo(() => {
-    if (!balances) return {};
-    return Object.entries(balances).reduce((acc, [symbol, data]) => {
-      acc[symbol] = {
-        balance: data.balance,
-        usdValue: data.value,
-        price: data.price,
-        change24h: Math.random() * 10 - 5, // Placeholder
-      };
-      return acc;
-    }, {});
-  }, [balances]);
-
-  // Use real balances or fallback
-  const realBalance = balances?.[sendAsset]?.balance || 0;
-  const selectedAsset = ASSETS.find(a => a.symbol === sendAsset) || ASSETS[0];
-  const selectedNetwork = NETWORKS.find(n => n.id === sendNetwork) || NETWORKS[0];
-  const availableSend = realBalance;
-  const receiveEst = parseFloat(sendAmount || 0) > 0
-    ? Math.max(0, parseFloat(sendAmount) - parseFloat(selectedNetwork.feeUsd.replace('~$', ''))).toFixed(4)
-    : '—';
-
-  const copyAddress = (addr) => {
-    navigator.clipboard.writeText(addr).catch(() => {});
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleSend = () => {
-    if (!sendAmount || !sendDest) return;
-    setSendConfirmed(true);
-    setTimeout(() => { setSendConfirmed(false); setSendAmount(''); setSendDest(''); }, 3000);
-  };
-
-  const totalSpot = ASSETS.reduce((s, a) => s + a.spot, 0);
-  const totalFutures = ASSETS.reduce((s, a) => s + a.futures, 0);
-  const totalRWA = ASSETS.reduce((s, a) => s + a.rwa, 0);
-  const totalLocked = ASSETS.reduce((s, a) => s + a.locked, 0);
-
-  const filteredHistory = HISTORY.filter(h =>
-    histFilter === 'all' ? true : h.type === histFilter
-  );
 
   if (!isConnected) {
     return (
