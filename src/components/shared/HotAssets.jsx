@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useLang } from './LanguageContext';
 import { useCurrency } from './CurrencyContext';
 import { useChartPrice } from './useChartPrice';
-import { formatSOFPrice } from './useSOFPrice';
+import { useSOFPrice } from '@/hooks/useSOFPrice';
 import { formatPrice } from './MarketData';
 import { formatPriceRealtime } from '@/lib/realtimeCurrencyUtils';
 
