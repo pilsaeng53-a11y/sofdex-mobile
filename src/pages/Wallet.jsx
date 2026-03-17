@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import { useCurrency } from '../components/shared/CurrencyContext';
-import { formatPrice } from '@/lib/currencyUtils';
+import { formatPriceRealtime } from '@/lib/realtimeCurrencyUtils';
 import { useWallet } from '../components/shared/WalletContext';
 import { useSolanaBalances } from '../hooks/useSolanaBalances';
 import WalletTabs from '../components/wallet/WalletTabs';
