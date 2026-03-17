@@ -541,7 +541,7 @@ export default function AIIntelligence() {
           </>
         )}
 
-        {/* Volatility */}
+        {/* Volatility — live dynamic */}
         {tab === 'Volatility' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -549,7 +549,10 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_volatilityRadar')}</p>
               <span className="text-[10px] text-slate-600">· {t('ai_unusualActivity')}</span>
             </div>
-            {VOLATILITY_ALERTS.map((a, i) => (
+            {volatilityAlerts.length === 0 && (
+              <div className="glass-card rounded-2xl p-4 text-center text-[11px] text-slate-500">No significant volatility detected across tracked assets.</div>
+            )}
+            {volatilityAlerts.map((a, i) => (
               <div key={i} className={`glass-card rounded-2xl p-4 border ${a.border}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2.5">
@@ -569,9 +572,12 @@ export default function AIIntelligence() {
             <div className="glass-card rounded-2xl p-4 mt-1">
               <p className="text-[10px] text-slate-500 mb-2 font-semibold uppercase tracking-wider">{t('ai_lowVolAssets')}</p>
               <div className="flex flex-wrap gap-2">
-                {['BTC', 'ETH', 'TBILL', 'GOLD-T', 'EURO-B'].map(a => (
-                  <span key={a} className="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] font-semibold text-slate-400 border border-[rgba(148,163,184,0.06)]">{a}</span>
-                ))}
+                {ALL_MARKETS_FLAT
+                  .filter(a => { const live = liveData[a.symbol]; const ch = live?.available ? Math.abs(live.change) : Math.abs(a.change); return ch < 1.5; })
+                  .slice(0, 6)
+                  .map(a => (
+                    <span key={a.symbol} className="px-2.5 py-1 rounded-lg bg-slate-800 text-[11px] font-semibold text-slate-400 border border-[rgba(148,163,184,0.06)]">{a.symbol}</span>
+                  ))}
               </div>
             </div>
           </>
