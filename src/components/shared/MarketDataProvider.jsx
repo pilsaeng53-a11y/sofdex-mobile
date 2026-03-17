@@ -8,6 +8,8 @@
  * 3. Binance REST klines — sparkline data (1h candles, refreshed every 30 min).
  * 4. Auto-reconnect with exponential back-off on WS disconnect.
  * 5. CoinGecko polling fallback every 30 s if WS is not delivering data.
+ * 6. Commodity REST polling — fetches live Gold/Oil/commodity prices from
+ *    free public APIs every 60 s to keep RWA commodity assets in sync with charts.
  */
 import React, {
   createContext, useContext,
