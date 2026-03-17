@@ -207,11 +207,15 @@ export function MarketDataProvider({ children }) {
     // Layer 3: WebSocket for real-time ticks
     connectWS();
     startFlush();
+    // Layer 4: commodity prices (RWA assets — Gold, Oil, etc.)
+    fetchCommodityPrices();
 
     // CoinGecko polling every 30 s — acts as WS fallback
     cgPollRef.current = setInterval(fetchCoinGecko, 30_000);
     // Sparkline refresh every 30 min
     const spTimer = setInterval(fetchSparklines, 30 * 60 * 1000);
+    // Commodity polling every 60 s (markets update ~1/min)
+    commPollRef.current = setInterval(fetchCommodityPrices, 60_000);
 
     return () => {
       alive.current = false;
@@ -219,6 +223,7 @@ export function MarketDataProvider({ children }) {
       clearTimeout(reconnectRef.current);
       clearInterval(flushRef.current);
       clearInterval(cgPollRef.current);
+      clearInterval(commPollRef.current);
       clearInterval(spTimer);
     };
   }, []);
