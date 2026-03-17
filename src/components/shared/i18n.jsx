@@ -904,10 +904,34 @@ export const translations = {
     },
 
   ja: {
-    nav_home:'ホーム', nav_markets:'マーケット', nav_trade:'トレード', nav_portfolio:'ポートフォリオ', nav_more:'もっと見る', nav_swap:'スワップ',
-    menu_swap:'スワップ', menu_solfort:'SOLFORT', menu_solfortPage:'SolFort ハブ', menu_swapSof:'SOF スワップ',
-    menu_exchange:'取引所', menu_discover:'発見', menu_earnSocial:'稼ぐ＆ソーシャル', menu_liveFeed:'ライブフィード', menu_dao:'DAO', menu_account:'アカウント',
-    menu_home:'ホーム', menu_markets:'マーケット', menu_trade:'トレード', menu_portfolio:'ポートフォリオ',
+    nav_home:'ホーム', nav_markets:'マーケット', nav_trade:'トレード', nav_portfolio:'ポートフォリオ', nav_more:'もっと見る',
+    nav_ai: 'AI', nav_activity: 'アクティビティ',
+    // Menu sections
+    menu_futures: 'スワップ先物', menu_trading: 'トレーディング', menu_aiTools: 'AI & ツール', menu_community: 'コミュニティ', menu_portfolio_hub: 'ポートフォリオ & ウォレット',
+    menu_news_section: 'ニュース & 分析', menu_launchpad_section: 'ローンチパッド & RWA', menu_liveFeed: 'ライブフィード', menu_dao: 'DAO',
+    menu_account: 'アカウント', menu_partnerHub: 'パートナーハブ',
+    // Individual menu items
+    menu_home:'ホーム', menu_markets:'マーケット', menu_trade:'トレード', menu_portfolio:'ポートフォリオ', menu_wallet: 'ウォレット',
+    menu_futuresDashboard: 'スワップ先物ダッシュボード', menu_futuresTrade: 'スワップ先物取引', menu_futuresMarketWatch: 'マーケットウォッチ',
+    menu_futuresPositions: 'ポジション', menu_globalMarkets: 'グローバルマーケット', menu_copyTrading: 'コピートレーディング',
+    menu_marketHeatmap: 'マーケットヒートマップ', menu_swap: 'スワップ',
+    menu_aiIntelligence: 'AIインテリジェンス', menu_aiWealthManager: 'AI資産管理者', menu_strategyMkt: '戦略マーケットプレイス',
+    menu_strategyVaults: '戦略ボルト', menu_strategyFunds: '戦略ETF', menu_assetDiscovery: 'アセット発見',
+    menu_tradingTools: 'トレーディングツール', menu_tradingFeed: 'トレーディングフィード', menu_discussions: 'ディスカッション', menu_traders: 'トレーダー',
+    menu_leaderboard: 'リーダーボード', menu_rewards: '報酬', menu_uniPortfolio: 'ユニバーサルポートフォリオ', menu_myStrategyInv: '私の投資',
+    menu_earnStaking: '稼ぐ / ステーキング', menu_referralHub: '紹介ハブ', menu_news: 'ニュース', menu_analytics: '分析',
+    menu_aiIntelHub: 'AIインテリジェンスハブ', menu_whatsNew: '新しい機能', menu_alerts: 'アラート', menu_launchpad: 'ローンチパッド',
+    menu_predictionMarket: '予測市場', menu_rwaMarkets: 'RWA市場', menu_realEstate: '不動産',
+    menu_liquidationFeed: '清算フィード', menu_whaleTracker: 'クジラトラッカー', menu_fundingRates: '資金調達率',
+    menu_openInterest: 'オープンインタレスト', menu_announcements: 'お知らせ', menu_solfortPage: 'SolFort ハブ',
+    menu_institutional: '機関投資家向け', menu_reputationScore: '評判スコア',
+    // Partner & governance sections
+    menu_partnerHubMain: 'パートナーダッシュボード', menu_downlineTree: 'ダウンラインツリー', menu_commissionDist: '手数料',
+    menu_rankProgress: 'ランク進捗', menu_teamLeaderboard: 'チームリーダーボード', menu_regionalDist: '地域',
+    menu_myTeam: '私のチーム', menu_applyDistributor: 'ディストリビューター申請', menu_partnerLocked: 'パートナー機能ロック中',
+    menu_partnerPending: '申請審査中', menu_governance: 'ガバナンス',
+    // Account menu
+    menu_settings: '設定', menu_support: 'サポート', menu_notifications: '通知', menu_activity: 'アクティビティ',
     menu_news:'ニュース', menu_rwaMarkets:'RWA市場', menu_realEstate:'不動産', menu_analytics:'分析', menu_launchpad:'ローンチパッド',
     menu_earnStaking:'積立/ステーキング', menu_socialTrading:'ソーシャルトレーディング', menu_copyTrading:'コピートレーディング', menu_referralHub:'紹介ハブ',
     menu_liquidationFeed:'清算フィード', menu_whaleTracker:'クジラトラッカー', menu_governance:'ガバナンス',
