@@ -180,21 +180,24 @@ export default function Portfolio() {
 
       {/* Asset Prices Reference */}
       <div className="space-y-3">
-        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">Market Prices</p>
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">Your Holdings (Solana)</p>
         <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.06)]">
-          {[
-            { symbol: 'SOL', price: prices.SOL, name: 'Solana' },
-            { symbol: 'USDC', price: prices.USDC, name: 'USD Coin' },
-            { symbol: 'USDT', price: prices.USDT, name: 'Tether' },
-          ].map((item) => (
+          {assets.length > 0 ? assets.map((item) => (
             <div key={item.symbol} className="p-3 flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-white">{item.symbol}</p>
                 <p className="text-[10px] text-slate-500">{item.name}</p>
               </div>
-              <p className="text-xs font-semibold text-[#00d4aa]">{item.price > 0 ? formatPriceRealtime(item.price, displayCurrency, exchangeRates) : 'N/A'}</p>
+              <div className="text-right">
+                <p className="text-xs font-semibold text-[#00d4aa]">{item.balance.toFixed(4)}</p>
+                <p className="text-[10px] text-slate-500">{formatPriceRealtime(item.value, displayCurrency, exchangeRates)}</p>
+              </div>
             </div>
-          ))}
+          )) : (
+            <div className="p-4 text-center text-sm text-slate-400">
+              No holdings on Solana
+            </div>
+          )}
         </div>
       </div>
 
