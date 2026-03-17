@@ -731,6 +731,14 @@ export const translations = {
     ai_liveYield: '실시간 10년물 수익률 — TVC:US10Y / Yahoo ^TNX 추적',
     ai_disclaimer: 'AI 분석은 정보 목적일 뿐이며 수익을 보장하지 않습니다.',
     ai_disclaimerNote: '사용자는 모든 투자 결정에 대해 책임이 있습니다.',
+    // Additional detailed UI labels - Korean
+    ai_readMore: '더 읽기',
+    ai_seeDetails: '세부 정보 보기',
+    ai_keySignals: '핵심 신호',
+    ai_relatedNews: '관련 뉴스',
+    ai_aiReasoning: 'AI 추론',
+    ai_riskFactors: '위험 요소',
+    ai_marketContext: '시장 맥락',
     },
 
   ja: {
