@@ -501,6 +501,7 @@
   }
 
   /* ─── Animated orb drifts (AnimatedBackground) ──── */
+  /* Legacy names kept for compatibility */
   @keyframes orbDrift1 {
     0%,100% { transform: translate(0, 0) scale(1); }
     33%     { transform: translate(-40px, 30px) scale(1.08); }
@@ -515,6 +516,29 @@
     0%,100% { transform: translate(0, 0) scale(1); }
     30%     { transform: translate(-30px, 40px) scale(1.06); }
     65%     { transform: translate(40px, -30px) scale(0.96); }
+  }
+
+  /* ─── Premium ambient drift (slower, gentler) ──── */
+  @keyframes ambientDrift1 {
+    0%   { transform: translate(0px,   0px)  scale(1.00); }
+    20%  { transform: translate(-28px, 18px) scale(1.04); }
+    45%  { transform: translate(18px, -22px) scale(0.97); }
+    70%  { transform: translate(-12px, 30px) scale(1.03); }
+    100% { transform: translate(0px,   0px)  scale(1.00); }
+  }
+  @keyframes ambientDrift2 {
+    0%   { transform: translate(0px,  0px)   scale(1.00); }
+    25%  { transform: translate(32px, -18px) scale(1.05); }
+    55%  { transform: translate(-22px, 14px) scale(0.96); }
+    80%  { transform: translate(14px,  26px) scale(1.02); }
+    100% { transform: translate(0px,  0px)   scale(1.00); }
+  }
+  @keyframes ambientDrift3 {
+    0%   { transform: translate(0px,   0px)  scale(1.00); }
+    30%  { transform: translate(-20px, 24px) scale(1.04); }
+    60%  { transform: translate(26px, -16px) scale(0.97); }
+    85%  { transform: translate(-8px,  20px) scale(1.02); }
+    100% { transform: translate(0px,   0px)  scale(1.00); }
   }
 
   /* ─── Price change slide animations ─────────────── */
