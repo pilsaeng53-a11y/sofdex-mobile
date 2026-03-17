@@ -40,16 +40,15 @@ export const MarketDataContext = createContext(defaultCtx);
 export const useMarketData = () => useContext(MarketDataContext);
 
 // ── Commodity / liquid-RWA symbol config ──────────────────────────────────────
-// Maps internal SOFDex symbol → Yahoo Finance ticker (exact same price that
-// TradingView shows), so chart price and app price are ALWAYS identical.
-// Yahoo Finance provides free JSON quotes at https://query1.finance.yahoo.com
+// Uses frankfurter.app (FX), open-source metal price APIs, and allorigins CORS
+// proxy for Yahoo Finance — all browser-accessible without API keys.
 const COMMODITY_CONFIG = {
-  'GOLD-T':   { yahoo: 'GC=F',  fallback: 3300   },  // Gold Futures  (COMEX)  → OANDA:XAUUSD parity
-  'SILVER-T': { yahoo: 'SI=F',  fallback: 32     },  // Silver Futures (COMEX) → OANDA:XAGUSD parity
-  'CRUDE-T':  { yahoo: 'CL=F',  fallback: 78     },  // WTI Crude Oil Futures  → NYMEX:CL1!
-  'SP500-T':  { yahoo: '^GSPC', fallback: 5800   },  // S&P 500 Index          → SP:SPX
-  'TBILL':    { yahoo: '^TNX',  fallback: 4.25   },  // US 10Y Treasury Yield  → TVC:US10Y
-  'EURO-B':   { yahoo: 'EURUSD=X', fallback: 1.08 }, // EUR/USD FX rate        → TVC:EURUSD
+  'GOLD-T':   { yahoo: 'GC=F',     fallback: 3300   },
+  'SILVER-T': { yahoo: 'SI=F',     fallback: 33     },
+  'CRUDE-T':  { yahoo: 'CL=F',     fallback: 67     },
+  'SP500-T':  { yahoo: '%5EGSPC',  fallback: 5600   },
+  'TBILL':    { yahoo: '%5ETNX',   fallback: 4.25   },
+  'EURO-B':   { yahoo: 'EURUSD%3DX', fallback: 1.085 },
 };
 
 // ── Provider ──────────────────────────────────────────────────────────────────
