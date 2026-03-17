@@ -6,6 +6,8 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { useState } from 'react';
 import DisplayCurrencySelector from '../components/settings/DisplayCurrencySelector';
+import { useCurrency } from '../components/shared/CurrencyContext';
+import { formatPrice } from '@/lib/currencyUtils';
 
 export default function Account() {
   const { isConnected, address, shortAddress, disconnect, walletName } = useWallet();
