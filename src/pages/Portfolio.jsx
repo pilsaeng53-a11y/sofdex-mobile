@@ -49,11 +49,17 @@ function generatePortfolioData(period) {
 
 export default function Portfolio() {
   const { t } = useLang();
+  const { isConnected, address } = useWallet();
+  const { balances, loading } = useSolanaBalances(isConnected ? address : null);
   const [showBalance, setShowBalance] = useState(true);
   const [tab, setTab] = useState('All');
   const [chartPeriod, setChartPeriod] = useState('7D');
   const chartData = generatePortfolioData(chartPeriod);
-  const totalBalance = '$71,823.85';
+
+  // Calculate total balance from real Solana holdings
+  const totalBalance = balances
+    ? `$${(balances.SOL.value + balances.USDC.value + balances.USDT.value).toFixed(2)}`
+    : '$0.00';
   const totalPnL = '+$1,248.90';
   const unrealizedPnL = '+$449.90';
   const realizedPnL = '+$799.00';
