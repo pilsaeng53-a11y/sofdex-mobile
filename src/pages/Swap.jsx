@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { ArrowDownUp, ChevronDown, Info, Zap, Clock, TrendingUp, X, Search } from 'lucide-react';
