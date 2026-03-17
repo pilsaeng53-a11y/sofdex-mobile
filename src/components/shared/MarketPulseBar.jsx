@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Activity } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const PULSES = [
   { label: 'BTC Dominance', value: '54.2%', change: '+0.4%', up: true },
@@ -38,9 +39,20 @@ export default function MarketPulseBar() {
           <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Market Pulse</span>
         </div>
         <div className="h-3 w-px bg-[rgba(148,163,184,0.1)]" />
-        <div className="flex items-center gap-2 min-w-0 flex-1 relative z-10">
+        <div className="flex items-center gap-2 min-w-0 flex-1 relative z-10 overflow-hidden">
           <span className="text-[10px] text-slate-500 flex-shrink-0">{item.label}:</span>
-          <span className="text-[10px] font-bold text-white transition-all duration-300">{item.value}</span>
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={`${item.label}-${item.value}`}
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.28, ease: [0.22,1,0.36,1] }}
+              className="text-[10px] font-bold text-white num-highlight"
+            >
+              {item.value}
+            </motion.span>
+          </AnimatePresence>
           {item.change && (
             <span className={`text-[10px] font-semibold flex items-center gap-0.5 ${item.up ? 'text-emerald-400' : 'text-red-400'}`}>
               {item.up ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
