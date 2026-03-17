@@ -91,7 +91,7 @@ export default function Account() {
           <div>
             <p className="text-[11px] text-slate-500 mb-1">Total Value</p>
             <p className="text-2xl font-bold text-[#00d4aa] num-large">
-              {loading ? '...' : `$${totalValue.toFixed(2)}`}
+              {loading ? '...' : formatPrice(totalValue, displayCurrency, exchangeRates)}
             </p>
           </div>
 
@@ -105,7 +105,7 @@ export default function Account() {
                 <div key={asset.symbol} className="bg-[#05070d] rounded-lg p-2">
                   <p className="text-[9px] text-slate-500 mb-0.5">{asset.symbol}</p>
                   <p className="text-xs font-bold text-white">{asset.balance.toFixed(4)}</p>
-                  <p className="text-[9px] text-[#00d4aa]">${asset.value.toFixed(2)}</p>
+                  <p className="text-[9px] text-[#00d4aa]">{formatPrice(asset.value, displayCurrency, exchangeRates)}</p>
                 </div>
               ))}
             </div>
