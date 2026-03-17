@@ -602,8 +602,8 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_portfolioAdvisor')}</p>
             </div>
             <div className="glass-card rounded-2xl p-3 mb-1 border border-cyan-400/10">
-              <p className="text-[10px] text-cyan-400/70 font-semibold mb-0.5">Wallet-Context Analysis</p>
-              <p className="text-[10px] text-slate-500">Connect your wallet to receive personalised AI portfolio views based on your actual holdings and position history.</p>
+              <p className="text-[10px] text-cyan-400/70 font-semibold mb-0.5">{t('ai_walletContextAnalysis')}</p>
+              <p className="text-[10px] text-slate-500">{t('ai_connectWalletPersonalized')}</p>
             </div>
             <div className="glass-card rounded-2xl p-4 border border-amber-400/10">
               <div className="flex items-center justify-between mb-2">
