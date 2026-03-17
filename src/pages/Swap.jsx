@@ -151,12 +151,13 @@ function AssetSelector({ selected, onChange, exclude }) {
 
 export default function Swap() {
   const { t } = useLang();
+  const { isConnected, requireWallet } = useWallet();
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const [fromAsset, setFromAsset] = useState(SWAP_ASSETS.find(a => a.symbol === 'SOL'));
   const [toAsset, setToAsset] = useState(SWAP_ASSETS.find(a => a.symbol === 'USDT'));
   const [fromAmount, setFromAmount] = useState('');
   const [slippage, setSlippage] = useState(0.5);
-  const [swapped, setSwapped] = useState(false);
 
   // SOF uses dedicated DEX pool price, all others use chart prices
   const sofData = useSOFPrice();
