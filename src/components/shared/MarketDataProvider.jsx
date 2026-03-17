@@ -98,42 +98,38 @@ export function MarketDataProvider({ children }) {
     }
   }
 
-  // ── Commodity price fetch (RWA assets — Gold, Oil, S&P500) ──────────────
-  // Uses stooq.com free CSV API. Falls back to prev price if request fails.
-  // stooq CSV format: Symbol,Date,Time,Open,High,Low,Close,Volume
+  // ── Commodity price fetch (RWA assets — Gold, Oil, S&P500, etc.) ────────
+  // Uses Yahoo Finance v8 JSON API — returns the SAME price that TradingView
+  // displays for these symbols, guaranteeing chart price === app price.
   async function fetchCommodityPrices() {
     if (!alive.current) return;
 
     const patch = {};
 
-    // Fetch each commodity independently so one failure doesn't block others
     await Promise.all(
       Object.entries(COMMODITY_CONFIG).map(async ([sofSym, cfg]) => {
         try {
-          const res = await fetch(
-            `https://stooq.com/q/l/?s=${cfg.stooq}&f=sd2t2ohlcv&h&e=csv`,
-            { signal: AbortSignal.timeout(8000) }
-          );
+          // Yahoo Finance v8 chart endpoint — CORS-friendly, no API key needed
+          const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(cfg.yahoo)}?interval=1d&range=2d`;
+          const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
           if (!res.ok) throw new Error('non-200');
-          const text = await res.text();
-          const lines = text.trim().split('\n');
-          if (lines.length < 2) throw new Error('no data');
-          const cols = lines[1].split(',');
-          // Symbol,Date,Time,Open,High,Low,Close,Volume  → indices 3,6
-          const close = parseFloat(cols[6]);
-          const open  = parseFloat(cols[3]);
+          const json = await res.json();
+          const meta = json?.chart?.result?.[0]?.meta;
+          if (!meta) throw new Error('no meta');
+          // Use regularMarketPrice (live) or previousClose as fallback
+          const close = meta.regularMarketPrice ?? meta.chartPreviousClose;
+          const prev  = meta.chartPreviousClose ?? meta.previousClose;
           if (!close || isNaN(close)) throw new Error('bad price');
-          const change = open && !isNaN(open) ? ((close - open) / open) * 100 : 0;
+          const change = prev && !isNaN(prev) ? ((close - prev) / prev) * 100 : 0;
           patch[sofSym] = { available: true, price: close, change };
           prevCommodity.current[sofSym] = close;
         } catch {
-          // If stooq fails, keep the last known price if we have one;
-          // otherwise mark as unavailable so static fallback from MarketData is used
+          // Keep last known price on error so UI doesn't flash stale static values
           const prev = prevCommodity.current[sofSym];
           if (prev) {
             patch[sofSym] = { available: true, price: prev, change: 0 };
           }
-          // No patch entry → getLiveAsset returns available:false → UI falls back to static mock
+          // No patch entry → getLiveAsset returns available:false → UI falls back to static seed in MarketData
         }
       })
     );
