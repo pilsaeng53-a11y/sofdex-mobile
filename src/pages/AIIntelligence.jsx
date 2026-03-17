@@ -433,7 +433,7 @@ export default function AIIntelligence() {
       <div className="px-4 space-y-3">
         <AIDisclaimer />
 
-        {/* AI Trade Signals */}
+        {/* AI Trade Signals — live dynamic */}
         {tab === 'Signals' && (
           <>
             <div className="flex items-center gap-2 mb-1">
@@ -441,9 +441,10 @@ export default function AIIntelligence() {
               <p className="text-xs font-bold text-white">{t('ai_tradeSignals')}</p>
               <span className="text-[10px] text-slate-600">· {t('ai_directionalBias')}</span>
             </div>
-            {Object.entries(ASSET_SIGNALS).map(([asset, sig]) => {
+            {Object.entries(assetSignals).map(([asset, sig]) => {
               const style = signalStyle[sig.signal];
-              const Icon = style.icon;
+              const Icon  = style.icon;
+              const chPos = sig.change >= 0;
               return (
                 <div key={asset} className="glass-card rounded-2xl p-3.5">
                   <div className="flex items-center gap-3 mb-2">
@@ -456,12 +457,15 @@ export default function AIIntelligence() {
                         <span className={`flex items-center gap-0.5 px-1.5 py-0.5 rounded-lg text-[10px] font-bold border ${style.color} ${style.bg} ${style.border}`}>
                           <Icon className="w-2.5 h-2.5" />{sig.signal}
                         </span>
+                        <span className={`text-[10px] font-bold ${chPos ? 'text-emerald-400' : 'text-red-400'}`}>
+                          {chPos ? '+' : ''}{sig.change.toFixed(2)}%
+                        </span>
                       </div>
-                      <p className="text-[10px] text-slate-500">Est. basis: <span className="text-slate-400 font-semibold">{sig.basis}</span></p>
+                      <p className="text-[10px] text-slate-500">Live basis: <span className="text-slate-400 font-semibold">{sig.basis}</span></p>
                     </div>
                     <div className="flex-shrink-0 text-right">
-                      <div className="text-xs font-bold text-white">{sig.score}%</div>
-                      <div className="text-[10px] text-slate-600">{t('ai_conf')}</div>
+                      <div className="text-xs font-bold text-white">{sig.score}</div>
+                      <div className="text-[10px] text-slate-600">/ 100</div>
                       <div className="w-12 h-1 rounded-full bg-[#0d1220] mt-1 overflow-hidden">
                         <div className={`h-full rounded-full ${style.bg.replace('/10', '/60')}`} style={{ width: `${sig.score}%` }} />
                       </div>
