@@ -220,13 +220,17 @@ export default function StrategyCreator() {
           </div>
 
           <div className="flex gap-2">
-            <button type="submit" className="flex-1 px-4 py-3 bg-[#00d4aa]/10 border border-[#00d4aa]/20 text-[#00d4aa] font-semibold rounded-xl hover:bg-[#00d4aa]/20 transition-all flex items-center justify-center gap-2">
-              <Plus className="w-4 h-4" />
-              Publish
-            </button>
-            <button type="button" className="flex-1 px-4 py-3 bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-slate-300 font-semibold rounded-xl hover:border-[#00d4aa]/30 transition-all">
-              Save Draft
-            </button>
+           <WalletGatedButton
+             type="submit"
+             className="flex-1 px-4 py-3 bg-[#00d4aa]/10 border border-[#00d4aa]/20 text-[#00d4aa] font-semibold rounded-xl hover:bg-[#00d4aa]/20 transition-all flex items-center justify-center gap-2"
+             requireWallet={true}
+           >
+             <Plus className="w-4 h-4" />
+             Publish
+           </WalletGatedButton>
+           <button type="button" className="flex-1 px-4 py-3 bg-[#151c2e] border border-[rgba(148,163,184,0.08)] text-slate-300 font-semibold rounded-xl hover:border-[#00d4aa]/30 transition-all">
+             Save Draft
+           </button>
           </div>
         </form>
       )}
