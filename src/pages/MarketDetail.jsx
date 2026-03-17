@@ -14,9 +14,12 @@ export default function MarketDetail() {
   const [orderType, setOrderType] = useState('market');
   
   // **CHART PRICE IS MASTER**
+  // Non-crypto assets (RWA / TradFi / xStocks / xETFs) must NEVER fall back
+  // to the static seed — they show null/loading until Yahoo Finance responds.
   const { price, change24h } = useChartPrice(symbol);
-  const displayPrice  = price ?? asset?.price;
-  const displayChange = change24h ?? asset?.change;
+  const isNonCrypto   = COMMODITY_SYMBOLS.has(symbol);
+  const displayPrice  = price ?? (isNonCrypto ? null : asset?.price);
+  const displayChange = change24h ?? (isNonCrypto ? 0 : asset?.change);
   const isPositive = (displayChange ?? 0) >= 0;
 
   if (!asset) {
