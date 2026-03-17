@@ -18,8 +18,9 @@ export default function AssetCard({ asset, compact = false }) {
   const { getLiveAsset } = useMarketData();
   const live = getLiveAsset(asset.symbol);
 
-  const price  = live.available ? live.price  : asset.price;
-  const change = live.available ? live.change : asset.change;
+  const isCommodity = COMMODITY_SYMBOLS.has(asset.symbol);
+  const price  = live.available ? live.price  : (isCommodity ? null : asset.price);
+  const change = live.available ? live.change : (isCommodity ? 0   : asset.change);
   const gradientClass = symbolColors[asset.symbol] || 'from-slate-500 to-slate-600';
   const isPositive = change >= 0;
 
