@@ -741,35 +741,55 @@ export default function AIIntelligence() {
           </>
         )}
 
-        {/* RWA Valuation */}
+        {/* RWA Valuation — current price always from live market feed */}
         {tab === 'RWA' && (
           <>
             <div className="flex items-center gap-2 mb-1">
               <BarChart3 className="w-4 h-4 text-purple-400" />
               <p className="text-xs font-bold text-white">{t('ai_rwaValuation')}</p>
             </div>
-            {RWA_VALUATIONS.map((r, i) => (
-              <div key={i} className="glass-card rounded-2xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-9 h-9 rounded-xl ${r.bg} flex items-center justify-center text-[10px] font-black ${r.color}`}>
-                      {r.symbol.slice(0, 2)}
+            {RWA_VALUATIONS.map((r, i) => {
+              // Live price is master — never use static current price
+              const liveEntry = liveData[r.symbol];
+              const baseAsset = getMarketBySymbol(r.symbol);
+              const livePrice = liveEntry?.available ? liveEntry.price : (baseAsset?.price ?? null);
+              const currentStr = fmtLivePrice(livePrice);
+              const fairStr    = fmtLivePrice(r.fairRaw);
+              // Dynamically compute gap vs fair value
+              const gapPct = livePrice && r.fairRaw
+                ? (((r.fairRaw - livePrice) / livePrice) * 100).toFixed(1)
+                : null;
+              const gapStr = gapPct !== null
+                ? (parseFloat(gapPct) >= 0 ? `+${gapPct}%` : `${gapPct}%`)
+                : r.pct;
+              const dynamicStatus = gapPct !== null
+                ? (Math.abs(parseFloat(gapPct)) < 1 ? 'Fair Value' : parseFloat(gapPct) > 0 ? 'Undervalued' : 'Overvalued')
+                : r.status;
+              const dynamicColor = dynamicStatus === 'Fair Value' ? 'text-slate-400' : dynamicStatus === 'Undervalued' ? 'text-emerald-400' : 'text-red-400';
+              const dynamicBg    = dynamicStatus === 'Fair Value' ? 'bg-slate-400/10'  : dynamicStatus === 'Undervalued' ? 'bg-emerald-400/10'  : 'bg-red-400/10';
+              return (
+                <div key={i} className="glass-card rounded-2xl p-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-9 h-9 rounded-xl ${dynamicBg} flex items-center justify-center text-[10px] font-black ${dynamicColor}`}>
+                        {r.symbol.slice(0, 2)}
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white">{r.symbol}</p>
+                        <p className="text-[10px] text-slate-500">{r.name}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-white">{r.symbol}</p>
-                      <p className="text-[10px] text-slate-500">{r.name}</p>
-                    </div>
+                    <div className={`px-2 py-1 rounded-lg ${dynamicBg} text-[10px] font-bold ${dynamicColor}`}>{dynamicStatus}</div>
                   </div>
-                  <div className={`px-2 py-1 rounded-lg ${r.bg} text-[10px] font-bold ${r.color}`}>{r.status}</div>
+                  <div className="flex items-center justify-between text-[11px] mt-1 mb-2">
+                    <div><span className="text-slate-500">{t('ai_current')}: </span><span className="text-white font-semibold">{currentStr}</span></div>
+                    <div><span className="text-slate-500">{t('ai_fairValue')}: </span><span className={`font-bold ${dynamicColor}`}>{fairStr}</span></div>
+                    <span className={`font-black text-sm ${dynamicColor}`}>{gapStr}</span>
+                  </div>
+                  <ReasoningCard factors={null} risk={null} basis={r.basis} />
                 </div>
-                <div className="flex items-center justify-between text-[11px] mt-1 mb-2">
-                  <div><span className="text-slate-500">{t('ai_current')}: </span><span className="text-white font-semibold">{r.current}</span></div>
-                  <div><span className="text-slate-500">{t('ai_fairValue')}: </span><span className={`font-bold ${r.color}`}>{r.fair}</span></div>
-                  <span className={`font-black text-sm ${r.color}`}>{r.pct}</span>
-                </div>
-                <ReasoningCard factors={null} risk={null} basis={r.basis} />
-              </div>
-            ))}
+              );
+            })}
           </>
         )}
 
