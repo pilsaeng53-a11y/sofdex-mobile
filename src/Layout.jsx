@@ -52,17 +52,21 @@ function LayoutInner({ children, currentPageName }) {
                   </Link>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <button className="w-8 h-8 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all">
+                  <button className="w-8 h-8 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/25 fluid btn-press tap-ring"
+                    style={{ transition: 'border-color 0.2s ease, transform 0.08s ease' }}>
                     <Search className="w-3.5 h-3.5 text-slate-400" />
                   </button>
                   <Link to={createPageUrl('Notifications')}>
-                    <button className="w-8 h-8 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all relative">
+                    <button className="w-8 h-8 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/25 fluid btn-press tap-ring relative"
+                      style={{ transition: 'border-color 0.2s ease, transform 0.08s ease' }}>
                       <Bell className="w-3.5 h-3.5 text-slate-400" />
-                      <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#00d4aa]" />
+                      <div className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-[#00d4aa]"
+                        style={{ boxShadow: '0 0 6px rgba(0,212,170,0.9)' }} />
                     </button>
                   </Link>
                   <Link to={createPageUrl('WalletConnect')}>
-                    <button className="h-8 px-3 rounded-xl bg-[#00d4aa]/10 border border-[#00d4aa]/20 flex items-center gap-1.5 hover:bg-[#00d4aa]/20 transition-all">
+                    <button className="h-8 px-3 rounded-xl bg-[#00d4aa]/10 border border-[#00d4aa]/20 flex items-center gap-1.5 hover:bg-[#00d4aa]/20 btn-press tap-ring"
+                      style={{ transition: 'background 0.18s ease, transform 0.08s ease, box-shadow 0.18s ease' }}>
                       <Wallet className="w-3.5 h-3.5 text-[#00d4aa]" />
                       <span className="text-xs font-semibold text-[#00d4aa]">{t('common_connect')}</span>
                     </button>
