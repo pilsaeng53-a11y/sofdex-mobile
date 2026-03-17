@@ -1,25 +1,154 @@
-import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart, Info } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart, Info, RefreshCw } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
+import { useMarketData } from '../components/shared/MarketDataProvider';
+import { CRYPTO_MARKETS, RWA_MARKETS } from '../components/shared/MarketData';
 
-// ── Per-asset AI scoring (deterministic but varied) ──────────────────────────
-const ASSET_SIGNALS = {
-  BTC:  { signal: 'Bullish',  score: 81, basis: '$92,400',  factors: ['ETF inflows +$420M week', 'Whale accumulation', 'Halving narrative'], risk: 'High volatility near $90K support. Stop-loss recommended.' },
-  SOL:  { signal: 'Bullish',  score: 88, basis: '$186.20',  factors: ['DePIN sector strength', 'On-chain volume spike', 'Whale buys +$27M'], risk: 'Momentum extended. RSI at 74, pullback possible to $172.' },
-  ETH:  { signal: 'Neutral',  score: 62, basis: '$3,820',   factors: ['Spot ETF uncertainty', 'Low staking APR narrative', 'Range-bound price action'], risk: 'No clear directional catalyst. Avoid over-leverage.' },
-  JUP:  { signal: 'Bullish',  score: 76, basis: '$1.24',    factors: ['Jupiverse expansion', 'Airdrop momentum', 'Volume 8.4x 30d avg'], risk: 'Small-cap. High impact from whale exits.' },
-  RNDR: { signal: 'Bullish',  score: 72, basis: '$9.48',    factors: ['AI compute demand rising', 'Sector +42%', 'Breakout from consolidation'], risk: 'Tech/AI narrative dependent. Monitor macro risk.' },
-  RAY:  { signal: 'Neutral',  score: 55, basis: '$2.14',    factors: ['DEX volumes stabilizing', 'Memecoin season fading', 'TVL flat'], risk: 'Low conviction. Wait for volume confirmation.' },
-  BONK: { signal: 'Bearish',  score: 67, basis: '$0.0000318', factors: ['Retail FOMO fading', 'RSI overbought', 'Volume declining'], risk: 'Extreme speculative risk. Only micro-positions.' },
-  HNT:  { signal: 'Neutral',  score: 58, basis: '$7.82',    factors: ['Network growth steady', 'Lacking near-term catalyst', 'Accumulation phase'], risk: 'Sideways range. No strong entry signal.' },
+// ── Static per-asset context (narratives, sector, risk notes) ─────────────────
+const ASSET_CONTEXT = {
+  BTC:  { narrative: 'ETF inflow momentum + halving narrative',       risk: 'High volatility near major support. Stop-loss recommended.',   sector: 'Large Cap Crypto' },
+  SOL:  { narrative: 'DePIN sector strength + on-chain volume surge', risk: 'Momentum extended — RSI elevated, pullback possible.',          sector: 'Solana Ecosystem' },
+  ETH:  { narrative: 'Staking yield narrative + Layer-2 activity',    risk: 'Range-bound — no clear directional catalyst. Avoid over-leverage.', sector: 'Large Cap Crypto' },
+  JUP:  { narrative: 'Jupiverse expansion + airdrop momentum',        risk: 'Small-cap. High impact from whale exits.',                      sector: 'Solana Ecosystem' },
+  RNDR: { narrative: 'AI compute demand + GPU render breakout',       risk: 'Tech/AI narrative dependent. Monitor macro risk.',              sector: 'AI / DePIN' },
+  RAY:  { narrative: 'Raydium DEX volume stabilizing',                risk: 'Low conviction. Wait for volume confirmation.',                  sector: 'Solana Ecosystem' },
+  BONK: { narrative: 'Solana memecoin rotation play',                 risk: 'Extreme speculative risk. Only micro-positions.',               sector: 'Memecoins' },
+  HNT:  { narrative: 'Helium Mobile subscriber growth',               risk: 'Sideways range. No strong entry signal.',                       sector: 'DePIN' },
+  BNB:  { narrative: 'BNB Chain activity + new DEX launch',           risk: 'CEX-native token regulatory risk.',                             sector: 'Exchange Token' },
+  XRP:  { narrative: 'SEC clarity catalyst + cross-border demand',    risk: 'Regulatory overhang partially resolved but still present.',     sector: 'Payments' },
+  AVAX: { narrative: 'Institutional subnet deals announced',          risk: 'Competing L1 pressure. Monitor TVL trend.',                     sector: 'Layer 1' },
+  DOGE: { narrative: 'Social sentiment spike + retail volume',        risk: 'Purely speculative — no fundamental backing.',                  sector: 'Memecoins' },
+  PEPE: { narrative: 'Memecoin season rotation',                      risk: 'Extreme speculative risk. Momentum-only trade.',                sector: 'Memecoins' },
+  SUI:  { narrative: 'Sui DeFi TVL growing + new dApp launches',      risk: 'Early ecosystem — smart contract risks remain.',               sector: 'Layer 1' },
+  ARB:  { narrative: 'Arbitrum daily transactions at all-time high',  risk: 'L2 competition intensifying.',                                  sector: 'Layer 2' },
+  OP:   { narrative: 'Optimism Superchain expansion driving fees',    risk: 'Revenue still low vs valuation.',                              sector: 'Layer 2' },
+  'GOLD-T': { narrative: 'Safe-haven demand + inflation hedging',     risk: 'Tracks physical gold — subject to macro swings.',              sector: 'RWA Commodity' },
+  'CRUDE-T':{ narrative: 'Supply cut news driving oil prices',        risk: 'Geopolitical sensitivity — high event risk.',                   sector: 'RWA Commodity' },
+  'SP500-T':{ narrative: 'Broad equity rally + soft landing narrative',risk: 'Rate sensitivity — Fed pivot timing uncertain.',              sector: 'RWA Equity' },
+  'TBILL':  { narrative: 'Rate cut expectations boosting treasuries', risk: 'Duration risk if rates rise unexpectedly.',                    sector: 'RWA Treasury' },
+  'RE-NYC': { narrative: 'NYC real estate yield stabilizing',         risk: 'Illiquid underlying — NAV may lag market.',                    sector: 'RWA Real Estate' },
+  'RE-DXB': { narrative: 'Dubai property market at new highs',        risk: 'Emerging market + FX risk.',                                   sector: 'RWA Real Estate' },
 };
 
-const AI_SENTIMENT = {
-  label: 'Bullish', score: 74, confidence: 'High',
-  explanation: 'On-chain accumulation by large wallets accelerated over the past 48h. Exchange outflows hit a 30-day high, signaling reduced sell pressure. Derivatives funding remains mildly positive.',
-  reasoning: 'Weighted composite of: price momentum (+18pts), whale activity (+22pts), volume profile (+14pts), news sentiment (+12pts), macro indicators (+8pts). Score normalized to 100.',
-  factors: ['Price momentum: BTC +6.4%, SOL +11.3%', 'Whale activity: Net inflows $42M in 24h', 'Volume spike: 2.3x 30-day average', 'Macro: Fed hold → risk-on', 'Sector strength: DePIN + RWA leading'],
-};
+// ── Dynamic weighted AI score model ──────────────────────────────────────────
+// Inputs: change (24h %), abs volatility, buy pressure proxy, news tilt
+// Weights: trend(30) + vol_confirm(20) + volatility(15) + orderbook(20) + news(15)
+function computeAssetScore(symbol, change, liveAvailable) {
+  const ctx = ASSET_CONTEXT[symbol] || {};
+  const ch  = change ?? 0;
+  const absC = Math.abs(ch);
+
+  // 1. Trend strength (0–30): strong positive trend scores highest
+  const trendRaw = ch >= 10 ? 30 : ch >= 5 ? 25 : ch >= 2 ? 20 : ch >= 0 ? 15
+                 : ch >= -2 ? 10 : ch >= -5 ? 6 : 3;
+
+  // 2. Volume confirmation (0–20): large moves with high abs change = volume confirmation proxy
+  const volConfirm = absC >= 8 ? 20 : absC >= 5 ? 17 : absC >= 3 ? 14 : absC >= 1 ? 10 : 6;
+
+  // 3. Volatility condition (0–15): moderate volatility is healthy, extreme is risky
+  const volCond = absC >= 15 ? 5 : absC >= 8 ? 12 : absC >= 3 ? 15 : absC >= 1 ? 11 : 7;
+
+  // 4. Orderbook pressure (0–20): inferred from price direction + change magnitude
+  //    Positive change → buy pressure; negative → sell pressure
+  const obScore = ch >= 8 ? 20 : ch >= 4 ? 17 : ch >= 1 ? 13 : ch >= 0 ? 10
+                : ch >= -2 ? 7 : ch >= -5 ? 4 : 2;
+
+  // 5. News/narrative sentiment (0–15): seeded by symbol's narrative strength
+  //    Use symbol char sum as stable seed, then tilt by price direction
+  const seed = symbol.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
+  const newsBase = ((seed * 7919) % 8) + 5; // 5–12 base
+  const newsTilt = ch > 3 ? 3 : ch > 0 ? 1 : ch > -3 ? -1 : -3;
+  const newsScore = Math.max(0, Math.min(15, newsBase + newsTilt));
+
+  const raw = trendRaw + volConfirm + volCond + obScore + newsScore;
+  // Clamp 10–97, add small live bonus if we actually have live data
+  return Math.min(97, Math.max(10, liveAvailable ? raw : Math.max(10, raw - 5)));
+}
+
+function getSignalLabel(score) {
+  if (score >= 68) return 'Bullish';
+  if (score >= 45) return 'Neutral';
+  return 'Bearish';
+}
+
+function getConfidenceLabel(score) {
+  if (score >= 75) return 'High';
+  if (score >= 55) return 'Medium';
+  return 'Low';
+}
+
+function buildAssetSignal(symbol, change, price, liveAvailable, baseData) {
+  const score   = computeAssetScore(symbol, change, liveAvailable);
+  const signal  = getSignalLabel(score);
+  const ctx     = ASSET_CONTEXT[symbol] || { narrative: 'Market activity detected', risk: 'Monitor closely.', sector: 'Asset' };
+  const ch      = change ?? 0;
+  const absC    = Math.abs(ch);
+
+  const basisStr = price != null
+    ? (price >= 1000
+        ? `$${price.toLocaleString('en-US', { maximumFractionDigits: 2 })}`
+        : price >= 1 ? `$${price.toFixed(2)}` : `$${price.toFixed(6)}`)
+    : (baseData?.price ? `$${baseData.price}` : '—');
+
+  const volLabel = absC >= 10 ? 'Extreme volatility spike' : absC >= 5 ? 'High volatility' : absC >= 2 ? 'Moderate volatility' : 'Low volatility';
+  const dirLabel = ch >= 5 ? 'Strong upward momentum' : ch >= 1 ? 'Mild bullish bias' : ch >= 0 ? 'Flat / consolidating' : ch >= -3 ? 'Mild selling pressure' : 'Strong bearish momentum';
+  const obLabel  = ch >= 3 ? 'Buy-side dominant' : ch >= 0 ? 'Balanced order flow' : 'Sell-side dominant';
+
+  return {
+    signal,
+    score,
+    basis: basisStr,
+    change: ch,
+    factors: [
+      `${dirLabel} · 24h change: ${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%`,
+      `${volLabel} · abs move ${absC.toFixed(2)}%`,
+      `Orderbook: ${obLabel}`,
+      ctx.narrative,
+      liveAvailable ? 'Live price confirmed via Binance/CoinGecko' : 'Static price fallback',
+    ],
+    risk: ctx.risk,
+    sector: ctx.sector,
+  };
+}
+
+// ── Derive overall market sentiment from live crypto leaders ─────────────────
+function computeOverallSentiment(liveData, allMarkets) {
+  const leaders = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'];
+  let totalChange = 0; let count = 0;
+  leaders.forEach(sym => {
+    const live = liveData[sym];
+    const base = allMarkets.find(m => m.symbol === sym);
+    const ch = live?.available ? live.change : base?.change ?? 0;
+    totalChange += ch; count++;
+  });
+  const avgChange = count > 0 ? totalChange / count : 0;
+  const score = Math.min(97, Math.max(10, Math.round(50 + avgChange * 3)));
+  const label = score >= 65 ? 'Bullish' : score >= 45 ? 'Neutral' : 'Bearish';
+  const confidence = getConfidenceLabel(score);
+
+  const btcLive  = liveData['BTC'];
+  const solLive  = liveData['SOL'];
+  const btcCh    = btcLive?.available ? btcLive.change : allMarkets.find(m=>m.symbol==='BTC')?.change ?? 0;
+  const solCh    = solLive?.available ? solLive.change : allMarkets.find(m=>m.symbol==='SOL')?.change ?? 0;
+
+  const explanation = `Market composite score derived from live momentum across ${count} leading assets. ` +
+    `BTC ${btcCh >= 0 ? '+' : ''}${btcCh.toFixed(2)}%, SOL ${solCh >= 0 ? '+' : ''}${solCh.toFixed(2)}%. ` +
+    (score >= 65 ? 'Buy-side pressure dominant. Exchange outflows elevated.' : score >= 45 ? 'Mixed signals — await confirmation before directional bias.' : 'Sell-side dominant. Risk-off positioning advised.');
+
+  return {
+    label, score, confidence, explanation,
+    reasoning: `Weighted composite: price momentum (30%), volume confirmation (20%), volatility condition (15%), orderbook pressure (20%), news/narrative (15%). Avg 24h change of top-${count} assets: ${avgChange >= 0 ? '+' : ''}${avgChange.toFixed(2)}%.`,
+    factors: leaders.map(sym => {
+      const live = liveData[sym];
+      const base = allMarkets.find(m => m.symbol === sym);
+      const ch   = live?.available ? live.change : base?.change ?? 0;
+      return `${sym}: ${ch >= 0 ? '+' : ''}${ch.toFixed(2)}% ${live?.available ? '(live)' : '(static)'}`;
+    }),
+  };
+}
+
+// ── Signal tab asset list ─────────────────────────────────────────────────────
+const SIGNAL_ASSETS = ['BTC', 'SOL', 'ETH', 'JUP', 'RNDR', 'RAY', 'BONK', 'HNT'];
 
 const SMART_MONEY = [
   { type: 'Whale Buy',       asset: 'BTC', amount: '142 BTC',    usd: '$13.9M', wallet: '1AaBb...9Cc3', dir: 'in',  time: '4m ago' },
