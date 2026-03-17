@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { BarChart3, Zap, TrendingUp, TrendingDown, Flame, Brain } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useMarketData } from '../components/shared/MarketDataProvider';
+import { useMarketData, COMMODITY_SYMBOLS } from '../components/shared/MarketDataProvider';
 import { CRYPTO_MARKETS, RWA_MARKETS, TRADFI_MARKETS } from '../components/shared/MarketData';
 
 // ── AI-generated reason snippets (deterministic per symbol) ──────────────────
