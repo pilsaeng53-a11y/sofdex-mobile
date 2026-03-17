@@ -39,13 +39,15 @@ export const CRYPTO_MARKETS = [
 ];
 
 export const RWA_MARKETS = [
-  // Liquid commodity-style RWA — prices updated live via MarketDataProvider (same as crypto)
-  { symbol: "GOLD-T",   name: "Tokenized Gold",      price: 3300.00, change: 0.87,  volume: "124M", mcap: "—",     category: "rwa", yield: "0.0%",  type: "Commodity" },
-  { symbol: "SILVER-T", name: "Tokenized Silver",    price: 32.00,   change: 0.52,  volume: "45M",  mcap: "—",     category: "rwa", yield: "0.0%",  type: "Commodity" },
-  { symbol: "CRUDE-T",  name: "Crude Oil Token",     price: 78.00,   change: -1.23, volume: "67M",  mcap: "—",     category: "rwa", yield: "0.0%",  type: "Commodity" },
-  { symbol: "SP500-T",  name: "S&P 500 Tokenized",   price: 5700.00, change: 0.45,  volume: "234M", mcap: "—",     category: "rwa", yield: "1.2%",  type: "Equity"    },
-  { symbol: "TBILL",    name: "US Treasury Bill",    price: 100.24,  change: 0.02,  volume: "892M", mcap: "—",     category: "rwa", yield: "5.12%", type: "Treasury"  },
-  { symbol: "EURO-B",   name: "Euro Bond Token",     price: 1.08,    change: 0.11,  volume: "156M", mcap: "—",     category: "rwa", yield: "3.8%",  type: "FX/Bond"   },
+  // Liquid commodity-style RWA — prices updated live via MarketDataProvider
+  // Seed prices below match Yahoo Finance / TradingView real-market prices.
+  // Live prices always override these seeds once MarketDataProvider loads.
+  { symbol: "GOLD-T",   name: "Tokenized Gold",      price: 3300.00, change: 0.87,  volume: "124M", mcap: "—",     category: "rwa", yield: "0.0%",  type: "Commodity", tvSymbol: "OANDA:XAUUSD"  },
+  { symbol: "SILVER-T", name: "Tokenized Silver",    price: 33.00,   change: 0.52,  volume: "45M",  mcap: "—",     category: "rwa", yield: "0.0%",  type: "Commodity", tvSymbol: "OANDA:XAGUSD"  },
+  { symbol: "CRUDE-T",  name: "WTI Crude Oil",       price: 67.00,   change: -1.23, volume: "67M",  mcap: "—",     category: "rwa", yield: "0.0%",  type: "Commodity", tvSymbol: "NYMEX:CL1!"    },
+  { symbol: "SP500-T",  name: "S&P 500 Index",       price: 5600.00, change: 0.45,  volume: "234M", mcap: "—",     category: "rwa", yield: "1.2%",  type: "Equity",    tvSymbol: "SP:SPX"        },
+  { symbol: "TBILL",    name: "US 10Y Treasury",     price: 4.25,    change: 0.02,  volume: "892M", mcap: "—",     category: "rwa", yield: "4.25%", type: "Treasury",  tvSymbol: "TVC:US10Y"     },
+  { symbol: "EURO-B",   name: "EUR/USD",             price: 1.085,   change: 0.11,  volume: "156M", mcap: "—",     category: "rwa", yield: "3.8%",  type: "FX/Bond",   tvSymbol: "TVC:EURUSD"    },
   // Illiquid RWA — static prices, no TradingView commodity logic applied
   { symbol: "RE-NYC",   name: "NYC Real Estate Fund",price: 52.40,   change: 1.24,  volume: "34M",  mcap: "2.1B",  category: "rwa", yield: "7.8%",  type: "Real Estate" },
   { symbol: "RE-DXB",   name: "Dubai RE Portfolio",  price: 124.50,  change: 2.15,  volume: "18M",  mcap: "890M",  category: "rwa", yield: "9.2%",  type: "Real Estate" },
