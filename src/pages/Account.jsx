@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWallet } from '../components/shared/WalletContext';
 import { useSolanaBalances } from '../hooks/useSolanaBalances';
+import { useLang } from '../components/shared/LanguageContext';
 import { User, Wallet, LogOut, Copy, Check, RotateCw, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -10,6 +11,7 @@ import { useCurrency } from '../components/shared/CurrencyContext';
 import { formatPriceRealtime } from '@/lib/realtimeCurrencyUtils';
 
 export default function Account() {
+  const { t } = useLang();
   const { isConnected, address, shortAddress, disconnect, walletName } = useWallet();
   const { balances, prices, loading } = useSolanaBalances(isConnected ? address : null);
   const { displayCurrency, exchangeRates } = useCurrency();
