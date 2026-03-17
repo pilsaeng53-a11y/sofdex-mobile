@@ -174,11 +174,9 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
           </div>
           <div className="flex items-center gap-2">
             {/* User type badge */}
-            {userType !== 'beginner' && (
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-lg bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20 uppercase">
-                {userType}
-              </span>
-            )}
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-lg border uppercase ${getTierBadgeClass(userType, isPartnerApproved ? 'approved' : isPartnerPending ? 'pending' : 'none')}`}>
+              {getUserTierLabel(userType, isPartnerApproved ? 'approved' : isPartnerPending ? 'pending' : 'none')}
+            </span>
             <button
               onClick={onClose}
               className="w-8 h-8 rounded-lg bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all"
