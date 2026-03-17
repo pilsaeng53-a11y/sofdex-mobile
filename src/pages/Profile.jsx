@@ -4,6 +4,7 @@ import {
   LogOut, ExternalLink, Copy, Check, Settings, X
 } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
+import { useWallet } from '../components/shared/WalletContext';
 
 export default function Profile() {
   const { t, lang, setLang, LANGUAGES } = useLang();
