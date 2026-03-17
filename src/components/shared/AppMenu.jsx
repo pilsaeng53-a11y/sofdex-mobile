@@ -8,7 +8,7 @@ import {
   BarChart2, Users, BookOpen, Rocket, Zap,
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
-  Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User
+  Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User, Globe
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
