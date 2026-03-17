@@ -66,9 +66,12 @@ export default function WalletPage() {
   const { t } = useLang();
   const { isConnected, address, disconnect, requireWallet } = useWallet();
   const walletAddress = address || DEMO_ADDRESS;
-  const [tab, setTab] = useState('overview'); // overview | send | receive | history
+  const [tab, setTab] = useState('overview');
   const [showBal, setShowBal] = useState(true);
   const [copied, setCopied] = useState(false);
+
+  // Fetch real Solana balances
+  const { balances, prices, loading, error } = useSolanaBalances(isConnected ? address : null);
 
   // Send form
   const [sendAsset, setSendAsset] = useState('USDC');
