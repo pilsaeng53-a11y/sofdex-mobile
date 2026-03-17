@@ -814,7 +814,7 @@ export default function AIIntelligence() {
                   <TrendingUp className={`w-2.5 h-2.5 ${o.color}`} />
                   <span className={`text-[10px] font-bold ${o.color}`}>{o.signal}</span>
                 </div>
-                <ReasoningCard factors={o.factors} risk="Opportunity signals do not guarantee price movement." />
+                <ReasoningCard factors={o.factors} risk={t('ai_priceMovement')} t={t} />
               </div>
             ))}
           </>
