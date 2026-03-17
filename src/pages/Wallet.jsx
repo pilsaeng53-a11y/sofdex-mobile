@@ -74,22 +74,24 @@ export default function WalletPage() {
   const { balances, prices, loading, error } = useSolanaBalances(isConnected ? address : null);
 
   // Send form
-  const [sendAsset, setSendAsset] = useState('USDC');
+  const [sendAsset, setSendAsset] = useState('SOL');
   const [sendNetwork, setSendNetwork] = useState('sol');
   const [sendAmount, setSendAmount] = useState('');
   const [sendDest, setSendDest] = useState('');
   const [sendConfirmed, setSendConfirmed] = useState(false);
 
   // Receive
-  const [rcvAsset, setRcvAsset] = useState('USDC');
+  const [rcvAsset, setRcvAsset] = useState('SOL');
   const [rcvNetwork, setRcvNetwork] = useState('sol');
 
   // History filter
   const [histFilter, setHistFilter] = useState('all');
 
+  // Use real balances or fallback
+  const realBalance = balances?.[sendAsset]?.balance || 0;
   const selectedAsset = ASSETS.find(a => a.symbol === sendAsset) || ASSETS[0];
   const selectedNetwork = NETWORKS.find(n => n.id === sendNetwork) || NETWORKS[0];
-  const availableSend = selectedAsset.spot;
+  const availableSend = realBalance;
   const receiveEst = parseFloat(sendAmount || 0) > 0
     ? Math.max(0, parseFloat(sendAmount) - parseFloat(selectedNetwork.feeUsd.replace('~$', ''))).toFixed(4)
     : '—';
