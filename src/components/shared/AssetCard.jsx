@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { formatPrice, formatChange } from './MarketData';
-import { useMarketData } from './MarketDataProvider';
+import { useMarketData, COMMODITY_SYMBOLS } from './MarketDataProvider';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 
 const symbolColors = {
