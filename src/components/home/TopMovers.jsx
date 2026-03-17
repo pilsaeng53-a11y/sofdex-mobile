@@ -62,9 +62,12 @@ export default function TopMovers() {
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-bold text-white">Top Movers</h2>
-          <span className="flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 pulse-dot" />
-            <span className="text-[10px] text-slate-500">Live</span>
+          <span className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-50" style={{ animationDuration: '2s' }} />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+            </span>
+            <span className="text-[10px] text-slate-500 font-semibold">Live</span>
           </span>
         </div>
         <div className="flex gap-1 bg-[#151c2e] rounded-lg p-0.5">
@@ -94,11 +97,11 @@ export default function TopMovers() {
               const isPos = asset.change >= 0;
               return (
                 <Link key={asset.symbol} to={createPageUrl('MarketDetail') + `?symbol=${asset.symbol}`}>
-                  <div className="flex items-center justify-between p-3.5 hover:bg-[#1a2340] transition-colors">
+                  <div className="flex items-center justify-between p-3.5 transition-all duration-200 hover:bg-[#1a2340] group/row" style={{ transition: 'background 0.18s ease' }}>
                     <div className="flex items-center gap-3">
                       <span className="text-[11px] text-slate-600 font-medium w-4">{i + 1}</span>
                       <div>
-                        <p className="text-sm font-semibold text-slate-100">{asset.symbol}</p>
+                        <p className="text-sm font-semibold text-slate-100 group-hover/row:text-[#00d4aa] transition-colors">{asset.symbol}</p>
                         <p className="text-[11px] text-slate-500">{asset.name}</p>
                       </div>
                     </div>
