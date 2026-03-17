@@ -52,10 +52,16 @@ export default function MarketRow({ asset }) {
           <MiniChart data={sparkline} positive={isPositive} width={64} height={28} />
         </div>
         <div className="text-right flex-shrink-0 min-w-[80px]">
-          <p className="text-sm font-bold text-white">${formatPrice(price)}</p>
-          <p className={`text-[11px] font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
-            {formatChange(change)}
-          </p>
+          {price != null ? (
+            <>
+              <p className="text-sm font-bold text-white">${formatPrice(price)}</p>
+              <p className={`text-[11px] font-semibold ${isPositive ? 'text-emerald-400' : 'text-red-400'}`}>
+                {formatChange(change)}
+              </p>
+            </>
+          ) : (
+            <p className="text-sm font-bold text-slate-600 animate-pulse">—</p>
+          )}
         </div>
       </div>
     </Link>
