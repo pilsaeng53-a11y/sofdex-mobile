@@ -150,7 +150,8 @@ async function fetchFromBirdeye() {
 }
 
 Deno.serve(async (req) => {
-  if (req.method !== 'GET') {
+  // Accept both GET and POST
+  if (!['GET', 'POST'].includes(req.method)) {
     return Response.json({ error: 'Method not allowed' }, { status: 405 });
   }
 
