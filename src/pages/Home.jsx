@@ -32,11 +32,13 @@ export default function Home() {
       {/* Welcome section */}
       <div className="px-4 pt-3 pb-2 flex items-center justify-between">
         <p className="text-slate-500 text-xs font-medium">{t('home_subtitle')}</p>
-        {userType === 'beginner' && (
-          <Link to="/BeginnerDashboard" className="text-[10px] font-bold text-[#00d4aa] bg-[#00d4aa]/10 border border-[#00d4aa]/20 px-2 py-1 rounded-lg hover:bg-[#00d4aa]/20 transition-all">
-            ✨ Beginner Guide
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          {userType === 'beginner' && (
+            <Link to="/BeginnerDashboard" className="text-[10px] font-bold text-[#00d4aa] bg-[#00d4aa]/10 border border-[#00d4aa]/20 px-2 py-1 rounded-lg hover:bg-[#00d4aa]/20 transition-all">
+              ✨ {t('beginner_quickstart')}
+            </Link>
+          )}
+        </div>
       </div>
 
       <MarketPulseBar />
