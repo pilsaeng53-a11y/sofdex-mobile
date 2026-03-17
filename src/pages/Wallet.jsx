@@ -67,6 +67,7 @@ function FakeQR({ data }) {
 export default function WalletPage() {
   const navigate = useNavigate();
   const { t } = useLang();
+  const { displayCurrency, exchangeRates } = useCurrency();
   const { isConnected, address, disconnect, requireWallet } = useWallet();
   const walletAddress = address || DEMO_ADDRESS;
   const [tab, setTab] = useState('overview');
