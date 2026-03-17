@@ -780,7 +780,7 @@ export default function AIIntelligence() {
                     <div><span className="text-slate-500">Chart Price: </span><span className={`font-bold ${dynamicColor}`}>{fairStr}</span></div>
                     <span className={`font-black text-sm ${dynamicColor}`}>✓ Synced</span>
                   </div>
-                  <ReasoningCard factors={null} risk={null} basis={r.basis} />
+                  <ReasoningCard factors={null} risk={null} basis={r.basis} t={t} />
                 </div>
               );
             })}
