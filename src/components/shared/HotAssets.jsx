@@ -95,6 +95,7 @@ export default function HotAssets({ compact = false }) {
 function HotAssetItem({ asset, index, expanded, setExpanded }) {
   // **CHART PRICE IS MASTER** for Hot Assets display
   const { price, change24h, isLive } = useChartPrice(asset.symbol);
+  const { displayCurrency, exchangeRates } = useCurrency();
   const displayPrice = price;
   const displayChange = change24h ?? 0;
 
