@@ -40,8 +40,13 @@ export default function StrategyMarketplace() {
         </Link>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-4 gap-2 mb-4">
+      {/* Notice: Example Data */}
+      <div className="glass-card rounded-xl p-3 mb-4 bg-blue-400/5 border border-blue-400/20">
+        <p className="text-[10px] text-blue-300"><span className="font-semibold">Preview:</span> Showing example strategies. Backend integration coming soon.</p>
+      </div>
+
+      {/* Stats (Example Data) */}
+      <div className="grid grid-cols-4 gap-2 mb-4 opacity-75">
         {[
           { label: 'Strategies', val: EXAMPLE_STRATEGIES.length },
           { label: 'ROI', val: '+' + Math.max(...EXAMPLE_STRATEGIES.map(s => s.roi30d)).toFixed(1) + '%' },
