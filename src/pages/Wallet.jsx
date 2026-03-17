@@ -165,10 +165,11 @@ export default function WalletPage() {
         </div>
       </div>
 
-      {/* Address bar */}
-      <div className="px-4 mb-4">
+      {/* Address bar - Connected Account */}
+      <div className="px-4 mb-4 space-y-2">
+        <div className="text-xs text-slate-500 px-1">Connected Account</div>
         <div className="glass-card rounded-2xl px-4 py-3 flex items-center gap-3">
-          <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot flex-shrink-0" />
+          <div className="w-2 h-2 rounded-full bg-emerald-400 pulse-dot flex-shrink-0" style={{ boxShadow: '0 0 8px rgba(34,197,94,0.9)' }} />
           <p className="text-xs font-mono text-slate-300 flex-1 truncate">{walletAddress}</p>
           <button onClick={() => copyAddress(walletAddress)}
             className="flex items-center gap-1 text-[10px] font-semibold text-[#00d4aa] bg-[#00d4aa]/10 px-2.5 py-1.5 rounded-lg hover:bg-[#00d4aa]/20 transition-all flex-shrink-0">
