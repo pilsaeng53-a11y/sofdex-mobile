@@ -20,13 +20,16 @@ export default function WalletConnect() {
   const [connected, setConnected] = useState(isConnected);
   const [connecting, setConnecting] = useState(null);
 
-  const handleConnect = (wallet) => {
+  const handleConnect = async (wallet) => {
     setConnecting(wallet.name);
-    setTimeout(() => {
-      setConnecting(null);
+    try {
+      await connect(wallet.name);
       setConnected(true);
-      connect(wallet.name);
-    }, 1500);
+      setConnecting(null);
+    } catch (err) {
+      setConnecting(null);
+      // If not installed, connect() already opened install page
+    }
   };
 
   return (
