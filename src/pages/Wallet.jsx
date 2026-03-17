@@ -7,6 +7,7 @@ import {
   QrCode, AlertCircle, Zap, Shield
 } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
+import { useWallet } from '../components/shared/WalletContext';
 
 // ── Simulated wallet state (mirrors WalletConnect page logic) ──────────────
 const DEMO_ADDRESS = '7xKXtg2QzMLmE4ipAnZBmFQXE3v5bHaP9mN4pQ';
@@ -62,11 +63,7 @@ function FakeQR({ data }) {
 export default function WalletPage() {
   const navigate = useNavigate();
   const { t } = useLang();
-
-  // Detect connected state from localStorage (set by WalletConnect page simulation)
-  const [isConnected, setIsConnected] = useState(() => {
-    try { return !!localStorage.getItem('sofdex_wallet_connected'); } catch { return false; }
-  });
+  const { isConnected } = useWallet();
   const [walletAddress] = useState(DEMO_ADDRESS);
   const [tab, setTab] = useState('overview'); // overview | send | receive | history
   const [showBal, setShowBal] = useState(true);
