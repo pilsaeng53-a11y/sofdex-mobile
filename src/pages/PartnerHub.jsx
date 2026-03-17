@@ -164,17 +164,67 @@ function DistributorDashboard({ isAdmin, applyForPartner, isPartnerPending }) {
         <>
           {/* Stats Row */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="bg-[#151c2e] rounded-xl p-3 border border-[rgba(148,163,184,0.08)]">
-              <p className="text-xs text-slate-500 mb-1">Team Vol.</p>
-              <p className="text-sm font-black text-white">$2.4M</p>
+            {[
+              { label: 'Team Vol.', value: '$2.4M', color: 'text-white', sub: '+18.4%' },
+              { label: 'Commission', value: '$1,248', color: 'text-[#00d4aa]', sub: 'All-time' },
+              { label: 'Team Size', value: '34', color: 'text-white', sub: '3 levels' },
+            ].map((s, i) => (
+              <div key={i} className="bg-gradient-to-br from-[#151c2e] to-[#1a2340] rounded-xl p-3 border border-[rgba(148,163,184,0.08)] text-center">
+                <p className="text-[9px] text-slate-600 mb-1">{s.label}</p>
+                <p className={`text-sm font-black ${s.color}`}>{s.value}</p>
+                <p className="text-[9px] text-emerald-400 mt-0.5">{s.sub}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Sales Metrics */}
+          <div className="bg-[#151c2e] rounded-2xl border border-[rgba(148,163,184,0.08)] p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <BarChart3 className="w-4 h-4 text-[#3b82f6]" />
+              <p className="text-sm font-bold text-white">Sales Performance</p>
             </div>
-            <div className="bg-[#151c2e] rounded-xl p-3 border border-[rgba(148,163,184,0.08)]">
-              <p className="text-xs text-slate-500 mb-1">Commission</p>
-              <p className="text-sm font-black text-[#00d4aa]">$1,248</p>
+            <div className="space-y-2">
+              {SALES_METRICS.map((m, i) => (
+                <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-[#0a0e1a] border border-[rgba(148,163,184,0.05)]">
+                  <p className="text-xs font-semibold text-white">{m.label}</p>
+                  <div className="flex items-center gap-3 text-right">
+                    <div>
+                      <p className="text-[9px] text-slate-600">Volume</p>
+                      <p className="text-xs font-bold text-white">{m.vol}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] text-slate-600">Commission</p>
+                      <p className="text-xs font-bold text-[#00d4aa]">{m.comm}</p>
+                    </div>
+                    {m.change && <span className="text-[9px] font-bold text-emerald-400">{m.change}</span>}
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="bg-[#151c2e] rounded-xl p-3 border border-[rgba(148,163,184,0.08)]">
-              <p className="text-xs text-slate-500 mb-1">Team Size</p>
-              <p className="text-sm font-black text-white">34</p>
+          </div>
+
+          {/* Team Structure */}
+          <div className="bg-[#151c2e] rounded-2xl border border-[rgba(148,163,184,0.08)] p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <GitBranch className="w-4 h-4 text-[#8b5cf6]" />
+              <p className="text-sm font-bold text-white">Team Structure</p>
+            </div>
+            <div className="space-y-2">
+              {TEAM_STRUCTURE.map((t, i) => (
+                <div key={i} className="p-3 rounded-xl bg-[#0a0e1a] border border-[rgba(148,163,184,0.05)]">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: t.color }} />
+                      <p className="text-xs font-bold text-white">{t.level}</p>
+                    </div>
+                    <span className="text-[10px] font-bold text-white">{t.count} members</span>
+                  </div>
+                  <div className="flex justify-between text-[10px]">
+                    <span className="text-slate-500">Vol: <span className="text-white">{t.vol}</span></span>
+                    <span className="text-slate-500">Rate: <span style={{ color: t.color }}>{t.commission}</span></span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
