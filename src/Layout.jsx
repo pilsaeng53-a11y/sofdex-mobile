@@ -35,7 +35,7 @@ function LayoutInner({ children, currentPageName }) {
             <AppMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} currentPage={currentPageName} />
 
             {/* Global Sticky Header */}
-            <div className="sticky top-0 z-40 bg-[#0a0e1a]/95 backdrop-blur-xl border-b border-[rgba(148,163,184,0.05)]" style={{ boxShadow: '0 1px 0 rgba(0,212,170,0.04), 0 4px 20px rgba(0,0,0,0.4)' }}>
+            <div className="sticky top-0 z-40 backdrop-blur-xl border-b border-[rgba(148,163,184,0.05)]" style={{ background: 'rgba(5,7,13,0.92)', boxShadow: '0 1px 0 rgba(153,69,255,0.06), 0 4px 20px rgba(0,0,0,0.5)' }}>
               <div className="px-4 py-2.5 flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <button
@@ -77,7 +77,7 @@ function LayoutInner({ children, currentPageName }) {
             </div>
           </>
         )}
-        <div className={`${showShell ? 'pb-20' : ''} page-enter`}>
+        <div className={`${showShell ? 'pb-20' : ''} page-enter`} style={{ position: 'relative', zIndex: 1 }}>
           {children}
         </div>
         {showShell && <BottomNav currentPage={currentPageName} />}
