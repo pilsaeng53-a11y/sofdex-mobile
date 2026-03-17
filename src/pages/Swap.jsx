@@ -4,6 +4,7 @@ import { createPageUrl } from '@/utils';
 import { ArrowDownUp, ChevronDown, Info, Zap, Clock, TrendingUp, X, Search } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import { useChartPrice } from '../components/shared/useChartPrice';
+import { useSOFPrice } from '../hooks/useSOFPrice';
 import { getMarketBySymbol } from '../components/shared/MarketData';
 
 const SWAP_ASSETS = [
@@ -156,24 +157,31 @@ export default function Swap() {
   const [slippage, setSlippage] = useState(0.5);
   const [swapped, setSwapped] = useState(false);
 
-  // **CHART PRICES ARE MASTER** — use for all swap calculations
+  // SOF uses dedicated DEX pool price, all others use chart prices
+  const sofData = useSOFPrice();
   const fromChartPrice = useChartPrice(fromAsset.symbol);
   const toChartPrice = useChartPrice(toAsset.symbol);
 
   const getPrice = useCallback((asset) => {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
-    // All assets: use chart price as master source
+    
+    // SOF: always use dedicated DEX pool price
+    if (asset.symbol === 'SOF') {
+      return sofData.sofPrice && sofData.sofPrice > 0 ? sofData.sofPrice : null;
+    }
+    
+    // All other assets: use chart price as master source
     const chartPrice = asset.symbol === fromAsset.symbol ? fromChartPrice : toChartPrice;
     const price = chartPrice.price ?? (getMarketBySymbol(asset.symbol)?.price ?? null);
     // Never return 0 or undefined — only valid price or null
-    return price && price > 0 ? price : 1;
-  }, [fromAsset.symbol, toAsset.symbol, fromChartPrice, toChartPrice]);
+    return price && price > 0 ? price : null;
+  }, [fromAsset.symbol, toAsset.symbol, sofData.sofPrice, fromChartPrice, toChartPrice]);
 
   const fromPrice = getPrice(fromAsset);
   const toPrice = getPrice(toAsset);
-  
+
   // Calculate rate with safeguards — never divide by zero
-  const rate = toPrice > 0 && fromPrice > 0 ? fromPrice / toPrice : 0;
+  const rate = (toPrice && toPrice > 0) && (fromPrice && fromPrice > 0) ? fromPrice / toPrice : 0;
   
   // Calculate output amount — must be positive or empty, never 0
   const toAmount = fromAmount && parseFloat(fromAmount) > 0 && rate > 0
@@ -265,14 +273,14 @@ export default function Swap() {
             <AssetSelector selected={toAsset} onChange={setToAsset} exclude={fromAsset.symbol} />
             <div className="flex-1 text-right">
                <p className="text-2xl font-bold text-[#00d4aa]">
-                 {toAmount ? (
-                   toAmount
-                 ) : toPrice <= 0 || !fromChartPrice.isLive ? (
-                   <span className="text-amber-400 text-sm">Price unavailable</span>
-                 ) : (
-                   <span className="text-slate-700">0.00</span>
-                 )}
-               </p>
+                  {toAmount ? (
+                    toAmount
+                  ) : !toPrice || !fromPrice ? (
+                    <span className="text-amber-400 text-sm">Price unavailable</span>
+                  ) : (
+                    <span className="text-slate-700">—</span>
+                  )}
+                </p>
                <p className="text-[11px] text-slate-500 mt-0.5">
                  {toAmount && !isNaN(toAmount)
                    ? `≈ $${(parseFloat(toAmount) * toPrice).toLocaleString('en', { maximumFractionDigits: 2 })}`
