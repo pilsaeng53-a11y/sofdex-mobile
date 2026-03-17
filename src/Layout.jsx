@@ -172,12 +172,15 @@ export default function Layout({ children, currentPageName }) {
   return (
     <CurrencyProvider>
       <LanguageProvider>
-        <UserTypeProvider>
-          <WalletProvider>
-            <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
-            <ConnectWalletModal />
-          </WalletProvider>
-        </UserTypeProvider>
+        <RegionProvider>
+          <UserTypeProvider>
+            <WalletProvider>
+              <RegionPersonalizationInitializer />
+              <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
+              <ConnectWalletModal />
+            </WalletProvider>
+          </UserTypeProvider>
+        </RegionProvider>
       </LanguageProvider>
     </CurrencyProvider>
   );
