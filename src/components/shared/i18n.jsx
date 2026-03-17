@@ -728,7 +728,7 @@ export const translations = {
   },
 
   fr: {
-    nav_home:'Accueil', nav_markets:'Marchés', nav_trade:'Trader', nav_portfolio:'Portefeuille', nav_more:'Plus',
+    nav_home:'Accueil', nav_markets:'Marchés', nav_trade:'Trader', nav_portfolio:'Portefeuille', nav_more:'Plus', nav_ai:'IA',
     menu_exchange:'Bourse', menu_discover:'Découvrir', menu_earnSocial:'Gagner & Social', menu_liveFeed:'Fil en Direct', menu_dao:'DAO', menu_account:'Compte',
     menu_home:'Accueil', menu_markets:'Marchés', menu_trade:'Trader', menu_portfolio:'Portefeuille',
     menu_news:'Actualités', menu_rwaMarkets:'Marchés RWA', menu_realEstate:'Immobilier', menu_analytics:'Analytique', menu_launchpad:'Lanceur',
