@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWallet } from '../shared/WalletContext';
 import { useSolanaBalances } from '../../hooks/useSolanaBalances';
 import { Eye, EyeOff, RotateCw } from 'lucide-react';
