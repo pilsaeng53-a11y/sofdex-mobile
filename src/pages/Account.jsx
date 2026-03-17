@@ -139,8 +139,8 @@ export default function Account() {
             <button className="w-full glass-card rounded-2xl p-3 flex items-center gap-3 hover:border-[#00d4aa]/30 transition-all">
               <Wallet className="w-4 h-4 text-[#00d4aa] flex-shrink-0" />
               <div className="text-left">
-                <p className="text-xs font-semibold text-white">Portfolio</p>
-                <p className="text-[10px] text-slate-500">View holdings & balances</p>
+                <p className="text-xs font-semibold text-white">{t('page_portfolio')}</p>
+                <p className="text-[10px] text-slate-500">{t('portfolio_description')}</p>
               </div>
             </button>
           </Link>
