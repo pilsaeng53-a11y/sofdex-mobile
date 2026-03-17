@@ -85,8 +85,19 @@ export default function WalletPage() {
   const [rcvAsset, setRcvAsset] = useState('SOL');
   const [rcvNetwork, setRcvNetwork] = useState('sol');
 
-  // History filter
-  const [histFilter, setHistFilter] = useState('all');
+  // Prepare balances for new transaction system
+  const preparedBalances = useMemo(() => {
+    if (!balances) return {};
+    return Object.entries(balances).reduce((acc, [symbol, data]) => {
+      acc[symbol] = {
+        balance: data.balance,
+        usdValue: data.value,
+        price: data.price,
+        change24h: Math.random() * 10 - 5, // Placeholder
+      };
+      return acc;
+    }, {});
+  }, [balances]);
 
   // Use real balances or fallback
   const realBalance = balances?.[sendAsset]?.balance || 0;
