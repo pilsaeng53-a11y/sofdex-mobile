@@ -39,11 +39,11 @@ export const CRYPTO_MARKETS = [
 ];
 
 export const RWA_MARKETS = [
-  { symbol: "GOLD-T", name: "Tokenized Gold", price: 2341.80, change: 0.87, volume: "124M", mcap: "18.2B", category: "rwa", yield: "0.0%", type: "Commodity" },
-  { symbol: "TBILL", name: "US Treasury Bill", price: 100.24, change: 0.02, volume: "892M", mcap: "45.1B", category: "rwa", yield: "5.12%", type: "Treasury" },
-  { symbol: "RE-NYC", name: "NYC Real Estate Fund", price: 52.40, change: 1.24, volume: "34M", mcap: "2.1B", category: "rwa", yield: "7.8%", type: "Real Estate" },
-  { symbol: "SP500-T", name: "S&P 500 Tokenized", price: 5842.30, change: 0.45, volume: "234M", mcap: "12.4B", category: "rwa", yield: "1.2%", type: "Equity" },
-  { symbol: "CRUDE-T", name: "Crude Oil Token", price: 78.92, change: -1.23, volume: "67M", mcap: "3.2B", category: "rwa", yield: "0.0%", type: "Commodity" },
+  { symbol: "GOLD-T",  name: "Tokenized Gold",      price: 3300.00, change: 0.87, volume: "124M", mcap: "18.2B", category: "rwa", yield: "0.0%", type: "Commodity" },
+  { symbol: "TBILL",   name: "US Treasury Bill",    price: 100.24,  change: 0.02, volume: "892M", mcap: "45.1B", category: "rwa", yield: "5.12%", type: "Treasury" },
+  { symbol: "RE-NYC",  name: "NYC Real Estate Fund",price: 52.40,   change: 1.24, volume: "34M",  mcap: "2.1B",  category: "rwa", yield: "7.8%",  type: "Real Estate" },
+  { symbol: "SP500-T", name: "S&P 500 Tokenized",   price: 5700.00, change: 0.45, volume: "234M", mcap: "12.4B", category: "rwa", yield: "1.2%",  type: "Equity" },
+  { symbol: "CRUDE-T", name: "Crude Oil Token",     price: 68.00,   change: -1.23, volume: "67M", mcap: "3.2B",  category: "rwa", yield: "0.0%", type: "Commodity" },
   { symbol: "RE-DXB", name: "Dubai RE Portfolio", price: 124.50, change: 2.15, volume: "18M", mcap: "890M", category: "rwa", yield: "9.2%", type: "Real Estate" },
   { symbol: "EURO-B", name: "Euro Bond Token", price: 98.75, change: 0.11, volume: "156M", mcap: "8.4B", category: "rwa", yield: "3.8%", type: "Treasury" },
   { symbol: "TSLA-T", name: "Tesla Tokenized", price: 248.90, change: 3.45, volume: "89M", mcap: "5.6B", category: "rwa", yield: "0.0%", type: "Equity" },
