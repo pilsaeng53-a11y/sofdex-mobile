@@ -249,8 +249,8 @@ export default function MarketHeatmap() {
       const isCommodity = COMMODITY_SYMBOLS.has(a.symbol);
       const liveChange = live?.available ? live.change : null;
       const livePrice  = live?.available ? live.price  : null;
-      // Commodity assets: never fall back to stale static seed — wait for live data
-      const change = liveChange ?? (isCommodity ? a.change : a.change);
+      // Non-crypto: never fall back to stale static seed — wait for live data
+      const change = liveChange ?? (isCommodity ? 0 : a.change);
       const price  = livePrice  ?? (isCommodity ? null : a.price);
       const aiScore = getAIScore(a.symbol, change ?? 0, price ?? a.price, a);
       return { ...a, liveChange, livePrice, change, price, aiScore };
