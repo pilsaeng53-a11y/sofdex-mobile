@@ -46,28 +46,28 @@ export default function ConnectWalletModal() {
   const [error, setError] = useState(null);
 
   const handleConnect = async (wallet) => {
-    setConnecting(wallet.name);
-    setError(null);
-    try {
-      const addr = await connect(wallet.name);
-      setSuccess(wallet.name);
-      setTimeout(() => {
-        setSuccess(null);
-        setConnecting(null);
-        setShowModal(false);
-      }, 1000);
-    } catch (err) {
-      setConnecting(null);
-      if (err.message?.includes('not installed')) {
-        // Opened install page, show install hint
-        setError(`${wallet.name} not detected. Install it and try again.`);
-      } else if (err.message?.includes('rejected')) {
-        setError('Connection cancelled.');
-      } else {
-        setError(err.message || 'Connection failed. Please try again.');
-      }
-    }
-  };
+     setConnecting(wallet.name);
+     setError(null);
+     try {
+       const addr = await connect(wallet.name);
+       setSuccess(wallet.name);
+       setTimeout(() => {
+         setSuccess(null);
+         setConnecting(null);
+         setShowModal(false);
+       }, 1000);
+     } catch (err) {
+       setConnecting(null);
+       const errorMsg = err.message || 'Connection failed. Please try again.';
+       if (errorMsg.includes('not installed')) {
+         setError(`${wallet.name} not found. Install the extension and try again.`);
+       } else if (errorMsg.includes('rejected')) {
+         setError('Connection cancelled. Please try again.');
+       } else {
+         setError(errorMsg);
+       }
+     }
+   };
 
   const handleClose = () => {
     if (connecting) return;
