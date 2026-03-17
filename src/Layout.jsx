@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLang } from './components/shared/LanguageContext';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -10,11 +10,13 @@ import AppMenu from './components/shared/AppMenu';
 import { MarketDataProvider, useMarketData } from './components/shared/MarketDataProvider';
 import { LanguageProvider } from './components/shared/LanguageContext';
 import { UserTypeProvider } from './components/shared/UserTypeContext';
-import { CurrencyProvider } from './components/shared/CurrencyContext';
+import { CurrencyProvider, useCurrency } from './components/shared/CurrencyContext';
+import { RegionProvider } from './components/shared/RegionContext';
 import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
 import AnimatedBackground from './components/shared/AnimatedBackground';
 import { WalletProvider, useWallet } from './components/shared/WalletContext';
 import ConnectWalletModal from './components/shared/ConnectWalletModal';
+import { getRegionDefaultCurrency } from '@/services/RegionDetectionService';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
