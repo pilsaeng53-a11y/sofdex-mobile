@@ -122,6 +122,13 @@ const AuthenticatedApp = () => {
       <Route path="/DocRiskDisclosure" element={<LayoutWrapper currentPageName="DocRiskDisclosure"><DocRiskDisclosure /></LayoutWrapper>} />
       <Route path="/Swap" element={<LayoutWrapper currentPageName="Swap"><Swap /></LayoutWrapper>} />
       <Route path="/GlobalMarkets" element={<LayoutWrapper currentPageName="GlobalMarkets"><GlobalMarkets /></LayoutWrapper>} />
+      <Route path="/FuturesDashboard" element={<LayoutWrapper currentPageName="FuturesDashboard"><FuturesDashboard /></LayoutWrapper>} />
+      <Route path="/FuturesTrade" element={<LayoutWrapper currentPageName="FuturesTrade"><FuturesTrade /></LayoutWrapper>} />
+      <Route path="/FuturesMarketWatch" element={<LayoutWrapper currentPageName="FuturesMarketWatch"><FuturesMarketWatch /></LayoutWrapper>} />
+      <Route path="/FuturesPositions" element={<LayoutWrapper currentPageName="FuturesPositions"><FuturesPositions /></LayoutWrapper>} />
+      <Route path="/FuturesAccountTypes" element={<LayoutWrapper currentPageName="FuturesAccountTypes"><FuturesAccountTypes /></LayoutWrapper>} />
+      <Route path="/FuturesSalesPartner" element={<LayoutWrapper currentPageName="FuturesSalesPartner"><FuturesSalesPartner /></LayoutWrapper>} />
+      <Route path="/FuturesReferral" element={<LayoutWrapper currentPageName="FuturesReferral"><FuturesReferral /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/BeginnerDashboard" element={<LayoutWrapper currentPageName="BeginnerDashboard"><BeginnerDashboard /></LayoutWrapper>} />
