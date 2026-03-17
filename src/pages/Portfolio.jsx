@@ -105,7 +105,7 @@ export default function Portfolio() {
           <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Total Portfolio Value</p>
           <div className="flex items-baseline gap-2">
             <p className={`text-3xl font-bold num-large ${showBalances ? 'text-[#00d4aa]' : 'text-slate-400'}`}>
-              {showBalances ? `$${totalValue.toFixed(2)}` : '••••••••'}
+              {showBalances ? formatPrice(totalValue, displayCurrency, exchangeRates) : '••••••••'}
             </p>
             <span className={`text-sm font-semibold ${changeColor}`}>
               {change24h > 0 ? '+' : ''}{change24h.toFixed(2)}% (24h)
