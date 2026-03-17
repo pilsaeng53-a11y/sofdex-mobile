@@ -21,29 +21,7 @@ const NETWORKS = [
   { id: 'bep20',label: 'BNB Smart Chain (BEP20)', fee: '0.0003 BNB', feeUsd: '~$0.18',  time: '~30s' },
 ];
 
-// ── Simple QR-code-style display (CSS grid, no external lib) ─────────────
-function FakeQR({ data }) {
-  const hash = data.split('').reduce((a, c) => a + c.charCodeAt(0), 0);
-  const grid = Array.from({ length: 11 }, (_, r) =>
-    Array.from({ length: 11 }, (_, c) => (((hash * (r + 1) * (c + 2)) % 7) < 3))
-  );
-  const corners = [[0,0],[0,1],[1,0],[0,9],[0,10],[1,10],[9,0],[10,0],[10,1],[9,10],[10,9],[10,10]];
-  const isCorner = (r, c) => corners.some(([cr, cc]) => cr === r && cc === c);
 
-  return (
-    <div className="p-4 bg-white rounded-2xl inline-block">
-      <div className="grid gap-0.5" style={{ gridTemplateColumns: 'repeat(11, 1fr)', width: 110 }}>
-        {grid.map((row, r) =>
-          row.map((on, c) => (
-            <div key={`${r}-${c}`}
-              className={`w-[9px] h-[9px] rounded-sm ${on || isCorner(r,c) ? 'bg-[#0a0e1a]' : 'bg-white'}`}
-            />
-          ))
-        )}
-      </div>
-    </div>
-  );
-}
 
 export default function WalletPage() {
   const navigate = useNavigate();
