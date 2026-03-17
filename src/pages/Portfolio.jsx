@@ -64,12 +64,12 @@ export default function Portfolio() {
     );
   }
 
-  const totalValue = balances.SOL.value + balances.USDC.value + balances.USDT.value + (balances.SOF?.value || 0);
+  const totalValue = (balances.SOL?.value || 0) + (balances.USDC?.value || 0) + (balances.USDT?.value || 0) + (balances.SOF?.value || 0);
   const assets = [
-    { symbol: 'SOL', name: 'Solana', balance: balances.SOL.balance, value: balances.SOL.value, price: prices.SOL },
-    { symbol: 'USDC', name: 'USD Coin', balance: balances.USDC.balance, value: balances.USDC.value, price: prices.USDC },
-    { symbol: 'USDT', name: 'Tether', balance: balances.USDT.balance, value: balances.USDT.value, price: prices.USDT },
-    { symbol: 'SOF', name: 'SOFDex', balance: balances.SOF?.balance || 0, value: balances.SOF?.value || 0, price: prices.SOF },
+    { symbol: 'SOL', name: 'Solana', balance: balances.SOL?.balance || 0, value: balances.SOL?.value || 0 },
+    { symbol: 'USDC', name: 'USD Coin', balance: balances.USDC?.balance || 0, value: balances.USDC?.value || 0 },
+    { symbol: 'USDT', name: 'Tether', balance: balances.USDT?.balance || 0, value: balances.USDT?.value || 0 },
+    { symbol: 'SOF', name: 'SOFDex', balance: balances.SOF?.balance || 0, value: balances.SOF?.value || 0 },
   ].filter(a => a.balance > 0);
 
   const btcData = getLiveAsset('BTC');
