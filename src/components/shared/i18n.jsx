@@ -866,7 +866,7 @@ export const translations = {
   },
 
   ru: {
-    nav_home:'Главная', nav_markets:'Рынки', nav_trade:'Торговля', nav_portfolio:'Портфель', nav_more:'Ещё',
+    nav_home:'Главная', nav_markets:'Рынки', nav_trade:'Торговля', nav_portfolio:'Портфель', nav_more:'Ещё', nav_ai:'ИИ',
     menu_exchange:'Биржа', menu_discover:'Обзор', menu_earnSocial:'Заработок & Соцсети', menu_liveFeed:'Прямой Эфир', menu_dao:'DAO', menu_account:'Аккаунт',
     menu_home:'Главная', menu_markets:'Рынки', menu_trade:'Торговля', menu_portfolio:'Портфель',
     menu_news:'Новости', menu_rwaMarkets:'Рынки RWA', menu_realEstate:'Недвижимость', menu_analytics:'Аналитика', menu_launchpad:'Лончпад',
