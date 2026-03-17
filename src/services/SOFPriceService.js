@@ -121,19 +121,17 @@ export function calculateSOFPortfolioValue(sofHolding, currentPrice) {
 
 /**
  * Single source of truth for all SOF prices
- * All components should import and use this
+ * Uses exact Dexscreener pool address as primary (and only) source
  */
 export const SOF_DATA_SOURCE = {
-  name: 'SOF Dedicated DEX Service',
-  primarySource: 'Raydium',
-  fallbackSource: 'Dexscreener',
-  mint: SOF_MINT,
-  note: 'SOF MUST ALWAYS use this service. Never use TradingView or generic market data for SOF.',
+  name: 'SOF Pool-Based DEX Service',
+  primarySource: 'Dexscreener Pool',
+  poolAddress: SOF_POOL_ADDRESS,
+  note: 'SOF MUST ALWAYS use this exact pool. Never use mint-based lookup, TradingView, or generic market data.',
 };
 
 export default {
-  getSOFPriceFromRaydium,
-  getSOFPriceFromDexscreener,
+  getSOFPriceFromPool,
   fetchSOFPrice,
   calculateSwapOutput,
   calculateSOFPortfolioValue,
