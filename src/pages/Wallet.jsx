@@ -121,10 +121,11 @@ export default function WalletPage() {
         <p className="text-sm text-slate-500 text-center mb-8 leading-relaxed">
           Connect your wallet to view balances, send and receive assets across multiple networks.
         </p>
-        <Link to={createPageUrl('WalletConnect')}
+        <button
+          onClick={() => requireWallet()}
           className="w-full max-w-xs py-4 rounded-2xl gradient-teal text-white font-bold text-sm text-center flex items-center justify-center gap-2 shadow-lg shadow-[#00d4aa]/20">
           <Wallet className="w-4 h-4" /> Connect Wallet
-        </Link>
+        </button>
         <div className="mt-6 flex items-start gap-3 p-4 rounded-2xl bg-[#151c2e] border border-[rgba(148,163,184,0.08)] w-full max-w-xs">
           <Shield className="w-4 h-4 text-[#00d4aa] mt-0.5 flex-shrink-0" />
           <p className="text-[11px] text-slate-500 leading-relaxed">SOFDex never stores private keys. All transactions are signed locally in your wallet.</p>
