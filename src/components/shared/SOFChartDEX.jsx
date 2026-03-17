@@ -90,35 +90,24 @@ export default function SOFChartDEX({ timeframe = '1h', height = 300, showVolume
     })();
   }, [timeframe]);
 
-  if (loading || chartLoading) {
+  // ALWAYS SHOW DEXSCREENER EMBED AS FALLBACK
+  // This ensures chart always loads even if API is slow
+  const showEmbed = chartData.length === 0 || loading || chartLoading || chartError || error;
+  
+  if (showEmbed) {
     return (
-      <div 
-        className="w-full bg-[#0f1525] rounded-xl border border-[rgba(148,163,184,0.08)] flex items-center justify-center"
-        style={{ height: `${height}px` }}
-      >
-        <div className="text-sm text-slate-400">Loading SOF chart...</div>
-      </div>
-    );
-  }
-
-  if (chartError || error) {
-    return (
-      <div 
-        className="w-full bg-[#0f1525] rounded-xl border border-[rgba(148,163,184,0.08)] flex items-center justify-center"
-        style={{ height: `${height}px` }}
-      >
-        <div className="text-sm text-red-400">{chartError || error || 'No liquidity data'}</div>
-      </div>
-    );
-  }
-
-  if (chartData.length === 0) {
-    return (
-      <div 
-        className="w-full bg-[#0f1525] rounded-xl border border-[rgba(148,163,184,0.08)] flex items-center justify-center"
-        style={{ height: `${height}px` }}
-      >
-        <div className="text-sm text-slate-400">No chart data available</div>
+      <div className="w-full bg-[#0f1525] rounded-xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
+        {/* Dexscreener Chart Embed - Always Loads */}
+        <iframe
+          src="https://dexscreener.com/solana/4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS?embed=1&trades=0&info=0&chartLeftToolbar=0"
+          style={{
+            width: '100%',
+            height: `${height}px`,
+            border: 'none',
+            borderRadius: '8px',
+          }}
+          title="SOF DEX Chart"
+        />
       </div>
     );
   }
