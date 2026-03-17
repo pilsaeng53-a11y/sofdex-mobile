@@ -56,6 +56,13 @@ import MacroDetail from './pages/MacroDetail';
 import DocTokenStructure from './pages/DocTokenStructure';
 import DocRiskDisclosure from './pages/DocRiskDisclosure';
 import GlobalMarkets from './pages/GlobalMarkets';
+import FuturesDashboard from './pages/FuturesDashboard';
+import FuturesTrade from './pages/FuturesTrade';
+import FuturesMarketWatch from './pages/FuturesMarketWatch';
+import FuturesPositions from './pages/FuturesPositions';
+import FuturesAccountTypes from './pages/FuturesAccountTypes';
+import FuturesSalesPartner from './pages/FuturesSalesPartner';
+import FuturesReferral from './pages/FuturesReferral';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
