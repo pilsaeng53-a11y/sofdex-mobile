@@ -14,47 +14,67 @@ const SOF_POOL_ADDRESS = "4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS";
 const DEXSCREENER_API = "https://api.dexscreener.com/latest";
 
 /**
- * Fetch SOF price directly from pool liquidity data via Dexscreener
+ * Fetch SOF price directly from pool liquidity data via Dexscreener API
  * Uses exact pool address as the single source of truth
- * Returns: { price, change24h, volume24h, liquidity, timestamp, poolAddress }
+ * Actively retrieves live data from the Raydium pool
+ * Returns: { price, change24h, volume24h, liquidity, priceNative, timestamp, poolAddress }
  */
 export async function getSOFPriceFromPool() {
   try {
-    // Fetch pool data directly using pool address
+    // ACTIVE FETCH: Get real-time pool data using exact pool address
     const response = await fetch(
-      `${DEXSCREENER_API}/dex/pairs/solana/${SOF_POOL_ADDRESS}`
+      `${DEXSCREENER_API}/dex/pairs/solana/${SOF_POOL_ADDRESS}`,
+      { 
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: AbortSignal.timeout(8000), // 8s timeout
+      }
     );
     
-    if (!response.ok) throw new Error(`API error: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Dexscreener API error: ${response.status}`);
+    }
     
     const data = await response.json();
-    if (!data.pair) throw new Error('No pool data found');
+    if (!data.pair) {
+      throw new Error('No pool pair data found from Dexscreener');
+    }
 
     const pair = data.pair;
     
-    // Extract price from pool liquidity data
-    const price = parseFloat(pair.priceUsd);
+    // EXTRACT LIVE PRICE from USD value
+    const priceUsd = parseFloat(pair.priceUsd);
+    const priceNative = parseFloat(pair.priceNative);
     
-    // Validate we have a real price
-    if (!price || price <= 0 || isNaN(price)) {
-      throw new Error(`Invalid price from pool: ${price}`);
+    // Validate we have a REAL, NON-ZERO price
+    if (!priceUsd || priceUsd <= 0 || isNaN(priceUsd)) {
+      throw new Error(`Invalid SOF price from Dexscreener: ${priceUsd}`);
     }
 
+    // Extract additional market data
     const change24h = parseFloat(pair.priceChange?.h24) || 0;
     const volume24h = parseFloat(pair.volume?.h24) || 0;
     const liquidity = parseFloat(pair.liquidity?.usd) || 0;
+    const txns24h = pair.txns?.h24 || {};
 
     return {
-      price,
+      price: priceUsd,
+      priceNative: priceNative || priceUsd,
       change24h,
       volume24h,
       liquidity,
-      source: 'dexscreener_pool',
+      transactions: {
+        buy24h: txns24h.buys || 0,
+        sell24h: txns24h.sells || 0,
+      },
+      source: 'dexscreener_live',
       poolAddress: SOF_POOL_ADDRESS,
+      chainId: 'solana',
       timestamp: Date.now(),
+      apiStatus: 'success',
     };
   } catch (err) {
-    console.error('[SOF] Pool fetch failed:', err.message);
+    console.error('[SOF] Dexscreener API fetch failed:', err.message);
     return null;
   }
 }
