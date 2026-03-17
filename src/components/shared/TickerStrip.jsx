@@ -1,6 +1,7 @@
 import React from 'react';
 import { ALL_MARKETS, formatPrice, formatChange } from './MarketData';
 import { useMarketData } from './MarketDataProvider';
+import AnimatedPrice from './AnimatedPrice';
 
 // Show top 8 most important assets in the ticker
 const TICKER_SYMBOLS = ['BTC', 'ETH', 'SOL', 'JUP', 'RNDR', 'BONK', 'TSLA-T', 'GOLD-T'];
@@ -32,12 +33,20 @@ export default function TickerStrip() {
         <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#0a0e1a] to-transparent z-10 pointer-events-none" />
         <div className="flex ticker-scroll whitespace-nowrap py-1.5">
           {display.map((m, i) => (
-            <div key={i} className="flex items-center gap-1.5 px-4 text-xs">
-              <span className="text-slate-500 font-semibold tracking-wide">{m.symbol}</span>
-              <span className="text-slate-200 font-bold tabular-nums">${formatPrice(m.price)}</span>
-              <span className={`font-semibold tabular-nums ${m.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-                {formatChange(m.change)}
-              </span>
+            <div key={i} className="flex items-center gap-1.5 px-4 text-xs group/tick">
+              <span className="text-slate-500 font-semibold tracking-wide group-hover/tick:text-slate-300 fluid-fast">{m.symbol}</span>
+              <AnimatedPrice
+                value={m.price}
+                prefix="$"
+                formatter={formatPrice}
+                className="text-slate-200 font-bold num-highlight"
+              />
+              <AnimatedPrice
+                value={m.change}
+                formatter={v => formatChange(v)}
+                className={`font-semibold num-highlight ${m.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}
+                flashOnly
+              />
               <span className="text-[rgba(148,163,184,0.12)] ml-1 text-[10px]">·</span>
             </div>
           ))}
