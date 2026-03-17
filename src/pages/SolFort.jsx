@@ -40,7 +40,7 @@ const FOUNDATION_URL = 'https://www.solfort.foundation';
 export default function SolFort() {
   const [copied, setCopied] = useState(false);
   const [activeSection, setActiveSection] = useState('about');
-  const { sofPrice, change24h, volume24h, loading, error } = useSOFPrice();
+  const { sofPrice, change24h, volume24h, liquidity, loading, error } = useSOFPrice();
 
   const handleCopy = () => {
     navigator.clipboard.writeText(CONTRACT).then(() => {
