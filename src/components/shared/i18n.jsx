@@ -19,11 +19,35 @@ export const LANGUAGES = [
 
 export const translations = {
   en: {
-    // Nav
+    // Bottom Nav
     nav_home:'Home', nav_markets:'Markets', nav_trade:'Trade', nav_portfolio:'Portfolio', nav_more:'More',
+    nav_ai: 'AI', nav_activity: 'Activity',
     // Menu sections
-    menu_exchange:'Exchange', menu_discover:'Discover', menu_earnSocial:'Earn & Social', menu_liveFeed:'Live Feed', menu_dao:'DAO', menu_account:'Account',
-    menu_home:'Home', menu_markets:'Markets', menu_trade:'Trade', menu_portfolio:'Portfolio',
+    menu_futures: 'Futures', menu_trading: 'Trading', menu_aiTools: 'AI & Tools', menu_community: 'Community', menu_portfolio_hub: 'Portfolio & Wallet',
+    menu_news_section: 'News & Analysis', menu_launchpad_section: 'Launchpad & RWA', menu_liveFeed: 'Live Feed', menu_dao: 'DAO',
+    menu_account: 'Account', menu_partnerHub: 'Partner Hub',
+    // Individual menu items
+    menu_home:'Home', menu_markets:'Markets', menu_trade:'Trade', menu_portfolio:'Portfolio', menu_wallet: 'Wallet',
+    menu_futuresDashboard: 'Futures Dashboard', menu_futuresTrade: 'Futures Trading', menu_futuresMarketWatch: 'Market Watch',
+    menu_futuresPositions: 'Positions', menu_globalMarkets: 'Global Markets', menu_copyTrading: 'Copy Trading',
+    menu_marketHeatmap: 'Market Heatmap', menu_swap: 'Swap',
+    menu_aiIntelligence: 'AI Intelligence', menu_aiWealthManager: 'AI Wealth Manager', menu_strategyMkt: 'Strategy Marketplace',
+    menu_strategyVaults: 'Strategy Vaults', menu_strategyFunds: 'Strategy ETFs', menu_assetDiscovery: 'Asset Discovery',
+    menu_tradingTools: 'Trading Tools', menu_tradingFeed: 'Trading Feed', menu_discussions: 'Discussions', menu_traders: 'Traders',
+    menu_leaderboard: 'Leaderboard', menu_rewards: 'Rewards', menu_uniPortfolio: 'Universal Portfolio', menu_myStrategyInv: 'My Investments',
+    menu_earnStaking: 'Earn / Staking', menu_referralHub: 'Referral Hub', menu_news: 'News', menu_analytics: 'Analytics',
+    menu_aiIntelHub: 'AI Intelligence Hub', menu_whatsNew: 'What\'s New', menu_alerts: 'Alerts', menu_launchpad: 'Launchpad',
+    menu_predictionMarket: 'Prediction Market', menu_rwaMarkets: 'RWA Markets', menu_realEstate: 'Real Estate',
+    menu_liquidationFeed: 'Liquidation Feed', menu_whaleTracker: 'Whale Tracker', menu_fundingRates: 'Funding Rates',
+    menu_openInterest: 'Open Interest', menu_announcements: 'Announcements', menu_solfortPage: 'SolFort Hub',
+    menu_institutional: 'Institutional', menu_reputationScore: 'Reputation Score',
+    // Partner & governance sections
+    menu_partnerHubMain: 'Partner Dashboard', menu_downlineTree: 'Downline Tree', menu_commissionDist: 'Commission',
+    menu_rankProgress: 'Rank Progress', menu_teamLeaderboard: 'Team Leaderboard', menu_regionalDist: 'Regional',
+    menu_myTeam: 'My Team', menu_applyDistributor: 'Apply as Distributor', menu_partnerLocked: 'Partner features locked',
+    menu_partnerPending: 'Application pending review', menu_governance: 'Governance',
+    // Account menu
+    menu_settings: 'Settings', menu_support: 'Support', menu_notifications: 'Notifications', menu_activity: 'Activity',
     menu_news:'News', menu_rwaMarkets:'RWA Markets', menu_realEstate:'Real Estate', menu_analytics:'Analytics', menu_launchpad:'Launchpad',
     menu_earnStaking:'Earn / Staking', menu_socialTrading:'Social Trading', menu_copyTrading:'Copy Trading', menu_referralHub:'Referral Hub',
     menu_liquidationFeed:'Liquidation Feed', menu_whaleTracker:'Whale Tracker', menu_governance:'Governance', menu_announcements:'Announcements',
