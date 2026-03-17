@@ -191,21 +191,9 @@ export default function WalletPage() {
         </div>
       </div>
 
-      {/* Tab selector */}
-      <div className="flex gap-1.5 px-4 mb-4 overflow-x-auto no-scrollbar">
-        {[
-          { id: 'overview', label: 'Overview' },
-          { id: 'send',     label: 'Send',    icon: Send },
-          { id: 'receive',  label: 'Receive', icon: Download },
-          { id: 'history',  label: 'History', icon: Clock },
-        ].map(({ id, label, icon: Icon }) => (
-          <button key={id} onClick={() => setTab(id)}
-            className={`flex-shrink-0 flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-              tab === id ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20' : 'text-slate-500 border border-transparent'
-            }`}>
-            {Icon && <Icon className="w-3.5 h-3.5" />} {label}
-          </button>
-        ))}
+      {/* New Transaction System */}
+      <div className="px-4">
+        <WalletTabs walletAddress={walletAddress} balances={preparedBalances} />
       </div>
 
       {/* ── OVERVIEW ────────────────────────────────────────────── */}
