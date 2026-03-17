@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
 import { TrendingUp, Plus, DollarSign, Users, Award, Wallet, ArrowUpRight } from 'lucide-react';
+import { useWallet } from '../components/shared/WalletContext';
+import WalletGatedButton from '../components/shared/WalletGatedButton';
 
 export default function StrategyCreator() {
+  const { isConnected, requireWallet } = useWallet();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [formData, setFormData] = useState({
     name: '',
@@ -13,7 +16,7 @@ export default function StrategyCreator() {
     pricing_1month: '79.99',
   });
 
-  // Example creator data
+  // Example creator data (only shown when wallet connected)
   const creatorData = {
     id: 'creator-1',
     name: 'Sarah Patel',
@@ -39,6 +42,50 @@ export default function StrategyCreator() {
     // Simulated creation
     alert('Strategy published! (Demo mode)');
   };
+
+  // Disconnected state
+  if (!isConnected) {
+    return (
+      <div className="min-h-screen px-4 pt-4 pb-8 flex items-center justify-center">
+        <div className="w-full max-w-sm text-center space-y-6">
+          {/* Icon */}
+          <div className="flex justify-center">
+            <div className="w-16 h-16 rounded-2xl bg-[#00d4aa]/10 border border-[#00d4aa]/20 flex items-center justify-center">
+              <TrendingUp className="w-8 h-8 text-[#00d4aa]" />
+            </div>
+          </div>
+
+          {/* Header */}
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-2">My Strategies</h1>
+            <p className="text-sm text-slate-400">Connect your wallet to view and manage your strategies.</p>
+          </div>
+
+          {/* Empty State Message */}
+          <div className="glass-card rounded-2xl p-4 border border-[rgba(148,163,184,0.08)] space-y-3">
+            <p className="text-sm text-slate-300">
+              Access your strategy dashboard, view earnings, create new strategies, and manage subscriptions.
+            </p>
+            <div className="h-px bg-[rgba(148,163,184,0.08)]" />
+            <p className="text-xs text-slate-500">
+              Your strategies, earnings, and subscriber data will appear here once connected.
+            </p>
+          </div>
+
+          {/* Connect Button */}
+          <button
+            onClick={() => requireWallet()}
+            className="w-full px-4 py-3 bg-gradient-to-r from-[#00d4aa] to-[#06b6d4] text-[#05070d] font-bold rounded-xl hover:shadow-lg hover:shadow-[#00d4aa]/20 transition-all"
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Wallet className="w-4 h-4" />
+              Connect Wallet
+            </div>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-4 pt-4 pb-8">
