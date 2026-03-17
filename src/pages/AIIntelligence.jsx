@@ -482,7 +482,7 @@ export default function AIIntelligence() {
                       </div>
                     </div>
                   </div>
-                  <ReasoningCard factors={sig.factors} risk={sig.risk} />
+                  <ReasoningCard factors={sig.factors} risk={sig.risk} t={t} />
                 </div>
               );
             })}
