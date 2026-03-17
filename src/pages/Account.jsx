@@ -151,16 +151,16 @@ export default function Account() {
       <div className="glass-card rounded-2xl p-4 flex items-start gap-3 border border-[rgba(148,163,184,0.06)]">
         <AlertCircle className="w-4 h-4 text-[#00d4aa] flex-shrink-0 mt-0.5" />
         <div>
-          <p className="text-[10px] font-semibold text-white mb-1">Security Notice</p>
+          <p className="text-[10px] font-semibold text-white mb-1">{t('profile_security')}</p>
           <p className="text-[11px] text-slate-400 leading-relaxed">
-            SOFDex never stores or has access to your private keys. All transactions are signed locally in your wallet.
+            {t('account_security_notice')}
           </p>
         </div>
       </div>
 
       {/* Network Info */}
       <div className="glass-card rounded-2xl p-4 space-y-3">
-        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Network Status</p>
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">{t('wallet_network_status')}</p>
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-400">Solana (Active)</span>
