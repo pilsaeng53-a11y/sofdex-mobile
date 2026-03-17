@@ -7,11 +7,22 @@
  * SINGLE SOURCE OF TRUTH: Exact Dexscreener Pool Address
  * Pool: 4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS
  * All SOF features sync from this ONE pool
+ * 
+ * RESILIENCE: Includes retry logic and last-known-price fallback
+ * - Failed fetches don't clear valid cached prices
+ * - Auto-retry failed requests
+ * - Keep price visible during temporary API failures
  */
 
 // EXACT POOL ADDRESS - PRIMARY AND ONLY SOURCE
 const SOF_POOL_ADDRESS = "4EXEQGBHukoZxKadSabQ7tYiABYRiBGpMWtC3edhMZsS";
 const DEXSCREENER_API = "https://api.dexscreener.com/latest";
+
+// Resilience settings
+let lastValidPrice = null; // Store last successful price for fallback
+let failureCount = 0; // Track consecutive failures for retry logic
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second between retries
 
 /**
  * Fetch SOF price directly from pool liquidity data via Dexscreener API
