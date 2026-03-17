@@ -129,8 +129,8 @@ export default function Account() {
             <button className="w-full glass-card rounded-2xl p-3 flex items-center gap-3 hover:border-[#00d4aa]/30 transition-all">
               <Wallet className="w-4 h-4 text-[#00d4aa] flex-shrink-0" />
               <div className="text-left">
-                <p className="text-xs font-semibold text-white">Wallet</p>
-                <p className="text-[10px] text-slate-500">Send, receive & manage assets</p>
+                <p className="text-xs font-semibold text-white">{t('menu_wallet')}</p>
+                <p className="text-[10px] text-slate-500">{t('wallet_description')}</p>
               </div>
             </button>
           </Link>
