@@ -87,13 +87,14 @@ export const SYMBOL_MAP = {
   // RWA Equities
   'RE-NYC':     'TVC:CSUSHPINSA',
   'RE-DXB':     'TVC:CSUSHPINSA',
-  // Liquid commodity-style RWA — all mapped to market price feeds (NEVER market cap)
-  'GOLD-T':     'OANDA:XAUUSD',      // Spot gold — market price
-  'SILVER-T':   'OANDA:XAGUSD',      // Spot silver — market price
-  'CRUDE-T':    'NYMEX:CL1!',        // WTI crude oil futures — market price
-  'SP500-T':    'SP:SPX',            // S&P 500 index — market price
-  'TBILL':      'TVC:US10Y',         // US 10Y yield — market price
-  'EURO-B':     'TVC:EURUSD',        // EUR/USD FX rate — market price
+  // Liquid commodity-style RWA — TradingView symbols that match Yahoo Finance prices exactly
+  // Yahoo Finance feed: GC=F, SI=F, CL=F, ^GSPC, ^TNX, EURUSD=X
+  'GOLD-T':     'TVC:GOLD',          // Spot gold XAU/USD — matches GC=F (COMEX)
+  'SILVER-T':   'TVC:SILVER',        // Spot silver XAG/USD — matches SI=F (COMEX)
+  'CRUDE-T':    'TVC:USOIL',         // WTI crude oil — matches CL=F
+  'SP500-T':    'SP:SPX',            // S&P 500 index — matches ^GSPC
+  'TBILL':      'TVC:US10Y',         // US 10Y Treasury yield — matches ^TNX
+  'EURO-B':     'TVC:EURUSD',        // EUR/USD FX rate — matches EURUSD=X
   // Landmark Real Estate — use benchmark index proxies
   'RE-MHT-1':   'TVC:CSUSHPINSA',   // Case-Shiller US Home Price Index (closest public RE bench)
   'RE-DXB-1':   null,                // No public TV symbol for Dubai; chart uses internal series
