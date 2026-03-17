@@ -49,6 +49,7 @@ import GovernanceDetail from './pages/GovernanceDetail';
 import FundingRates from './pages/FundingRates';
 import OpenInterest from './pages/OpenInterest';
 import DocLegalDocuments from './pages/DocLegalDocuments';
+import MacroDetail from './pages/MacroDetail';
 import DocTokenStructure from './pages/DocTokenStructure';
 import DocRiskDisclosure from './pages/DocRiskDisclosure';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -150,6 +151,7 @@ const AuthenticatedApp = () => {
       <Route path="/StrategyIndexFunds" element={<LayoutWrapper currentPageName="StrategyIndexFunds"><StrategyIndexFunds /></LayoutWrapper>} />
       <Route path="/IndexFundDetail" element={<LayoutWrapper currentPageName="IndexFundDetail"><IndexFundDetail /></LayoutWrapper>} />
       <Route path="/MyStrategyInvestments" element={<LayoutWrapper currentPageName="MyStrategyInvestments"><MyStrategyInvestments /></LayoutWrapper>} />
+      <Route path="/MacroDetail" element={<LayoutWrapper currentPageName="MacroDetail"><MacroDetail /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
