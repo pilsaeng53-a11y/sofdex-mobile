@@ -6,10 +6,11 @@ import { Bell, Search, Wallet, Menu } from 'lucide-react';
 import BottomNav from './components/shared/BottomNav';
 import TickerStrip from './components/shared/TickerStrip';
 import AppMenu from './components/shared/AppMenu';
-import { MarketDataProvider } from './components/shared/MarketDataProvider';
+import { MarketDataProvider, useMarketData } from './components/shared/MarketDataProvider';
 import { LanguageProvider } from './components/shared/LanguageContext';
 import { UserTypeProvider } from './components/shared/UserTypeContext';
 import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
+import AnimatedBackground from './components/shared/AnimatedBackground';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
@@ -18,9 +19,17 @@ function LayoutInner({ children, currentPageName }) {
   const { t } = useLang();
   const showShell = !NO_SHELL_PAGES.includes(currentPageName);
 
+  // Derive market sentiment from live BTC change
+  const { getLiveAsset } = useMarketData();
+  const btc = getLiveAsset('BTC');
+  const sentiment = btc.available
+    ? btc.change > 1.5 ? 'bullish' : btc.change < -1.5 ? 'bearish' : 'neutral'
+    : 'neutral';
+
   return (
     <MarketDataProvider>
       <div className="min-h-screen bg-[#0a0e1a] text-slate-100 max-w-lg mx-auto relative">
+        {showShell && <AnimatedBackground direction={sentiment} />}
         {showShell && (
           <>
             <AppMenu isOpen={menuOpen} onClose={() => setMenuOpen(false)} currentPage={currentPageName} />
