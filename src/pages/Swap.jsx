@@ -167,9 +167,9 @@ export default function Swap() {
   const getPrice = useCallback((asset) => {
     if (STABLE_SYMBOLS.includes(asset.symbol)) return 1;
     
-    // SOF: ALWAYS use dedicated DEX pool price (never null)
+    // SOF: TEMPORARY FIXED PRICE $4.00 (no live fetching)
     if (asset.symbol === 'SOF') {
-      return sofData.sofPrice && sofData.sofPrice > 0 ? sofData.sofPrice : 0.0245;
+      return 4.00;
     }
     
     // All other assets: use chart price as master source
@@ -177,7 +177,7 @@ export default function Swap() {
     const price = chartPrice.price ?? (getMarketBySymbol(asset.symbol)?.price ?? null);
     // Never return 0 or undefined — only valid price or null
     return price && price > 0 ? price : null;
-  }, [fromAsset.symbol, toAsset.symbol, sofData.sofPrice, fromChartPrice, toChartPrice]);
+  }, [fromAsset.symbol, toAsset.symbol, fromChartPrice, toChartPrice]);
 
   const fromPrice = getPrice(fromAsset);
   const toPrice = getPrice(toAsset);
