@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Home, BarChart3, TrendingUp, Wallet, Brain } from 'lucide-react';
+import { Home, BarChart3, TrendingUp, Wallet, Brain, History } from 'lucide-react';
 import { useLang } from './LanguageContext';
 
 const TAB_KEYS = [
