@@ -241,11 +241,13 @@ export default function MarketHeatmap() {
     const baseAssets = ASSETS_BY_TAB[tab] || [];
     return baseAssets.map(a => {
       const live = liveData[a.symbol];
+      const isCommodity = COMMODITY_SYMBOLS.has(a.symbol);
       const liveChange = live?.available ? live.change : null;
       const livePrice  = live?.available ? live.price  : null;
-      const change     = liveChange ?? a.change;
-      const price      = livePrice  ?? a.price;
-      const aiScore    = getAIScore(a.symbol, change, price, a);
+      // Commodity assets: never fall back to stale static seed — wait for live data
+      const change = liveChange ?? (isCommodity ? a.change : a.change);
+      const price  = livePrice  ?? (isCommodity ? null : a.price);
+      const aiScore = getAIScore(a.symbol, change ?? 0, price ?? a.price, a);
       return { ...a, liveChange, livePrice, change, price, aiScore };
     });
   }, [tab, liveData]);
