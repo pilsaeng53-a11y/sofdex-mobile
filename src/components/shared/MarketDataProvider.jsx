@@ -93,6 +93,46 @@ export function MarketDataProvider({ children }) {
     }
   }
 
+  // ── Commodity price fetch via stooq.com (free, no key required) ─────────
+  // Stooq returns a small CSV: Date,Time,Open,High,Low,Close,Volume
+  // We parse Close as the current price and derive change from previous close.
+  async function fetchCommodityPrices() {
+    if (!alive.current) return;
+    const entries = Object.entries(COMMODITY_CONFIG);
+    const results = await Promise.all(
+      entries.map(([, cfg]) =>
+        fetch(`https://stooq.com/q/l/?s=${cfg.stooq}&f=sd2t2ohlcv&h&e=csv`)
+          .then(r => r.text())
+          .catch(() => null)
+      )
+    );
+    if (!alive.current) return;
+
+    const patch = {};
+    entries.forEach(([sofSym, cfg], i) => {
+      const text = results[i];
+      if (!text) return;
+      // CSV lines: header + data row
+      const lines = text.trim().split('\n');
+      if (lines.length < 2) return;
+      const cols = lines[1].split(',');
+      // Format: Symbol,Date,Time,Open,High,Low,Close,Volume
+      const close = parseFloat(cols[6]);
+      const open  = parseFloat(cols[3]);
+      if (!close || isNaN(close)) return;
+
+      // 24h change: (close - open) / open * 100
+      const change = open && !isNaN(open) ? ((close - open) / open) * 100 : 0;
+
+      patch[sofSym] = { available: true, price: close, change };
+      prevCommodity.current[sofSym] = close;
+    });
+
+    if (Object.keys(patch).length > 0) {
+      setLiveData(prev => ({ ...prev, ...patch }));
+    }
+  }
+
   // ── Binance REST klines for sparklines ────────────────────────────────────
   async function fetchSparklines() {
     if (!alive.current) return;
