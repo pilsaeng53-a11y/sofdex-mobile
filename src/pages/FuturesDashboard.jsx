@@ -72,6 +72,18 @@ export default function FuturesDashboard() {
             <span className="text-xs font-semibold text-white">Referral</span>
           </button>
         </Link>
+        <Link to={createPageUrl('PartnerHubNew')}>
+          <button className="w-full glass-card hover:border-[#8b5cf6]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
+            <TrendingUp className="w-5 h-5 text-[#8b5cf6]" />
+            <span className="text-xs font-semibold text-white">Partner Hub</span>
+          </button>
+        </Link>
+        <Link to={createPageUrl('SalesDashboard')}>
+          <button className="w-full glass-card hover:border-[#f59e0b]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
+            <ArrowUpRight className="w-5 h-5 text-[#f59e0b]" />
+            <span className="text-xs font-semibold text-white">Sales Dashboard</span>
+          </button>
+        </Link>
       </div>
 
       {/* Hot Instruments */}
