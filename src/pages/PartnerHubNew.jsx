@@ -8,11 +8,11 @@ import {
 } from 'lucide-react';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
-function StatCard({ label, value, sub, color = '#00d4aa', icon: Icon }) {
+function StatCard({ label, value, sub, color = '#00d4aa', icon: IconComp }) {
   return (
     <div className="glass-card rounded-xl p-4 space-y-1">
       <div className="flex items-center gap-2">
-        {Icon && <Icon className="w-3.5 h-3.5 flex-shrink-0" style={{ color }} />}
+        {IconComp && <IconComp className="w-3.5 h-3.5 flex-shrink-0" style={{ color }} />}
         <p className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">{label}</p>
       </div>
       <p className="text-xl font-bold" style={{ color }}>{value}</p>
