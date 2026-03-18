@@ -278,6 +278,12 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
             )}
           </div>
 
+          {/* SOF Sales Partner — fully separate from Partner Hub */}
+          <div>
+            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">SOF Sales</p>
+            <NavLink item={SOF_SALES_PARTNER_ITEM} />
+          </div>
+
           {/* Governance expandable */}
           <div>
             <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_dao')}</p>
