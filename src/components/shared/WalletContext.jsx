@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { isMobile, triggerMobileDeepLink } from '@/services/MobileWalletDeepLinks';
 
 const WalletContext = createContext(null);
 
@@ -74,7 +75,11 @@ export function WalletProvider({ children }) {
     const provider = wallets[key];
 
     if (!provider) {
-      // Wallet not installed — throw error without redirect
+      // On mobile: trigger deep link instead of error
+      if (isMobile()) {
+        triggerMobileDeepLink(key);
+        throw new Error(`Opening ${name} app… If it doesn't open, please install the ${name} mobile app.`);
+      }
       throw new Error(`${name} wallet is not installed. Please install the ${name} extension and try again.`);
     }
 
