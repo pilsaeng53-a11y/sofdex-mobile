@@ -47,7 +47,7 @@ export default function FuturesDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-3 gap-2">
         <Link to={createPageUrl('FuturesTrade')}>
           <button className="w-full glass-card hover:border-[#00d4aa]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <Zap className="w-5 h-5 text-[#00d4aa]" />
