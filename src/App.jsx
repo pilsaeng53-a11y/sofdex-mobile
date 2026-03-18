@@ -63,6 +63,8 @@ import FuturesPositions from './pages/FuturesPositions';
 import FuturesAccountTypes from './pages/FuturesAccountTypes';
 import FuturesSalesPartner from './pages/FuturesSalesPartner';
 import FuturesReferral from './pages/FuturesReferral';
+import PartnerHubNew from './pages/PartnerHubNew';
+import SalesDashboard from './pages/SalesDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -129,6 +131,8 @@ const AuthenticatedApp = () => {
       <Route path="/FuturesAccountTypes" element={<LayoutWrapper currentPageName="FuturesAccountTypes"><FuturesAccountTypes /></LayoutWrapper>} />
       <Route path="/FuturesSalesPartner" element={<LayoutWrapper currentPageName="FuturesSalesPartner"><FuturesSalesPartner /></LayoutWrapper>} />
       <Route path="/FuturesReferral" element={<LayoutWrapper currentPageName="FuturesReferral"><FuturesReferral /></LayoutWrapper>} />
+      <Route path="/PartnerHubNew" element={<LayoutWrapper currentPageName="PartnerHubNew"><PartnerHubNew /></LayoutWrapper>} />
+      <Route path="/SalesDashboard" element={<LayoutWrapper currentPageName="SalesDashboard"><SalesDashboard /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/BeginnerDashboard" element={<LayoutWrapper currentPageName="BeginnerDashboard"><BeginnerDashboard /></LayoutWrapper>} />
