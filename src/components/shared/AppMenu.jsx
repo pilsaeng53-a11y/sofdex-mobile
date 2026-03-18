@@ -128,6 +128,9 @@ const PARTNER_FULL_ITEMS = [
   { labelKey: 'menu_myTeam',          page: 'MyTeam',             icon: Users },
 ];
 
+// SOF Sales Partner — separate nav entry (not in PARTNER_FULL_ITEMS)
+const SOF_SALES_PARTNER_ITEM = { label: 'SOF Sales Partner', page: 'SOFSalesPartnerDashboard', icon: Briefcase };
+
 const ACCOUNT_LINK_KEYS = [
   { labelKey: 'menu_account',       page: 'Account',       icon: User },
   { labelKey: 'menu_activity',      page: 'Activity',      icon: Activity },
