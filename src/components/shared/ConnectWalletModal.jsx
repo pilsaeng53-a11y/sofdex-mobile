@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Wallet, X, Shield, ExternalLink, CheckCircle2, AlertCircle, Download } from 'lucide-react';
+import { Wallet, X, Shield, ExternalLink, CheckCircle2, AlertCircle, Download, Smartphone } from 'lucide-react';
 import { useWallet } from './WalletContext';
 import { AnimatePresence, motion } from 'framer-motion';
+import { isMobile, getMobileDeepLink } from '@/services/MobileWalletDeepLinks';
 
 const WALLETS = [
   {
@@ -223,6 +224,17 @@ export default function ConnectWalletModal() {
                   );
                 })}
               </div>
+
+              {/* Mobile banner */}
+              {isMobile() && (
+                <div className="flex items-start gap-2.5 p-3 rounded-xl mb-3"
+                  style={{ background: 'rgba(0,212,170,0.05)', border: '1px solid rgba(0,212,170,0.15)' }}>
+                  <Smartphone className="w-3.5 h-3.5 text-[#00d4aa] mt-0.5 flex-shrink-0" />
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    On mobile, tap a wallet to open its app. If not installed, you'll be redirected to download it.
+                  </p>
+                </div>
+              )}
 
               {/* Security note */}
               <div className="flex items-start gap-2.5 p-3.5 rounded-xl"
