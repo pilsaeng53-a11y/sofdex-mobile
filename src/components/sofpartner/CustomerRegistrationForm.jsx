@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { calcSOFQuantity, isValidSolanaAddress, formatNumber } from './SOFQuantityCalc';
 import { AlertCircle, CheckCircle, Send, Calculator, Info } from 'lucide-react';
+import { useLang } from '@/components/shared/LanguageContext';
 
 const inputCls = "w-full bg-[#0f1525] border border-[rgba(148,163,184,0.1)] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:border-[#00d4aa]/40 outline-none transition-all";
 const labelCls = "text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5";
@@ -15,39 +16,38 @@ const EMPTY_FORM = {
 };
 
 export default function CustomerRegistrationForm({ partnerWallet, onSubmitSuccess }) {
+  const { t } = useLang();
   const [form, setForm] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
-  const [result, setResult] = useState(null); // { type: 'success'|'error', msg }
+  const [result, setResult] = useState(null);
   const [touched, setTouched] = useState({});
 
   const set = (field, val) => {
     setForm(f => ({ ...f, [field]: val }));
-    setTouched(t => ({ ...t, [field]: true }));
+    setTouched(tt => ({ ...tt, [field]: true }));
   };
 
-  // ── Reactive calculation ──────────────────────────────────────────────────
   const calc = useMemo(() => {
     return calcSOFQuantity(form.purchase_amount, form.sof_unit_price, form.promotion_percent);
   }, [form.purchase_amount, form.sof_unit_price, form.promotion_percent]);
 
-  // ── Validation ────────────────────────────────────────────────────────────
   const errors = useMemo(() => {
     const e = {};
-    if (touched.customer_name && !form.customer_name.trim()) e.customer_name = 'Required';
+    if (touched.customer_name && !form.customer_name.trim()) e.customer_name = t('sof_reg_required');
     if (touched.customer_wallet) {
-      if (!form.customer_wallet.trim()) e.customer_wallet = 'Required';
-      else if (!isValidSolanaAddress(form.customer_wallet)) e.customer_wallet = 'Invalid Solana address format';
+      if (!form.customer_wallet.trim()) e.customer_wallet = t('sof_reg_required');
+      else if (!isValidSolanaAddress(form.customer_wallet)) e.customer_wallet = t('sof_reg_invalid_wallet');
     }
     if (touched.purchase_amount && (isNaN(parseFloat(form.purchase_amount)) || parseFloat(form.purchase_amount) <= 0))
-      e.purchase_amount = 'Must be a positive number';
+      e.purchase_amount = t('sof_reg_positive_num');
     if (touched.sof_unit_price && (isNaN(parseFloat(form.sof_unit_price)) || parseFloat(form.sof_unit_price) <= 0))
-      e.sof_unit_price = 'Must be a positive number';
+      e.sof_unit_price = t('sof_reg_positive_num');
     if (touched.promotion_percent) {
       const pp = parseFloat(form.promotion_percent);
-      if (isNaN(pp) || pp < 0 || pp > 100) e.promotion_percent = 'Must be 0–100';
+      if (isNaN(pp) || pp < 0 || pp > 100) e.promotion_percent = t('sof_reg_promo_range');
     }
     return e;
-  }, [form, touched]);
+  }, [form, touched, t]);
 
   const isFormReady =
     form.customer_name.trim() &&
@@ -58,10 +58,8 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
     parseFloat(form.promotion_percent) <= 100 &&
     calc.isValid;
 
-  // ── Submit ────────────────────────────────────────────────────────────────
   async function handleSubmit(e) {
     e.preventDefault();
-    // Touch all fields to trigger validation
     setTouched({ customer_name: true, customer_wallet: true, purchase_amount: true, sof_unit_price: true, promotion_percent: true });
     if (!isFormReady) return;
 
@@ -80,12 +78,12 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         submitted_at: new Date().toISOString(),
       });
 
-      setResult({ type: 'success', msg: 'Submission sent to Foundation. Status: Processing.' });
+      setResult({ type: 'success', msg: t('sof_reg_success') });
       setForm(EMPTY_FORM);
       setTouched({});
       if (onSubmitSuccess) onSubmitSuccess();
     } catch (err) {
-      setResult({ type: 'error', msg: 'Submission failed. Please try again.' });
+      setResult({ type: 'error', msg: t('sof_reg_error') });
     }
     setSubmitting(false);
   }
@@ -94,45 +92,43 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Customer Info */}
       <div className="glass-card rounded-2xl p-5 space-y-4">
-        <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">Customer Information</p>
+        <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">{t('sof_reg_customer_info')}</p>
 
         <div>
-          <label className={labelCls}>Customer Name *</label>
+          <label className={labelCls}>{t('sof_reg_customer_name')}</label>
           <input
             value={form.customer_name}
             onChange={e => set('customer_name', e.target.value)}
-            placeholder="Full name of the customer"
+            placeholder={t('sof_reg_customer_name_ph')}
             className={inputCls}
           />
           {errors.customer_name && <p className="text-[9px] text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.customer_name}</p>}
         </div>
 
         <div>
-          <label className={labelCls}>Customer Wallet Address *</label>
+          <label className={labelCls}>{t('sof_reg_wallet')}</label>
           <input
             value={form.customer_wallet}
             onChange={e => set('customer_wallet', e.target.value)}
-            placeholder="Solana wallet address (base58)"
+            placeholder={t('sof_reg_wallet_ph')}
             className={`${inputCls} font-mono`}
           />
           {errors.customer_wallet && <p className="text-[9px] text-red-400 mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{errors.customer_wallet}</p>}
           {!errors.customer_wallet && form.customer_wallet && isValidSolanaAddress(form.customer_wallet) && (
-            <p className="text-[9px] text-green-400 mt-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" />Valid address</p>
+            <p className="text-[9px] text-green-400 mt-1 flex items-center gap-1"><CheckCircle className="w-3 h-3" />{t('sof_reg_valid_addr')}</p>
           )}
         </div>
       </div>
 
       {/* Purchase Details */}
       <div className="glass-card rounded-2xl p-5 space-y-4">
-        <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">Purchase Details</p>
+        <p className="text-xs font-bold text-slate-300 uppercase tracking-wider">{t('sof_reg_purchase_details')}</p>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className={labelCls}>Purchase Amount (USDT) *</label>
+            <label className={labelCls}>{t('sof_reg_purchase_amount')}</label>
             <input
-              type="number"
-              min="0"
-              step="any"
+              type="number" min="0" step="any"
               value={form.purchase_amount}
               onChange={e => set('purchase_amount', e.target.value)}
               placeholder="e.g. 1000"
@@ -142,11 +138,9 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
           </div>
 
           <div>
-            <label className={labelCls}>SOF Unit Price (USD) *</label>
+            <label className={labelCls}>{t('sof_reg_sof_price')}</label>
             <input
-              type="number"
-              min="0"
-              step="any"
+              type="number" min="0" step="any"
               value={form.sof_unit_price}
               onChange={e => set('sof_unit_price', e.target.value)}
               placeholder="e.g. 4.00"
@@ -157,13 +151,10 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         </div>
 
         <div>
-          <label className={labelCls}>Promotion Percent (%)</label>
+          <label className={labelCls}>{t('sof_reg_promo')}</label>
           <div className="flex items-center gap-3">
             <input
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
+              type="number" min="0" max="100" step="0.1"
               value={form.promotion_percent}
               onChange={e => set('promotion_percent', e.target.value)}
               placeholder="0"
@@ -179,17 +170,17 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
       <div className="rounded-2xl p-5 space-y-3" style={{ background: 'rgba(0,212,170,0.04)', border: '1px solid rgba(0,212,170,0.15)' }}>
         <div className="flex items-center gap-2">
           <Calculator className="w-4 h-4 text-[#00d4aa]" />
-          <p className="text-xs font-bold text-[#00d4aa] uppercase tracking-wider">Auto-Calculated SOF Quantity</p>
+          <p className="text-xs font-bold text-[#00d4aa] uppercase tracking-wider">{t('sof_reg_auto_calc')}</p>
         </div>
 
         {calc.isValid ? (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-400">Effective SOF Price</span>
+              <span className="text-[10px] text-slate-400">{t('sof_reg_effective_price')}</span>
               <span className="text-xs font-bold text-slate-200">${formatNumber(calc.effectivePrice, 4)}</span>
             </div>
             <div className="flex items-center justify-between border-t border-[rgba(0,212,170,0.1)] pt-2">
-              <span className="text-sm font-bold text-white">Final SOF Quantity</span>
+              <span className="text-sm font-bold text-white">{t('sof_reg_final_qty')}</span>
               <span className="text-xl font-bold text-[#00d4aa]">{formatNumber(calc.sofQuantity, 4)} SOF</span>
             </div>
             <p className="text-[8px] text-slate-500">
@@ -199,7 +190,7 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         ) : (
           <div className="flex items-center gap-2 text-[10px] text-slate-500">
             <Info className="w-3.5 h-3.5" />
-            {calc.errorMsg || 'Enter purchase amount, SOF price, and promotion to see calculated quantity.'}
+            {calc.errorMsg || t('sof_reg_enter_details')}
           </div>
         )}
       </div>
@@ -224,12 +215,10 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         style={{ background: isFormReady ? 'linear-gradient(135deg, #00d4aa, #3b82f6)' : 'rgba(148,163,184,0.1)' }}
       >
         <Send className="w-4 h-4" />
-        {submitting ? 'Sending to Foundation…' : 'Send to Foundation'}
+        {submitting ? t('sof_reg_sending') : t('sof_reg_send')}
       </button>
 
-      <p className="text-[8px] text-slate-600 text-center">
-        Submission will be sent to the SolFort Foundation for processing. Default status: Processing.
-      </p>
+      <p className="text-[8px] text-slate-600 text-center">{t('sof_reg_footer')}</p>
     </form>
   );
 }

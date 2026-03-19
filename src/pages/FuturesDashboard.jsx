@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { ArrowRight, Zap, TrendingUp, Users, Gift, Rocket, Lock, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { ArrowRight, Zap, TrendingUp, Users, Gift, Rocket, Lock, ArrowUpRight } from 'lucide-react';
 import { HOT_INSTRUMENTS, BONUS_PROMOTIONS, ACCOUNT_TYPES } from '@/data/futuresTradingAssets';
+import { useLang } from '@/components/shared/LanguageContext';
 
 export default function FuturesDashboard() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const { t } = useLang();
 
   const categories = [
-    { id: 'all', label: 'All Markets', icon: '📊' },
-    { id: 'forex', label: 'Forex', icon: '💱' },
-    { id: 'commodities', label: 'Commodities', icon: '⛽' },
-    { id: 'indices', label: 'Indices', icon: '📈' },
-    { id: 'stocks', label: 'Stocks', icon: '🏢' },
-    { id: 'crypto', label: 'Crypto Perps', icon: '₿' },
+    { id: 'all',         label: t('futures_cat_all'),         icon: '📊' },
+    { id: 'forex',       label: t('futures_cat_forex'),       icon: '💱' },
+    { id: 'commodities', label: t('futures_cat_commodities'), icon: '⛽' },
+    { id: 'indices',     label: t('futures_cat_indices'),     icon: '📈' },
+    { id: 'stocks',      label: t('futures_cat_stocks'),      icon: '🏢' },
+    { id: 'crypto',      label: t('futures_cat_crypto'),      icon: '₿' },
   ];
 
   return (
@@ -21,11 +23,9 @@ export default function FuturesDashboard() {
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-[#00d4aa] via-[#06b6d4] to-[#3b82f6] bg-clip-text text-transparent">
-          Futures Trading
+          {t('futures_page_title')}
         </h1>
-        <p className="text-sm text-slate-400">
-          Professional MT5-style trading with broker-grade instruments
-        </p>
+        <p className="text-sm text-slate-400">{t('futures_page_subtitle')}</p>
       </div>
 
       {/* Promotion Banner */}
@@ -34,13 +34,11 @@ export default function FuturesDashboard() {
           <Gift className="w-5 h-5 text-[#00d4aa]" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-white mb-1">50% Welcome Bonus</h3>
-          <p className="text-xs text-slate-400 mb-3">
-            Deposit $100+ and receive a 50% trading bonus (up to $5,000)
-          </p>
+          <h3 className="text-sm font-bold text-white mb-1">{t('futures_welcome_bonus_title')}</h3>
+          <p className="text-xs text-slate-400 mb-3">{t('futures_welcome_bonus_desc')}</p>
           <Link to={createPageUrl('FuturesTrade')}>
             <button className="w-full bg-[#00d4aa]/20 hover:bg-[#00d4aa]/30 border border-[#00d4aa]/30 text-[#00d4aa] text-xs font-bold py-2 rounded-lg transition-all">
-              Start Trading Now →
+              {t('futures_start_now')} →
             </button>
           </Link>
         </div>
@@ -51,37 +49,37 @@ export default function FuturesDashboard() {
         <Link to={createPageUrl('FuturesTrade')}>
           <button className="w-full glass-card hover:border-[#00d4aa]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <Zap className="w-5 h-5 text-[#00d4aa]" />
-            <span className="text-xs font-semibold text-white">Trade</span>
+            <span className="text-xs font-semibold text-white">{t('menu_futuresTrade')}</span>
           </button>
         </Link>
         <Link to={createPageUrl('FuturesAccountTypes')}>
           <button className="w-full glass-card hover:border-[#00d4aa]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <Rocket className="w-5 h-5 text-[#00d4aa]" />
-            <span className="text-xs font-semibold text-white">Account Types</span>
+            <span className="text-xs font-semibold text-white">{t('futures_account_types')}</span>
           </button>
         </Link>
         <Link to={createPageUrl('FuturesSalesPartner')}>
           <button className="w-full glass-card hover:border-[#00d4aa]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <Users className="w-5 h-5 text-[#00d4aa]" />
-            <span className="text-xs font-semibold text-white">Sales Partner</span>
+            <span className="text-xs font-semibold text-white">{t('futures_sales_partner')}</span>
           </button>
         </Link>
         <Link to={createPageUrl('FuturesReferral')}>
           <button className="w-full glass-card hover:border-[#00d4aa]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <Gift className="w-5 h-5 text-[#00d4aa]" />
-            <span className="text-xs font-semibold text-white">Referral</span>
+            <span className="text-xs font-semibold text-white">{t('futures_referral')}</span>
           </button>
         </Link>
         <Link to={createPageUrl('PartnerHubNew')}>
           <button className="w-full glass-card hover:border-[#8b5cf6]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <TrendingUp className="w-5 h-5 text-[#8b5cf6]" />
-            <span className="text-xs font-semibold text-white">Partner Hub</span>
+            <span className="text-xs font-semibold text-white">{t('menu_partnerHub')}</span>
           </button>
         </Link>
         <Link to={createPageUrl('SalesDashboard')}>
           <button className="w-full glass-card hover:border-[#f59e0b]/30 rounded-xl p-4 flex flex-col items-center gap-2 transition-all hover:bg-[#151c2e]">
             <ArrowUpRight className="w-5 h-5 text-[#f59e0b]" />
-            <span className="text-xs font-semibold text-white">Sales Dashboard</span>
+            <span className="text-xs font-semibold text-white">{t('futures_sales_dashboard')}</span>
           </button>
         </Link>
       </div>
@@ -89,9 +87,9 @@ export default function FuturesDashboard() {
       {/* Hot Instruments */}
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">🔥 Hot Instruments</h3>
+          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">🔥 {t('futures_hot_instruments')}</h3>
           <Link to={createPageUrl('FuturesMarketWatch')}>
-            <button className="text-[10px] text-[#00d4aa] hover:text-[#00d4aa]/80 font-semibold">See All →</button>
+            <button className="text-[10px] text-[#00d4aa] hover:text-[#00d4aa]/80 font-semibold">{t('futures_see_all')} →</button>
           </Link>
         </div>
 
@@ -100,7 +98,7 @@ export default function FuturesDashboard() {
             <div key={instr.symbol} className="p-3 flex items-center justify-between hover:bg-[#151c2e] transition-all">
               <div>
                 <p className="text-xs font-bold text-white">{instr.symbol}</p>
-                <p className="text-[9px] text-slate-500">Vol: ${(instr.volume / 1000000).toFixed(1)}M</p>
+                <p className="text-[9px] text-slate-500">{t('vol_label')}: ${(instr.volume / 1000000).toFixed(1)}M</p>
               </div>
               <div className="text-right">
                 <p className={`text-xs font-bold ${instr.change > 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -114,8 +112,7 @@ export default function FuturesDashboard() {
 
       {/* Market Categories */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Trading Categories</h3>
-
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">{t('futures_trading_categories')}</h3>
         <div className="grid grid-cols-2 gap-2">
           {categories.map((cat) => (
             <button
@@ -136,14 +133,10 @@ export default function FuturesDashboard() {
 
       {/* Account Types Overview */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Account Types Comparison</h3>
-
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">{t('futures_account_comparison')}</h3>
         <div className="space-y-2">
           {Object.values(ACCOUNT_TYPES).map((account) => (
-            <div
-              key={account.id}
-              className={`rounded-xl p-3 glass-card border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all`}
-            >
+            <div key={account.id} className="rounded-xl p-3 glass-card border border-[rgba(148,163,184,0.08)] hover:border-[#00d4aa]/20 transition-all">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -152,8 +145,8 @@ export default function FuturesDashboard() {
                   </div>
                   <p className="text-[9px] text-slate-500 mb-2">{account.description}</p>
                   <div className="grid grid-cols-2 gap-1 text-[8px] text-slate-400">
-                    <span>Spread: {(account.features.spread_multiplier * 100).toFixed(0)}%</span>
-                    <span>Leverage: 1:{account.features.max_leverage}</span>
+                    <span>{t('futures_spread')}: {(account.features.spread_multiplier * 100).toFixed(0)}%</span>
+                    <span>{t('futures_leverage')}: 1:{account.features.max_leverage}</span>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-slate-500 flex-shrink-0" />
@@ -161,18 +154,16 @@ export default function FuturesDashboard() {
             </div>
           ))}
         </div>
-
         <Link to={createPageUrl('FuturesAccountTypes')}>
           <button className="w-full bg-[#00d4aa]/20 hover:bg-[#00d4aa]/30 border border-[#00d4aa]/30 text-[#00d4aa] text-xs font-bold py-2.5 rounded-lg transition-all">
-            View Full Comparison
+            {t('futures_view_full_comparison')}
           </button>
         </Link>
       </div>
 
       {/* Featured Promotions */}
       <div className="space-y-3">
-        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">Active Promotions</h3>
-
+        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider px-1">{t('futures_active_promotions')}</h3>
         <div className="space-y-2">
           {BONUS_PROMOTIONS.map((promo) => (
             <div key={promo.id} className="rounded-xl p-3 glass-card border border-[#8b5cf6]/20 bg-gradient-to-r from-[#8b5cf6]/10 to-transparent">
@@ -192,15 +183,15 @@ export default function FuturesDashboard() {
       {/* Stats Section */}
       <div className="grid grid-cols-3 gap-2">
         <div className="glass-card rounded-lg p-3 text-center">
-          <p className="text-[10px] text-slate-500 mb-1">Trading Pairs</p>
+          <p className="text-[10px] text-slate-500 mb-1">{t('futures_trading_pairs')}</p>
           <p className="text-xl font-bold text-[#00d4aa]">50+</p>
         </div>
         <div className="glass-card rounded-lg p-3 text-center">
-          <p className="text-[10px] text-slate-500 mb-1">Max Leverage</p>
+          <p className="text-[10px] text-slate-500 mb-1">{t('futures_max_leverage')}</p>
           <p className="text-xl font-bold text-[#00d4aa]">1:100</p>
         </div>
         <div className="glass-card rounded-lg p-3 text-center">
-          <p className="text-[10px] text-slate-500 mb-1">Daily Volume</p>
+          <p className="text-[10px] text-slate-500 mb-1">{t('futures_daily_volume')}</p>
           <p className="text-xl font-bold text-[#00d4aa]">$2.5B</p>
         </div>
       </div>
@@ -211,8 +202,8 @@ export default function FuturesDashboard() {
           <div className="flex items-start gap-2">
             <Lock className="w-4 h-4 text-[#00d4aa] flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-semibold text-white">Secure & Regulated</p>
-              <p className="text-[9px] text-slate-400">Professional-grade trading infrastructure</p>
+              <p className="text-xs font-semibold text-white">{t('futures_secure')}</p>
+              <p className="text-[9px] text-slate-400">{t('futures_secure_desc')}</p>
             </div>
           </div>
         </div>
@@ -220,8 +211,8 @@ export default function FuturesDashboard() {
           <div className="flex items-start gap-2">
             <TrendingUp className="w-4 h-4 text-[#00d4aa] flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-xs font-semibold text-white">Real-Time Execution</p>
-              <p className="text-[9px] text-slate-400">Instant order processing with competitive spreads</p>
+              <p className="text-xs font-semibold text-white">{t('futures_realtime')}</p>
+              <p className="text-[9px] text-slate-400">{t('futures_realtime_desc')}</p>
             </div>
           </div>
         </div>
