@@ -91,15 +91,9 @@ const DYNAMIC_FIELDS = {
   ],
 };
 
-const STATUS_CONFIG = {
-  Processing: { icon: Clock,    color: 'text-amber-400',  bg: 'bg-amber-500/10',  border: 'border-amber-500/20',  label: 'Processing' },
-  Approved:   { icon: Check,    color: 'text-emerald-400',bg: 'bg-emerald-500/10',border: 'border-emerald-500/20',label: 'Approved' },
-  Rejected:   { icon: XCircle,  color: 'text-red-400',    bg: 'bg-red-500/10',    border: 'border-red-500/20',    label: 'Rejected' },
-};
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function StepIndicator({ current, total, labels }) {
+function StepIndicator({ current, labels }) {
   return (
     <div className="px-4 py-4">
       <div className="flex items-center justify-between mb-2">
@@ -134,61 +128,21 @@ function FormInput({ field, value, onChange }) {
   const base = "w-full bg-[#0d1220] border border-[rgba(148,163,184,0.12)] rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#8b5cf6]/40 transition-colors";
   if (field.type === 'textarea') {
     return (
-      <textarea
-        value={value || ''}
-        onChange={e => onChange(field.key, e.target.value)}
-        placeholder={field.placeholder}
-        rows={3}
-        className={`${base} resize-none`}
-      />
+      <textarea value={value || ''} onChange={e => onChange(field.key, e.target.value)}
+        placeholder={field.placeholder} rows={3} className={`${base} resize-none`} />
     );
   }
   if (field.type === 'select') {
     return (
-      <select
-        value={value || ''}
-        onChange={e => onChange(field.key, e.target.value)}
-        className={`${base} appearance-none`}
-      >
+      <select value={value || ''} onChange={e => onChange(field.key, e.target.value)} className={`${base} appearance-none`}>
         <option value="" disabled>Select...</option>
         {field.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
       </select>
     );
   }
   return (
-    <input
-      type={field.type === 'number' ? 'number' : 'text'}
-      value={value || ''}
-      onChange={e => onChange(field.key, e.target.value)}
-      placeholder={field.placeholder}
-      className={base}
-    />
-  );
-}
-
-function SubmissionCard({ sub }) {
-  const cfg = STATUS_CONFIG[sub.status] || STATUS_CONFIG.Processing;
-  const Icon = cfg.icon;
-  const subcat = sub.rwa_subcategory ? ` · ${sub.rwa_subcategory}` : '';
-  return (
-    <div className="glass-card rounded-2xl p-4 border border-[rgba(148,163,184,0.06)]">
-      <div className="flex items-start justify-between mb-2">
-        <div>
-          <p className="text-sm font-bold text-white">{sub.fields?.token_name || sub.fields?.coin_name || sub.fields?.company_name || sub.fields?.artwork_name || sub.fields?.property_type || sub.asset_class}</p>
-          <p className="text-[10px] text-slate-500">{sub.asset_class}{subcat}</p>
-        </div>
-        <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl border ${cfg.bg} ${cfg.border}`}>
-          <Icon className={`w-3 h-3 ${cfg.color}`} />
-          <span className={`text-[10px] font-bold ${cfg.color}`}>{cfg.label}</span>
-        </div>
-      </div>
-      <p className="text-[10px] text-slate-600">
-        Submitted {sub.submitted_at ? new Date(sub.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-      </p>
-      {sub.notes && (
-        <p className="text-[10px] text-slate-400 mt-1.5 border-t border-[rgba(148,163,184,0.06)] pt-1.5">{sub.notes}</p>
-      )}
-    </div>
+    <input type={field.type === 'number' ? 'number' : 'text'} value={value || ''}
+      onChange={e => onChange(field.key, e.target.value)} placeholder={field.placeholder} className={base} />
   );
 }
 
@@ -196,7 +150,6 @@ function SubmissionCard({ sub }) {
 
 export default function AssetOnboarding() {
   const { isConnected, address, requireWallet } = useWallet();
-  const [view, setView] = useState('form'); // 'form' | 'submissions'
   const [step, setStep] = useState(0);
   const [contact, setContact] = useState({ name: '', email: '', telegram: '' });
   const [assetClass, setAssetClass] = useState('');
@@ -204,31 +157,23 @@ export default function AssetOnboarding() {
   const [fields, setFields] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [submissions, setSubmissions] = useState([]);
-  const [loadingSubs, setLoadingSubs] = useState(false);
 
-  // Effective step count: skip step 2 (subcategory) if not RWA
-  const totalSteps = assetClass === 'RWA' ? 5 : 4;
   const effectiveSteps = assetClass === 'RWA' ? STEPS : ['Contact', 'Asset Class', 'Details', 'Review'];
-
   const dynamicKey = assetClass === 'RWA' ? subcategory : assetClass;
   const dynamicFields = DYNAMIC_FIELDS[dynamicKey] || [];
-
   const setField = (key, val) => setFields(prev => ({ ...prev, [key]: val }));
 
-  const loadSubmissions = async () => {
-    if (!isConnected || !address) return;
-    setLoadingSubs(true);
-    try {
-      const data = await base44.entities.AssetRegistration.filter({ wallet_address: address });
-      setSubmissions(data || []);
-    } catch (_) {}
-    setLoadingSubs(false);
+  const isLastStep = (assetClass === 'RWA' && step === 4) || (assetClass !== 'RWA' && step === 3);
+
+  const canNext = () => {
+    if (step === 0) return contact.name && contact.email;
+    if (step === 1) return !!assetClass;
+    if (step === 2 && assetClass === 'RWA') return !!subcategory;
+    return true;
   };
 
-  useEffect(() => {
-    if (view === 'submissions') loadSubmissions();
-  }, [view, isConnected, address]);
+  const next = () => { if (canNext()) setStep(s => s + 1); };
+  const back = () => setStep(s => Math.max(0, s - 1));
 
   const handleSubmit = async () => {
     if (!isConnected) { requireWallet(); return; }
@@ -256,27 +201,11 @@ export default function AssetOnboarding() {
     setSubmitted(false);
   };
 
-  // ── Determine real step index (skipping step 2 when not RWA)
-  const getRealStep = (s) => {
-    if (assetClass !== 'RWA' && s >= 2) return s + 1; // skip step 2
-    return s;
-  };
-
-  const canNext = () => {
-    if (step === 0) return contact.name && contact.email;
-    if (step === 1) return !!assetClass;
-    if (step === 2 && assetClass === 'RWA') return !!subcategory;
-    return true;
-  };
-
-  const next = () => { if (canNext()) setStep(s => s + 1); };
-  const back = () => setStep(s => Math.max(0, s - 1));
-
   // ── Success screen
   if (submitted) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <div className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center mb-5 animate-[checkBounce_0.5s_ease_forwards]">
+        <div className="w-20 h-20 rounded-full bg-emerald-500/15 border border-emerald-500/25 flex items-center justify-center mb-5">
           <Check className="w-10 h-10 text-emerald-400" />
         </div>
         <h2 className="text-2xl font-black text-white mb-2">Submitted!</h2>
@@ -289,59 +218,13 @@ export default function AssetOnboarding() {
           <button onClick={reset} className="px-5 py-2.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.1)] text-sm text-slate-300 hover:text-white transition-all">
             Submit Another
           </button>
-          <button onClick={() => { setView('submissions'); setSubmitted(false); }} className="px-5 py-2.5 rounded-xl bg-[#8b5cf6]/15 border border-[#8b5cf6]/25 text-sm text-[#8b5cf6] font-semibold hover:bg-[#8b5cf6]/20 transition-all">
+          <a href="/MySubmissions" className="px-5 py-2.5 rounded-xl bg-[#8b5cf6]/15 border border-[#8b5cf6]/25 text-sm text-[#8b5cf6] font-semibold hover:bg-[#8b5cf6]/20 transition-all">
             View My Submissions
-          </button>
+          </a>
         </div>
       </div>
     );
   }
-
-  // ── Submissions view
-  if (view === 'submissions') {
-    return (
-      <div className="min-h-screen">
-        <div className="px-4 pt-4 pb-2 flex items-center gap-3">
-          <button onClick={() => setView('form')} className="w-8 h-8 rounded-xl bg-[#151c2e] flex items-center justify-center border border-[rgba(148,163,184,0.08)]">
-            <ChevronLeft className="w-4 h-4 text-slate-400" />
-          </button>
-          <div>
-            <h1 className="text-lg font-bold text-white">My Submissions</h1>
-            <p className="text-[10px] text-slate-500">Track your asset registration requests</p>
-          </div>
-        </div>
-
-        {!isConnected ? (
-          <div className="px-4 mt-8 text-center">
-            <Wallet className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <p className="text-sm text-slate-400 mb-4">Connect your wallet to view submissions</p>
-            <button onClick={() => requireWallet()} className="px-5 py-2.5 rounded-xl bg-[#8b5cf6]/15 border border-[#8b5cf6]/25 text-sm font-semibold text-[#8b5cf6]">
-              Connect Wallet
-            </button>
-          </div>
-        ) : loadingSubs ? (
-          <div className="px-4 mt-8 flex justify-center">
-            <div className="w-6 h-6 spin-glow" />
-          </div>
-        ) : submissions.length === 0 ? (
-          <div className="px-4 mt-8 text-center">
-            <FileText className="w-10 h-10 text-slate-600 mx-auto mb-3" />
-            <p className="text-sm text-slate-400 mb-4">No submissions yet</p>
-            <button onClick={() => setView('form')} className="px-5 py-2.5 rounded-xl bg-[#8b5cf6]/15 border border-[#8b5cf6]/25 text-sm font-semibold text-[#8b5cf6]">
-              Register an Asset
-            </button>
-          </div>
-        ) : (
-          <div className="px-4 pb-8 space-y-3 mt-2">
-            {submissions.map(s => <SubmissionCard key={s.id} sub={s} />)}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // ── Multi-step form
-  const realStep = getRealStep(step);
 
   return (
     <div className="min-h-screen">
@@ -352,24 +235,22 @@ export default function AssetOnboarding() {
             <h1 className="text-xl font-bold text-white">Register My Asset</h1>
             <p className="text-xs text-slate-500">Submit to the SolFort Foundation for review & listing</p>
           </div>
-          <button
-            onClick={() => setView('submissions')}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.1)] text-xs text-slate-400 hover:text-white transition-all"
-          >
+          <a href="/MySubmissions"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.1)] text-xs text-slate-400 hover:text-white transition-all">
             <Eye className="w-3.5 h-3.5" />
             My Submissions
-          </button>
+          </a>
         </div>
       </div>
 
       {/* Step indicator */}
-      <StepIndicator current={step} total={effectiveSteps.length} labels={effectiveSteps} />
+      <StepIndicator current={step} labels={effectiveSteps} />
 
       {/* Card */}
       <div className="px-4 pb-8">
         <div className="glass-card rounded-2xl border border-[rgba(148,163,184,0.08)] overflow-hidden">
 
-          {/* ── Step 0: Contact ───────────────────────────────────── */}
+          {/* Step 0: Contact */}
           {step === 0 && (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">
@@ -383,15 +264,15 @@ export default function AssetOnboarding() {
               </div>
               <div className="space-y-3">
                 {[
-                  { key: 'name',     label: 'Full Name',       icon: User,          ph: 'Your full name' },
-                  { key: 'email',    label: 'Email Address',   icon: Mail,          ph: 'your@email.com' },
-                  { key: 'telegram', label: 'Telegram ID',     icon: MessageCircle, ph: '@username' },
+                  { key: 'name',     label: 'Full Name',     icon: User,          ph: 'Your full name',  required: true },
+                  { key: 'email',    label: 'Email Address', icon: Mail,          ph: 'your@email.com',  required: true },
+                  { key: 'telegram', label: 'Telegram ID',   icon: MessageCircle, ph: '@username',       required: false },
                 ].map(f => {
                   const Icon = f.icon;
                   return (
                     <div key={f.key}>
                       <label className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                        <Icon className="w-3 h-3" /> {f.label} {f.key !== 'telegram' && <span className="text-red-400">*</span>}
+                        <Icon className="w-3 h-3" /> {f.label} {f.required && <span className="text-red-400">*</span>}
                       </label>
                       <input
                         type={f.key === 'email' ? 'email' : 'text'}
@@ -407,7 +288,7 @@ export default function AssetOnboarding() {
             </div>
           )}
 
-          {/* ── Step 1: Asset Class ───────────────────────────────── */}
+          {/* Step 1: Asset Class */}
           {step === 1 && (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">
@@ -424,13 +305,10 @@ export default function AssetOnboarding() {
                   const Icon = ac.icon;
                   const sel = assetClass === ac.id;
                   return (
-                    <button
-                      key={ac.id}
-                      onClick={() => { setAssetClass(ac.id); setSubcategory(''); setFields({}); }}
+                    <button key={ac.id} onClick={() => { setAssetClass(ac.id); setSubcategory(''); setFields({}); }}
                       className={`w-full flex items-center gap-4 p-4 rounded-2xl border transition-all text-left ${
                         sel ? 'border-[#8b5cf6]/40 bg-[#8b5cf6]/10' : 'border-[rgba(148,163,184,0.08)] bg-[#0d1220] hover:border-[rgba(148,163,184,0.15)]'
-                      }`}
-                    >
+                      }`}>
                       <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: `${ac.color}18` }}>
                         <Icon className="w-5 h-5" style={{ color: ac.color }} />
                       </div>
@@ -448,7 +326,7 @@ export default function AssetOnboarding() {
             </div>
           )}
 
-          {/* ── Step 2: RWA Subcategory (RWA only) ───────────────── */}
+          {/* Step 2: RWA Subcategory */}
           {step === 2 && assetClass === 'RWA' && (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">
@@ -465,13 +343,10 @@ export default function AssetOnboarding() {
                   const Icon = sc.icon;
                   const sel = subcategory === sc.id;
                   return (
-                    <button
-                      key={sc.id}
-                      onClick={() => { setSubcategory(sc.id); setFields({}); }}
+                    <button key={sc.id} onClick={() => { setSubcategory(sc.id); setFields({}); }}
                       className={`flex flex-col items-start p-3.5 rounded-2xl border transition-all text-left ${
                         sel ? 'border-[#8b5cf6]/40 bg-[#8b5cf6]/10' : 'border-[rgba(148,163,184,0.08)] bg-[#0d1220] hover:border-[rgba(148,163,184,0.15)]'
-                      }`}
-                    >
+                      }`}>
                       <div className="w-8 h-8 rounded-xl flex items-center justify-center mb-2" style={{ background: `${sc.color}18` }}>
                         <Icon className="w-4 h-4" style={{ color: sc.color }} />
                       </div>
@@ -484,7 +359,7 @@ export default function AssetOnboarding() {
             </div>
           )}
 
-          {/* ── Step 3 (or 2 for non-RWA): Dynamic Fields ────────── */}
+          {/* Dynamic Fields step */}
           {((step === 3 && assetClass === 'RWA') || (step === 2 && assetClass !== 'RWA')) && (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">
@@ -503,15 +378,12 @@ export default function AssetOnboarding() {
                     <FormInput field={f} value={fields[f.key]} onChange={setField} />
                   </div>
                 ))}
-                {dynamicFields.length === 0 && (
-                  <p className="text-sm text-slate-500 text-center py-4">No additional fields required.</p>
-                )}
               </div>
             </div>
           )}
 
-          {/* ── Final Step: Review & Submit ───────────────────────── */}
-          {((step === 4 && assetClass === 'RWA') || (step === 3 && assetClass !== 'RWA')) && (
+          {/* Review & Submit */}
+          {isLastStep && (
             <div className="p-5">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-8 h-8 rounded-xl bg-emerald-500/15 flex items-center justify-center">
@@ -524,43 +396,36 @@ export default function AssetOnboarding() {
               </div>
 
               <div className="space-y-3 mb-5">
-                {/* Contact summary */}
                 <div className="bg-[#0d1220] rounded-xl p-3.5 border border-[rgba(148,163,184,0.08)]">
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Contact</p>
-                  <div className="space-y-1">
-                    {[['Name', contact.name], ['Email', contact.email], ['Telegram', contact.telegram || '—']].map(([k, v]) => (
-                      <div key={k} className="flex items-center justify-between">
-                        <span className="text-[11px] text-slate-500">{k}</span>
-                        <span className="text-[11px] text-white font-medium">{v}</span>
-                      </div>
-                    ))}
-                  </div>
+                  {[['Name', contact.name], ['Email', contact.email], ['Telegram', contact.telegram || '—']].map(([k, v]) => (
+                    <div key={k} className="flex items-center justify-between py-0.5">
+                      <span className="text-[11px] text-slate-500">{k}</span>
+                      <span className="text-[11px] text-white font-medium">{v}</span>
+                    </div>
+                  ))}
                 </div>
-                {/* Asset summary */}
                 <div className="bg-[#0d1220] rounded-xl p-3.5 border border-[rgba(148,163,184,0.08)]">
                   <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2">Asset</p>
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[11px] text-slate-500">Class</span>
-                      <span className="text-[11px] text-white font-medium">{assetClass}</span>
-                    </div>
-                    {subcategory && (
-                      <div className="flex items-center justify-between">
-                        <span className="text-[11px] text-slate-500">Category</span>
-                        <span className="text-[11px] text-white font-medium">{subcategory}</span>
-                      </div>
-                    )}
-                    {Object.entries(fields).filter(([, v]) => v).map(([k, v]) => (
-                      <div key={k} className="flex items-start justify-between gap-4">
-                        <span className="text-[11px] text-slate-500 capitalize flex-shrink-0">{k.replace(/_/g, ' ')}</span>
-                        <span className="text-[11px] text-white font-medium text-right line-clamp-1">{String(v)}</span>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between py-0.5">
+                    <span className="text-[11px] text-slate-500">Class</span>
+                    <span className="text-[11px] text-white font-medium">{assetClass}</span>
                   </div>
+                  {subcategory && (
+                    <div className="flex items-center justify-between py-0.5">
+                      <span className="text-[11px] text-slate-500">Category</span>
+                      <span className="text-[11px] text-white font-medium">{subcategory}</span>
+                    </div>
+                  )}
+                  {Object.entries(fields).filter(([, v]) => v).map(([k, v]) => (
+                    <div key={k} className="flex items-start justify-between gap-4 py-0.5">
+                      <span className="text-[11px] text-slate-500 capitalize flex-shrink-0">{k.replace(/_/g, ' ')}</span>
+                      <span className="text-[11px] text-white font-medium text-right line-clamp-1">{String(v)}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Wallet gate */}
               {!isConnected && (
                 <div className="flex items-center gap-2.5 p-3.5 rounded-xl bg-amber-500/8 border border-amber-500/20 mb-4">
                   <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0" />
@@ -568,41 +433,26 @@ export default function AssetOnboarding() {
                 </div>
               )}
 
-              <button
-                onClick={handleSubmit}
-                disabled={submitting}
+              <button onClick={handleSubmit} disabled={submitting}
                 className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl font-bold text-sm text-white transition-all disabled:opacity-60"
-                style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }}
-              >
-                {submitting ? (
-                  <div className="w-4 h-4 spin-glow" />
-                ) : (
-                  <>
-                    <Send className="w-4 h-4" />
-                    Submit to Foundation
-                  </>
-                )}
+                style={{ background: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }}>
+                {submitting ? <div className="w-4 h-4 spin-glow" /> : <><Send className="w-4 h-4" /> Submit to Foundation</>}
               </button>
               <p className="text-[9px] text-slate-600 text-center mt-2">Review takes 3–5 business days. You'll be notified via email & Telegram.</p>
             </div>
           )}
 
-          {/* ── Navigation bar ────────────────────────────────────── */}
+          {/* Navigation bar */}
           <div className="px-5 pb-5 flex items-center justify-between gap-3">
             {step > 0 ? (
               <button onClick={back} className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#151c2e] border border-[rgba(148,163,184,0.1)] text-sm text-slate-400 hover:text-white transition-all">
                 <ChevronLeft className="w-4 h-4" /> Back
               </button>
             ) : <div />}
-
-            {/* Don't show Next on last step (it has its own submit) */}
-            {!((step === 4 && assetClass === 'RWA') || (step === 3 && assetClass !== 'RWA')) && (
-              <button
-                onClick={next}
-                disabled={!canNext()}
+            {!isLastStep && (
+              <button onClick={next} disabled={!canNext()}
                 className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-40"
-                style={{ background: canNext() ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : '#1e2a42' }}
-              >
+                style={{ background: canNext() ? 'linear-gradient(135deg, #8b5cf6, #6d28d9)' : '#1e2a42' }}>
                 Continue <ChevronRight className="w-4 h-4" />
               </button>
             )}
