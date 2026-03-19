@@ -9,7 +9,7 @@ import {
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
   Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User, Globe,
-  TrendingDown, Briefcase
+  TrendingDown, Briefcase, Plus
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
@@ -86,9 +86,14 @@ const NAV_SECTIONS = [
     items: [
       { labelKey: 'menu_launchpad',        page: 'Launchpad',       icon: Rocket },
       { labelKey: 'menu_predictionMarket', page: 'PredictionMarket',icon: BarChart2 },
+    ],
+  },
+  {
+    label: 'RWA',
+    items: [
       { labelKey: 'menu_rwaMarkets',       page: 'RWAExplore',      icon: Building2 },
       { labelKey: 'menu_realEstate',       page: 'RealEstate',      icon: MapPin },
-      { label: 'Register My Asset',        page: 'AssetOnboarding', icon: Plus },
+      { label: 'Register My Asset',        page: 'AssetOnboarding', icon: Plus, highlight: true },
     ],
   },
   {
