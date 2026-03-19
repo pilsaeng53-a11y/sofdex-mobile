@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { DEV_MODE } from './devConfig';
 
 // User types: 'beginner' | 'trader' | 'investor' | 'partner'
 // Partner status: 'none' | 'pending' | 'approved'
@@ -54,8 +55,9 @@ export function UserTypeProvider({ children }) {
     userType: status === 'approved' ? 'partner' : prev.userType,
   }));
 
-  const isPartnerApproved = state.partnerStatus === 'approved';
-  const isPartnerPending = state.partnerStatus === 'pending';
+  // DEV_MODE: treat as fully approved partner
+  const isPartnerApproved = DEV_MODE || state.partnerStatus === 'approved';
+  const isPartnerPending = !DEV_MODE && state.partnerStatus === 'pending';
 
   return (
     <UserTypeContext.Provider value={{
