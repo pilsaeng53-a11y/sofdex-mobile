@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '@/components/shared/WalletContext';
 import { base44 } from '@/api/base44Client';
+import { DEV_MODE, DEV_WALLET, DEV_PARTNER_NODE } from '@/components/shared/devConfig';
 import { FEE_POLICY, validatePartnerRates } from '@/services/FeeEngine';
 import {
   Users, TrendingUp, DollarSign, ChevronRight, ChevronDown,
@@ -76,23 +77,29 @@ export default function PartnerHubNew() {
   const [withdrawing, setWithdrawing] = useState(false);
 
   useEffect(() => {
+    if (DEV_MODE) {
+      // Dev override: inject mock partner node and skip DB lookup
+      setMyNode(DEV_PARTNER_NODE);
+      setLoading(false);
+      loadPartnerData(true);
+      return;
+    }
     if (!isConnected || !address) { setLoading(false); return; }
     loadPartnerData();
   }, [isConnected, address]);
 
-  async function loadPartnerData() {
+  async function loadPartnerData(devOverride = false) {
     setLoading(true);
+    const effectiveAddress = devOverride ? DEV_WALLET : address;
     try {
       const [nodes, accrualsData] = await Promise.all([
-        base44.entities.PartnerNode.filter({ user_id: address }),
-        base44.entities.FeeAccrual.filter({ recipient_id: address }, '-created_date', 50),
+        base44.entities.PartnerNode.filter({ user_id: effectiveAddress }),
+        base44.entities.FeeAccrual.filter({ recipient_id: effectiveAddress }, '-created_date', 50),
       ]);
       if (nodes.length > 0) {
         const node = nodes[0];
-        setMyNode(node);
-        // Load children
-        const childNodes = await base44.entities.PartnerNode.filter({ parent_id: address });
-        // Attach children for tree view
+        if (!devOverride) setMyNode(node);
+        const childNodes = await base44.entities.PartnerNode.filter({ parent_id: effectiveAddress });
         const childrenWithGrandkids = await Promise.all(
           childNodes.map(async (c) => {
             const grandkids = await base44.entities.PartnerNode.filter({ parent_id: c.user_id });
@@ -160,32 +167,32 @@ export default function PartnerHubNew() {
     }
   }
 
-  // ─── Not connected ─────────────────────────────────────────────────────────
-  if (!isConnected) {
-    return (
-      <div className="px-4 py-10 max-w-lg mx-auto text-center space-y-4">
-        <Shield className="w-12 h-12 text-[#00d4aa] mx-auto" />
-        <h2 className="text-xl font-bold text-white">Partner Hub</h2>
-        <p className="text-sm text-slate-400">Connect your wallet to access the Partner Hub</p>
-        <button onClick={() => requireWallet()} className="btn-solana px-6 py-3 text-sm font-bold rounded-xl">
-          Connect Wallet
-        </button>
-      </div>
-    );
-  }
-
-  // ─── Not a partner yet ─────────────────────────────────────────────────────
-  if (!loading && !myNode) {
-    return (
-      <div className="px-4 py-10 max-w-lg mx-auto text-center space-y-4">
-        <Users className="w-12 h-12 text-[#8b5cf6] mx-auto" />
-        <h2 className="text-xl font-bold text-white">Not a Partner Yet</h2>
-        <p className="text-sm text-slate-400">Apply via the Sales Partner program to get approved and access commission features.</p>
-        <a href="/FuturesSalesPartner" className="inline-block btn-purple px-6 py-3 text-sm font-bold rounded-xl">
-          Apply Now →
-        </a>
-      </div>
-    );
+  // ─── Gate checks (skipped in DEV_MODE) ────────────────────────────────────
+  if (!DEV_MODE) {
+    if (!isConnected) {
+      return (
+        <div className="px-4 py-10 max-w-lg mx-auto text-center space-y-4">
+          <Shield className="w-12 h-12 text-[#00d4aa] mx-auto" />
+          <h2 className="text-xl font-bold text-white">Partner Hub</h2>
+          <p className="text-sm text-slate-400">Connect your wallet to access the Partner Hub</p>
+          <button onClick={() => requireWallet()} className="btn-solana px-6 py-3 text-sm font-bold rounded-xl">
+            Connect Wallet
+          </button>
+        </div>
+      );
+    }
+    if (!loading && !myNode) {
+      return (
+        <div className="px-4 py-10 max-w-lg mx-auto text-center space-y-4">
+          <Users className="w-12 h-12 text-[#8b5cf6] mx-auto" />
+          <h2 className="text-xl font-bold text-white">Not a Partner Yet</h2>
+          <p className="text-sm text-slate-400">Apply via the Sales Partner program to get approved and access commission features.</p>
+          <a href="/FuturesSalesPartner" className="inline-block btn-purple px-6 py-3 text-sm font-bold rounded-xl">
+            Apply Now →
+          </a>
+        </div>
+      );
+    }
   }
 
   const totalEarnings = accruals.filter(a => a.status === 'settled').reduce((s, a) => s + a.amount, 0);
