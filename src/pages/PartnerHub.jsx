@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUserType } from '../components/shared/UserTypeContext';
 import { base44 } from '@/api/base44Client';
+import { DEV_MODE } from '@/components/shared/devConfig';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Users, TrendingUp, Award, Gift, Map, GitBranch, BarChart3, ExternalLink, Copy, Share2, CheckCircle2, Crown, Star, Zap, Wallet, ChevronRight, Lock, Trophy, Globe } from 'lucide-react';
@@ -347,9 +348,9 @@ export default function PartnerHub() {
   const { isPartnerApproved, applyForPartner, isPartnerPending } = useUserType();
   const { isAdmin, isDistributor } = usePartnerRole(isPartnerApproved);
 
-  // Admin and approved distributors see full dashboard
-  if (isDistributor) {
-    return <DistributorDashboard isAdmin={isAdmin} applyForPartner={applyForPartner} isPartnerPending={isPartnerPending} />;
+  // DEV_MODE: always show full dashboard, bypass all approval checks
+  if (DEV_MODE || isDistributor) {
+    return <DistributorDashboard isAdmin={true} applyForPartner={applyForPartner} isPartnerPending={isPartnerPending} />;
   }
 
   // Everyone else sees apply view
