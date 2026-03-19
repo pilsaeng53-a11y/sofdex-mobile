@@ -18,6 +18,7 @@ import AnimatedBackground from './components/shared/AnimatedBackground';
 import { WalletProvider, useWallet } from './components/shared/WalletContext';
 import ConnectWalletModal from './components/shared/ConnectWalletModal';
 import { getRegionDefaultCurrency } from '@/services/RegionDetectionService';
+import { DEV_MODE } from '@/components/shared/devConfig';
 
 const NO_SHELL_PAGES = ['Splash', 'WalletConnect'];
 
@@ -171,6 +172,14 @@ function LayoutInner({ children, currentPageName }) {
           {children}
         </div>
         {showShell && <BottomNav currentPage={currentPageName} />}
+        {DEV_MODE && (
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest" style={{ background: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.4)', color: '#fbbf24' }}>
+              <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+              DEV MODE — All gates bypassed
+            </div>
+          </div>
+        )}
       </div>
     </MarketDataProvider>
   );
