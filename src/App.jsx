@@ -66,6 +66,7 @@ import FuturesReferral from './pages/FuturesReferral';
 import PartnerHubNew from './pages/PartnerHubNew';
 import SalesDashboard from './pages/SalesDashboard';
 import SOFSalesPartnerDashboard from './pages/SOFSalesPartnerDashboard';
+import AssetOnboarding from './pages/AssetOnboarding';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 

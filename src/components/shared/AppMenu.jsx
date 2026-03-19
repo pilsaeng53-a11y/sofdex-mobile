@@ -88,6 +88,7 @@ const NAV_SECTIONS = [
       { labelKey: 'menu_predictionMarket', page: 'PredictionMarket',icon: BarChart2 },
       { labelKey: 'menu_rwaMarkets',       page: 'RWAExplore',      icon: Building2 },
       { labelKey: 'menu_realEstate',       page: 'RealEstate',      icon: MapPin },
+      { label: 'Register My Asset',        page: 'AssetOnboarding', icon: Plus },
     ],
   },
   {
