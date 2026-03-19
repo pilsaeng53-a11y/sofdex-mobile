@@ -1,99 +1,94 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Search, Shield, Globe, ArrowRight, Building2, Package, BarChart2, Palette, TrendingUp, Zap } from 'lucide-react';
-import { RWA_MARKETS, TRADFI_MARKETS } from '../components/shared/MarketData';
-import { LANDMARK_RE, ART_MARKETS } from '../components/shared/RWAData';
+import { Search, Shield, Globe, ArrowRight, Building2, Package, BarChart2, Palette, TrendingUp, Zap, Music, Gem, Flame } from 'lucide-react';
+import { LANDMARK_RE, ART_MARKETS, COMMODITY_MARKETS, YIELD_MARKETS, ALT_MARKETS, STOCK_MARKETS, ETF_MARKETS } from '../components/shared/RWAData';
 import RWACategoryCard from '../components/rwa/RWACategoryCard';
 import RWAAssetCard from '../components/rwa/RWAAssetCard';
 import PropertyCard from '../components/rwa/PropertyCard';
 import RWAOverviewDashboard from '../components/rwa/RWAOverviewDashboard';
 import XStocksPanel from '../components/rwa/XStocksPanel';
 import RWAYieldDashboard from '../components/rwa/RWAYieldDashboard';
+import TrendingRWA from '../components/rwa/TrendingRWA';
+import CommodityCard from '../components/rwa/CommodityCard';
+import YieldCard from '../components/rwa/YieldCard';
+import AltAssetCard from '../components/rwa/AltAssetCard';
 
-const MAIN_TABS = ['All', 'Real Estate', 'Commodities', 'Gold', 'Equities', 'xStocks', 'Yield', 'Art / Collectibles', 'Infrastructure', 'Energy'];
+const MAIN_TABS = ['All', 'Real Estate', 'Commodities', 'Stocks', 'ETFs', 'Yield', 'Art & Collectibles', 'Alternative'];
 
 const categoryStats = {
-  'Real Estate':  { count: 5,  value: '$9.2B',  icon: Building2, color: '#8b5cf6' },
-  'Commodities':  { count: RWA_MARKETS.filter(a => a.type === 'Commodity').length, value: '$21.4B', icon: Package, color: '#f59e0b' },
-  'xStocks':      { count: TRADFI_MARKETS.length, value: '$82B',  icon: BarChart2, color: '#60a5fa' },
-  'Equities':     { count: RWA_MARKETS.filter(a => a.type === 'Equity').length, value: '$18.0B', icon: BarChart2, color: '#00d4aa' },
-  'Yield':        { count: 8,  value: '$53.5B', icon: TrendingUp, color: '#22c55e' },
-  'Art / Collectibles': { count: ART_MARKETS.length, value: '$852M', icon: Palette, color: '#ec4899' },
+  'Real Estate':       { count: LANDMARK_RE.length,      value: '$11.4B', icon: Building2,  color: '#8b5cf6', desc: 'Landmark properties worldwide' },
+  'Commodities':       { count: COMMODITY_MARKETS.length, value: '$21.4B', icon: Package,    color: '#f59e0b', desc: 'Gold, oil, metals & more' },
+  'Stocks':            { count: STOCK_MARKETS.length,     value: '$82B',   icon: BarChart2,  color: '#3b82f6', desc: 'Blue-chip tokenized equities' },
+  'ETFs':              { count: ETF_MARKETS.length,       value: '$76B',   icon: TrendingUp, color: '#00d4aa', desc: 'Diversified index exposure' },
+  'Yield':             { count: YIELD_MARKETS.length,     value: '$53.5B', icon: Zap,        color: '#22c55e', desc: 'Bonds, treasuries & pools' },
+  'Art & Collectibles':{ count: ART_MARKETS.length,       value: '$3.5B',  icon: Palette,    color: '#ec4899', desc: 'Blue-chip art & watches' },
+  'Alternative':       { count: ALT_MARKETS.length,       value: '$2.1B',  icon: Music,      color: '#a78bfa', desc: 'Royalties, gaming & luxury' },
 };
+
+function ArtCard({ asset }) {
+  return (
+    <div className="glass-card rounded-2xl p-4 flex items-center gap-3">
+      <img src={asset.image} alt={asset.name} className="w-14 h-14 rounded-xl object-cover flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-0.5">
+          <p className="text-xs font-bold text-white">{asset.symbol}</p>
+          <span className={`text-xs font-bold ${asset.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+            {asset.change >= 0 ? '+' : ''}{asset.change}%
+          </span>
+        </div>
+        <p className="text-xs text-slate-400 truncate">{asset.name}</p>
+        <p className="text-[10px] text-slate-500">{asset.artist}</p>
+        <div className="flex items-center justify-between mt-1">
+          <p className="text-sm font-bold text-white">${asset.price.toLocaleString()}</p>
+          <div className="flex items-center gap-1">
+            {asset.tag && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-pink-500/10 text-pink-400 border border-pink-500/20">{asset.tag}</span>}
+            {asset.verified && <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400">✓</span>}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function RWAExplore() {
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
 
-  // Filter logic per tab
+  const filterBySearch = (arr, fields = ['name', 'symbol']) =>
+    !search ? arr : arr.filter(a => fields.some(f => a[f]?.toLowerCase().includes(search.toLowerCase())));
+
   const getContent = () => {
     if (activeTab === 'Real Estate') {
-      const filtered = LANDMARK_RE.filter(p =>
-        !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.symbol.toLowerCase().includes(search.toLowerCase())
-      );
-      return (
-        <div className="space-y-4">
-          {filtered.map(p => <PropertyCard key={p.symbol} property={p} />)}
-        </div>
-      );
+      const filtered = filterBySearch(LANDMARK_RE);
+      return <div className="space-y-4">{filtered.map(p => <PropertyCard key={p.symbol} property={p} />)}</div>;
     }
 
-    if (activeTab === 'xStocks') {
-      return <XStocksPanel />;
+    if (activeTab === 'Commodities') {
+      const filtered = filterBySearch(COMMODITY_MARKETS);
+      return <div className="space-y-3">{filtered.map(a => <CommodityCard key={a.symbol} asset={a} />)}</div>;
     }
 
-    if (activeTab === 'Yield') {
-      return <RWAYieldDashboard />;
-    }
-
-    if (activeTab === 'Infrastructure') {
-      const infra = RWA_MARKETS.filter(a => a.type === 'Treasury' || a.symbol.includes('INFRA'));
+    if (activeTab === 'Stocks') {
+      const filtered = filterBySearch(STOCK_MARKETS);
       return (
         <div className="space-y-3">
-          {infra.length === 0 && (
-            <div className="glass-card rounded-2xl p-6 text-center">
-              <Zap className="w-8 h-8 text-[#06b6d4] mx-auto mb-2" />
-              <p className="text-sm font-bold text-white mb-1">Infrastructure RWA</p>
-              <p className="text-[11px] text-slate-500">Coming soon — infrastructure bond tokens and project financing assets will be listed here.</p>
-            </div>
-          )}
-          {infra.map(a => <RWAAssetCard key={a.symbol} asset={a} />)}
-        </div>
-      );
-    }
-
-    if (activeTab === 'Energy') {
-      return (
-        <div className="glass-card rounded-2xl p-6 text-center">
-          <TrendingUp className="w-8 h-8 text-emerald-400 mx-auto mb-2" />
-          <p className="text-sm font-bold text-white mb-1">Energy RWA</p>
-          <p className="text-[11px] text-slate-500">Renewable energy project tokens coming soon. Proposal SFD-007 is currently being voted on.</p>
-        </div>
-      );
-    }
-
-    if (activeTab === 'Art / Collectibles') {
-      const filtered = ART_MARKETS.filter(a =>
-        !search || a.name.toLowerCase().includes(search.toLowerCase()) || a.symbol.toLowerCase().includes(search.toLowerCase())
-      );
-      return (
-        <div className="space-y-3">
+          <p className="text-[10px] text-slate-500 px-1">Tokenized blue-chip equities — economic exposure only. T+0 settlement on-chain.</p>
           {filtered.map(a => (
-            <div key={a.symbol} className="glass-card rounded-2xl p-4 flex items-center gap-3">
-              <img src={a.image} alt={a.name} className="w-14 h-14 rounded-xl object-cover" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-bold text-white">{a.symbol}</p>
+            <div key={a.symbol} className="glass-card rounded-2xl p-4 border border-blue-500/10 hover:border-blue-500/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-bold text-white">{a.name}</p>
+                    {a.tag && <span className="text-[9px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">{a.tag}</span>}
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-mono">{a.symbol} · {a.sector}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-black text-white">${a.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                   <span className={`text-xs font-bold ${a.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                     {a.change >= 0 ? '+' : ''}{a.change}%
                   </span>
-                </div>
-                <p className="text-xs text-slate-400 truncate">{a.name}</p>
-                <p className="text-[11px] text-slate-500">{a.artist}</p>
-                <div className="flex items-center justify-between mt-1">
-                  <p className="text-sm font-bold text-white">${a.price.toLocaleString()}</p>
-                  <p className="text-[10px] text-slate-500">Vol: {a.volume}</p>
                 </div>
               </div>
             </div>
@@ -102,33 +97,77 @@ export default function RWAExplore() {
       );
     }
 
-    // Commodities / Gold / Equities / All
-    let base = RWA_MARKETS;
-    if (activeTab === 'Gold') base = RWA_MARKETS.filter(a => a.symbol === 'GOLD-T');
-    else if (activeTab === 'Commodities') base = RWA_MARKETS.filter(a => a.type === 'Commodity');
-    else if (activeTab === 'Equities') base = [...RWA_MARKETS.filter(a => a.type === 'Equity'), ...TRADFI_MARKETS.slice(0, 4)];
-    else if (activeTab === 'All') {
-      // Mix: property cards first, then RWA
-      const filteredRE = LANDMARK_RE.filter(p =>
-        !search || p.name.toLowerCase().includes(search.toLowerCase()) || p.symbol.toLowerCase().includes(search.toLowerCase())
-      );
-      const filteredRWA = RWA_MARKETS.filter(a =>
-        !search || a.name.toLowerCase().includes(search.toLowerCase()) || a.symbol.toLowerCase().includes(search.toLowerCase())
-      );
+    if (activeTab === 'ETFs') {
+      const filtered = filterBySearch(ETF_MARKETS);
       return (
         <div className="space-y-3">
-          {filteredRE.slice(0, 2).map(p => <PropertyCard key={p.symbol} property={p} />)}
-          {filteredRWA.map(a => <RWAAssetCard key={a.symbol} asset={a} />)}
+          <p className="text-[10px] text-slate-500 px-1">Tokenized index ETFs with on-chain T+0 settlement and transparent NAV pricing.</p>
+          {filtered.map(a => (
+            <div key={a.symbol} className="glass-card rounded-2xl p-4 border border-teal-500/10 hover:border-teal-500/20 transition-all">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-sm font-bold text-white">{a.name}</p>
+                    <span className="text-[9px] px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20">{a.tag}</span>
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-mono">{a.symbol} · AUM: {a.mcap}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm font-black text-white">${a.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                  <span className={`text-xs font-bold ${a.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+                    {a.change >= 0 ? '+' : ''}{a.change}%
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       );
     }
 
-    const filtered = base.filter(a =>
-      !search || a.name.toLowerCase().includes(search.toLowerCase()) || a.symbol.toLowerCase().includes(search.toLowerCase())
-    );
+    if (activeTab === 'Yield') {
+      const filtered = filterBySearch(YIELD_MARKETS);
+      return <div className="space-y-3">{filtered.map(a => <YieldCard key={a.symbol} asset={a} />)}</div>;
+    }
+
+    if (activeTab === 'Art & Collectibles') {
+      const filtered = filterBySearch(ART_MARKETS);
+      return <div className="space-y-3">{filtered.map(a => <ArtCard key={a.symbol} asset={a} />)}</div>;
+    }
+
+    if (activeTab === 'Alternative') {
+      const filtered = filterBySearch(ALT_MARKETS);
+      return (
+        <div className="space-y-3">
+          <p className="text-[10px] text-slate-500 px-1">Tokenized alternative assets — music royalties, sports contracts, luxury goods, film revenue, and more.</p>
+          {filtered.map(a => <AltAssetCard key={a.symbol} asset={a} />)}
+        </div>
+      );
+    }
+
+    // All tab — overview
+    const filteredRE = filterBySearch(LANDMARK_RE);
+    const filteredComm = filterBySearch(COMMODITY_MARKETS);
     return (
       <div className="space-y-3">
-        {filtered.map(a => <RWAAssetCard key={a.symbol} asset={a} />)}
+        {filteredRE.slice(0, 2).map(p => <PropertyCard key={p.symbol} property={p} />)}
+        {filteredComm.slice(0, 3).map(a => <CommodityCard key={a.symbol} asset={a} />)}
+        {filterBySearch(STOCK_MARKETS).slice(0, 2).map(a => (
+          <div key={a.symbol} className="glass-card rounded-2xl p-4 border border-blue-500/10">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-bold text-white">{a.name}</p>
+                <p className="text-[10px] text-slate-500 font-mono">{a.symbol} · {a.sector}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-black text-white">${a.price.toLocaleString('en-US', { minimumFractionDigits: 2 })}</p>
+                <span className={`text-xs font-bold ${a.change >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>{a.change >= 0 ? '+' : ''}{a.change}%</span>
+              </div>
+            </div>
+          </div>
+        ))}
+        {filterBySearch(ART_MARKETS).slice(0, 2).map(a => <ArtCard key={a.symbol} asset={a} />)}
+        {filterBySearch(ALT_MARKETS).slice(0, 2).map(a => <AltAssetCard key={a.symbol} asset={a} />)}
       </div>
     );
   };
@@ -141,13 +180,13 @@ export default function RWAExplore() {
           <Globe className="w-5 h-5 text-[#8b5cf6]" />
           <h1 className="text-xl font-bold text-white">RWA Markets</h1>
         </div>
-        <p className="text-xs text-slate-500">Tokenized Real-World Assets on Solana</p>
+        <p className="text-xs text-slate-500">Tokenized Real-World Assets on Solana — {Object.values(categoryStats).reduce((s,c) => s + c.count, 0)}+ assets across {Object.keys(categoryStats).length} categories</p>
       </div>
 
-      {/* RWA Overview Dashboard */}
+      {/* Overview Dashboard */}
       {activeTab === 'All' && !search && <RWAOverviewDashboard />}
 
-      {/* Hero banner (only on All, no search) */}
+      {/* Hero Banner */}
       {activeTab === 'All' && !search && (
         <div className="px-4 mb-4">
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a103c] via-[#15112e] to-[#0d1220] border border-[#8b5cf6]/15 p-5">
@@ -159,7 +198,7 @@ export default function RWAExplore() {
               </div>
               <h3 className="text-lg font-bold text-white mb-1">Real-World Assets</h3>
               <p className="text-xs text-slate-400 leading-relaxed max-w-[280px] mb-3">
-                Trade tokenized real estate, commodities, government bonds, equities, and collectibles with transparent on-chain pricing.
+                Trade tokenized real estate, commodities, blue-chip stocks, government bonds, collectibles, and alternative assets with transparent on-chain pricing.
               </p>
               <Link to={createPageUrl('RealEstate')}>
                 <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#8b5cf6]/10 border border-[#8b5cf6]/20 text-[#8b5cf6] text-xs font-semibold hover:bg-[#8b5cf6]/20 transition-all">
@@ -171,16 +210,31 @@ export default function RWAExplore() {
         </div>
       )}
 
-      {/* Category cards (only on All, no search) */}
+      {/* Trending Section */}
+      {activeTab === 'All' && !search && <TrendingRWA />}
+
+      {/* Category Cards */}
       {activeTab === 'All' && !search && (
         <div className="px-4 mb-4">
-          <h3 className="text-sm font-bold text-white mb-3">Categories</h3>
+          <h3 className="text-sm font-bold text-white mb-3">All Categories</h3>
           <div className="grid grid-cols-2 gap-2.5">
-            {Object.entries(categoryStats).map(([type, stats]) => (
-              <button key={type} onClick={() => setActiveTab(type)} className="text-left">
-                <RWACategoryCard type={type} count={stats.count} totalValue={stats.value} />
-              </button>
-            ))}
+            {Object.entries(categoryStats).map(([type, stats]) => {
+              const Icon = stats.icon;
+              return (
+                <button key={type} onClick={() => setActiveTab(type)} className="text-left">
+                  <div className="glass-card rounded-2xl p-3.5 border border-[rgba(148,163,184,0.06)] hover:border-[rgba(148,163,184,0.12)] transition-all">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: `${stats.color}18` }}>
+                        <Icon className="w-3.5 h-3.5" style={{ color: stats.color }} />
+                      </div>
+                      <span className="text-xs font-bold text-white truncate">{type}</span>
+                    </div>
+                    <p className="text-base font-black" style={{ color: stats.color }}>{stats.value}</p>
+                    <p className="text-[9px] text-slate-500 mt-0.5">{stats.count} assets · {stats.desc}</p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
@@ -208,7 +262,7 @@ export default function RWAExplore() {
             className={`flex-shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === tab
                 ? 'bg-[#8b5cf6]/15 text-[#8b5cf6] border border-[#8b5cf6]/20'
-                : 'text-slate-500 border border-transparent'
+                : 'text-slate-500 border border-transparent hover:text-slate-300'
             }`}
           >
             {tab}
@@ -216,7 +270,7 @@ export default function RWAExplore() {
         ))}
       </div>
 
-      {/* Dynamic content */}
+      {/* Content */}
       <div className="px-4 pb-8">
         {getContent()}
       </div>
