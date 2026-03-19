@@ -10,6 +10,7 @@ import { useWallet } from '@/components/shared/WalletContext';
 import { useLang } from '@/components/shared/LanguageContext';
 import { base44 } from '@/api/base44Client';
 import { DisconnectedState, NotApprovedState, CheckingState } from '@/components/sofpartner/SOFPartnerGate';
+import { DEV_MODE, DEV_WALLET, DEV_SALES_PARTNER } from '@/components/shared/devConfig';
 import CustomerRegistrationForm from '@/components/sofpartner/CustomerRegistrationForm';
 import CustomerTable from '@/components/sofpartner/CustomerTable';
 import { formatNumber } from '@/components/sofpartner/SOFQuantityCalc';
@@ -44,6 +45,14 @@ export default function SOFSalesPartnerDashboard() {
   ];
 
   useEffect(() => {
+    // DEV_MODE: bypass all approval/whitelist checks
+    if (DEV_MODE) {
+      setCheckingAccess(false);
+      setIsApproved(true);
+      setPartnerInfo(DEV_SALES_PARTNER);
+      loadSubmissions();
+      return;
+    }
     if (!isConnected || !address) {
       setCheckingAccess(false);
       setIsApproved(false);
@@ -71,10 +80,11 @@ export default function SOFSalesPartnerDashboard() {
   }
 
   const loadSubmissions = useCallback(async () => {
-    if (!address) return;
+    const effectiveAddress = DEV_MODE ? DEV_WALLET : address;
+    if (!effectiveAddress) return;
     setLoadingData(true);
     try {
-      const data = await base44.entities.SOFSaleSubmission.filter({ partner_wallet: address }, '-submitted_at', 500);
+      const data = await base44.entities.SOFSaleSubmission.filter({ partner_wallet: DEV_MODE ? DEV_WALLET : address }, '-submitted_at', 500);
       setSubmissions(data);
     } catch (e) { console.error(e); }
     setLoadingData(false);
@@ -85,9 +95,12 @@ export default function SOFSalesPartnerDashboard() {
   const processing = submissions.filter(r => r.status === 'Processing').length;
   const approved   = submissions.filter(r => r.status === 'Approved').length;
 
-  if (!isConnected) return <DisconnectedState />;
-  if (checkingAccess) return <CheckingState />;
-  if (!isApproved) return <NotApprovedState />;
+  // DEV_MODE: never show gate screens
+  if (!DEV_MODE) {
+    if (!isConnected) return <DisconnectedState />;
+    if (checkingAccess) return <CheckingState />;
+    if (!isApproved) return <NotApprovedState />;
+  }
 
   return (
     <div className="px-4 py-6 max-w-lg mx-auto space-y-5 pb-24">
@@ -99,7 +112,8 @@ export default function SOFSalesPartnerDashboard() {
           <span className="text-[9px] font-bold text-[#00d4aa] uppercase tracking-widest">{t('sof_approved_label')}</span>
         </div>
         <h1 className="text-2xl font-bold text-white">{t('sof_sales_title')}</h1>
-        <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">{address}</p>
+        <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">{DEV_MODE ? DEV_WALLET : address}</p>
+        {DEV_MODE && <span className="text-[8px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-bold">DEV MODE</span>}
         {partnerInfo?.display_name && (
           <p className="text-xs text-slate-400 mt-1">{partnerInfo.display_name}</p>
         )}
