@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translations, LANGUAGES } from './i18n';
+import { translationExtensions } from './i18nExtensions';
+
+// Merge extensions into translations
+const mergedTranslations = Object.keys(translations).reduce((acc, lang) => {
+  acc[lang] = { ...translations[lang], ...(translationExtensions[lang] || {}) };
+  return acc;
+}, { ...translations });
 
 const LanguageContext = createContext({
   lang: 'en',
@@ -85,7 +92,7 @@ export function LanguageProvider({ children }) {
     const keys = key.split('.');
     
     // Try to find in current language
-    let value = translations[lang];
+    let value = mergedTranslations[lang];
     for (const k of keys) {
       value = value?.[k];
     }
@@ -97,7 +104,7 @@ export function LanguageProvider({ children }) {
 
     // Fallback to English if different language
     if (lang !== 'en') {
-      value = translations.en;
+      value = mergedTranslations.en;
       for (const k of keys) {
         value = value?.[k];
       }
