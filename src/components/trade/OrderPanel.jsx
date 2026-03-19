@@ -71,7 +71,7 @@ export default function OrderPanel({ asset }) {
 
       {/* Order type */}
       <div className="flex gap-1 mb-2 flex-wrap">
-        {[['market','Market'],['limit','Limit'],['stop','Stop'],['trailing','Trailing'],['iceberg','Iceberg']].map(([type, label]) => (
+        {[['market','order_market'],['limit','order_limit'],['stop','order_stop'],['trailing','order_trailing'],['iceberg','order_iceberg']].map(([type, key]) => (
           <button
             key={type}
             onClick={() => setOrderType(type)}
@@ -81,14 +81,14 @@ export default function OrderPanel({ asset }) {
                 : 'text-slate-500 border border-transparent hover:text-slate-300'
             }`}
           >
-            {label}
+            {t(key)}
           </button>
         ))}
       </div>
 
       {/* Advanced flags */}
       <div className="flex gap-1.5 mb-3">
-        {[['post-only','Post Only'],['reduce-only','Reduce Only']].map(([val, label]) => (
+        {[['post-only','order_postOnly'],['reduce-only','order_reduceOnly']].map(([val, key]) => (
           <button
             key={val}
             onClick={() => setAdvancedType(advancedType === val ? '' : val)}
@@ -98,7 +98,7 @@ export default function OrderPanel({ asset }) {
                 : 'text-slate-600 border-[rgba(148,163,184,0.06)] hover:text-slate-400'
             }`}
           >
-            {label}
+            {t(key)}
           </button>
         ))}
       </div>
@@ -107,7 +107,7 @@ export default function OrderPanel({ asset }) {
       {(orderType === 'limit' || orderType === 'stop') && (
         <div className="mb-3">
           <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">
-            {orderType === 'limit' ? 'Limit Price' : 'Stop Price'}
+            {orderType === 'limit' ? t('order_limitPrice') : t('order_stopPrice')}
           </label>
           <input
             type="number"
@@ -122,7 +122,7 @@ export default function OrderPanel({ asset }) {
       {/* Trailing stop % */}
       {orderType === 'trailing' && (
         <div className="mb-3">
-          <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Trail Distance (%)</label>
+          <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">{t('order_trailDistance')}</label>
           <input
             type="number"
             placeholder="1.5"
@@ -130,7 +130,7 @@ export default function OrderPanel({ asset }) {
             onChange={(e) => setTrailPct(e.target.value)}
             className="w-full h-11 px-4 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30"
           />
-          <p className="text-[10px] text-slate-600 mt-1">Order triggers {trailPct}% from peak price</p>
+          <p className="text-[10px] text-slate-600 mt-1">{t('order_trailTrigger').replace('{pct}', trailPct)}</p>
         </div>
       )}
 
@@ -138,12 +138,12 @@ export default function OrderPanel({ asset }) {
       {orderType === 'iceberg' && (
         <div className="mb-3 grid grid-cols-2 gap-2">
           <div>
-            <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Limit Price</label>
+            <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">{t('order_limitPrice')}</label>
             <input type="number" placeholder={basePrice?.toFixed(2)} value={limitPrice} onChange={e => setLimitPrice(e.target.value)}
               className="w-full h-11 px-3 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30" />
           </div>
           <div>
-            <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">Visible ({icebergPct}%)</label>
+            <label className="text-[11px] text-slate-500 font-medium mb-1.5 block">{t('order_visible')} ({icebergPct}%)</label>
             <input type="number" placeholder="20" value={icebergPct} onChange={e => setIcebergPct(e.target.value)}
               className="w-full h-11 px-3 rounded-xl bg-[#0d1220] border border-[rgba(148,163,184,0.08)] text-sm text-white placeholder-slate-600 focus:outline-none focus:border-[#00d4aa]/30" />
           </div>
@@ -156,7 +156,7 @@ export default function OrderPanel({ asset }) {
       {/* Collateral amount input */}
       <div className="mb-3">
         <div className="flex items-center justify-between mb-1.5">
-          <label className="text-[11px] text-slate-500 font-medium">{t('order_collateral')} Amount</label>
+          <label className="text-[11px] text-slate-500 font-medium">{t('order_collateral')}</label>
           <span className="text-[11px] text-slate-500">{t('order_balance')} <span className="text-slate-300 font-medium">{collateral.balance.toLocaleString()} {collateral.symbol}</span></span>
         </div>
         <input
@@ -232,12 +232,12 @@ export default function OrderPanel({ asset }) {
         <div className="flex justify-between text-[11px]">
           <span className="text-slate-500">{t('order_estEntry')}</span>
           <span className="text-slate-300 font-medium">
-            {orderType === 'market' ? 'Market' : limitPrice ? `$${parseFloat(limitPrice).toFixed(2)}` : '—'}
+            {orderType === 'market' ? t('order_market') : limitPrice ? `$${parseFloat(limitPrice).toFixed(2)}` : '—'}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
-          <span className="text-slate-500">Collateral</span>
-          <span className="text-slate-300 font-medium">{collateral.symbol} · ${effectiveMargin.toFixed(0)} effective</span>
+          <span className="text-slate-500">{t('order_collateral')}</span>
+          <span className="text-slate-300 font-medium">{collateral.symbol} · ${effectiveMargin.toFixed(0)}</span>
         </div>
         <div className="flex justify-between text-[11px]">
           <span className="text-slate-500">{t('order_positionSize')}</span>
@@ -259,20 +259,20 @@ export default function OrderPanel({ asset }) {
         </div>
         {advancedType && (
           <div className="flex justify-between text-[11px]">
-            <span className="text-slate-500">Order Flag</span>
-            <span className="text-purple-400 font-medium capitalize">{advancedType}</span>
+            <span className="text-slate-500">{t('order_flag')}</span>
+            <span className="text-purple-400 font-medium capitalize">{t(`order_${advancedType.replace('-','_')}`) || advancedType}</span>
           </div>
         )}
         {orderType === 'trailing' && (
           <div className="flex justify-between text-[11px]">
-            <span className="text-slate-500">Trail Distance</span>
+            <span className="text-slate-500">{t('order_trailDistance')}</span>
             <span className="text-slate-300 font-medium">{trailPct}%</span>
           </div>
         )}
         {orderType === 'iceberg' && (
           <div className="flex justify-between text-[11px]">
-            <span className="text-slate-500">Visible Size</span>
-            <span className="text-slate-300 font-medium">{icebergPct}% of total</span>
+            <span className="text-slate-500">{t('order_visibleSize')}</span>
+            <span className="text-slate-300 font-medium">{icebergPct}%</span>
           </div>
         )}
       </div>
@@ -296,7 +296,7 @@ export default function OrderPanel({ asset }) {
           className="w-full py-3.5 rounded-xl font-bold text-sm text-slate-300 border border-[rgba(148,163,184,0.15)] bg-[#0d1220] hover:border-[#00d4aa]/30 hover:text-white transition-all flex items-center justify-center gap-2 opacity-80"
         >
           <Wallet className="w-4 h-4 text-[#00d4aa]" />
-          Connect Wallet to Trade
+          {t('wallet_connect')}
         </button>
       )}
     </div>
