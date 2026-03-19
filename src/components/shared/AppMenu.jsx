@@ -91,9 +91,12 @@ const NAV_SECTIONS = [
   {
     label: 'RWA',
     items: [
-      { labelKey: 'menu_rwaMarkets',       page: 'RWAExplore',      icon: Building2 },
-      { labelKey: 'menu_realEstate',       page: 'RealEstate',      icon: MapPin },
-      { label: 'Register My Asset',        page: 'AssetOnboarding', icon: Plus, highlight: true },
+      { label: 'RWA Market',         page: 'RWAExplore',      icon: Building2 },
+      { label: 'Categories',         page: 'RealEstate',      icon: MapPin },
+      { label: 'Trending Assets',    page: 'RWAExplore',      icon: TrendingUp },
+      { label: 'Register My Asset',  page: 'AssetOnboarding', icon: Plus, highlight: true },
+      { label: 'My Submissions',     page: 'MySubmissions',   icon: FileText },
+      { label: 'RWA Insights',       page: 'RWAInsights',     icon: BarChart2 },
     ],
   },
   {
