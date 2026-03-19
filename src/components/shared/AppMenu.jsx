@@ -280,7 +280,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
 
           {/* SOF Sales Partner — fully separate from Partner Hub */}
           <div>
-            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">SOF Sales</p>
+            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_sof_sales') || 'SOF Sales'}</p>
             <NavLink item={SOF_SALES_PARTNER_ITEM} />
           </div>
 
