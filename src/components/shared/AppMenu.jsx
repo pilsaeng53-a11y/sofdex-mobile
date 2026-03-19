@@ -226,10 +226,30 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
         {/* Nav sections */}
         <div className="flex-1 px-3 py-2 space-y-4">
           {NAV_SECTIONS.map(section => (
-            <div key={section.labelKey}>
-              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t(section.labelKey)}</p>
+            <div key={section.label || section.labelKey}>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{section.label || t(section.labelKey)}</p>
               <div className="space-y-0.5">
-                {section.items.map(item => <NavLink key={item.labelKey + item.page} item={item} />)}
+                {section.items.map(item => {
+                  if (item.highlight) {
+                    const Icon = item.icon;
+                    const isActive = currentPage === item.page;
+                    return (
+                      <Link
+                        key={item.page}
+                        to={createPageUrl(item.page)}
+                        onClick={onClose}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${
+                          isActive ? 'bg-[#8b5cf6]/15 text-[#8b5cf6]' : 'bg-[#8b5cf6]/8 border border-[#8b5cf6]/15 text-[#a78bfa] hover:bg-[#8b5cf6]/15 hover:text-[#c4b5fd]'
+                        }`}
+                      >
+                        <Icon className="w-4 h-4 flex-shrink-0 text-[#8b5cf6]" />
+                        <span className="text-sm font-semibold">{item.label}</span>
+                        <span className="ml-auto text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#8b5cf6]/20 text-[#8b5cf6] border border-[#8b5cf6]/25">NEW</span>
+                      </Link>
+                    );
+                  }
+                  return <NavLink key={(item.labelKey || '') + item.page} item={item} />;
+                })}
               </div>
             </div>
           ))}
