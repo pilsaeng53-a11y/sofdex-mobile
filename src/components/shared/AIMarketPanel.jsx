@@ -74,7 +74,7 @@ const AI_DATA = {
   },
 };
 
-const IMPACT_COLOR = { Bullish: 'text-emerald-400 bg-emerald-400/10', Bearish: 'text-red-400 bg-red-400/10', Neutral: 'text-amber-400 bg-amber-400/10' };
+const IMPACT_COLOR = { Bullish: 'text-emerald-400 bg-emerald-400/10', Bearish: 'text-red-400 bg-red-400/10', Neutral: 'text-amber-400 bg-amber-400/10', bullish: 'text-emerald-400 bg-emerald-400/10', bearish: 'text-red-400 bg-red-400/10', neutral: 'text-amber-400 bg-amber-400/10' };
 
 export default function AIMarketPanel({ symbol = 'BTC' }) {
   const { t } = useLang();
@@ -91,7 +91,7 @@ export default function AIMarketPanel({ symbol = 'BTC' }) {
     : data.direction === 'short' ? 'text-red-400 bg-red-400/10 border-red-400/20'
     : 'text-amber-400 bg-amber-400/10 border-amber-400/20';
 
-  const dirLabel = data.direction === 'long' ? 'Bullish' : data.direction === 'short' ? 'Bearish' : 'Neutral';
+  const dirLabel = data.direction === 'long' ? t('sentiment_bullish') : data.direction === 'short' ? t('sentiment_bearish') : t('ai_neutral_signal');
 
   const volColor = data.volatility >= 15 ? 'text-red-400' : data.volatility >= 10 ? 'text-orange-400' : data.volatility >= 6 ? 'text-amber-400' : 'text-emerald-400';
 
@@ -172,7 +172,7 @@ export default function AIMarketPanel({ symbol = 'BTC' }) {
                   <div className="flex-1">
                     <p className="text-xs text-slate-300 leading-snug">{n.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${IMPACT_COLOR[n.impact]}`}>{n.impact}</span>
+                      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded ${IMPACT_COLOR[n.impact]}`}>{n.impact === 'Bullish' ? t('sentiment_bullish') : n.impact === 'Bearish' ? t('sentiment_bearish') : t('ai_neutral_signal')}</span>
                       <span className="text-[10px] text-slate-600">{n.time}</span>
                     </div>
                   </div>
