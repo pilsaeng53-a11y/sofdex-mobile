@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { calcSOFQuantity, isValidSolanaAddress, formatNumber } from './SOFQuantityCalc';
 import { AlertCircle, CheckCircle, Send, Calculator, Info } from 'lucide-react';
 import { useLang } from '@/components/shared/LanguageContext';
+import { DEV_MODE, DEV_WALLET } from '@/components/shared/devConfig';
 
 const inputCls = "w-full bg-[#0f1525] border border-[rgba(148,163,184,0.1)] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:border-[#00d4aa]/40 outline-none transition-all";
 const labelCls = "text-[9px] font-bold text-slate-500 uppercase tracking-wider block mb-1.5";
@@ -67,7 +68,7 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
     setResult(null);
     try {
       await base44.entities.SOFSaleSubmission.create({
-        partner_wallet: partnerWallet,
+        partner_wallet: DEV_MODE ? DEV_WALLET : partnerWallet,
         customer_name: form.customer_name.trim(),
         customer_wallet: form.customer_wallet.trim(),
         purchase_amount: parseFloat(form.purchase_amount),

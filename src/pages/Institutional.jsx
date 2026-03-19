@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Shield, Layers, Briefcase, Database, BarChart2, Lock, TrendingUp, DollarSign, Globe, Zap, CheckCircle2, ExternalLink, ArrowRight } from 'lucide-react';
 import InstitutionalGate from '../components/institutional/InstitutionalGate';
+import { DEV_MODE } from '@/components/shared/devConfig';
 import RiskDashboard from '../components/institutional/RiskDashboard';
 import AssetRegistry from '../components/institutional/AssetRegistry';
 import OTCDesk from '../components/institutional/OTCDesk';
@@ -154,7 +155,8 @@ function OverviewTab() {
 }
 
 export default function Institutional() {
-  const [approved, setApproved] = useState(false);
+  // DEV_MODE: start as approved, skip gate entirely
+  const [approved, setApproved] = useState(DEV_MODE ? true : false);
   const [activeTab, setActiveTab] = useState('overview');
   const [selectedAsset, setSelectedAsset] = useState(null);
 
