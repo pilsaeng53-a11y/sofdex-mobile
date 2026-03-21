@@ -112,18 +112,21 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
   let dead  = false;
   let delay = 1500;
   let hbTimer;
-
+  let firstMessageReceived = false;
   let reconnectCount = 0;
+  let hbCount = 0;
 
   function connect() {
     if (dead) return;
+    firstMessageReceived = false;
     onStatus('reconnecting');
-    console.log(`[Orderly WS] Connecting → topic="${topic}" (attempt ${reconnectCount + 1})`);
+    console.log(`[Orderly WS] ▶ Connecting to ${ORDERLY_WS_URL}`);
+    console.log(`[Orderly WS]   topic="${topic}" attempt=${reconnectCount + 1}`);
 
     try {
       ws = new WebSocket(ORDERLY_WS_URL);
     } catch (err) {
-      console.error(`[Orderly WS] Failed to open WebSocket for topic="${topic}":`, err);
+      console.error(`[Orderly WS] ❌ Failed to open WebSocket for topic="${topic}":`, err);
       scheduleReconnect();
       return;
     }
@@ -131,13 +134,16 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
     ws.onopen = () => {
       delay = 1500;
       reconnectCount++;
-      console.log(`[Orderly WS] ✅ Connected. Subscribing to topic="${topic}"`);
-      // Orderly subscribe format: { id, event, topic }
-      ws.send(JSON.stringify({ id: `sub_${Date.now()}`, event: 'subscribe', topic }));
+      console.log(`[Orderly WS] ✅ WS open (topic="${topic}", attempt=${reconnectCount})`);
+      const subPayload = { id: `sub_${Date.now()}`, event: 'subscribe', topic };
+      console.log(`[Orderly WS]   Subscribe payload:`, JSON.stringify(subPayload));
+      ws.send(JSON.stringify(subPayload));
       // Orderly requires client ping every 10s to keep connection alive
       hbTimer = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
+          hbCount++;
           ws.send(JSON.stringify({ event: 'ping' }));
+          console.log(`[Orderly WS]   💓 ping sent (topic="${topic}", hb#${hbCount})`);
         }
       }, 10000);
     };
@@ -145,19 +151,28 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
     ws.onmessage = (ev) => {
       try {
         const msg = JSON.parse(ev.data);
-        // Server ping → reply with pong
+
+        // Server heartbeat ping → reply pong
         if (msg.event === 'ping') {
           ws.send(JSON.stringify({ event: 'pong' }));
+          console.log(`[Orderly WS]   🏓 server ping → pong replied (topic="${topic}")`);
           return;
         }
-        // Log subscription ack
+
+        // Subscription acknowledgement
         if (msg.event === 'subscribe' || msg.event === 'ack') {
-          console.log(`[Orderly WS] ✅ Subscription confirmed for topic="${topic}"`);
+          console.log(`[Orderly WS] ✅ Subscribe ACK for topic="${topic}"`, msg);
           return;
         }
-        // Ignore other ack/event frames
+
+        // Ignore other control frames
         if (msg.event) return;
+
         if (msg.data != null) {
+          if (!firstMessageReceived) {
+            firstMessageReceived = true;
+            console.log(`[Orderly WS] 🟢 First data message for topic="${topic}" ts=${new Date().toISOString()}`, msg);
+          }
           onStatus('live');
           onMessage(normalise(msg.data));
         }
@@ -171,8 +186,10 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
     ws.onclose = (ev) => {
       clearInterval(hbTimer);
       if (!dead) {
-        console.warn(`[Orderly WS] Disconnected from topic="${topic}" (code=${ev.code}). Reconnecting in ${delay}ms…`);
+        console.warn(`[Orderly WS] ⚡ Disconnected topic="${topic}" code=${ev.code} reason="${ev.reason}". Reconnecting in ${delay}ms…`);
         scheduleReconnect();
+      } else {
+        console.log(`[Orderly WS] ◀ Cleanly closed topic="${topic}"`);
       }
     };
   }
@@ -180,6 +197,7 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
   function scheduleReconnect() {
     onStatus('reconnecting');
     delay = Math.min(delay * 2, MAX_RECONNECT_DELAY);
+    console.log(`[Orderly WS] ⏳ Scheduled reconnect for topic="${topic}" in ${delay}ms`);
     setTimeout(connect, delay);
   }
 
@@ -188,6 +206,7 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
   return function unsubscribe() {
     dead = true;
     clearInterval(hbTimer);
+    console.log(`[Orderly WS] ◀ Unsubscribed topic="${topic}" (reconnects=${reconnectCount}, hbSent=${hbCount})`);
     try { ws?.close(); } catch { /* ignore */ }
   };
 }
