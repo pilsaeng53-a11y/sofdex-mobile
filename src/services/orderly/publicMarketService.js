@@ -126,23 +126,26 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
 
     ws.onopen = () => {
       delay = 1500;
-      ws.send(JSON.stringify({ id: 'sub', event: 'subscribe', topic }));
-      // Client heartbeat every 8s
+      // Orderly subscribe format: { id, event, topic }
+      ws.send(JSON.stringify({ id: `sub_${Date.now()}`, event: 'subscribe', topic }));
+      // Orderly requires client ping every 10s to keep connection alive
       hbTimer = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({ id: 'hb', event: 'ping' }));
+          ws.send(JSON.stringify({ event: 'ping' }));
         }
-      }, 8000);
+      }, 10000);
     };
 
     ws.onmessage = (ev) => {
       try {
         const msg = JSON.parse(ev.data);
-        // Respond to server pings
+        // Server ping → reply with pong
         if (msg.event === 'ping') {
-          ws.send(JSON.stringify({ id: 'pong', event: 'pong' }));
+          ws.send(JSON.stringify({ event: 'pong' }));
           return;
         }
+        // Ignore ack/subscribe confirmation events
+        if (msg.event) return;
         if (msg.data != null) {
           onStatus('live');
           onMessage(normalise(msg.data));
