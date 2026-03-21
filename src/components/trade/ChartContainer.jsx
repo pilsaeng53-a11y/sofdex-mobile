@@ -182,8 +182,8 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   // Live klines from Orderly WebSocket (no public REST kline endpoint exists)
   const { candles, loading, error, status: klinesStatus } = useKlines(symbol, timeframe);
 
-  // Status: use klines WS status, but override with 'live' once we have candles
-  const status = candles.length > 0 ? 'live' : klinesStatus;
+  // Show 'live' once WS is connected (even if no candles yet — low-activity symbols)
+  const status = klinesStatus === 'live' || candles.length > 0 ? 'live' : klinesStatus;
 
   // Last candle OHLC for the footer bar
   const lastCandle = candles.length > 0 ? candles[candles.length - 1] : null;
