@@ -13,8 +13,8 @@ const TABS = [
 
 // ─── Demo data ────────────────────────────────────────────────────────────────
 const DEMO_POSITIONS = [
-  { symbol: 'BTC/USDT', side: 'long',  size: '0.450',  entry: 83241.00, mark: 84180.50, pnl: 422.73,  roe: 1.86  },
-  { symbol: 'ETH/USDT', side: 'short', size: '2.800',  entry: 3218.40,  mark: 3190.20,  pnl: 78.96,   roe: 0.87  },
+  { symbol: 'BTC/USDT', side: 'long',  size: '0.450', entry: 83241.00, leverage: 10, marginMode: 'Cross'    },
+  { symbol: 'ETH/USDT', side: 'short', size: '2.800', entry: 3218.40,  leverage: 20, marginMode: 'Isolated' },
 ];
 
 const DEMO_OPEN_ORDERS = [
