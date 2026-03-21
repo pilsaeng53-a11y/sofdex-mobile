@@ -18,7 +18,7 @@ const DEMO_POSITIONS = [
 ];
 
 const DEMO_OPEN_ORDERS = [
-  { symbol: 'SOL/USDT', side: 'long',  type: 'Limit',  price: 138.50, size: '10.00', status: 'Open' },
+  { symbol: 'SOL/USDT', side: 'long', type: 'Limit', price: 138.50, size: '10.00', status: 'Open' },
 ];
 
 const DEMO_ORDER_HISTORY = [
@@ -28,28 +28,16 @@ const DEMO_ORDER_HISTORY = [
 ];
 
 const DEMO_TRADE_HISTORY = [
-  { symbol: 'BTC/USDT', side: 'long',  price: 82100.00, size: '0.250', fee: '4.11',  pnl: null,    ts: '2026-03-21 14:32:11' },
+  { symbol: 'BTC/USDT', side: 'long',  price: 82100.00, size: '0.250', fee: '4.11',  pnl: null,     ts: '2026-03-21 14:32:11' },
   { symbol: 'BTC/USDT', side: 'short', price: 84180.50, size: '0.200', fee: '3.37',  pnl: '+423.7', ts: '2026-03-21 09:14:02' },
-  { symbol: 'ETH/USDT', side: 'long',  price: 3102.50,  size: '2.000', fee: '1.24',  pnl: null,    ts: '2026-03-20 17:55:19' },
+  { symbol: 'ETH/USDT', side: 'long',  price: 3102.50,  size: '2.000', fee: '1.24',  pnl: null,     ts: '2026-03-20 17:55:19' },
 ];
 
-// ─── Extract base from "BTC/USDT" → "BTC" ────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function extractBase(symbol) {
   return symbol?.split('/')?.[0] ?? symbol ?? '?';
 }
 
-// ─── Symbol cell with icon ────────────────────────────────────────────────────
-function SymbolCell({ symbol }) {
-  const base = extractBase(symbol);
-  return (
-    <div className="flex items-center gap-1.5">
-      <CoinIcon symbol={base} size={16} />
-      <span className="font-bold text-white text-[11px]">{symbol}</span>
-    </div>
-  );
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(v, decimals = 2) {
   if (v == null) return '—';
   return Number(v).toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
@@ -63,16 +51,26 @@ function pnlColor(v) {
   return v > 0 ? '#4ade80' : v < 0 ? '#f87171' : '#94a3b8';
 }
 
-// ─── Status badge ─────────────────────────────────────────────────────────────
+// ─── Shared UI primitives ─────────────────────────────────────────────────────
+function SymbolCell({ symbol }) {
+  const base = extractBase(symbol);
+  return (
+    <div className="flex items-center gap-1.5">
+      <CoinIcon symbol={base} size={16} />
+      <span className="font-bold text-white text-[11px]">{symbol}</span>
+    </div>
+  );
+}
+
 function StatusBadge({ status }) {
   const map = {
-    Filled:    { color: '#4ade80', bg: 'rgba(74,222,128,0.08)',  icon: CheckCircle2 },
-    Open:      { color: '#00d4aa', bg: 'rgba(0,212,170,0.08)',   icon: Clock },
-    Cancelled: { color: '#64748b', bg: 'rgba(100,116,139,0.08)', icon: XCircle },
-    Rejected:  { color: '#f87171', bg: 'rgba(248,113,113,0.08)', icon: AlertCircle },
+    Filled:    { color: '#4ade80', bg: 'rgba(74,222,128,0.08)',  Icon: CheckCircle2 },
+    Open:      { color: '#00d4aa', bg: 'rgba(0,212,170,0.08)',   Icon: Clock },
+    Cancelled: { color: '#64748b', bg: 'rgba(100,116,139,0.08)', Icon: XCircle },
+    Rejected:  { color: '#f87171', bg: 'rgba(248,113,113,0.08)', Icon: AlertCircle },
   };
   const cfg = map[status] || map.Open;
-  const Icon = cfg.icon;
+  const { Icon } = cfg;
   return (
     <span
       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold"
@@ -84,7 +82,6 @@ function StatusBadge({ status }) {
   );
 }
 
-// ─── Empty state ──────────────────────────────────────────────────────────────
 function EmptyState({ label }) {
   return (
     <div className="flex flex-col items-center justify-center py-10 gap-2.5">
@@ -99,7 +96,6 @@ function EmptyState({ label }) {
   );
 }
 
-// ─── Table wrapper ────────────────────────────────────────────────────────────
 function ScrollTable({ children }) {
   return (
     <div className="overflow-x-auto scrollbar-none">
@@ -129,8 +125,6 @@ function TD({ children, right, style }) {
     </td>
   );
 }
-
-// PositionsTab is now a dedicated component: ./PositionsTab.jsx
 
 // ─── Open Orders tab ──────────────────────────────────────────────────────────
 function OpenOrdersTab({ orders }) {
@@ -184,14 +178,12 @@ function OrderHistoryTab({ orders }) {
     <div className="flex flex-col divide-y" style={{ divideColor: 'rgba(148,163,184,0.04)' }}>
       {orders.map((o, i) => (
         <div key={i} className="flex items-center px-3 py-2.5 gap-3 hover:bg-white/[0.015] transition-colors">
-          {/* Side pill */}
           <span
             className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded flex-shrink-0"
             style={{ color: sideColor(o.side), background: o.side === 'long' ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)' }}
           >
             {o.side}
           </span>
-          {/* Symbol + type */}
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             <CoinIcon symbol={extractBase(o.symbol)} size={16} />
             <div>
@@ -199,14 +191,11 @@ function OrderHistoryTab({ orders }) {
               <span className="text-[9px] ml-1.5" style={{ color: '#3d4f6b' }}>{o.type}</span>
             </div>
           </div>
-          {/* Price × size */}
           <div className="text-right hidden sm:block">
             <div className="font-mono text-[10px] text-slate-300">{fmt(o.price, o.price > 100 ? 2 : 4)}</div>
             <div className="font-mono text-[9px]" style={{ color: '#3d4f6b' }}>× {o.size}</div>
           </div>
-          {/* Status */}
           <StatusBadge status={o.status} />
-          {/* Timestamp */}
           <span className="font-mono text-[8.5px] flex-shrink-0 hidden md:block" style={{ color: '#2a3348' }}>{o.ts}</span>
         </div>
       ))}
@@ -221,27 +210,19 @@ function TradeHistoryTab({ trades }) {
     <div className="flex flex-col divide-y" style={{ divideColor: 'rgba(148,163,184,0.04)' }}>
       {trades.map((t, i) => (
         <div key={i} className="flex items-center px-3 py-2.5 gap-3 hover:bg-white/[0.015] transition-colors">
-          {/* Side dot */}
-          <div
-            className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-            style={{ background: sideColor(t.side) }}
-          />
-          {/* Symbol */}
+          <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: sideColor(t.side) }} />
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             <CoinIcon symbol={extractBase(t.symbol)} size={16} />
             <span className="text-[11px] font-bold text-white">{t.symbol}</span>
           </div>
-          {/* Price × size */}
           <div className="text-right">
             <div className="font-mono text-[10px] text-slate-300">{fmt(t.price, t.price > 100 ? 2 : 4)}</div>
             <div className="font-mono text-[9px]" style={{ color: '#3d4f6b' }}>× {t.size}</div>
           </div>
-          {/* Fee */}
           <div className="text-right hidden sm:block">
             <div className="text-[8.5px]" style={{ color: '#2a3348' }}>Fee</div>
             <div className="font-mono text-[9px]" style={{ color: '#3d4f6b' }}>${t.fee}</div>
           </div>
-          {/* PnL (only on closing trades) */}
           <div className="text-right w-16">
             {t.pnl ? (
               <span className="font-mono text-[10px] font-bold" style={{ color: pnlColor(parseFloat(t.pnl)) }}>
@@ -251,7 +232,6 @@ function TradeHistoryTab({ trades }) {
               <span className="text-[8.5px]" style={{ color: '#2a3348' }}>Open</span>
             )}
           </div>
-          {/* Timestamp */}
           <span className="font-mono text-[8.5px] flex-shrink-0 hidden md:block" style={{ color: '#2a3348' }}>{t.ts}</span>
         </div>
       ))}
@@ -261,8 +241,8 @@ function TradeHistoryTab({ trades }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function TradingBottomPanel({
-  positions   = DEMO_POSITIONS,
-  openOrders  = DEMO_OPEN_ORDERS,
+  positions    = DEMO_POSITIONS,
+  openOrders   = DEMO_OPEN_ORDERS,
   orderHistory = DEMO_ORDER_HISTORY,
   tradeHistory = DEMO_TRADE_HISTORY,
 }) {
@@ -303,7 +283,6 @@ export default function TradingBottomPanel({
                   {tab.count}
                 </span>
               )}
-              {/* Active underline */}
               {isActive && (
                 <div
                   className="absolute bottom-0 left-0 right-0 h-[2px] rounded-full"
