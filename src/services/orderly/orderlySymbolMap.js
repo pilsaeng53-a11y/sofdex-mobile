@@ -8,7 +8,11 @@
  */
 
 export const ORDERLY_BASE_URL = 'https://api.orderly.org';
-export const ORDERLY_WS_URL   = 'wss://ws.orderly.org/ws/stream/public';
+
+// For public market-data WS, Orderly requires an account_id in the URL path.
+// Any valid hex-format string works for unauthenticated public topics.
+const PUBLIC_GUEST_ID = '0x0000000000000000000000000000000000000001';
+export const ORDERLY_WS_URL = `wss://ws-evm.orderly.org/ws/stream/${PUBLIC_GUEST_ID}`;
 
 /** Map app symbol → Orderly instrument string */
 export const SYMBOL_MAP = {
