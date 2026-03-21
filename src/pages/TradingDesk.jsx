@@ -8,6 +8,7 @@ import OrderPanel          from '../components/trade/OrderPanel';
 import TradingBottomPanel  from '../components/trade/TradingBottomPanel';
 import SymbolDrawer        from '../components/trade/SymbolDrawer';
 import OrderlyDebugPanel   from '../components/trade/OrderlyDebugPanel';
+import TokenInfoCard       from '../components/trade/TokenInfoCard';
 import CoinIcon            from '../components/shared/CoinIcon';
 import { BarChart2, BookOpen, ArrowDownUp, LayoutGrid, ChevronDown } from 'lucide-react';
 
