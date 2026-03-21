@@ -225,46 +225,27 @@ export default function OrderBook({ symbol = 'BTC', onPriceClick }) {
   const liveAsset = getLiveAsset(symbol);
   const livePrice = liveAsset?.price;
 
-  const [asks, setAsks] = useState([]);
-  const [bids, setBids] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [status, setStatus] = useState('live'); // live | reconnecting | offline
-  const [priceDir, setPriceDir] = useState(null); // up | down | null
+  // Live order book from Orderly public WebSocket
+  const { asks, bids, status, loading } = useOrderBook(symbol);
+
+  const [priceDir, setPriceDir] = useState(null);
   const prevPrice = useRef(null);
-  const failCount = useRef(0);
+
   const midPrice = livePrice ?? (bids[0]?.price != null && asks[0]?.price != null
     ? (bids[0].price + asks[0].price) / 2
     : null);
 
-  const refresh = useCallback(() => {
-    if (!midPrice) return;
-    try {
-      const tick = getTickSize(midPrice);
-      const { asks: newAsks, bids: newBids } = buildBook(midPrice, tick);
-      setAsks(newAsks);
-      setBids(newBids);
-      setLoading(false);
-
-      // Price direction
-      if (prevPrice.current != null) {
-        setPriceDir(midPrice > prevPrice.current ? 'up' : midPrice < prevPrice.current ? 'down' : null);
-      }
-      prevPrice.current = midPrice;
-
-      failCount.current = 0;
-      setStatus('live');
-    } catch {
-      failCount.current += 1;
-      if (failCount.current >= 3) setStatus('offline');
-      else setStatus('reconnecting');
-    }
-  }, [midPrice]);
-
+  // Track price direction for spread bar arrow
   useEffect(() => {
-    refresh();
-    const id = setInterval(refresh, TICK_INTERVAL);
-    return () => clearInterval(id);
-  }, [refresh]);
+    if (midPrice == null) return;
+    if (prevPrice.current != null) {
+      setPriceDir(midPrice > prevPrice.current ? 'up' : midPrice < prevPrice.current ? 'down' : null);
+      const t = setTimeout(() => setPriceDir(null), 1500);
+      prevPrice.current = midPrice;
+      return () => clearTimeout(t);
+    }
+    prevPrice.current = midPrice;
+  }, [midPrice]);
 
   const maxAskSize = useMemo(() => Math.max(...asks.map(a => a.size), 0.001), [asks]);
   const maxBidSize = useMemo(() => Math.max(...bids.map(b => b.size), 0.001), [bids]);
