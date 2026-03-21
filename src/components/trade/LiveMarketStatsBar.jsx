@@ -1,133 +1,179 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowUpRight, ArrowDownRight, Wifi, WifiOff, RefreshCw, TrendingUp, BarChart2, Zap, Activity, DollarSign } from 'lucide-react';
+import {
+  ArrowUpRight, ArrowDownRight, WifiOff, RefreshCw,
+  TrendingUp, BarChart2, Zap, Activity, DollarSign, Tag
+} from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
 
 const OI_API = 'https://solfort-api.onrender.com/open-interest';
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtPrice(v) {
   if (v == null || isNaN(v)) return '—';
   if (v >= 10000) return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  if (v >= 100)   return v.toFixed(2);
-  if (v >= 1)     return v.toFixed(4);
+  if (v >= 100) return v.toFixed(2);
+  if (v >= 1)   return v.toFixed(4);
   return v.toFixed(6);
 }
 function fmtVolume(v) {
   if (v == null || isNaN(v)) return '—';
   if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
-  if (v >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
-  if (v >= 1e3) return `$${(v / 1e3).toFixed(0)}K`;
-  return `$${v}`;
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
+  if (v >= 1e3) return `$${(v / 1e3).toFixed(1)}K`;
+  return `$${Number(v).toLocaleString()}`;
 }
 function fmtOI(v) {
   if (v == null || isNaN(v)) return '—';
   if (v >= 1e9) return `$${(v / 1e9).toFixed(2)}B`;
-  if (v >= 1e6) return `$${(v / 1e6).toFixed(1)}M`;
+  if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
   return `$${(v / 1e3).toFixed(0)}K`;
 }
 function fmtChange(v) {
-  if (v == null || isNaN(v)) return null;
-  const s = v >= 0 ? '+' : '';
-  return `${s}${Number(v).toFixed(2)}%`;
+  if (v == null || isNaN(v)) return '—';
+  return `${v >= 0 ? '+' : ''}${Number(v).toFixed(2)}%`;
 }
 function fmtFunding(v) {
   if (v == null || isNaN(v)) return '—';
   return `${v >= 0 ? '+' : ''}${Number(v).toFixed(4)}%`;
 }
 
-// ─── Animated flash value ─────────────────────────────────────────────────────
-function AnimatedValue({ value, style, className }) {
-  const [flash, setFlash] = useState(null); // 'up' | 'down' | null
-  const prev = useRef(value);
-
+// ─── Flash hook — returns 'up' | 'down' | null ────────────────────────────────
+function useFlash(rawValue) {
+  const [flash, setFlash] = useState(null);
+  const prev = useRef(null);
   useEffect(() => {
-    const curr = parseFloat(value);
+    const n = parseFloat(rawValue);
     const p = parseFloat(prev.current);
-    if (!isNaN(curr) && !isNaN(p) && curr !== p) {
-      setFlash(curr > p ? 'up' : 'down');
-      const t = setTimeout(() => setFlash(null), 500);
-      prev.current = value;
+    if (!isNaN(n) && !isNaN(p) && n !== p) {
+      setFlash(n > p ? 'up' : 'down');
+      const t = setTimeout(() => setFlash(null), 600);
+      prev.current = rawValue;
       return () => clearTimeout(t);
     }
-    prev.current = value;
-  }, [value]);
+    if (prev.current === null) prev.current = rawValue;
+  }, [rawValue]);
+  return flash;
+}
 
-  const flashStyle = flash === 'up'
-    ? { color: '#4ade80', textShadow: '0 0 10px rgba(74,222,128,0.5)' }
-    : flash === 'down'
-    ? { color: '#f87171', textShadow: '0 0 10px rgba(248,113,113,0.5)' }
-    : null;
-
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+function Skel({ w = 16 }) {
   return (
-    <span className={`transition-colors duration-300 ${className}`} style={flashStyle || style}>
-      {value}
-    </span>
+    <div
+      className="rounded-md animate-pulse"
+      style={{ width: w, height: 15, background: 'rgba(148,163,184,0.08)' }}
+    />
   );
 }
 
-// ─── Skeleton pill ────────────────────────────────────────────────────────────
-function Skeleton({ w = 'w-14' }) {
-  return <div className={`h-4 ${w} rounded animate-pulse bg-slate-800`} />;
-}
-
-// ─── Status indicator ─────────────────────────────────────────────────────────
-function LiveDot({ state }) {
-  if (state === 'live')
-    return (
-      <div className="relative">
-        <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-        <div className="absolute inset-0 w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping opacity-60" />
-      </div>
-    );
-  if (state === 'reconnecting')
-    return <RefreshCw className="w-3 h-3 text-amber-400 animate-spin" />;
-  return <WifiOff className="w-3 h-3 text-slate-600" />;
-}
-
-// ─── Stat block ───────────────────────────────────────────────────────────────
-function StatBlock({ label, icon: IconEl, iconColor, primary, primaryStyle, secondary, secondaryColor, loading }) {
-  const Icon = IconEl;
+// ─── Live dot / status ────────────────────────────────────────────────────────
+function StatusBadge({ state }) {
+  const configs = {
+    live:         { color: '#4ade80', dot: true,  label: 'Live' },
+    reconnecting: { color: '#fbbf24', spin: true,  label: 'Reconnecting' },
+    offline:      { color: '#475569', icon: true,  label: 'Offline' },
+  };
+  const cfg = configs[state] || configs.live;
   return (
-    <div className="flex flex-col gap-0.5 min-w-0 flex-shrink-0">
+    <div className="flex items-center gap-1.5">
+      {cfg.dot && (
+        <div className="relative w-1.5 h-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+          <div className="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-50" />
+        </div>
+      )}
+      {cfg.spin && <RefreshCw className="w-2.5 h-2.5 animate-spin" style={{ color: cfg.color }} />}
+      {cfg.icon && <WifiOff className="w-2.5 h-2.5" style={{ color: cfg.color }} />}
+      <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: cfg.color }}>
+        {cfg.label}
+      </span>
+    </div>
+  );
+}
+
+// ─── Individual stat cell ─────────────────────────────────────────────────────
+function Stat({ label, Icon, iconColor, rawValue, displayValue, valueColor, subLabel, subColor, loading }) {
+  const flash = useFlash(rawValue);
+
+  const textColor = flash === 'up'
+    ? '#4ade80'
+    : flash === 'down'
+    ? '#f87171'
+    : (valueColor || '#e2e8f0');
+
+  const glow = flash === 'up'
+    ? '0 0 12px rgba(74,222,128,0.45)'
+    : flash === 'down'
+    ? '0 0 12px rgba(248,113,113,0.45)'
+    : 'none';
+
+  return (
+    <div className="flex flex-col gap-1 min-w-0 flex-shrink-0">
+      {/* Label */}
       <div className="flex items-center gap-1">
         <Icon className="w-2.5 h-2.5 flex-shrink-0" style={{ color: iconColor }} />
-        <span className="text-[8.5px] font-bold uppercase tracking-widest text-slate-600 whitespace-nowrap">{label}</span>
+        <span className="text-[9px] font-bold uppercase tracking-widest whitespace-nowrap" style={{ color: '#3d4f6b' }}>
+          {label}
+        </span>
       </div>
-      {loading ? <Skeleton /> : (
-        <AnimatedValue
-          value={primary}
-          className="font-mono text-[12px] font-black leading-tight truncate"
-          style={{ color: '#e2e8f0' }}
-        />
+
+      {/* Primary value */}
+      {loading ? (
+        <Skel w={52} />
+      ) : (
+        <span
+          className="font-mono font-black leading-none transition-all duration-300"
+          style={{
+            fontSize: 13,
+            color: textColor,
+            textShadow: glow,
+            letterSpacing: '-0.02em',
+          }}
+        >
+          {displayValue}
+        </span>
       )}
-      {secondary != null && !loading && (
-        <span className="font-mono text-[9px] font-semibold leading-tight" style={{ color: secondaryColor }}>
-          {secondary}
+
+      {/* Sub label */}
+      {subLabel && !loading && (
+        <span className="font-mono text-[9px] font-semibold leading-none" style={{ color: subColor || '#475569' }}>
+          {subLabel}
         </span>
       )}
     </div>
   );
 }
 
-// ─── Divider ─────────────────────────────────────────────────────────────────
+// ─── Separator ────────────────────────────────────────────────────────────────
 function Sep() {
-  return <div className="w-px self-stretch bg-[rgba(148,163,184,0.07)] flex-shrink-0" />;
+  return (
+    <div
+      className="self-stretch flex-shrink-0"
+      style={{ width: 1, background: 'rgba(148,163,184,0.06)', margin: '0 14px' }}
+    />
+  );
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// ─── Main component ───────────────────────────────────────────────────────────
 export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
   const { getLiveAsset } = useMarketData();
-  const asset = getLiveAsset(symbol);
+  const asset  = getLiveAsset(symbol);
+  const price  = asset?.price  ?? null;
+  const change = asset?.change ?? null;
+  const volume = asset?.volume ?? null;
+  const lastPrice = price != null ? parseFloat((price * (1 - 0.00007)).toFixed(8)) : null;
 
-  const [status, setStatus] = useState('live');
-  const [oiValue, setOiValue] = useState(null);
+  const [status,    setStatus]    = useState('live');
+  const [oiValue,   setOiValue]   = useState(null);
   const [oiLoading, setOiLoading] = useState(true);
+  const [funding,   setFunding]   = useState(0.0043);
 
-  // Funding rate simulation — update every 2s with tiny drift
-  const [funding, setFunding] = useState(0.0043);
+  // Funding drift every 2s
   useEffect(() => {
     const id = setInterval(() => {
-      setFunding(f => parseFloat((f + (Math.random() - 0.5) * 0.0008).toFixed(4)));
+      setFunding(f => {
+        const next = f + (Math.random() - 0.5) * 0.0009;
+        return parseFloat(Math.max(-0.08, Math.min(0.08, next)).toFixed(4));
+      });
     }, 2000);
     return () => clearInterval(id);
   }, []);
@@ -135,166 +181,142 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
   // OI from Solfort API
   useEffect(() => {
     let dead = false;
-    let failCount = 0;
-    const fetch_ = async () => {
+    let fails = 0;
+    const run = async () => {
       try {
         const res  = await fetch(OI_API);
         const json = await res.json();
-        if (!dead && !json?.error) {
-          const item = Array.isArray(json)
-            ? (json.find(i => i.symbol?.toUpperCase().includes(symbol.toUpperCase())) || json[0])
-            : json;
-          const v = item?.openInterest ?? item?.oi ?? item?.value ?? null;
-          setOiValue(v);
-          setOiLoading(false);
-          failCount = 0;
-          setStatus('live');
-        }
+        if (dead || json?.error) return;
+        const item = Array.isArray(json)
+          ? (json.find(i => i.symbol?.toUpperCase().includes(symbol.toUpperCase())) || json[0])
+          : json;
+        const v = item?.openInterest ?? item?.oi ?? item?.value ?? null;
+        setOiValue(v);
+        setOiLoading(false);
+        fails = 0;
+        setStatus('live');
       } catch {
-        failCount++;
-        if (!dead) setStatus(failCount >= 3 ? 'offline' : 'reconnecting');
+        if (dead) return;
+        fails++;
+        setStatus(fails >= 3 ? 'offline' : 'reconnecting');
+        if (fails >= 3) setOiLoading(false);
       }
     };
-    fetch_();
-    const id = setInterval(fetch_, 2000);
+    run();
+    const id = setInterval(run, 2000);
     return () => { dead = true; clearInterval(id); };
   }, [symbol]);
 
-  const price   = asset?.price  ?? null;
-  const change  = asset?.change ?? null;
-  const volume  = asset?.volume ?? null;
-  // Last price is mark price with tiny simulated spread
-  const lastPrice = price != null ? price * (1 - 0.00008) : null;
-
   const changeColor  = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
   const fundingColor = funding >= 0 ? '#4ade80' : '#f87171';
+  const loading      = !asset.available;
 
   return (
     <div
-      className="rounded-2xl overflow-hidden"
+      className="rounded-2xl overflow-hidden w-full"
       style={{
-        background: 'rgba(8,11,20,0.97)',
-        border: '1px solid rgba(148,163,184,0.09)',
-        boxShadow: '0 2px 24px rgba(0,0,0,0.5)',
+        background: 'linear-gradient(160deg, rgba(10,14,26,0.98) 0%, rgba(6,9,18,0.99) 100%)',
+        border: '1px solid rgba(148,163,184,0.08)',
+        boxShadow: '0 4px 32px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.02)',
       }}
     >
-      {/* Top accent */}
-      <div className="h-px" style={{ background: 'linear-gradient(90deg, rgba(0,212,170,0.3), rgba(59,130,246,0.2), transparent)' }} />
-
-      {/* Header bar */}
+      {/* Top gradient accent line */}
       <div
-        className="flex items-center justify-between px-4 pt-2.5 pb-2 border-b"
-        style={{ borderColor: 'rgba(148,163,184,0.06)', background: 'rgba(5,7,13,0.7)' }}
+        className="h-px w-full"
+        style={{ background: 'linear-gradient(90deg, #00d4aa35 0%, #3b82f625 40%, #8b5cf615 70%, transparent 100%)' }}
+      />
+
+      {/* Header row */}
+      <div
+        className="flex items-center justify-between px-4 py-2 border-b"
+        style={{ borderColor: 'rgba(148,163,184,0.055)' }}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
+          {/* Symbol badge */}
           <div
-            className="w-6 h-6 rounded-lg flex items-center justify-center text-[9px] font-black"
-            style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', border: '1px solid rgba(0,212,170,0.15)' }}
+            className="h-6 px-2 rounded-lg flex items-center gap-1.5 flex-shrink-0"
+            style={{
+              background: 'rgba(0,212,170,0.08)',
+              border: '1px solid rgba(0,212,170,0.14)',
+            }}
           >
-            {symbol.slice(0, 2)}
+            <span className="text-[10px] font-black text-[#00d4aa] tracking-tight">{symbol}</span>
+            <span className="text-[8px] text-slate-600">/USDT</span>
           </div>
-          <span className="text-xs font-black text-white">{symbol}/USDT</span>
           <span
-            className="text-[8.5px] font-bold px-1.5 py-0.5 rounded-md"
-            style={{ background: 'rgba(153,69,255,0.1)', color: '#a78bfa', border: '1px solid rgba(153,69,255,0.15)' }}
+            className="text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
+            style={{ background: 'rgba(139,92,246,0.1)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.14)' }}
           >
-            PERP
+            Perp
           </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <LiveDot state={status} />
-          <span
-            className="text-[8.5px] font-bold uppercase tracking-widest"
-            style={{ color: status === 'live' ? '#4ade80' : status === 'reconnecting' ? '#fbbf24' : '#64748b' }}
-          >
-            {status === 'live' ? 'Live' : status === 'reconnecting' ? 'Reconnecting' : 'Offline'}
-          </span>
-        </div>
+        <StatusBadge state={status} />
       </div>
 
-      {/* Stats grid — scrollable on mobile */}
-      <div className="flex items-start gap-0 overflow-x-auto scrollbar-none px-4 py-3">
-        {/* Mark Price */}
-        <div className="flex items-start gap-4 flex-shrink-0">
-          <StatBlock
-            label="Mark Price"
-            icon={TrendingUp}
-            iconColor="#00d4aa"
-            primary={price != null ? `$${fmtPrice(price)}` : '—'}
-            secondary={change != null ? fmtChange(change) : null}
-            secondaryColor={changeColor}
-            loading={!asset.available}
-          />
-        </div>
-
-        <div className="mx-3.5"><Sep /></div>
-
-        {/* Last Price */}
-        <div className="flex-shrink-0">
-          <StatBlock
-            label="Last Price"
-            icon={DollarSign}
-            iconColor="#3b82f6"
-            primary={lastPrice != null ? `$${fmtPrice(lastPrice)}` : '—'}
-            loading={!asset.available}
-          />
-        </div>
-
-        <div className="mx-3.5"><Sep /></div>
-
-        {/* 24h Change */}
-        <div className="flex-shrink-0">
-          <StatBlock
-            label="24h Change"
-            icon={change != null && change >= 0 ? ArrowUpRight : ArrowDownRight}
-            iconColor={changeColor}
-            primary={change != null ? fmtChange(change) : '—'}
-            primaryStyle={{ color: changeColor }}
-            loading={!asset.available}
-          />
-        </div>
-
-        <div className="mx-3.5"><Sep /></div>
-
-        {/* 24h Volume */}
-        <div className="flex-shrink-0">
-          <StatBlock
-            label="24h Volume"
-            icon={BarChart2}
-            iconColor="#8b5cf6"
-            primary={volume != null ? fmtVolume(volume) : '—'}
-            loading={!asset.available}
-          />
-        </div>
-
-        <div className="mx-3.5"><Sep /></div>
-
-        {/* Funding Rate */}
-        <div className="flex-shrink-0">
-          <StatBlock
-            label="Funding 8h"
-            icon={Zap}
-            iconColor={fundingColor}
-            primary={fmtFunding(funding)}
-            primaryStyle={{ color: fundingColor }}
-            secondary={funding >= 0 ? 'Longs pay' : 'Shorts pay'}
-            secondaryColor="#64748b"
-            loading={false}
-          />
-        </div>
-
-        <div className="mx-3.5"><Sep /></div>
-
-        {/* Open Interest */}
-        <div className="flex-shrink-0">
-          <StatBlock
-            label="Open Int."
-            icon={Activity}
-            iconColor="#f59e0b"
-            primary={oiValue != null ? fmtOI(oiValue) : '—'}
-            loading={oiLoading}
-          />
-        </div>
+      {/* Stats row — horizontally scrollable on mobile */}
+      <div
+        className="flex items-stretch overflow-x-auto scrollbar-none px-4 py-3.5"
+        style={{ gap: 0 }}
+      >
+        <Stat
+          label="Mark Price"
+          Icon={TrendingUp}
+          iconColor="#00d4aa"
+          rawValue={price}
+          displayValue={price != null ? `$${fmtPrice(price)}` : '—'}
+          subLabel={change != null ? fmtChange(change) : null}
+          subColor={changeColor}
+          loading={loading}
+        />
+        <Sep />
+        <Stat
+          label="Last Price"
+          Icon={Tag}
+          iconColor="#3b82f6"
+          rawValue={lastPrice}
+          displayValue={lastPrice != null ? `$${fmtPrice(lastPrice)}` : '—'}
+          loading={loading}
+        />
+        <Sep />
+        <Stat
+          label="24h Change"
+          Icon={change != null && change >= 0 ? ArrowUpRight : ArrowDownRight}
+          iconColor={changeColor}
+          rawValue={change}
+          displayValue={fmtChange(change)}
+          valueColor={changeColor}
+          loading={loading}
+        />
+        <Sep />
+        <Stat
+          label="24h Volume"
+          Icon={BarChart2}
+          iconColor="#8b5cf6"
+          rawValue={volume}
+          displayValue={volume != null ? fmtVolume(volume) : '—'}
+          loading={loading}
+        />
+        <Sep />
+        <Stat
+          label="Funding 8h"
+          Icon={Zap}
+          iconColor={fundingColor}
+          rawValue={funding}
+          displayValue={fmtFunding(funding)}
+          valueColor={fundingColor}
+          subLabel={funding >= 0 ? 'Longs pay' : 'Shorts pay'}
+          subColor="#3d4f6b"
+          loading={false}
+        />
+        <Sep />
+        <Stat
+          label="Open Int."
+          Icon={Activity}
+          iconColor="#f59e0b"
+          rawValue={oiValue}
+          displayValue={oiValue != null ? fmtOI(oiValue) : (oiLoading ? '—' : 'N/A')}
+          loading={oiLoading}
+        />
       </div>
     </div>
   );
