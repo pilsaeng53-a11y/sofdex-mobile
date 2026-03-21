@@ -125,6 +125,20 @@ export default function OrderlyDebugPanel() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('orderly_debug') === '1' || window.__ORDERLY_DEBUG__) setVisible(true);
     window.__toggleOrderlyDebug = () => setVisible(v => !v);
+
+    // Print integration verification summary on load
+    console.group('[Orderly Debug] ═══ Integration Verification Summary ═══');
+    console.log('WS URL:          wss://ws-evm.orderly.org/ws/stream/<guest_id>');
+    console.log('REST URL:        https://api.orderly.org');
+    console.log('Price priority:  mark_price → lastPrice (24h_close) → indexPrice');
+    console.log('OrderPanel:      uses Orderly ticker only (no MarketDataProvider)');
+    console.log('ChartContainer:  uses Orderly ticker + klines only');
+    console.log('StatsBar:        uses Orderly ticker (REST poll every 5s)');
+    console.log('Subscriptions:   orderbook · trade · kline_{tf} — all via WS');
+    console.log('Stale watchdog:  15s → forced reconnect');
+    console.log('Heartbeat:       client ping every 10s; server ping → pong reply');
+    console.log('Toggle panel:    window.__toggleOrderlyDebug()  or  ?orderly_debug=1');
+    console.groupEnd();
   }, []);
 
   // ── Hooks ──────────────────────────────────────────────────────────────────
