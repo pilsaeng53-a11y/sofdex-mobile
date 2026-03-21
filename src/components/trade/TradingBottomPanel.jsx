@@ -32,6 +32,22 @@ const DEMO_TRADE_HISTORY = [
   { symbol: 'ETH/USDT', side: 'long',  price: 3102.50,  size: '2.000', fee: '1.24',  pnl: null,    ts: '2026-03-20 17:55:19' },
 ];
 
+// ─── Extract base from "BTC/USDT" → "BTC" ────────────────────────────────────
+function extractBase(symbol) {
+  return symbol?.split('/')?.[0] ?? symbol ?? '?';
+}
+
+// ─── Symbol cell with icon ────────────────────────────────────────────────────
+function SymbolCell({ symbol }) {
+  const base = extractBase(symbol);
+  return (
+    <div className="flex items-center gap-1.5">
+      <CoinIcon symbol={base} size={16} />
+      <span className="font-bold text-white text-[11px]">{symbol}</span>
+    </div>
+  );
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(v, decimals = 2) {
   if (v == null) return '—';
