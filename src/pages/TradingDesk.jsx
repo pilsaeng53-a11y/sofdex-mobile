@@ -175,6 +175,9 @@ export default function TradingDesk() {
 
       {/* Bottom breathing room */}
       <div className="h-4" />
+
+      {/* Debug panel — hidden by default. Enable: ?orderly_debug=1 or window.__toggleOrderlyDebug() */}
+      <OrderlyDebugPanel />
     </div>
   );
 }
