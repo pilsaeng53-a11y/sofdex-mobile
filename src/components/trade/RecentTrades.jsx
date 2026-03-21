@@ -182,57 +182,8 @@ function EmptyState({ message }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function RecentTrades({ symbol = 'BTC' }) {
-  const { getLiveAsset } = useMarketData();
-  const liveAsset  = getLiveAsset(symbol);
-  const livePrice  = liveAsset?.price;
-
-  const [trades,  setTrades]  = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [status,  setStatus]  = useState('live');
-
-  const failCount  = useRef(0);
-  const priceRef   = useRef(null);
-  const initialized = useRef(false);
-
-  // Build initial history once price is available
-  useEffect(() => {
-    if (!livePrice || initialized.current) return;
-    initialized.current = true;
-    priceRef.current = livePrice;
-    const history = buildHistory(livePrice, INIT_COUNT);
-    setTrades(history);
-    setLoading(false);
-    setStatus('live');
-  }, [livePrice]);
-
-  // Emit new trades on interval
-  const emitTrade = useCallback(() => {
-    const price = livePrice ?? priceRef.current;
-    if (!price) {
-      failCount.current += 1;
-      setStatus(failCount.current >= 3 ? 'offline' : 'reconnecting');
-      return;
-    }
-    try {
-      const trade = makeTrade(price, priceRef.current);
-      priceRef.current = price;
-      setTrades(prev => {
-        const next = [trade, ...prev];
-        return next.slice(0, MAX_TRADES);
-      });
-      failCount.current = 0;
-      setStatus('live');
-    } catch {
-      failCount.current += 1;
-      setStatus(failCount.current >= 3 ? 'offline' : 'reconnecting');
-    }
-  }, [livePrice]);
-
-  useEffect(() => {
-    if (loading) return;
-    const id = setInterval(emitTrade, TICK_MS);
-    return () => clearInterval(id);
-  }, [emitTrade, loading]);
+  // Live trade stream from Orderly public WebSocket
+  const { trades, status, loading } = useRecentTrades(symbol);
 
   return (
     <div
