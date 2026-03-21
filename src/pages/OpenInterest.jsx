@@ -3,6 +3,7 @@ import { BarChart2, TrendingUp, TrendingDown, ArrowUpRight } from 'lucide-react'
 import { CRYPTO_MARKETS, formatPrice } from '../components/shared/MarketData';
 import { Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell } from 'recharts';
+import LiveOpenInterest from '../components/shared/LiveOpenInterest';
 
 // Deterministic OI and long/short seeded from symbol
 function getOIData(m) {
