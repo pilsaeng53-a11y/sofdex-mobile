@@ -56,6 +56,11 @@ export default function OpenInterest() {
         </div>
       </div>
 
+      {/* Trading stats bar */}
+      <div className="mb-3">
+        <TradingStatsBar symbol="BTC" />
+      </div>
+
       {/* Live OI widget */}
       <div className="mb-4">
         <LiveOpenInterest baseValue={totalOI} symbol="ALL" />
