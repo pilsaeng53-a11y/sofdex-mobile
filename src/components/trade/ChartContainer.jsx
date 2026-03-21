@@ -4,6 +4,7 @@ import {
   RefreshCw, WifiOff, Activity, ChevronUp, ChevronDown
 } from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
+import { useKlines } from '../../hooks/useOrderlyMarket';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D'];

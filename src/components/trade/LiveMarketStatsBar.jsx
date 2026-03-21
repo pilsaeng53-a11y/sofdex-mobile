@@ -4,6 +4,7 @@ import {
   TrendingUp, BarChart2, Zap, Activity, DollarSign, Tag
 } from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
+import { useTicker } from '../../hooks/useOrderlyMarket';
 
 const OI_API = 'https://solfort-api.onrender.com/open-interest';
 
