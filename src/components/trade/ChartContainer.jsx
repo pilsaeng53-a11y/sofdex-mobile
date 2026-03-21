@@ -179,11 +179,11 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   const [priceDir,  setPriceDir]  = useState(null);
   const prevPrice = useRef(null);
 
-  // Real klines from Orderly public REST
-  const { candles, loading, error } = useKlines(symbol, timeframe);
+  // Live klines from Orderly WebSocket (no public REST kline endpoint exists)
+  const { candles, loading, error, status: klinesStatus } = useKlines(symbol, timeframe);
 
-  // Derive status from data state
-  const status = error ? 'offline' : loading ? 'reconnecting' : 'live';
+  // Status: use klines WS status, but override with 'live' once we have candles
+  const status = candles.length > 0 ? 'live' : klinesStatus;
 
   // Last candle OHLC for the footer bar
   const lastCandle = candles.length > 0 ? candles[candles.length - 1] : null;
