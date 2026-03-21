@@ -157,28 +157,30 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
         // Server heartbeat ping → reply pong
         if (msg.event === 'ping') {
           ws.send(JSON.stringify({ event: 'pong' }));
-          console.log(`[Orderly WS]   🏓 server ping → pong replied (topic="${topic}")`);
           return;
         }
 
-        // Subscription acknowledgement
-        if (msg.event === 'subscribe' || msg.event === 'ack') {
-          console.log(`[Orderly WS] ✅ Subscribe ACK for topic="${topic}"`, msg);
+        // Subscription acknowledgement or info frames
+        if (msg.event) {
+          console.log(`[Orderly WS] ℹ event="${msg.event}" topic="${topic}"`, msg);
           return;
         }
 
-        // Ignore other control frames
-        if (msg.event) return;
+        // Orderly market data frames: { topic, ts, data: {...} }
+        // The payload data lives under msg.data
+        const payload = msg.data ?? msg;
 
-        if (msg.data != null) {
+        if (payload != null && (msg.topic || msg.data != null)) {
           if (!firstMessageReceived) {
             firstMessageReceived = true;
-            console.log(`[Orderly WS] 🟢 First data message for topic="${topic}" ts=${new Date().toISOString()}`, msg);
+            console.log(`[Orderly WS] 🟢 First data for topic="${topic}"`, msg);
           }
           onStatus('live');
-          onMessage(normalise(msg.data));
+          onMessage(normalise(payload));
         }
-      } catch { /* ignore malformed frames */ }
+      } catch (e) {
+        console.error(`[Orderly WS] ❌ Parse error topic="${topic}":`, e, ev.data?.slice?.(0, 200));
+      }
     };
 
     ws.onerror = (err) => {
