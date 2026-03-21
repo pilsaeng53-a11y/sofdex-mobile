@@ -39,6 +39,7 @@ export const TIMEFRAME_MAP = {
   '1h':  '1h',
   '4h':  '4h',
   '1D':  '1d',
+  '1d':  '1d',
 };
 
 /**
