@@ -1,14 +1,24 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   Zap, Wallet, ChevronDown, ChevronUp,
-  AlertTriangle, CheckCircle2, CircleDot, TrendingUp, TrendingDown
+  AlertTriangle, CheckCircle2, CircleDot, TrendingUp, TrendingDown,
+  DollarSign, Coins, Percent
 } from 'lucide-react';
 import { useWallet } from '../shared/WalletContext';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const PCT_STEPS = [25, 50, 75, 100];
+const PCT_STEPS    = [25, 50, 75, 100];
 const LEVERAGE_PRESETS = [1, 2, 5, 10, 25, 50, 100];
 const MOCK_BALANCE = 4821.36;
+const TAKER_FEE    = 0.0005; // 0.05%
+const MAKER_FEE    = 0.0002; // 0.02%
+
+// Amount denomination modes
+const DENOM_MODES = [
+  { id: 'base',    label: 'Coin',   shortLabel: 'Coin',  Icon: Coins },
+  { id: 'quote',   label: 'USDC',   shortLabel: 'USDC',  Icon: DollarSign },
+  { id: 'percent', label: '%',      shortLabel: '%',     Icon: Percent },
+];
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmt(v, decimals = 2) {
@@ -20,6 +30,16 @@ function fmtUSD(v) {
   if (v >= 1e6) return `$${(v / 1e6).toFixed(2)}M`;
   if (v >= 1e3) return `$${(v / 1e3).toFixed(2)}K`;
   return `$${v.toFixed(2)}`;
+}
+function fmtBase(v, symbol) {
+  if (!v || isNaN(v)) return `—`;
+  return `${Number(v).toFixed(6)} ${symbol}`;
+}
+function smartDecimals(price) {
+  if (!price || price === 0) return 2;
+  if (price >= 1000) return 2;
+  if (price >= 1)    return 4;
+  return 6;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -37,7 +57,7 @@ function FieldLabel({ label, right }) {
   );
 }
 
-function InputRow({ value, onChange, placeholder, prefix, suffix, highlight, error, disabled, step }) {
+function InputRow({ value, onChange, placeholder, prefix, suffix, highlight, error, disabled, step, right }) {
   const [focused, setFocused] = useState(false);
   const borderColor = error
     ? 'rgba(248,113,113,0.5)'
@@ -83,6 +103,7 @@ function InputRow({ value, onChange, placeholder, prefix, suffix, highlight, err
           {suffix}
         </span>
       )}
+      {right}
     </div>
   );
 }
@@ -97,19 +118,144 @@ function ErrorMsg({ msg }) {
   );
 }
 
-function SummaryRow({ label, value, valueColor, dimTop }) {
+// ─── Denomination Selector ────────────────────────────────────────────────────
+function DenomSelector({ value, onChange, symbol }) {
+  return (
+    <div
+      className="flex rounded-lg overflow-hidden flex-shrink-0"
+      style={{ background: 'rgba(4,6,14,0.9)', border: '1px solid rgba(148,163,184,0.09)' }}
+    >
+      {DENOM_MODES.map(({ id, shortLabel, Icon }) => {
+        const active = value === id;
+        return (
+          <button
+            key={id}
+            onClick={() => onChange(id)}
+            title={id === 'base' ? `Amount in ${symbol}` : id === 'quote' ? 'Amount in USDC' : 'Percentage of balance'}
+            className="flex items-center gap-1 px-2.5 py-2 text-[9px] font-black transition-all duration-150"
+            style={active ? {
+              background: 'rgba(0,212,170,0.12)',
+              color: '#00d4aa',
+              borderBottom: '1.5px solid rgba(0,212,170,0.4)',
+            } : {
+              color: '#2e3d55',
+              borderBottom: '1.5px solid transparent',
+            }}
+          >
+            <Icon className="w-2.5 h-2.5" />
+            <span className="hidden sm:inline">{id === 'base' ? symbol : shortLabel}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Enhanced Order Summary ───────────────────────────────────────────────────
+function SummaryRow({ label, value, valueColor, dimTop, highlight }) {
   return (
     <div
       className={`flex items-center justify-between py-1.5 ${dimTop ? 'mt-1 pt-2 border-t' : ''}`}
       style={dimTop ? { borderColor: 'rgba(148,163,184,0.06)' } : {}}
     >
-      <span className="text-[9.5px]" style={{ color: '#3d4f6b' }}>{label}</span>
+      <span className="text-[9px]" style={{ color: '#3d4f6b' }}>{label}</span>
       <span
         className="text-[9.5px] font-black font-mono"
-        style={{ color: valueColor || '#64748b' }}
+        style={{
+          color: valueColor || '#64748b',
+          textShadow: highlight ? `0 0 8px ${valueColor}66` : 'none',
+        }}
       >
         {value}
       </span>
+    </div>
+  );
+}
+
+function OrderSummary({ mode, side, denom, symbol, entryPrice, baseQty, quoteQty, leverage, fee, margin, liqPrice, balance, isReady }) {
+  const sideColor = side === 'buy' ? '#4ade80' : '#f87171';
+  const denomLabel = denom === 'base' ? symbol : denom === 'quote' ? 'USDC' : '% mode';
+
+  return (
+    <div
+      className="rounded-xl px-3 py-2.5 space-y-0.5 transition-all duration-300"
+      style={{
+        background: isReady ? 'rgba(0,212,170,0.03)' : 'rgba(4,6,14,0.7)',
+        border: isReady
+          ? '1px solid rgba(0,212,170,0.1)'
+          : '1px solid rgba(148,163,184,0.06)',
+      }}
+    >
+      {/* Header row */}
+      <div className="flex items-center justify-between pb-1.5 mb-0.5" style={{ borderBottom: '1px solid rgba(148,163,184,0.06)' }}>
+        <span className="text-[8.5px] font-black uppercase tracking-widest" style={{ color: '#3d4f6b' }}>
+          Order Summary
+        </span>
+        <span
+          className="text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+          style={{
+            background: isReady ? 'rgba(0,212,170,0.1)' : 'rgba(148,163,184,0.06)',
+            color: isReady ? '#00d4aa' : '#3d4f6b',
+          }}
+        >
+          {isReady ? 'READY' : 'PENDING'}
+        </span>
+      </div>
+
+      <SummaryRow label="Order Type"       value={mode === 'limit' ? 'Limit' : 'Market'}     valueColor="#64748b" />
+      <SummaryRow label="Direction"        value={side === 'buy' ? '▲ Long' : '▼ Short'}     valueColor={sideColor} />
+      <SummaryRow label="Amount Mode"      value={denomLabel}                                  valueColor="#94a3b8" />
+      <SummaryRow label="Entry Price"
+        value={entryPrice > 0
+          ? (mode === 'market' ? `~$${entryPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}` : `$${entryPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}`)
+          : '—'}
+        valueColor="#94a3b8"
+      />
+      <SummaryRow
+        label="Est. Qty"
+        value={baseQty > 0 ? `${baseQty.toFixed(6)} ${symbol}` : '—'}
+        valueColor={baseQty > 0 ? '#e2e8f0' : undefined}
+        highlight={baseQty > 0}
+      />
+      <SummaryRow
+        label="Total Value"
+        value={quoteQty > 0 ? fmtUSD(quoteQty) : '—'}
+        valueColor={quoteQty > 0 ? '#e2e8f0' : undefined}
+        highlight={quoteQty > 0}
+      />
+
+      {/* Separator */}
+      <div className="pt-1" />
+
+      <SummaryRow
+        label="Margin Required"
+        value={margin > 0 ? fmtUSD(margin) : '—'}
+        valueColor={margin > 0 ? '#f59e0b' : undefined}
+        dimTop
+      />
+      <SummaryRow
+        label="Available Balance"
+        value={`${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDC`}
+        valueColor="#475569"
+      />
+      <SummaryRow
+        label="Balance After"
+        value={margin > 0 ? fmtUSD(Math.max(0, balance - margin)) : '—'}
+        valueColor={margin > 0 && (balance - margin) < balance * 0.2 ? '#f87171' : '#475569'}
+      />
+
+      {/* Risk row */}
+      <SummaryRow
+        label="Liq. Price"
+        value={liqPrice != null && liqPrice > 0 ? `$${fmt(liqPrice, 2)}` : '—'}
+        valueColor={liqPrice != null && liqPrice > 0 ? '#f87171' : undefined}
+        dimTop
+      />
+      <SummaryRow
+        label={`Est. Fee (${mode === 'limit' ? '0.02%' : '0.05%'})`}
+        value={fee > 0 ? `$${fee.toFixed(4)}` : '—'}
+        valueColor="#64748b"
+      />
     </div>
   );
 }
@@ -151,7 +297,8 @@ export default function OrderPanel({ asset, externalPrice }) {
 
   // ── State ──
   const [side, setSide]         = useState('buy');
-  const [mode, setMode]         = useState('limit'); // 'limit' | 'market'
+  const [mode, setMode]         = useState('limit');     // 'limit' | 'market'
+  const [denom, setDenom]       = useState('base');      // 'base' | 'quote' | 'percent'
   const [price, setPrice]       = useState('');
   const [amount, setAmount]     = useState('');
   const [leverage, setLeverage] = useState(Math.min(10, maxLev));
@@ -161,6 +308,12 @@ export default function OrderPanel({ asset, externalPrice }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted]   = useState(false);
   const [errors, setErrors]     = useState({});
+
+  // Reset amount when symbol changes
+  useEffect(() => {
+    setAmount('');
+    setErrors({});
+  }, [symbol]);
 
   // Auto-fill from OrderBook click
   useEffect(() => {
@@ -172,18 +325,35 @@ export default function OrderPanel({ asset, externalPrice }) {
   }, [externalPrice]);
 
   // ── Derived calculations ──
-  const entryPrice  = mode === 'market' ? basePrice : (parseFloat(price) || 0);
-  const parsedAmt   = parseFloat(amount) || 0;
-  const total       = entryPrice > 0 && parsedAmt > 0 ? entryPrice * parsedAmt : 0;
-  const margin      = total / leverage;
-  const fee         = total * 0.0005;
-  const liqOffset   = entryPrice / leverage * 0.9;
-  const liqPrice    = entryPrice > 0
+  const entryPrice = mode === 'market' ? basePrice : (parseFloat(price) || 0);
+  const parsedAmt  = parseFloat(amount) || 0;
+
+  // Calculate base qty and quote qty based on denomination mode
+  const { baseQty, quoteQty } = useMemo(() => {
+    if (entryPrice <= 0 || parsedAmt <= 0) return { baseQty: 0, quoteQty: 0 };
+    if (denom === 'base') {
+      return { baseQty: parsedAmt, quoteQty: parsedAmt * entryPrice };
+    }
+    if (denom === 'quote') {
+      return { baseQty: parsedAmt / entryPrice, quoteQty: parsedAmt };
+    }
+    if (denom === 'percent') {
+      const usd = MOCK_BALANCE * (parsedAmt / 100);
+      return { baseQty: usd / entryPrice, quoteQty: usd };
+    }
+    return { baseQty: 0, quoteQty: 0 };
+  }, [denom, parsedAmt, entryPrice]);
+
+  const margin    = quoteQty / leverage;
+  const feeRate   = mode === 'limit' ? MAKER_FEE : TAKER_FEE;
+  const fee       = quoteQty * feeRate;
+  const liqOffset = entryPrice / leverage * 0.9;
+  const liqPrice  = entryPrice > 0 && quoteQty > 0
     ? side === 'buy' ? entryPrice - liqOffset : entryPrice + liqOffset
     : null;
 
   const priceIsValid  = mode === 'market' || (price !== '' && parseFloat(price) > 0);
-  const amountIsValid = parsedAmt > 0 && parsedAmt <= MOCK_BALANCE / (entryPrice || 1);
+  const amountIsValid = parsedAmt > 0;
 
   // ── Validation ──
   const validate = useCallback(() => {
@@ -192,25 +362,35 @@ export default function OrderPanel({ asset, externalPrice }) {
       e.price = 'Enter a valid limit price';
     if (!parsedAmt || parsedAmt <= 0)
       e.amount = 'Enter an amount';
-    if (parsedAmt > 0 && entryPrice > 0 && parsedAmt * entryPrice > MOCK_BALANCE * leverage)
-      e.amount = 'Exceeds max position size';
+    if (denom === 'percent' && parsedAmt > 100)
+      e.amount = 'Percentage cannot exceed 100%';
+    if (margin > MOCK_BALANCE)
+      e.amount = 'Insufficient balance';
     setErrors(e);
     return Object.keys(e).length === 0;
-  }, [mode, price, parsedAmt, entryPrice, leverage]);
+  }, [mode, price, parsedAmt, denom, margin]);
 
   const isReady = useMemo(
-    () => priceIsValid && amountIsValid && Object.values(errors).every(v => !v),
-    [priceIsValid, amountIsValid, errors]
+    () => priceIsValid && amountIsValid && Object.values(errors).every(v => !v) && quoteQty > 0,
+    [priceIsValid, amountIsValid, errors, quoteQty]
   );
 
-  // ── Quick % allocation (of available balance in base units) ──
+  // ── Quick % allocation ──
   const handlePct = useCallback((pct) => {
+    if (denom === 'percent') {
+      setAmount(String(pct));
+      setErrors(e => ({ ...e, amount: null }));
+      return;
+    }
     if (!entryPrice || entryPrice === 0) return;
     const usdAmt = MOCK_BALANCE * (pct / 100);
-    const baseAmt = usdAmt / entryPrice;
-    setAmount(baseAmt.toFixed(6));
+    if (denom === 'quote') {
+      setAmount(usdAmt.toFixed(2));
+    } else {
+      setAmount((usdAmt / entryPrice).toFixed(6));
+    }
     setErrors(e => ({ ...e, amount: null }));
-  }, [entryPrice]);
+  }, [denom, entryPrice]);
 
   const handleSubmit = async () => {
     if (!validate()) return;
@@ -227,12 +407,34 @@ export default function OrderPanel({ asset, externalPrice }) {
     }, 2500);
   };
 
+  // ── Denom placeholder helper ──
+  const amountPlaceholder = useMemo(() => {
+    if (denom === 'base')    return `0.000000`;
+    if (denom === 'quote')   return `0.00`;
+    if (denom === 'percent') return `0`;
+    return '0.00';
+  }, [denom]);
+
+  const amountSuffix = useMemo(() => {
+    if (denom === 'base')    return symbol;
+    if (denom === 'quote')   return 'USDC';
+    if (denom === 'percent') return '%';
+    return '';
+  }, [denom, symbol]);
+
+  const amountStep = useMemo(() => {
+    if (denom === 'base')    return '0.000001';
+    if (denom === 'quote')   return '0.01';
+    if (denom === 'percent') return '1';
+    return '0.01';
+  }, [denom]);
+
   // ── Colors ──
-  const isBuy         = side === 'buy';
-  const sideColor     = isBuy ? '#4ade80' : '#f87171';
-  const sideBg        = isBuy ? 'rgba(74,222,128,0.1)' : 'rgba(248,113,113,0.1)';
-  const sideBorder    = isBuy ? 'rgba(74,222,128,0.2)' : 'rgba(248,113,113,0.2)';
-  const SideIcon      = isBuy ? TrendingUp : TrendingDown;
+  const isBuy      = side === 'buy';
+  const sideColor  = isBuy ? '#4ade80' : '#f87171';
+  const sideBg     = isBuy ? 'rgba(74,222,128,0.1)'  : 'rgba(248,113,113,0.1)';
+  const sideBorder = isBuy ? 'rgba(74,222,128,0.2)'  : 'rgba(248,113,113,0.2)';
+  const SideIcon   = isBuy ? TrendingUp : TrendingDown;
 
   return (
     <div
@@ -270,10 +472,7 @@ export default function OrderPanel({ asset, externalPrice }) {
                   boxShadow: `0 2px 14px ${c}18`,
                 } : { color: '#2e3d55', border: '1px solid transparent' }}
               >
-                {active && (s === 'buy'
-                  ? <TrendingUp className="w-3 h-3" />
-                  : <TrendingDown className="w-3 h-3" />
-                )}
+                {active && (s === 'buy' ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />)}
                 {label}
               </button>
             );
@@ -282,7 +481,7 @@ export default function OrderPanel({ asset, externalPrice }) {
       </div>
 
       {/* ── Scrollable body ── */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3.5">
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3.5 scrollbar-none">
 
         {/* Order type tabs */}
         <div
@@ -316,7 +515,7 @@ export default function OrderPanel({ asset, externalPrice }) {
           </div>
           <span className="text-[11px] font-black font-mono text-white">
             {MOCK_BALANCE.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            {' '}<span style={{ color: '#3d4f6b' }}>USDT</span>
+            {' '}<span style={{ color: '#3d4f6b' }}>USDC</span>
           </span>
         </div>
 
@@ -325,14 +524,14 @@ export default function OrderPanel({ asset, externalPrice }) {
           <div>
             <FieldLabel
               label="Limit Price"
-              right={basePrice > 0 ? `Last: $${fmt(basePrice, 2)}` : undefined}
+              right={basePrice > 0 ? `Last: $${fmt(basePrice, smartDecimals(basePrice))}` : undefined}
             />
             <InputRow
               value={price}
               onChange={v => { setPrice(v); setErrors(e => ({ ...e, price: null })); }}
-              placeholder={basePrice > 0 ? basePrice.toFixed(2) : '0.00'}
+              placeholder={basePrice > 0 ? basePrice.toFixed(smartDecimals(basePrice)) : '0.00'}
               prefix="$"
-              suffix="USDT"
+              suffix="USDC"
               highlight={!!externalPrice && price === String(externalPrice)}
               error={!!errors.price}
               step="0.01"
@@ -346,26 +545,49 @@ export default function OrderPanel({ asset, externalPrice }) {
           >
             <span className="text-[9.5px] font-bold" style={{ color: '#3d4f6b' }}>Market Price</span>
             <span className="text-[11px] font-black font-mono text-white">
-              {basePrice > 0 ? `$${basePrice.toLocaleString('en-US', { minimumFractionDigits: 2 })}` : '—'}
+              {basePrice > 0 ? `$${basePrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}` : '—'}
             </span>
           </div>
         )}
 
-        {/* Amount */}
+        {/* Amount + Denomination Selector */}
         <div>
-          <FieldLabel
-            label={`Amount (${symbol})`}
-            right={total > 0 ? `≈ ${fmtUSD(total)}` : undefined}
-          />
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[9.5px] font-bold uppercase tracking-widest" style={{ color: '#3d4f6b' }}>
+              Amount
+            </span>
+            <DenomSelector value={denom} onChange={v => { setDenom(v); setAmount(''); setErrors(e => ({ ...e, amount: null })); }} symbol={symbol} />
+          </div>
+
           <InputRow
             value={amount}
             onChange={v => { setAmount(v); setErrors(e => ({ ...e, amount: null })); }}
-            placeholder="0.000000"
-            suffix={symbol}
+            placeholder={amountPlaceholder}
+            suffix={amountSuffix}
             error={!!errors.amount}
-            step="0.000001"
+            step={amountStep}
           />
+
+          {/* Derived value hint */}
+          {parsedAmt > 0 && entryPrice > 0 && denom !== 'quote' && (
+            <div className="mt-1 text-right">
+              <span className="text-[9px] font-mono" style={{ color: '#3d4f6b' }}>
+                {denom === 'percent'
+                  ? `≈ ${fmtUSD(quoteQty)} · ${baseQty.toFixed(6)} ${symbol}`
+                  : `≈ ${fmtUSD(quoteQty)}`}
+              </span>
+            </div>
+          )}
+          {parsedAmt > 0 && entryPrice > 0 && denom === 'quote' && (
+            <div className="mt-1 text-right">
+              <span className="text-[9px] font-mono" style={{ color: '#3d4f6b' }}>
+                ≈ {baseQty.toFixed(6)} {symbol}
+              </span>
+            </div>
+          )}
+
           <ErrorMsg msg={errors.amount} />
+
           {/* Quick % buttons */}
           <div className="grid grid-cols-4 gap-1 mt-2">
             {PCT_STEPS.map(pct => (
@@ -428,11 +650,7 @@ export default function OrderPanel({ asset, externalPrice }) {
               className="h-full rounded-full transition-all duration-400"
               style={{
                 width: `${(leverage / maxLev) * 100}%`,
-                background: leverage <= maxLev * 0.2
-                  ? '#4ade80'
-                  : leverage <= maxLev * 0.5
-                  ? '#f59e0b'
-                  : '#f87171',
+                background: leverage <= maxLev * 0.2 ? '#4ade80' : leverage <= maxLev * 0.5 ? '#f59e0b' : '#f87171',
               }}
             />
           </div>
@@ -456,13 +674,10 @@ export default function OrderPanel({ asset, externalPrice }) {
               Take Profit / Stop Loss
             </span>
             <div className="flex items-center gap-1">
-              {(tp || sl) && (
-                <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#00d4aa' }} />
-              )}
+              {(tp || sl) && <div className="w-1.5 h-1.5 rounded-full" style={{ background: '#00d4aa' }} />}
               {showTPSL
                 ? <ChevronUp className="w-3.5 h-3.5" style={{ color: '#3d4f6b' }} />
-                : <ChevronDown className="w-3.5 h-3.5" style={{ color: '#3d4f6b' }} />
-              }
+                : <ChevronDown className="w-3.5 h-3.5" style={{ color: '#3d4f6b' }} />}
             </div>
           </button>
           {showTPSL && (
@@ -474,7 +689,7 @@ export default function OrderPanel({ asset, externalPrice }) {
                   onChange={setTp}
                   placeholder={entryPrice > 0 ? (entryPrice * 1.05).toFixed(2) : '0.00'}
                   prefix="$"
-                  suffix="USDT"
+                  suffix="USDC"
                 />
               </div>
               <div>
@@ -484,59 +699,32 @@ export default function OrderPanel({ asset, externalPrice }) {
                   onChange={setSl}
                   placeholder={entryPrice > 0 ? (entryPrice * 0.95).toFixed(2) : '0.00'}
                   prefix="$"
-                  suffix="USDT"
+                  suffix="USDC"
                 />
               </div>
             </div>
           )}
         </div>
 
-        {/* Order summary */}
-        <div
-          className="rounded-xl px-3 py-2"
-          style={{ background: 'rgba(4,6,14,0.7)', border: '1px solid rgba(148,163,184,0.06)' }}
-        >
-          <SummaryRow
-            label="Order Type"
-            value={mode === 'limit' ? 'Limit' : 'Market'}
-            valueColor="#64748b"
-          />
-          <SummaryRow
-            label="Est. Entry"
-            value={
-              mode === 'market'
-                ? 'Market Price'
-                : price && parseFloat(price) > 0
-                ? `$${Number(price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
-                : '—'
-            }
-            valueColor="#94a3b8"
-          />
-          <SummaryRow
-            label="Total Value"
-            value={total > 0 ? fmtUSD(total) : '—'}
-            valueColor={total > 0 ? '#e2e8f0' : undefined}
-          />
-          <SummaryRow
-            label="Margin Required"
-            value={total > 0 ? fmtUSD(margin) : '—'}
-            valueColor={total > 0 ? '#94a3b8' : undefined}
-          />
-          <SummaryRow
-            label="Liq. Price"
-            value={total > 0 && liqPrice ? `$${fmt(liqPrice, 2)}` : '—'}
-            valueColor={total > 0 ? '#f87171' : undefined}
-          />
-          <SummaryRow
-            label="Est. Fee"
-            value={total > 0 ? `$${fee.toFixed(4)}` : '0.050%'}
-            valueColor="#64748b"
-            dimTop
-          />
-        </div>
+        {/* ── Enhanced Order Summary ── */}
+        <OrderSummary
+          mode={mode}
+          side={side}
+          denom={denom}
+          symbol={symbol}
+          entryPrice={entryPrice}
+          baseQty={baseQty}
+          quoteQty={quoteQty}
+          leverage={leverage}
+          fee={fee}
+          margin={margin}
+          liqPrice={liqPrice}
+          balance={MOCK_BALANCE}
+          isReady={isReady}
+        />
 
         {/* Readiness badge */}
-        <ReadinessBadge errors={errors} isReady={isReady && parsedAmt > 0} />
+        <ReadinessBadge errors={errors} isReady={isReady} />
       </div>
 
       {/* ── Submit footer ── */}
@@ -569,8 +757,8 @@ export default function OrderPanel({ asset, externalPrice }) {
               <>
                 <SideIcon className="w-4 h-4" />
                 {isBuy ? 'Buy / Long' : 'Sell / Short'}
-                {total > 0 && (
-                  <span className="text-[10px] font-semibold opacity-70 ml-1">· {fmtUSD(total)}</span>
+                {quoteQty > 0 && (
+                  <span className="text-[10px] font-semibold opacity-70 ml-1">· {fmtUSD(quoteQty)}</span>
                 )}
               </>
             )}
