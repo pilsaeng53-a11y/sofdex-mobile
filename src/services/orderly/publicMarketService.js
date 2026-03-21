@@ -113,19 +113,25 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
   let delay = 1500;
   let hbTimer;
 
+  let reconnectCount = 0;
+
   function connect() {
     if (dead) return;
     onStatus('reconnecting');
+    console.log(`[Orderly WS] Connecting → topic="${topic}" (attempt ${reconnectCount + 1})`);
 
     try {
       ws = new WebSocket(ORDERLY_WS_URL);
-    } catch {
+    } catch (err) {
+      console.error(`[Orderly WS] Failed to open WebSocket for topic="${topic}":`, err);
       scheduleReconnect();
       return;
     }
 
     ws.onopen = () => {
       delay = 1500;
+      reconnectCount++;
+      console.log(`[Orderly WS] ✅ Connected. Subscribing to topic="${topic}"`);
       // Orderly subscribe format: { id, event, topic }
       ws.send(JSON.stringify({ id: `sub_${Date.now()}`, event: 'subscribe', topic }));
       // Orderly requires client ping every 10s to keep connection alive
@@ -144,7 +150,12 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
           ws.send(JSON.stringify({ event: 'pong' }));
           return;
         }
-        // Ignore ack/subscribe confirmation events
+        // Log subscription ack
+        if (msg.event === 'subscribe' || msg.event === 'ack') {
+          console.log(`[Orderly WS] ✅ Subscription confirmed for topic="${topic}"`);
+          return;
+        }
+        // Ignore other ack/event frames
         if (msg.event) return;
         if (msg.data != null) {
           onStatus('live');
@@ -153,11 +164,16 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
       } catch { /* ignore malformed frames */ }
     };
 
-    ws.onerror = () => { /* handled by onclose */ };
+    ws.onerror = (err) => {
+      console.error(`[Orderly WS] ❌ Error on topic="${topic}":`, err?.message ?? err);
+    };
 
-    ws.onclose = () => {
+    ws.onclose = (ev) => {
       clearInterval(hbTimer);
-      if (!dead) scheduleReconnect();
+      if (!dead) {
+        console.warn(`[Orderly WS] Disconnected from topic="${topic}" (code=${ev.code}). Reconnecting in ${delay}ms…`);
+        scheduleReconnect();
+      }
     };
   }
 
