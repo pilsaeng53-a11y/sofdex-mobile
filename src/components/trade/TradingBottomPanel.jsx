@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Clock, CheckCircle2, XCircle, AlertCircle, ChevronDown } from 'lucide-react';
+import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TABS = [

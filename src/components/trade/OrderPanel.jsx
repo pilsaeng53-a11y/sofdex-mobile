@@ -5,6 +5,7 @@ import {
   DollarSign, Coins, Percent
 } from 'lucide-react';
 import { useWallet } from '../shared/WalletContext';
+import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const PCT_STEPS    = [25, 50, 75, 100];

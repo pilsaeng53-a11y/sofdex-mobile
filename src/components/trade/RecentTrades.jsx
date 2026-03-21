@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { RefreshCw, WifiOff, ArrowDownUp } from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
 import { useRecentTrades } from '../../hooks/useOrderlyMarket';
+import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const MAX_TRADES   = 30;

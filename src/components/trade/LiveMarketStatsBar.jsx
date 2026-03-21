@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
 import { useTicker } from '../../hooks/useOrderlyMarket';
+import CoinIcon from '../shared/CoinIcon';
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtPrice(v) {

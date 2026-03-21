@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Wifi, WifiOff, RefreshCw, BookOpen, ChevronUp, ChevronDown } from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
 import { useOrderBook } from '../../hooks/useOrderlyMarket';
+import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const ROWS = 10;
