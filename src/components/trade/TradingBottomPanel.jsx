@@ -235,9 +235,12 @@ function OrderHistoryTab({ orders }) {
             {o.side}
           </span>
           {/* Symbol + type */}
-          <div className="flex-1 min-w-0">
-            <span className="text-[11px] font-bold text-white">{o.symbol}</span>
-            <span className="text-[9px] ml-1.5" style={{ color: '#3d4f6b' }}>{o.type}</span>
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <CoinIcon symbol={extractBase(o.symbol)} size={16} />
+            <div>
+              <span className="text-[11px] font-bold text-white">{o.symbol}</span>
+              <span className="text-[9px] ml-1.5" style={{ color: '#3d4f6b' }}>{o.type}</span>
+            </div>
           </div>
           {/* Price × size */}
           <div className="text-right hidden sm:block">
@@ -267,7 +270,8 @@ function TradeHistoryTab({ trades }) {
             style={{ background: sideColor(t.side) }}
           />
           {/* Symbol */}
-          <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <CoinIcon symbol={extractBase(t.symbol)} size={16} />
             <span className="text-[11px] font-bold text-white">{t.symbol}</span>
           </div>
           {/* Price × size */}
