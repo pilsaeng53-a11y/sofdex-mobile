@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useMarketData } from '../components/shared/MarketDataProvider';
+import { useTicker } from '../hooks/useOrderlyMarket';
 import LiveMarketStatsBar  from '../components/trade/LiveMarketStatsBar';
 import ChartContainer      from '../components/trade/ChartContainer';
 import OrderBook           from '../components/trade/OrderBook';
