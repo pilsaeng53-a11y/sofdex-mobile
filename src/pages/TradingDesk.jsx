@@ -7,6 +7,7 @@ import RecentTrades        from '../components/trade/RecentTrades';
 import OrderPanel          from '../components/trade/OrderPanel';
 import TradingBottomPanel  from '../components/trade/TradingBottomPanel';
 import { BarChart2, BookOpen, ArrowDownUp, LayoutGrid } from 'lucide-react';
+import OrderlyDebugPanel from '../components/trade/OrderlyDebugPanel';
 
 // ─── Symbol selector pill ─────────────────────────────────────────────────────
 const SYMBOLS = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'];
