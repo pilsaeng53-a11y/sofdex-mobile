@@ -142,6 +142,8 @@ export function useKlines(symbol, timeframe) {
   const [error,   setError]   = useState(null);
   const [status,  setStatus]  = useState('reconnecting');
   const tsIndexRef = useRef(new Map());
+  // Klines can be slow on low-activity symbols — use longer stale window
+  const [reconnectKey, markReceived] = useStaleWatchdog(symbol, `klines/${timeframe}`);
 
   useEffect(() => {
     if (!symbol || !timeframe) return;
@@ -172,6 +174,7 @@ export function useKlines(symbol, timeframe) {
         });
         setLoading(false);
         setError(null);
+        markReceived();
       },
       (s) => {
         setStatus(s);
@@ -180,7 +183,7 @@ export function useKlines(symbol, timeframe) {
     );
 
     return () => { tsIndexRef.current = new Map(); unsub(); };
-  }, [symbol, timeframe]);
+  }, [symbol, timeframe, reconnectKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { candles, loading, error, status };
 }
