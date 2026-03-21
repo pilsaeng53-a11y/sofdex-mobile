@@ -231,6 +231,7 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
       >
         {/* Left: symbol + price */}
         <div className="flex items-center gap-2.5 min-w-0">
+          <CoinIcon symbol={symbol} size={20} />
           <div
             className="h-6 px-2 rounded-lg flex items-center gap-1.5 flex-shrink-0"
             style={{ background: 'rgba(0,212,170,0.08)', border: '1px solid rgba(0,212,170,0.14)' }}
