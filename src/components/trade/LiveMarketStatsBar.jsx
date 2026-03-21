@@ -6,8 +6,6 @@ import {
 import { useMarketData } from '../shared/MarketDataProvider';
 import { useTicker } from '../../hooks/useOrderlyMarket';
 
-const OI_API = 'https://solfort-api.onrender.com/open-interest';
-
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtPrice(v) {
   if (v == null || isNaN(v)) return '—';
