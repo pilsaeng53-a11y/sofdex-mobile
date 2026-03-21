@@ -8,7 +8,7 @@
  *   useKlines(symbol, tf)   → { candles, loading, error, status }
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   fetchTicker,
   fetchTrades,
@@ -17,10 +17,36 @@ import {
   subscribeKlines,
 } from '../services/orderly/publicMarketService';
 
-const TICKER_POLL_MS = 5000;
-const BOOK_ROWS      = 10;
-const MAX_TRADES     = 30;
-const MAX_CANDLES    = 200;
+const TICKER_POLL_MS  = 5000;
+const BOOK_ROWS       = 10;
+const MAX_TRADES      = 30;
+const MAX_CANDLES     = 200;
+const STALE_TIMEOUT_MS = 15000; // reconnect if no data in 15s
+
+/**
+ * Watchdog: if no data arrives within STALE_TIMEOUT_MS, bump a reconnect key.
+ * Returns [reconnectKey, markReceived] — call markReceived() on each data event.
+ */
+function useStaleWatchdog(symbol, label) {
+  const [reconnectKey, setReconnectKey] = useState(0);
+  const timerRef = useRef(null);
+
+  const resetTimer = useCallback(() => {
+    clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      console.warn(`[Orderly Watchdog] No ${label} data for ${STALE_TIMEOUT_MS}ms (${symbol}). Forcing reconnect…`);
+      setReconnectKey(k => k + 1);
+    }, STALE_TIMEOUT_MS);
+  }, [symbol, label]);
+
+  // Start watchdog when symbol changes, clear on unmount
+  useEffect(() => {
+    resetTimer();
+    return () => clearTimeout(timerRef.current);
+  }, [symbol, resetTimer]);
+
+  return [reconnectKey, resetTimer];
+}
 
 // ─── useTicker ────────────────────────────────────────────────────────────────
 export function useTicker(symbol) {
