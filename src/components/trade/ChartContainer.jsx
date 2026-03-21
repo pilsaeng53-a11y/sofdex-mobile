@@ -3,8 +3,11 @@ import {
   TrendingUp, TrendingDown, Maximize2, BarChart2,
   RefreshCw, WifiOff, Activity, ChevronUp, ChevronDown
 } from 'lucide-react';
-import { useMarketData } from '../shared/MarketDataProvider';
-import { useKlines } from '../../hooks/useOrderlyMarket';
+import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
+
+// NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
+// All prices in this chart come exclusively from Orderly market data:
+//   priority: mark_price → last_price (24h_close) → index_price
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D'];
