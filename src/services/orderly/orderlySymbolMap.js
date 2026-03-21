@@ -4,28 +4,30 @@
  * Maps the app's short symbol strings (e.g. 'BTC') to the Orderly
  * perpetual futures instrument format (e.g. 'PERP_BTC_USDC').
  *
- * Structure is intentionally decoupled so any new instrument can be
- * added here without touching trading UI components.
- *
- * Future: this table could be hydrated from the Orderly /v1/public/info
- * endpoint and cached in a database for the watchlist feature.
+ * Verified against live API: https://api.orderly.org/v1/public/futures
  */
 
-export const ORDERLY_BASE_URL = 'https://api-evm.orderly.network';
-export const ORDERLY_WS_URL   = 'wss://ws-evm.orderly.network';
+export const ORDERLY_BASE_URL = 'https://api.orderly.org';
+export const ORDERLY_WS_URL   = 'wss://ws.orderly.org/ws/stream/public';
 
-/** Map app symbol → Orderly symbol string */
+/** Map app symbol → Orderly instrument string */
 export const SYMBOL_MAP = {
-  BTC:  'PERP_BTC_USDC',
-  ETH:  'PERP_ETH_USDC',
-  SOL:  'PERP_SOL_USDC',
-  BNB:  'PERP_BNB_USDC',
-  XRP:  'PERP_XRP_USDC',
-  ARB:  'PERP_ARB_USDC',
-  MATIC:'PERP_MATIC_USDC',
+  BTC:   'PERP_BTC_USDC',
+  ETH:   'PERP_ETH_USDC',
+  SOL:   'PERP_SOL_USDC',
+  BNB:   'PERP_BNB_USDC',
+  XRP:   'PERP_XRP_USDC',
+  ARB:   'PERP_ARB_USDC',
+  LINK:  'PERP_LINK_USDC',
+  UNI:   'PERP_UNI_USDC',
+  APT:   'PERP_APT_USDC',
+  TON:   'PERP_TON_USDC',
 };
 
-/** Orderly timeframe string for kline REST endpoint */
+/**
+ * WS timeframe → Orderly kline topic suffix
+ * Topic format: {symbol}@kline_{type}
+ */
 export const TIMEFRAME_MAP = {
   '1m':  '1m',
   '5m':  '5m',
