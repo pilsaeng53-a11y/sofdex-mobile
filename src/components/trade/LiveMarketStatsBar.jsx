@@ -201,6 +201,7 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
         style={{ borderColor: 'rgba(148,163,184,0.055)' }}
       >
         <div className="flex items-center gap-2.5">
+          <CoinIcon symbol={symbol} size={22} />
           {/* Symbol badge */}
           <div
             className="h-6 px-2 rounded-lg flex items-center gap-1.5 flex-shrink-0"

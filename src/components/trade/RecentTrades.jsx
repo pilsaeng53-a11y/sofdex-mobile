@@ -207,13 +207,13 @@ export default function RecentTrades({ symbol = 'BTC' }) {
         style={{ borderColor: 'rgba(148,163,184,0.07)', background: 'rgba(5,7,13,0.8)' }}
       >
         <div className="flex items-center gap-2">
-          <ArrowDownUp className="w-3.5 h-3.5" style={{ color: '#00d4aa' }} />
-          <span className="text-xs font-black text-white tracking-wide">Recent Trades</span>
+          <CoinIcon symbol={symbol} size={18} />
+          <span className="text-xs font-black text-white tracking-wide">{symbol}</span>
           <span
             className="text-[9px] font-bold px-1.5 py-0.5 rounded-md"
             style={{ background: 'rgba(0,212,170,0.08)', color: '#00d4aa', border: '1px solid rgba(0,212,170,0.15)' }}
           >
-            {symbol}/USDT
+            Trades
           </span>
         </div>
         <StatusPill state={status} />
