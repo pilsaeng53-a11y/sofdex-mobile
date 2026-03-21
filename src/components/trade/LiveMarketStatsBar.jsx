@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   ArrowUpRight, ArrowDownRight, WifiOff, RefreshCw,
-  TrendingUp, BarChart2, Zap, Activity, DollarSign, Tag
+  TrendingUp, TrendingDown, BarChart2, Zap, Activity, Tag
 } from 'lucide-react';
 import { useMarketData } from '../shared/MarketDataProvider';
 import { useTicker } from '../../hooks/useOrderlyMarket';
