@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Clock, CheckCircle2, XCircle, AlertCircle, ChevronDown } from 'lucide-react';
+import { X, Clock, CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import CoinIcon from '../shared/CoinIcon';
+import PositionsTab from './PositionsTab';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const TABS = [
