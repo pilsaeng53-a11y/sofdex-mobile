@@ -130,51 +130,7 @@ function TD({ children, right, style }) {
   );
 }
 
-// ─── Positions tab ────────────────────────────────────────────────────────────
-function PositionsTab({ positions }) {
-  if (!positions.length) return <EmptyState label="open positions" />;
-  return (
-    <ScrollTable>
-      <thead>
-        <tr>
-          <TH>Symbol</TH>
-          <TH>Side</TH>
-          <TH right>Size</TH>
-          <TH right>Entry Price</TH>
-          <TH right>Mark Price</TH>
-          <TH right>PnL (USDT)</TH>
-          <TH right>ROE %</TH>
-        </tr>
-      </thead>
-      <tbody>
-        {positions.map((p, i) => (
-          <tr key={i} className="hover:bg-white/[0.015] transition-colors">
-            <TD><SymbolCell symbol={p.symbol} /></TD>
-            <TD>
-              <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded"
-                style={{ color: sideColor(p.side), background: p.side === 'long' ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)' }}>
-                {p.side}
-              </span>
-            </TD>
-            <TD right style={{ color: '#e2e8f0' }}>{p.size}</TD>
-            <TD right style={{ color: '#94a3b8' }}>{fmt(p.entry, p.entry > 100 ? 2 : 4)}</TD>
-            <TD right style={{ color: '#00d4aa' }}>{fmt(p.mark, p.mark > 100 ? 2 : 4)}</TD>
-            <TD right>
-              <span className="font-bold" style={{ color: pnlColor(p.pnl) }}>
-                {p.pnl >= 0 ? '+' : ''}{fmt(p.pnl)}
-              </span>
-            </TD>
-            <TD right>
-              <span className="font-bold" style={{ color: pnlColor(p.roe) }}>
-                {p.roe >= 0 ? '+' : ''}{fmt(p.roe)}%
-              </span>
-            </TD>
-          </tr>
-        ))}
-      </tbody>
-    </ScrollTable>
-  );
-}
+// PositionsTab is now a dedicated component: ./PositionsTab.jsx
 
 // ─── Open Orders tab ──────────────────────────────────────────────────────────
 function OpenOrdersTab({ orders }) {
