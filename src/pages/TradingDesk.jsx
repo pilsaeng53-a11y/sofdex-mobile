@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import LiveMarketStatsBar  from '../components/trade/LiveMarketStatsBar';
 import ChartContainer      from '../components/trade/ChartContainer';
@@ -6,36 +6,28 @@ import OrderBook           from '../components/trade/OrderBook';
 import RecentTrades        from '../components/trade/RecentTrades';
 import OrderPanel          from '../components/trade/OrderPanel';
 import TradingBottomPanel  from '../components/trade/TradingBottomPanel';
-import { BarChart2, BookOpen, ArrowDownUp, LayoutGrid } from 'lucide-react';
-import OrderlyDebugPanel from '../components/trade/OrderlyDebugPanel';
+import SymbolDrawer        from '../components/trade/SymbolDrawer';
+import OrderlyDebugPanel   from '../components/trade/OrderlyDebugPanel';
+import CoinIcon            from '../components/shared/CoinIcon';
+import { BarChart2, BookOpen, ArrowDownUp, LayoutGrid, ChevronDown } from 'lucide-react';
 
-// ─── Symbol selector pill ─────────────────────────────────────────────────────
-const SYMBOLS = ['BTC', 'ETH', 'SOL', 'BNB', 'XRP'];
-
-function SymbolSelector({ active, onChange }) {
+// ─── Active symbol pill (top-bar trigger) ──────────────────────────────────────
+function ActiveSymbolPill({ base, quote, onClick }) {
   return (
-    <div
-      className="flex items-center gap-1 px-1 py-1 rounded-xl overflow-x-auto scrollbar-none"
-      style={{ background: 'rgba(4,6,14,0.85)', border: '1px solid rgba(148,163,184,0.07)' }}
+    <button
+      onClick={onClick}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-xl btn-press transition-all"
+      style={{
+        background: 'rgba(0,212,170,0.07)',
+        border: '1px solid rgba(0,212,170,0.18)',
+      }}
     >
-      {SYMBOLS.map(s => {
-        const on = active === s;
-        return (
-          <button
-            key={s}
-            onClick={() => onChange(s)}
-            className="px-3 py-1.5 rounded-lg text-[10px] font-black whitespace-nowrap transition-all duration-150 flex-shrink-0"
-            style={on ? {
-              background: 'rgba(0,212,170,0.12)',
-              color: '#00d4aa',
-              border: '1px solid rgba(0,212,170,0.22)',
-            } : { color: '#3d4f6b', border: '1px solid transparent' }}
-          >
-            {s}/USDT
-          </button>
-        );
-      })}
-    </div>
+      <CoinIcon symbol={base} size={18} />
+      <span className="text-[13px] font-black text-white">
+        {base}<span className="text-slate-500 font-medium">/{quote}</span>
+      </span>
+      <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+    </button>
   );
 }
 
@@ -75,15 +67,23 @@ function SideTabs({ active, onChange }) {
 
 // ─── Main layout ──────────────────────────────────────────────────────────────
 export default function TradingDesk() {
-  const [symbol,       setSymbol]       = useState('BTC');
+  // Active symbol state — now any Orderly symbol, not just a hardcoded list
+  const [activeSymbol, setActiveSymbol] = useState({
+    base: 'BTC', quote: 'USDC', orderlySymbol: 'PERP_BTC_USDC', displayName: 'BTC-USDC',
+  });
+  const [drawerOpen,   setDrawerOpen]   = useState(false);
   const [sideTab,      setSideTab]      = useState('both');
   const [orderPrice,   setOrderPrice]   = useState(null);
 
   const { getLiveAsset } = useMarketData();
-  const asset = getLiveAsset(symbol);
+  const asset = getLiveAsset(activeSymbol.base);
 
-  const handleBookPriceClick = (price) => setOrderPrice(price);
+  function handleSymbolSelect(sym) {
+    setActiveSymbol(sym);
+    setOrderPrice(null);
+  }
 
+  const symbol     = activeSymbol.base;   // short key used by all hooks
   const showBook   = sideTab === 'book'   || sideTab === 'both';
   const showTrades = sideTab === 'trades' || sideTab === 'both';
 
@@ -92,7 +92,7 @@ export default function TradingDesk() {
       className="min-h-screen flex flex-col"
       style={{ background: '#05070d', color: '#f1f5f9' }}
     >
-      {/* ── Top bar: symbol selector ── */}
+      {/* ── Top bar ── */}
       <div
         className="sticky top-0 z-20 px-3 py-2 border-b flex items-center gap-2.5 flex-wrap"
         style={{
@@ -109,7 +109,14 @@ export default function TradingDesk() {
           </span>
         </div>
         <div className="w-px self-stretch" style={{ background: 'rgba(148,163,184,0.07)' }} />
-        <SymbolSelector active={symbol} onChange={s => { setSymbol(s); setOrderPrice(null); }} />
+
+        {/* Active symbol trigger */}
+        <ActiveSymbolPill
+          base={activeSymbol.base}
+          quote={activeSymbol.quote}
+          onClick={() => setDrawerOpen(true)}
+        />
+
         <div className="ml-auto">
           <SideTabs active={sideTab} onChange={setSideTab} />
         </div>
@@ -129,12 +136,10 @@ export default function TradingDesk() {
         </div>
 
         {/* Side panel: OrderBook / RecentTrades / Both */}
-        <div
-          className="flex flex-col gap-3 w-full lg:w-[220px] xl:w-[240px] flex-shrink-0"
-        >
+        <div className="flex flex-col gap-3 w-full lg:w-[220px] xl:w-[240px] flex-shrink-0">
           {showBook && (
             <div className={showTrades ? '' : 'flex-1'}>
-              <OrderBook symbol={symbol} onPriceClick={handleBookPriceClick} />
+              <OrderBook symbol={symbol} onPriceClick={p => setOrderPrice(p)} />
             </div>
           )}
           {showTrades && (
@@ -145,7 +150,7 @@ export default function TradingDesk() {
         </div>
       </div>
 
-      {/* ── Order panel (full width on mobile, right column on desktop) ── */}
+      {/* ── Order panel (mobile) ── */}
       <div className="px-3 pt-3 lg:hidden">
         <OrderPanel
           asset={{ symbol, price: asset?.price ?? 0, maxLeverage: 100 }}
@@ -153,13 +158,11 @@ export default function TradingDesk() {
         />
       </div>
 
-      {/* Desktop: order panel floats alongside bottom panel */}
+      {/* ── Desktop: bottom panel + order panel ── */}
       <div className="hidden lg:flex gap-3 px-3 pt-3">
-        {/* Bottom account panel — takes most of the width */}
         <div className="flex-1 min-w-0">
           <TradingBottomPanel />
         </div>
-        {/* Order panel — fixed right width */}
         <div className="w-[220px] xl:w-[240px] flex-shrink-0">
           <OrderPanel
             asset={{ symbol, price: asset?.price ?? 0, maxLeverage: 100 }}
@@ -168,15 +171,22 @@ export default function TradingDesk() {
         </div>
       </div>
 
-      {/* Mobile: bottom panel below order panel */}
+      {/* ── Mobile: bottom panel ── */}
       <div className="px-3 pt-3 pb-6 lg:hidden">
         <TradingBottomPanel />
       </div>
 
-      {/* Bottom breathing room */}
       <div className="h-4" />
 
-      {/* Debug panel — hidden by default. Enable: ?orderly_debug=1 or window.__toggleOrderlyDebug() */}
+      {/* ── Symbol drawer ── */}
+      <SymbolDrawer
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        activeBase={activeSymbol.base}
+        onSelect={handleSymbolSelect}
+      />
+
+      {/* ── Debug panel (hidden by default) ── */}
       <OrderlyDebugPanel />
     </div>
   );
