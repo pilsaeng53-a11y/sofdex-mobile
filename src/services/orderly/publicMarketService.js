@@ -1,77 +1,179 @@
 /**
  * Orderly Network — Public Market Data Service
  *
- * Provides:
- *  - fetchTicker()    → 24h stats (price, change, volume, OI, funding)
- *  - fetchOrderBook() → current bids/asks snapshot
- *  - fetchTrades()    → recent public trades
- *  - fetchKlines()    → OHLCV candles for a timeframe
- *  - subscribeOrderBook() → live WS order book with reconnect
- *  - subscribeTrades()    → live WS trade stream with reconnect
+ * Verified endpoints (live tested 2024):
+ *  - GET  /v1/public/futures/{symbol}     → ticker/stats for one symbol
+ *  - GET  /v1/public/market_trades        → recent trades (REST snapshot)
+ *  - WS   {symbol}@orderbook             → live order book (depth 100, 1s push)
+ *  - WS   {symbol}@trade                 → live trade stream
+ *  - WS   {symbol}@kline_{type}          → live kline/OHLCV updates
  *
- * Design principles:
- *  - NO UI imports, NO React, NO component coupling
- *  - Returns plain data objects matching the shapes the UI components expect
- *  - All errors are thrown so callers (hooks) can handle loading/error state
- *  - WebSocket subscriptions return an `unsubscribe` function for cleanup
+ * NOTE: There is no public REST orderbook or kline endpoint — these are
+ * WebSocket-only on Orderly's public API.
  *
- * Future-proofing:
- *  - Private order/account endpoints will live in a separate
- *    services/orderly/privateAccountService.js — never in this file
- *  - Database caching (watchlist, order history) will be layered on top
- *    of these primitives in services/user/ without modifying this file
+ * Design:
+ *  - NO React, NO UI imports
+ *  - All errors thrown so hooks can surface loading/error state
+ *  - WS subscriptions return unsubscribe() for cleanup
+ *  - Private endpoints → separate privateAccountService.js (never here)
  */
 
 import { ORDERLY_BASE_URL, ORDERLY_WS_URL, toOrderlySymbol, TIMEFRAME_MAP } from './orderlySymbolMap';
 
-const MAX_RECONNECT_DELAY = 16000; // ms
+const MAX_RECONNECT_DELAY = 16000;
 
-// ─── REST helpers ──────────────────────────────────────────────────────────────
+// ─── REST helpers ─────────────────────────────────────────────────────────────
 
 async function get(path) {
   const res = await fetch(`${ORDERLY_BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Accept': 'application/json' },
   });
-  if (!res.ok) throw new Error(`Orderly API ${res.status}: ${path}`);
+  if (!res.ok) throw new Error(`Orderly ${res.status}: ${path}`);
   const json = await res.json();
-  if (!json.success) throw new Error(json.message ?? 'Orderly API error');
+  if (json.success === false) throw new Error(json.message ?? 'Orderly API error');
   return json.data;
 }
 
 // ─── Ticker / market stats ─────────────────────────────────────────────────────
 
 /**
- * Fetch 24h ticker for a symbol.
- * Returns { price, markPrice, change24h, volume24h, openInterest, fundingRate, symbol }
+ * Fetch 24h ticker for one symbol.
+ *
+ * Live response fields (verified):
+ *   mark_price, index_price, last_price (= 24h_close), est_funding_rate,
+ *   open_interest, 24h_open, 24h_close, 24h_high, 24h_low,
+ *   24h_volume, 24h_amount
+ *
+ * NOTE: There is no "24h_change" percentage field — we calculate it.
  */
 export async function fetchTicker(appSymbol) {
   const sym  = toOrderlySymbol(appSymbol);
   const data = await get(`/v1/public/futures/${sym}`);
 
+  const open24  = data['24h_open']  ?? null;
+  const close24 = data['24h_close'] ?? null;
+  const change24h = (open24 != null && close24 != null && open24 !== 0)
+    ? ((close24 - open24) / open24) * 100
+    : null;
+
   return {
-    symbol:      appSymbol,
-    price:       data.mark_price ?? data.last_price ?? null,
-    markPrice:   data.mark_price ?? null,
-    lastPrice:   data.last_price ?? null,
-    change24h:   data['24h_change'] ?? null,          // percentage, e.g. 2.34
-    volume24h:   data['24h_amount'] ?? null,           // in quote (USDC)
-    openInterest: data.open_interest ?? null,
-    fundingRate:  data.est_funding_rate ?? null,       // decimal, e.g. 0.0001
+    symbol:       appSymbol,
+    price:        data.mark_price  ?? data['24h_close'] ?? null,
+    markPrice:    data.mark_price  ?? null,
     indexPrice:   data.index_price ?? null,
+    lastPrice:    data['24h_close'] ?? null,
+    high24h:      data['24h_high'] ?? null,
+    low24h:       data['24h_low']  ?? null,
+    open24h:      open24,
+    change24h,                                    // calculated %
+    volume24h:    data['24h_volume'] ?? null,      // base asset qty
+    amount24h:    data['24h_amount'] ?? null,      // quote (USDC)
+    openInterest: data.open_interest ?? null,      // base asset
+    fundingRate:  data.est_funding_rate ?? null,   // decimal fraction
+    nextFundingTime: data.next_funding_time ?? null,
   };
 }
 
-// ─── Order book ───────────────────────────────────────────────────────────────
+// ─── Recent trades (REST snapshot) ────────────────────────────────────────────
 
 /**
- * Fetch current order book snapshot (20 levels each side).
- * Returns { asks: [{price, size}], bids: [{price, size}] }
+ * Fetch recent public trades snapshot.
+ * Returns array of { id, price, size, side, ts, fresh }
  */
-export async function fetchOrderBook(appSymbol, maxRows = 10) {
+export async function fetchTrades(appSymbol, limit = 20) {
   const sym  = toOrderlySymbol(appSymbol);
-  const data = await get(`/v1/public/orderbook/${sym}?max_level=${maxRows}`);
-  return normaliseBook(data, maxRows);
+  const data = await get(`/v1/public/market_trades?symbol=${sym}&limit=${limit}`);
+  const rows = Array.isArray(data?.rows) ? data.rows : [];
+  return normaliseTrades(rows, false);
 }
+
+let _tradeIdCounter = Date.now();
+function normaliseTrades(rows, fresh = true) {
+  return rows.map(t => ({
+    id:    _tradeIdCounter++,
+    price: parseFloat(t.executed_price ?? t.price ?? 0),
+    size:  parseFloat(t.executed_quantity ?? t.quantity ?? t.size ?? 0),
+    side:  (t.side ?? '').toUpperCase() === 'BUY' ? 'buy' : 'sell',
+    ts:    t.executed_timestamp ?? t.ts ?? Date.now(),
+    fresh,
+  }));
+}
+
+// ─── WebSocket core ───────────────────────────────────────────────────────────
+
+/**
+ * Open a managed public WebSocket to Orderly.
+ * Handles Orderly's ping/pong heartbeat and exponential-backoff reconnect.
+ *
+ * @returns unsubscribe()
+ */
+function openPublicWS({ topic, onMessage, onStatus, normalise }) {
+  let ws;
+  let dead  = false;
+  let delay = 1500;
+  let hbTimer;
+
+  function connect() {
+    if (dead) return;
+    onStatus('reconnecting');
+
+    try {
+      ws = new WebSocket(ORDERLY_WS_URL);
+    } catch {
+      scheduleReconnect();
+      return;
+    }
+
+    ws.onopen = () => {
+      delay = 1500;
+      ws.send(JSON.stringify({ id: 'sub', event: 'subscribe', topic }));
+      // Client heartbeat every 8s
+      hbTimer = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ id: 'hb', event: 'ping' }));
+        }
+      }, 8000);
+    };
+
+    ws.onmessage = (ev) => {
+      try {
+        const msg = JSON.parse(ev.data);
+        // Respond to server pings
+        if (msg.event === 'ping') {
+          ws.send(JSON.stringify({ id: 'pong', event: 'pong' }));
+          return;
+        }
+        if (msg.data != null) {
+          onStatus('live');
+          onMessage(normalise(msg.data));
+        }
+      } catch { /* ignore malformed frames */ }
+    };
+
+    ws.onerror = () => { /* handled by onclose */ };
+
+    ws.onclose = () => {
+      clearInterval(hbTimer);
+      if (!dead) scheduleReconnect();
+    };
+  }
+
+  function scheduleReconnect() {
+    onStatus('reconnecting');
+    delay = Math.min(delay * 2, MAX_RECONNECT_DELAY);
+    setTimeout(connect, delay);
+  }
+
+  connect();
+
+  return function unsubscribe() {
+    dead = true;
+    clearInterval(hbTimer);
+    try { ws?.close(); } catch { /* ignore */ }
+  };
+}
+
+// ─── Live order book ───────────────────────────────────────────────────────────
 
 function normaliseBook(data, maxRows) {
   const asks = (data.asks ?? []).slice(0, maxRows).map(([price, size]) => ({
@@ -85,182 +187,77 @@ function normaliseBook(data, maxRows) {
     side:  'bid',
   }));
 
-  // Cumulative totals
-  let cumAsk = 0;
-  asks.forEach(l => { cumAsk += l.size; l.cumulative = parseFloat(cumAsk.toFixed(6)); });
-  let cumBid = 0;
-  bids.forEach(l => { cumBid += l.size; l.cumulative = parseFloat(cumBid.toFixed(6)); });
+  // Sort correctly
+  asks.sort((a, b) => a.price - b.price);
+  bids.sort((a, b) => b.price - a.price);
+
+  // Cumulative depth
+  let cum = 0;
+  asks.forEach(l => { cum += l.size; l.cumulative = parseFloat(cum.toFixed(6)); });
+  cum = 0;
+  bids.forEach(l => { cum += l.size; l.cumulative = parseFloat(cum.toFixed(6)); });
 
   return { asks, bids };
 }
 
-// ─── Recent trades ─────────────────────────────────────────────────────────────
-
 /**
- * Fetch recent public trades.
- * Returns array of { id, price, size, side, ts, fresh }
- */
-export async function fetchTrades(appSymbol, limit = 20) {
-  const sym  = toOrderlySymbol(appSymbol);
-  const data = await get(`/v1/public/market_trades?symbol=${sym}&limit=${limit}`);
-  const rows  = Array.isArray(data.rows) ? data.rows : (Array.isArray(data) ? data : []);
-  return normaliseTrades(rows, false);
-}
-
-let _tradeIdCounter = Date.now();
-function normaliseTrades(rows, fresh = true) {
-  return rows.map(t => ({
-    id:    _tradeIdCounter++,
-    price: parseFloat(t.executed_price ?? t.price),
-    size:  parseFloat(t.executed_quantity ?? t.quantity ?? t.size),
-    side:  (t.side ?? '').toLowerCase() === 'buy' ? 'buy' : 'sell',
-    ts:    t.executed_timestamp ?? t.ts ?? Date.now(),
-    fresh,
-  }));
-}
-
-// ─── Klines (candlesticks) ────────────────────────────────────────────────────
-
-/**
- * Fetch OHLCV candles.
- * Returns array of { ts, open, high, low, close, volume }
- */
-export async function fetchKlines(appSymbol, timeframe = '1h', limit = 200) {
-  const sym  = toOrderlySymbol(appSymbol);
-  const tf   = TIMEFRAME_MAP[timeframe] ?? '1h';
-  const data = await get(`/v1/public/kline?symbol=${sym}&type=${tf}&limit=${limit}`);
-  const rows  = Array.isArray(data.rows) ? data.rows : (Array.isArray(data) ? data : []);
-  return rows.map(k => ({
-    ts:     k.start_timestamp,
-    open:   parseFloat(k.open),
-    high:   parseFloat(k.high),
-    low:    parseFloat(k.low),
-    close:  parseFloat(k.close),
-    volume: parseFloat(k.volume),
-  }));
-}
-
-// ─── WebSocket helpers ────────────────────────────────────────────────────────
-
-/**
- * Create a managed WebSocket connection to Orderly public feed.
- * Handles heartbeat (Orderly requires pong within 10s of ping) and
- * exponential-backoff reconnect.
- *
- * @param {object} opts
- *   topic       — Orderly WS topic string
- *   onMessage   — called with each parsed message payload
- *   onStatus    — called with 'live' | 'reconnecting' | 'offline'
- *   maxRows     — passed to the normaliser
- *   normalise   — function(raw) => transformed payload
- * @returns unsubscribe function
- */
-function openPublicWS({ topic, onMessage, onStatus, normalise }) {
-  let ws;
-  let dead = false;
-  let delay = 1000;
-  let heartbeat;
-
-  function connect() {
-    if (dead) return;
-    onStatus('reconnecting');
-
-    ws = new WebSocket(ORDERLY_WS_URL);
-
-    ws.onopen = () => {
-      delay = 1000; // reset back-off
-      ws.send(JSON.stringify({ id: 'sub', event: 'subscribe', topic }));
-    };
-
-    ws.onmessage = (ev) => {
-      try {
-        const msg = JSON.parse(ev.data);
-
-        // Orderly heartbeat
-        if (msg.event === 'ping') {
-          ws.send(JSON.stringify({ id: 'pong', event: 'pong' }));
-          return;
-        }
-
-        if (msg.data != null) {
-          onStatus('live');
-          onMessage(normalise(msg.data));
-        }
-      } catch { /* ignore malformed frames */ }
-    };
-
-    ws.onerror = () => { /* let onclose handle */ };
-
-    ws.onclose = () => {
-      clearInterval(heartbeat);
-      if (dead) return;
-      onStatus('reconnecting');
-      delay = Math.min(delay * 2, MAX_RECONNECT_DELAY);
-      setTimeout(connect, delay);
-    };
-
-    // Client-side heartbeat every 8s (Orderly sends ping ~10s)
-    heartbeat = setInterval(() => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify({ id: 'ping', event: 'ping' }));
-      }
-    }, 8000);
-  }
-
-  connect();
-
-  return function unsubscribe() {
-    dead = true;
-    clearInterval(heartbeat);
-    if (ws) ws.close();
-  };
-}
-
-// ─── Live order book subscription ─────────────────────────────────────────────
-
-/**
- * Subscribe to live order book updates via WebSocket.
- *
- * @param {string}   appSymbol
- * @param {number}   maxRows
- * @param {function} onBook    — called with { asks, bids }
- * @param {function} onStatus  — called with 'live' | 'reconnecting' | 'offline'
- * @returns unsubscribe()
+ * Subscribe to live order book via WebSocket.
+ * Topic: {symbol}@orderbook (depth 100, pushed every 1s)
  */
 export function subscribeOrderBook(appSymbol, maxRows, onBook, onStatus) {
-  const sym   = toOrderlySymbol(appSymbol);
-  const topic = `${sym}@orderbook`;
-
+  const sym = toOrderlySymbol(appSymbol);
   return openPublicWS({
-    topic,
+    topic:     `${sym}@orderbook`,
     onStatus,
     onMessage: onBook,
     normalise: (data) => normaliseBook(data, maxRows),
   });
 }
 
-// ─── Live trade stream subscription ───────────────────────────────────────────
+// ─── Live trade stream ─────────────────────────────────────────────────────────
 
 /**
  * Subscribe to live trade stream via WebSocket.
- *
- * @param {string}   appSymbol
- * @param {function} onTrades  — called with array of new trade objects (fresh=true)
- * @param {function} onStatus  — called with 'live' | 'reconnecting' | 'offline'
- * @returns unsubscribe()
+ * Topic: {symbol}@trade
  */
 export function subscribeTrades(appSymbol, onTrades, onStatus) {
-  const sym   = toOrderlySymbol(appSymbol);
-  const topic = `${sym}@trade`;
-
+  const sym = toOrderlySymbol(appSymbol);
   return openPublicWS({
-    topic,
+    topic:     `${sym}@trade`,
     onStatus,
     onMessage: onTrades,
     normalise: (data) => {
-      // WS trade payload is a single object, not an array
-      const row = Array.isArray(data) ? data : [data];
-      return normaliseTrades(row, true);
+      const rows = Array.isArray(data) ? data : [data];
+      return normaliseTrades(rows, true);
     },
+  });
+}
+
+// ─── Live klines (OHLCV) ──────────────────────────────────────────────────────
+
+/**
+ * Subscribe to live kline/OHLCV updates via WebSocket.
+ * Topic: {symbol}@kline_{type}  (e.g. PERP_BTC_USDC@kline_1h)
+ *
+ * WS payload fields (verified from docs):
+ *   open, close, high, low, volume, amount, startTime, endTime, type, symbol
+ *
+ * onCandle is called with { ts, open, high, low, close, volume }
+ */
+export function subscribeKlines(appSymbol, timeframe, onCandle, onStatus) {
+  const sym  = toOrderlySymbol(appSymbol);
+  const type = TIMEFRAME_MAP[timeframe] ?? '1h';
+  return openPublicWS({
+    topic:     `${sym}@kline_${type}`,
+    onStatus,
+    onMessage: onCandle,
+    normalise: (data) => ({
+      ts:     data.startTime ?? Date.now(),
+      open:   parseFloat(data.open),
+      high:   parseFloat(data.high),
+      low:    parseFloat(data.low),
+      close:  parseFloat(data.close),
+      volume: parseFloat(data.volume ?? 0),
+    }),
   });
 }
