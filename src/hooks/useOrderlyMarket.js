@@ -81,6 +81,7 @@ export function useOrderBook(symbol) {
   const [bids,    setBids]    = useState([]);
   const [status,  setStatus]  = useState('reconnecting');
   const [loading, setLoading] = useState(true);
+  const [reconnectKey, markReceived] = useStaleWatchdog(symbol, 'orderbook');
 
   useEffect(() => {
     if (!symbol) return;
@@ -92,12 +93,13 @@ export function useOrderBook(symbol) {
         setAsks(asks);
         setBids(bids);
         setLoading(false);
+        markReceived();
       },
       setStatus,
     );
 
     return unsub;
-  }, [symbol]);
+  }, [symbol, reconnectKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { asks, bids, status, loading };
 }
