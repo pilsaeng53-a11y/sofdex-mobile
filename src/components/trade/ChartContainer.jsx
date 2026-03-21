@@ -175,24 +175,18 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   const price  = asset?.price  ?? null;
   const change = asset?.change ?? null;
 
-  const [timeframe,  setTimeframe]  = useState('1h');
-  const [status,     setStatus]     = useState('live');
-  const [loading,    setLoading]    = useState(true);
-  const [priceDir,   setPriceDir]   = useState(null); // 'up' | 'down' | null
+  const [timeframe, setTimeframe] = useState('1h');
+  const [priceDir,  setPriceDir]  = useState(null);
   const prevPrice = useRef(null);
 
-  // Simulate chart load
-  useEffect(() => {
-    const t = setTimeout(() => setLoading(false), 800);
-    return () => clearTimeout(t);
-  }, []);
+  // Real klines from Orderly public REST
+  const { candles, loading, error } = useKlines(symbol, timeframe);
 
-  // Reload skeleton on timeframe change
-  useEffect(() => {
-    setLoading(true);
-    const t = setTimeout(() => setLoading(false), 600);
-    return () => clearTimeout(t);
-  }, [timeframe]);
+  // Derive status from data state
+  const status = error ? 'offline' : loading ? 'reconnecting' : 'live';
+
+  // Last candle OHLC for the footer bar
+  const lastCandle = candles.length > 0 ? candles[candles.length - 1] : null;
 
   // Track price direction
   useEffect(() => {
@@ -205,12 +199,6 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
     }
     prevPrice.current = price;
   }, [price]);
-
-  // Sync status with data availability
-  useEffect(() => {
-    if (asset?.available) setStatus('live');
-    else setStatus('reconnecting');
-  }, [asset?.available]);
 
   const changeColor = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
   const PriceIcon   = priceDir === 'up' ? ChevronUp : priceDir === 'down' ? ChevronDown : null;
