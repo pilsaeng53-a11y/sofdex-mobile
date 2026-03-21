@@ -55,16 +55,9 @@ export default function OpenInterest() {
         </div>
       </div>
 
-      {/* Total */}
-      <div className="glass-card rounded-2xl p-4 mb-4 flex items-center justify-between">
-        <div>
-          <p className="text-[10px] text-slate-500 mb-0.5">Total Open Interest</p>
-          <p className="text-2xl font-black text-white">{fmtOI(totalOI)}</p>
-        </div>
-        <div className="text-right">
-          <p className="text-[10px] text-slate-500 mb-0.5">Assets Tracked</p>
-          <p className="text-xl font-bold text-[#00d4aa]">{rows.length}</p>
-        </div>
+      {/* Live OI widget */}
+      <div className="mb-4">
+        <LiveOpenInterest baseValue={totalOI} symbol="ALL" />
       </div>
 
       {/* Sort */}
