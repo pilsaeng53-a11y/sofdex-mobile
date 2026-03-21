@@ -173,10 +173,12 @@ function ReadyOverlay({ symbol, timeframe }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
-  const { getLiveAsset } = useMarketData();
-  const asset  = getLiveAsset(symbol);
-  const price  = asset?.price  ?? null;
-  const change = asset?.change ?? null;
+  // ── Price comes exclusively from Orderly ticker ──
+  // Priority: mark_price → lastPrice (24h_close) → indexPrice
+  // MarketDataProvider (Binance/CoinGecko) is intentionally excluded here.
+  const { ticker } = useTicker(symbol);
+  const price  = ticker?.markPrice ?? ticker?.lastPrice ?? ticker?.indexPrice ?? null;
+  const change = ticker?.change24h ?? null;
 
   const [timeframe, setTimeframe] = useState('1h');
   const [priceDir,  setPriceDir]  = useState(null);
