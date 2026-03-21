@@ -157,60 +157,24 @@ function Sep() {
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
   const { getLiveAsset } = useMarketData();
-  const asset  = getLiveAsset(symbol);
-  const price  = asset?.price  ?? null;
-  const change = asset?.change ?? null;
-  const volume = asset?.volume ?? null;
-  const lastPrice = price != null ? parseFloat((price * (1 - 0.00007)).toFixed(8)) : null;
+  const asset = getLiveAsset(symbol);
 
-  const [status,    setStatus]    = useState('live');
-  const [oiValue,   setOiValue]   = useState(null);
-  const [oiLoading, setOiLoading] = useState(true);
-  const [funding,   setFunding]   = useState(0.0043);
+  // Live ticker from Orderly public REST (polls every 5s)
+  const { ticker, loading: tickerLoading } = useTicker(symbol);
 
-  // Funding drift every 2s
-  useEffect(() => {
-    const id = setInterval(() => {
-      setFunding(f => {
-        const next = f + (Math.random() - 0.5) * 0.0009;
-        return parseFloat(Math.max(-0.08, Math.min(0.08, next)).toFixed(4));
-      });
-    }, 2000);
-    return () => clearInterval(id);
-  }, []);
+  // Prefer Orderly ticker data; fall back to MarketDataProvider for price
+  const price     = ticker?.markPrice  ?? ticker?.price ?? asset?.price  ?? null;
+  const lastPrice = ticker?.lastPrice  ?? null;
+  const change    = ticker?.change24h  ?? asset?.change ?? null;
+  const volume    = ticker?.volume24h  ?? asset?.volume ?? null;
+  const oiValue   = ticker?.openInterest ?? null;
+  const funding   = ticker?.fundingRate  ?? 0.0043;
 
-  // OI from Solfort API
-  useEffect(() => {
-    let dead = false;
-    let fails = 0;
-    const run = async () => {
-      try {
-        const res  = await fetch(OI_API);
-        const json = await res.json();
-        if (dead || json?.error) return;
-        const item = Array.isArray(json)
-          ? (json.find(i => i.symbol?.toUpperCase().includes(symbol.toUpperCase())) || json[0])
-          : json;
-        const v = item?.openInterest ?? item?.oi ?? item?.value ?? null;
-        setOiValue(v);
-        setOiLoading(false);
-        fails = 0;
-        setStatus('live');
-      } catch {
-        if (dead) return;
-        fails++;
-        setStatus(fails >= 3 ? 'offline' : 'reconnecting');
-        if (fails >= 3) setOiLoading(false);
-      }
-    };
-    run();
-    const id = setInterval(run, 2000);
-    return () => { dead = true; clearInterval(id); };
-  }, [symbol]);
+  const status  = tickerLoading ? 'reconnecting' : 'live';
+  const loading = tickerLoading && !asset.available;
 
   const changeColor  = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
   const fundingColor = funding >= 0 ? '#4ade80' : '#f87171';
-  const loading      = !asset.available;
 
   return (
     <div
