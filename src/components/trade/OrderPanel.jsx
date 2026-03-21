@@ -452,6 +452,16 @@ export default function OrderPanel({ asset, externalPrice }) {
         style={{ background: `linear-gradient(90deg, ${sideColor}45, ${sideColor}18, transparent)` }}
       />
 
+      {/* ── Symbol header ── */}
+      <div
+        className="flex items-center gap-2 px-3 py-2 border-b"
+        style={{ borderColor: 'rgba(148,163,184,0.055)', background: 'rgba(4,6,14,0.6)' }}
+      >
+        <CoinIcon symbol={symbol} size={20} />
+        <span className="text-[12px] font-black text-white">{symbol}</span>
+        <span className="text-[9px] text-slate-600">/USDC Perpetual</span>
+      </div>
+
       {/* ── Buy / Sell toggle ── */}
       <div className="p-3 pb-2.5 border-b" style={{ borderColor: 'rgba(148,163,184,0.055)' }}>
         <div
