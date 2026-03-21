@@ -184,7 +184,11 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
     };
 
     ws.onerror = (err) => {
-      console.error(`[Orderly WS] ❌ Error on topic="${topic}":`, err?.message ?? err);
+      console.error(`[Orderly WS] ❌ Error on topic="${topic}":`, err?.type ?? err);
+      // If we've already tried multiple times and still failing, report error state
+      if (reconnectCount > 3) {
+        onStatus('error');
+      }
     };
 
     ws.onclose = (ev) => {
