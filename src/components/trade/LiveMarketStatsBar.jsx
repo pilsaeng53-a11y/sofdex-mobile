@@ -160,16 +160,21 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
   // Live ticker from Orderly public REST (polls every 5s)
   const { ticker, loading: tickerLoading } = useTicker(symbol);
 
-  // Prefer Orderly ticker data; fall back to MarketDataProvider for price
-  const price     = ticker?.markPrice  ?? ticker?.price ?? asset?.price  ?? null;
-  const lastPrice = ticker?.lastPrice  ?? null;
-  const change    = ticker?.change24h  ?? asset?.change ?? null;
-  const volume    = ticker?.volume24h  ?? asset?.volume ?? null;
+  // Prefer Orderly ticker; fall back to MarketDataProvider for price
+  const price     = ticker?.markPrice   ?? asset?.price  ?? null;
+  const lastPrice = ticker?.lastPrice   ?? null;
+  const change    = ticker?.change24h   ?? asset?.change ?? null;
+  // Use USDC quote amount for volume display (more meaningful than base qty)
+  const volume    = ticker?.amount24h   ?? ticker?.volume24h ?? asset?.volume ?? null;
+  const high24h   = ticker?.high24h     ?? null;
+  const low24h    = ticker?.low24h      ?? null;
   const oiValue   = ticker?.openInterest ?? null;
-  const funding   = ticker?.fundingRate  ?? 0.0043;
+  // fundingRate from API is a decimal fraction (e.g. 0.000059) — display as %
+  const fundingRaw = ticker?.fundingRate ?? null;
+  const funding    = fundingRaw != null ? fundingRaw * 100 : null; // convert to %
 
-  const status  = tickerLoading ? 'reconnecting' : 'live';
-  const loading = tickerLoading && !asset.available;
+  const status  = tickerLoading ? 'reconnecting' : ticker ? 'live' : 'offline';
+  const loading = tickerLoading && price == null;
 
   const changeColor  = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
   const fundingColor = funding >= 0 ? '#4ade80' : '#f87171';
