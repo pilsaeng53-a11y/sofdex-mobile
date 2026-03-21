@@ -76,15 +76,19 @@ export default function TradingDesk() {
   const [sideTab,      setSideTab]      = useState('both');
   const [orderPrice,   setOrderPrice]   = useState(null);
 
-  const { getLiveAsset } = useMarketData();
-  const asset = getLiveAsset(activeSymbol.base);
+  const symbol = activeSymbol.base;   // short key used by all hooks
+
+  // Price for OrderPanel: exclusively from Orderly ticker (mark → last → index)
+  // NOT from MarketDataProvider (Binance/CoinGecko) — that would pollute trading data
+  const { ticker: orderlyTicker } = useTicker(symbol);
+  const orderlyPrice = orderlyTicker?.markPrice ?? orderlyTicker?.lastPrice ?? orderlyTicker?.indexPrice ?? 0;
 
   function handleSymbolSelect(sym) {
+    console.log(`[TradingDesk] Symbol switch: ${activeSymbol.base} → ${sym.base}`);
     setActiveSymbol(sym);
     setOrderPrice(null);
   }
 
-  const symbol     = activeSymbol.base;   // short key used by all hooks
   const showBook   = sideTab === 'book'   || sideTab === 'both';
   const showTrades = sideTab === 'trades' || sideTab === 'both';
 
