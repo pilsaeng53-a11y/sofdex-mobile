@@ -369,23 +369,23 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <span className="text-[9px]" style={{ color: '#2a3348' }}>O</span>
-            <span className="font-mono text-[9px]" style={{ color: '#3d4f6b' }}>{price ? fmtPrice(price * 0.999) : '—'}</span>
+            <span className="font-mono text-[9px]" style={{ color: '#3d4f6b' }}>{lastCandle ? fmtPrice(lastCandle.open) : '—'}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[9px]" style={{ color: '#2a3348' }}>H</span>
-            <span className="font-mono text-[9px]" style={{ color: '#4ade80' }}>{price ? fmtPrice(price * 1.008) : '—'}</span>
+            <span className="font-mono text-[9px]" style={{ color: '#4ade80' }}>{lastCandle ? fmtPrice(lastCandle.high) : '—'}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[9px]" style={{ color: '#2a3348' }}>L</span>
-            <span className="font-mono text-[9px]" style={{ color: '#f87171' }}>{price ? fmtPrice(price * 0.992) : '—'}</span>
+            <span className="font-mono text-[9px]" style={{ color: '#f87171' }}>{lastCandle ? fmtPrice(lastCandle.low) : '—'}</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="text-[9px]" style={{ color: '#2a3348' }}>C</span>
-            <span className="font-mono text-[9px]" style={{ color: '#e2e8f0' }}>{price ? fmtPrice(price) : '—'}</span>
+            <span className="font-mono text-[9px]" style={{ color: '#e2e8f0' }}>{lastCandle ? fmtPrice(lastCandle.close) : price ? fmtPrice(price) : '—'}</span>
           </div>
         </div>
         <span className="text-[8.5px] font-bold" style={{ color: '#2a3348' }}>
-          TradingView integration ready
+          {candles.length > 0 ? `${candles.length} candles · ${timeframe}` : 'Loading candles...'}
         </span>
       </div>
     </div>
