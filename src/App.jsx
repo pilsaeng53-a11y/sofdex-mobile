@@ -69,6 +69,7 @@ import SOFSalesPartnerDashboard from './pages/SOFSalesPartnerDashboard';
 import AssetOnboarding from './pages/AssetOnboarding';
 import MySubmissions from './pages/MySubmissions';
 import RWAInsights from './pages/RWAInsights';
+import TradingDesk from './pages/TradingDesk';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
