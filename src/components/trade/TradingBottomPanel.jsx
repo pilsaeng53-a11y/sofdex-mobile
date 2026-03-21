@@ -148,7 +148,7 @@ function PositionsTab({ positions }) {
       <tbody>
         {positions.map((p, i) => (
           <tr key={i} className="hover:bg-white/[0.015] transition-colors">
-            <TD><span className="font-bold text-white text-[11px]">{p.symbol}</span></TD>
+            <TD><SymbolCell symbol={p.symbol} /></TD>
             <TD>
               <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded"
                 style={{ color: sideColor(p.side), background: p.side === 'long' ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)' }}>
@@ -194,7 +194,7 @@ function OpenOrdersTab({ orders }) {
       <tbody>
         {orders.map((o, i) => (
           <tr key={i} className="hover:bg-white/[0.015] transition-colors">
-            <TD><span className="font-bold text-white text-[11px]">{o.symbol}</span></TD>
+            <TD><SymbolCell symbol={o.symbol} /></TD>
             <TD>
               <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded"
                 style={{ color: sideColor(o.side), background: o.side === 'long' ? 'rgba(74,222,128,0.08)' : 'rgba(248,113,113,0.08)' }}>
