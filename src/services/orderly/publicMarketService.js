@@ -135,15 +135,17 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
       delay = 1500;
       reconnectCount++;
       console.log(`[Orderly WS] ✅ WS open (topic="${topic}", attempt=${reconnectCount})`);
-      const subPayload = { id: `sub_${Date.now()}`, event: 'subscribe', topic };
-      console.log(`[Orderly WS]   Subscribe payload:`, JSON.stringify(subPayload));
+      // Orderly public WS subscription format:
+      // { event: "subscribe", topic: "<SYMBOL>@<stream>" }
+      // The topic itself includes the symbol, no extra params needed
+      const subPayload = { event: 'subscribe', topic };
+      console.log(`[Orderly WS]   ▶ Subscribe sent:`, JSON.stringify(subPayload));
       ws.send(JSON.stringify(subPayload));
       // Orderly requires client ping every 10s to keep connection alive
       hbTimer = setInterval(() => {
         if (ws.readyState === WebSocket.OPEN) {
           hbCount++;
           ws.send(JSON.stringify({ event: 'ping' }));
-          console.log(`[Orderly WS]   💓 ping sent (topic="${topic}", hb#${hbCount})`);
         }
       }, 10000);
     };
