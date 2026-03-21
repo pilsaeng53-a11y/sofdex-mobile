@@ -85,7 +85,8 @@ function LiveDot({ state }) {
 }
 
 // ─── Stat block ───────────────────────────────────────────────────────────────
-function StatBlock({ label, icon: Icon, iconColor, primary, primaryStyle, secondary, secondaryColor, loading }) {
+function StatBlock({ label, icon: IconEl, iconColor, primary, primaryStyle, secondary, secondaryColor, loading }) {
+  const Icon = IconEl;
   return (
     <div className="flex flex-col gap-0.5 min-w-0 flex-shrink-0">
       <div className="flex items-center gap-1">
