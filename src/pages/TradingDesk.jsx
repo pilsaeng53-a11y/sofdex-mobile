@@ -131,9 +131,11 @@ export default function TradingDesk() {
       {/* ── Main grid: Chart + Side panel (desktop) ── */}
       <div className="flex flex-col lg:flex-row gap-3 px-3 pt-3 flex-1 min-h-0">
 
-        {/* Chart — takes remaining width */}
-        <div className="flex-1 min-w-0">
+        {/* Chart + Token Info — takes remaining width */}
+        <div className="flex-1 min-w-0 flex flex-col gap-3">
           <ChartContainer symbol={symbol} />
+          {/* Token metadata card — visually separated from trading data */}
+          <TokenInfoCard base={activeSymbol.base} quote={activeSymbol.quote} />
         </div>
 
         {/* Side panel: OrderBook / RecentTrades / Both */}
