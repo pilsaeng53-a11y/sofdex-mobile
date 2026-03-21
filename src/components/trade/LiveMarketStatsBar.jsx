@@ -279,8 +279,8 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
           Icon={Activity}
           iconColor="#f59e0b"
           rawValue={oiValue}
-          displayValue={oiValue != null ? fmtOI(oiValue) : (oiLoading ? '—' : 'N/A')}
-          loading={oiLoading}
+          displayValue={oiValue != null ? fmtOI(oiValue) : '—'}
+          loading={tickerLoading}
         />
       </div>
     </div>
