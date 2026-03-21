@@ -142,6 +142,7 @@ const AuthenticatedApp = () => {
       <Route path="/AssetOnboarding" element={<LayoutWrapper currentPageName="AssetOnboarding"><AssetOnboarding /></LayoutWrapper>} />
       <Route path="/MySubmissions" element={<LayoutWrapper currentPageName="MySubmissions"><MySubmissions /></LayoutWrapper>} />
       <Route path="/RWAInsights" element={<LayoutWrapper currentPageName="RWAInsights"><RWAInsights /></LayoutWrapper>} />
+      <Route path="/TradingDesk" element={<LayoutWrapper currentPageName="TradingDesk"><TradingDesk /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/BeginnerDashboard" element={<LayoutWrapper currentPageName="BeginnerDashboard"><BeginnerDashboard /></LayoutWrapper>} />
