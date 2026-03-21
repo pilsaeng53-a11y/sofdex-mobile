@@ -330,18 +330,26 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
         <GridLines />
         <PriceAxis midPrice={price} />
 
-        {loading ? (
+        {klinesStatus === 'reconnecting' ? (
           <>
             <ChartSkeleton />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(4,6,14,0.8)', border: '1px solid rgba(0,212,170,0.12)' }}>
                 <div className="w-3 h-3 rounded-full border-2 border-[#00d4aa] border-t-transparent animate-spin" />
-                <span className="text-[9px] font-bold text-[#00d4aa]">Loading {timeframe} chart...</span>
+                <span className="text-[9px] font-bold text-[#00d4aa]">Connecting to {symbol} stream...</span>
               </div>
             </div>
           </>
-        ) : !asset?.available ? (
-          <EmptyState message="Waiting for market data" />
+        ) : candles.length === 0 ? (
+          <>
+            <ReadyOverlay symbol={symbol} timeframe={timeframe} />
+            <div className="absolute bottom-10 inset-x-0 flex justify-center">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(4,6,14,0.8)', border: '1px solid rgba(0,212,170,0.08)' }}>
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="text-[9px] font-bold" style={{ color: '#3d4f6b' }}>Waiting for first {timeframe} candle...</span>
+              </div>
+            </div>
+          </>
         ) : (
           <ReadyOverlay symbol={symbol} timeframe={timeframe} />
         )}
