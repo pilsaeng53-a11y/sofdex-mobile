@@ -47,11 +47,11 @@ function FlashValue({ value, formatter, className }) {
 }
 
 // ─── Single stat cell ─────────────────────────────────────────────────────────
-function StatCell({ label, icon: Icon, iconColor, value, sub, subColor, loading, flash }) {
+function StatCell({ label, icon: IconComp, iconColor, value, sub, subColor, loading }) {
   return (
     <div className="flex flex-col justify-between min-w-0">
       <div className="flex items-center gap-1 mb-1.5">
-        <Icon className="w-3 h-3 flex-shrink-0" style={{ color: iconColor }} />
+        <IconComp className="w-3 h-3 flex-shrink-0" style={{ color: iconColor }} />
         <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600 truncate">{label}</span>
       </div>
       {loading ? (
