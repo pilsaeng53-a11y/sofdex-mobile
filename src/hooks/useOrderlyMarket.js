@@ -109,6 +109,7 @@ export function useRecentTrades(symbol) {
   const [trades,  setTrades]  = useState([]);
   const [status,  setStatus]  = useState('reconnecting');
   const [loading, setLoading] = useState(true);
+  const [reconnectKey, markReceived] = useStaleWatchdog(symbol, 'trades');
 
   useEffect(() => {
     if (!symbol) return;
@@ -123,12 +124,13 @@ export function useRecentTrades(symbol) {
       (newTrades) => {
         setTrades(prev => [...newTrades, ...prev].slice(0, MAX_TRADES));
         setLoading(false);
+        markReceived();
       },
       setStatus,
     );
 
     return () => { dead = true; unsub(); };
-  }, [symbol]);
+  }, [symbol, reconnectKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { trades, status, loading };
 }
