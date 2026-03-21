@@ -44,8 +44,14 @@ export const TIMEFRAME_MAP = {
 
 /**
  * Resolve an app-level short symbol to an Orderly instrument string.
- * Falls back to a best-guess PERP_ format if not in the map.
+ * Handles formats: 'BTC', 'BTC-USDT', 'BTC/USDT', 'PERP_BTC_USDC'
+ * Falls back to a best-guess PERP_X_USDC format if not in the map.
  */
 export function toOrderlySymbol(appSymbol) {
-  return SYMBOL_MAP[appSymbol?.toUpperCase()] ?? `PERP_${appSymbol?.toUpperCase()}_USDC`;
+  if (!appSymbol) return 'PERP_BTC_USDC';
+  // Already in Orderly format
+  if (appSymbol.startsWith('PERP_')) return appSymbol;
+  // Extract base from "BTC-USDT" or "BTC/USDT"
+  const base = appSymbol.split(/[-/]/)[0].toUpperCase();
+  return SYMBOL_MAP[base] ?? `PERP_${base}_USDC`;
 }
