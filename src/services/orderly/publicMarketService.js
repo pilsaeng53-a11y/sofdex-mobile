@@ -217,17 +217,25 @@ function openPublicWS({ topic, onMessage, onStatus, normalise }) {
 
 // ─── Live order book ───────────────────────────────────────────────────────────
 
+function parseLevel(level) {
+  // Orderly sends [price, size] arrays
+  if (Array.isArray(level)) {
+    return { price: parseFloat(level[0]), size: parseFloat(level[1]) };
+  }
+  // Fallback: object with price/quantity fields
+  return {
+    price: parseFloat(level.price ?? level.p ?? 0),
+    size:  parseFloat(level.quantity ?? level.size ?? level.q ?? 0),
+  };
+}
+
 function normaliseBook(data, maxRows) {
-  const asks = (data.asks ?? []).slice(0, maxRows).map(([price, size]) => ({
-    price: parseFloat(price),
-    size:  parseFloat(size),
-    side:  'ask',
-  }));
-  const bids = (data.bids ?? []).slice(0, maxRows).map(([price, size]) => ({
-    price: parseFloat(price),
-    size:  parseFloat(size),
-    side:  'bid',
-  }));
+  // Orderly book WS payload: { asks: [[price,size],...], bids: [[price,size],...] }
+  const rawAsks = data.asks ?? data.sell ?? [];
+  const rawBids = data.bids ?? data.buy  ?? [];
+
+  const asks = rawAsks.slice(0, maxRows).map(l => ({ ...parseLevel(l), side: 'ask' }));
+  const bids = rawBids.slice(0, maxRows).map(l => ({ ...parseLevel(l), side: 'bid' }));
 
   // Sort correctly
   asks.sort((a, b) => a.price - b.price);
