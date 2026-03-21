@@ -1,39 +1,38 @@
 /**
  * useOrderlyMarket — React hook layer over publicMarketService.js
  *
- * Provides clean, component-ready state for:
- *   - ticker (price, markPrice, change24h, volume, OI, funding)
- *   - order book (asks, bids, status)
- *   - recent trades (list, status)
- *   - klines (candles, status)
+ * Hooks:
+ *   useTicker(symbol)       → { ticker, loading, error }
+ *   useOrderBook(symbol)    → { asks, bids, status, loading }
+ *   useRecentTrades(symbol) → { trades, status, loading }
+ *   useKlines(symbol, tf)   → { candles, loading, error, status }
  *
  * Design:
- *   - One hook per concern so components only subscribe to what they need
- *   - Reconnect/retry is handled inside the service; this hook just exposes status
- *   - Adding user-specific data (positions, order history) later should never
- *     require changing this file — create useOrderlyAccount.js separately
+ *   - One hook per concern — components only subscribe to what they need
+ *   - Reconnect/retry handled inside the service; hooks just expose state
+ *   - Private account features → create useOrderlyAccount.js separately
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   fetchTicker,
-  fetchOrderBook,
   fetchTrades,
-  fetchKlines,
   subscribeOrderBook,
   subscribeTrades,
+  subscribeKlines,
 } from '../services/orderly/publicMarketService';
 
-const TICKER_POLL_MS   = 5000;
-const BOOK_ROWS        = 10;
-const MAX_TRADES       = 30;
+const TICKER_POLL_MS = 5000;
+const BOOK_ROWS      = 10;
+const MAX_TRADES     = 30;
+const MAX_CANDLES    = 200;
 
-// ─── Ticker ───────────────────────────────────────────────────────────────────
-
+// ─── useTicker ────────────────────────────────────────────────────────────────
 /**
- * useTicker(symbol)
+ * Polls the Orderly REST ticker every 5s.
  * Returns { ticker, loading, error }
- * ticker: { price, markPrice, lastPrice, change24h, volume24h, openInterest, fundingRate }
+ * ticker: { price, markPrice, lastPrice, change24h, volume24h, amount24h,
+ *           high24h, low24h, openInterest, fundingRate, nextFundingTime }
  */
 export function useTicker(symbol) {
   const [ticker,  setTicker]  = useState(null);
@@ -61,12 +60,10 @@ export function useTicker(symbol) {
   return { ticker, loading, error };
 }
 
-// ─── Order Book ───────────────────────────────────────────────────────────────
-
+// ─── useOrderBook ─────────────────────────────────────────────────────────────
 /**
- * useOrderBook(symbol)
+ * Real-time order book via Orderly WebSocket.
  * Returns { asks, bids, status, loading }
- * status: 'live' | 'reconnecting' | 'offline'
  */
 export function useOrderBook(symbol) {
   const [asks,    setAsks]    = useState([]);
@@ -77,16 +74,6 @@ export function useOrderBook(symbol) {
   useEffect(() => {
     if (!symbol) return;
 
-    // Seed with REST snapshot first for instant paint
-    fetchOrderBook(symbol, BOOK_ROWS)
-      .then(({ asks, bids }) => {
-        setAsks(asks);
-        setBids(bids);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-
-    // Then upgrade to live WebSocket
     const unsub = subscribeOrderBook(
       symbol,
       BOOK_ROWS,
@@ -104,12 +91,10 @@ export function useOrderBook(symbol) {
   return { asks, bids, status, loading };
 }
 
-// ─── Recent Trades ────────────────────────────────────────────────────────────
-
+// ─── useRecentTrades ──────────────────────────────────────────────────────────
 /**
- * useRecentTrades(symbol)
+ * Seeded with REST snapshot, then updated via WebSocket stream.
  * Returns { trades, status, loading }
- * Each trade: { id, price, size, side, ts, fresh }
  */
 export function useRecentTrades(symbol) {
   const [trades,  setTrades]  = useState([]);
@@ -118,62 +103,100 @@ export function useRecentTrades(symbol) {
 
   useEffect(() => {
     if (!symbol) return;
+    let dead = false;
 
-    // REST seed
+    // Seed with REST snapshot
     fetchTrades(symbol, 20)
-      .then(rows => {
-        setTrades(rows);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+      .then(rows => { if (!dead) { setTrades(rows); setLoading(false); } })
+      .catch(() => { if (!dead) setLoading(false); });
 
-    // WS live stream
+    // Then upgrade to live WS
     const unsub = subscribeTrades(
       symbol,
       (newTrades) => {
-        setTrades(prev => {
-          const combined = [...newTrades, ...prev];
-          return combined.slice(0, MAX_TRADES);
-        });
+        setTrades(prev => [...newTrades, ...prev].slice(0, MAX_TRADES));
         setLoading(false);
       },
       setStatus,
     );
 
-    return unsub;
+    return () => { dead = true; unsub(); };
   }, [symbol]);
 
   return { trades, status, loading };
 }
 
-// ─── Klines / Candlesticks ────────────────────────────────────────────────────
-
+// ─── useKlines ────────────────────────────────────────────────────────────────
 /**
- * useKlines(symbol, timeframe)
- * Returns { candles, loading, error }
+ * Live OHLCV candles via Orderly WebSocket kline feed.
+ *
+ * Orderly has no public REST kline endpoint — data comes only from WS.
+ * We accumulate incoming candles as a sliding window of MAX_CANDLES.
+ * When a candle with the same timestamp arrives, it replaces the existing
+ * one (in-progress candle update), otherwise it is prepended.
+ *
+ * Returns { candles, loading, error, status }
  * Each candle: { ts, open, high, low, close, volume }
  */
 export function useKlines(symbol, timeframe) {
   const [candles, setCandles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error,   setError]   = useState(null);
+  const [status,  setStatus]  = useState('reconnecting');
+
+  // Keep a ref map ts→index for O(1) upsert
+  const tsIndexRef = useRef(new Map());
 
   useEffect(() => {
     if (!symbol || !timeframe) return;
-    let dead = false;
+
+    // Reset on symbol/timeframe change
+    setCandles([]);
     setLoading(true);
     setError(null);
+    setStatus('reconnecting');
+    tsIndexRef.current = new Map();
 
-    fetchKlines(symbol, timeframe, 200)
-      .then(data => {
-        if (!dead) { setCandles(data); setLoading(false); }
-      })
-      .catch(e => {
-        if (!dead) { setError(e.message); setLoading(false); }
-      });
+    const unsub = subscribeKlines(
+      symbol,
+      timeframe,
+      (candle) => {
+        setCandles(prev => {
+          const map = tsIndexRef.current;
+          const existing = map.get(candle.ts);
 
-    return () => { dead = true; };
+          if (existing !== undefined) {
+            // Update in-progress candle
+            const next = [...prev];
+            next[existing] = candle;
+            return next;
+          } else {
+            // New candle — append
+            const next = [...prev, candle].slice(-MAX_CANDLES);
+            // Rebuild index
+            const newMap = new Map();
+            next.forEach((c, i) => newMap.set(c.ts, i));
+            tsIndexRef.current = newMap;
+            return next;
+          }
+        });
+        setLoading(false);
+        setError(null);
+      },
+      (s) => {
+        setStatus(s);
+        if (s === 'offline') {
+          setError('Connection offline');
+          setLoading(false);
+        }
+      },
+    );
+
+    return () => {
+      tsIndexRef.current = new Map();
+      unsub();
+    };
   }, [symbol, timeframe]);
 
-  return { candles, loading, error };
+  return { candles, loading, error, status };
 }
