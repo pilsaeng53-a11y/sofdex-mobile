@@ -4,6 +4,7 @@ import {
   RefreshCw, WifiOff, Activity, ChevronUp, ChevronDown
 } from 'lucide-react';
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
+import CoinIcon from '../shared/CoinIcon';
 
 // NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
 // All prices in this chart come exclusively from Orderly market data:
