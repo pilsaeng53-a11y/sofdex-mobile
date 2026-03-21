@@ -98,8 +98,8 @@ export default function SymbolDrawer({ isOpen, onClose, activeBase, onSelect }) 
       .then(syms => {
         setSymbols(syms);
         setLoading(false);
-        // Pre-warm icons for the first 30
-        preloadIcons(syms.slice(0, 30).map(s => s.base));
+        // Pre-warm icons for all symbols (staggered to avoid API hammering)
+        preloadIcons(syms.map(s => s.base));
       })
       .catch(err => {
         setError(err.message);
