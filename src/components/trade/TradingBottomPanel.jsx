@@ -316,7 +316,7 @@ export default function TradingBottomPanel({
       </div>
 
       {/* Content */}
-      <div className="overflow-x-auto overflow-y-auto scrollbar-none" style={{ maxHeight: 260 }}>
+      <div className="overflow-x-auto overflow-y-auto scrollbar-none" style={{ maxHeight: 340 }}>
         {active === 'positions'     && <PositionsTab    positions={positions} />}
         {active === 'open_orders'   && <OpenOrdersTab   orders={openOrders} />}
         {active === 'order_history' && <OrderHistoryTab orders={orderHistory} />}
