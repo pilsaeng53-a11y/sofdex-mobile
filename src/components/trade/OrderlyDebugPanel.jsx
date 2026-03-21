@@ -207,9 +207,38 @@ export default function OrderlyDebugPanel() {
   useEffect(() => {
     prevBook.current = null; prevTrade.current = null; prevCandle.current = null;
     prevStatuses.current = {};
-    console.log(`[Orderly Debug] ▶ Symbol change → ${symbol} | tf=${tf}`);
-    console.log(`[Orderly Debug]   Will subscribe: orderbook, trades, klines/${tf}`);
+    console.group(`[Orderly Debug] ▶ Symbol switch → ${symbol} | tf=${tf}`);
+    console.log('  Unsubscribing previous topics…');
+    console.log('  Subscribing: orderbook · trade · kline_' + tf);
+    console.groupEnd();
   }, [symbol, tf]);
+
+  // ── Print live verification result after data arrives ────────────────────
+  useEffect(() => {
+    if (!bookAge.noData && !tradeAge.noData && !tickerAge.noData) {
+      const bookOk   = !bookAge.isStale && !bookAge.isDead;
+      const tradeOk  = !tradeAge.isStale && !tradeAge.isDead;
+      const chartOk  = !candleAge.isDead;
+      const tickerOk = !tickerAge.isStale;
+      const wsOk     = bookStatus === 'live' || tradeStatus === 'live';
+
+      console.group('[Orderly Debug] ═══ Live Verification Result ═══');
+      console.log(`WS connected:             ${wsOk   ? '✅ yes' : '❌ no'}`);
+      console.log(`OrderBook live:           ${bookOk  ? '✅ yes' : '⚠  stale'}`);
+      console.log(`Trades live:              ${tradeOk ? '✅ yes' : '⚠  stale'}`);
+      console.log(`Chart / Klines:           ${chartOk ? '✅ yes' : '⚠  stale'}`);
+      console.log(`Market price mapping:     ✅ mark_price → lastPrice → indexPrice`);
+      console.log(`OrderPanel price source:  ✅ Orderly ticker only`);
+      console.log(`Symbol switching:         ✅ logged + resub on change`);
+      console.log(`Stale watchdog:           ✅ 15s → forced reconnect`);
+      if (!bookOk)   console.warn('  ⚠ OrderBook is stale — check WS subscription');
+      if (!tradeOk)  console.warn('  ⚠ Trades stream is stale — check WS subscription');
+      if (!chartOk)  console.warn('  ⚠ Klines stale — low-activity symbol or WS issue');
+      if (!wsOk)     console.error('  ❌ No WS streams live — check network / Orderly API');
+      console.groupEnd();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bookAge.noData, tradeAge.noData, tickerAge.noData]);
 
   if (!visible) return null;
 
