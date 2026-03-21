@@ -239,7 +239,7 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
           Icon={Tag}
           iconColor="#3b82f6"
           rawValue={lastPrice}
-          displayValue={lastPrice != null ? `$${fmtPrice(lastPrice)}` : '—'}
+          displayValue={lastPrice != null ? `$${fmtPrice(lastPrice)}` : price != null ? `$${fmtPrice(price)}` : '—'}
           loading={loading}
         />
         <Sep />
