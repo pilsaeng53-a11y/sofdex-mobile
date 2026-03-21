@@ -266,15 +266,35 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
         />
         <Sep />
         <Stat
+          label="24h High"
+          Icon={TrendingUp}
+          iconColor="#4ade80"
+          rawValue={high24h}
+          displayValue={high24h != null ? `$${fmtPrice(high24h)}` : '—'}
+          valueColor="#4ade80"
+          loading={loading}
+        />
+        <Sep />
+        <Stat
+          label="24h Low"
+          Icon={TrendingDown}
+          iconColor="#f87171"
+          rawValue={low24h}
+          displayValue={low24h != null ? `$${fmtPrice(low24h)}` : '—'}
+          valueColor="#f87171"
+          loading={loading}
+        />
+        <Sep />
+        <Stat
           label="Funding 8h"
           Icon={Zap}
           iconColor={fundingColor}
           rawValue={funding}
-          displayValue={fmtFunding(funding)}
+          displayValue={funding != null ? fmtFunding(funding) : '—'}
           valueColor={fundingColor}
-          subLabel={funding >= 0 ? 'Longs pay' : 'Shorts pay'}
+          subLabel={funding != null ? (funding >= 0 ? 'Longs pay' : 'Shorts pay') : null}
           subColor="#3d4f6b"
-          loading={false}
+          loading={loading}
         />
         <Sep />
         <Stat
@@ -283,7 +303,7 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
           iconColor="#f59e0b"
           rawValue={oiValue}
           displayValue={oiValue != null ? fmtOI(oiValue) : '—'}
-          loading={tickerLoading}
+          loading={loading}
         />
       </div>
     </div>
