@@ -112,6 +112,13 @@ export default function TradingDesk() {
           <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: '#3d4f6b' }}>
             Futures
           </span>
+          {/* DEBUG: price source badge */}
+          {process.env.NODE_ENV === 'development' && (
+            <span className="text-[7px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
+              style={{ background: 'rgba(251,191,36,0.08)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.15)' }}>
+              PRICE: MARK
+            </span>
+          )}
         </div>
         <div className="w-px self-stretch" style={{ background: 'rgba(148,163,184,0.07)' }} />
 
