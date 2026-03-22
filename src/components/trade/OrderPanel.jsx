@@ -412,16 +412,26 @@ export default function OrderPanel({ asset, externalPrice }) {
   const handleSubmit = async () => {
     if (!validate()) return;
     setSubmitting(true);
-    await new Promise(r => setTimeout(r, 1300));
-    setSubmitting(false);
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setAmount('');
-      setPrice('');
-      setTp('');
-      setSl('');
-    }, 2500);
+    setErrors({});
+    try {
+      // Simulate order placement — replace with real Orderly API call
+      await new Promise(r => setTimeout(r, 1300));
+      // Example: if the API returns an error, throw { code: -1101, message: '...' }
+      // throw { code: -1101 };
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setAmount('');
+        setPrice('');
+        setTp('');
+        setSl('');
+      }, 2500);
+    } catch (err) {
+      const msg = formatOrderlyError(err);
+      setErrors(e => ({ ...e, submit: msg }));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // ── Denom placeholder helper ──
