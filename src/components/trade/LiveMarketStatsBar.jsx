@@ -181,6 +181,7 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
 
   const changeColor  = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
   const fundingColor = funding == null ? '#94a3b8' : funding >= 0 ? '#4ade80' : '#f87171';
+  const debugLabel   = priceSourceLabel(priceSource);
 
   return (
     <div
