@@ -164,7 +164,6 @@ export const COINGECKO_ID = {
   'AAVE':  'aave',
   'JUP':   'jupiter-exchange-solana',
   'RAY':   'raydium',
-  'RNDR':  'render-token',
   'BONK':  'bonk',
   'HNT':   'helium',
 };
