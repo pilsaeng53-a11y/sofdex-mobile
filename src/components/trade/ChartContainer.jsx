@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
-import { resolvePrice as resolveTradingPrice, priceSourceLabel, normalizeSymbol } from '../../services/marketPriceResolver';
+import { resolveTradingPrice, priceSourceLabel, logPriceResolution, normalizeSymbol } from '../../services/tradingPriceResolver';
 import { logPriceSource, logComponentRender } from '../../lib/debugRuntimeBinding';
 
 // NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
