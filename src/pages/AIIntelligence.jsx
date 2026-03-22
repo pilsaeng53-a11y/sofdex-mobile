@@ -55,16 +55,7 @@ const PORTFOLIO_ADVISOR = {
   rwa: { current: '18%', suggested: '28%', reason: 'RWA sector momentum + treasury yield opportunity' },
 };
 
-const AI_RISK_SCORES = [
-  { asset: 'BTC',    score: 72, label: 'High Volatility',  color: 'text-orange-400', bar: 'bg-orange-400', factors: ['24h range: 4.2%', 'Beta: 1.0 (baseline)', 'Exchange inflows rising'] },
-  { asset: 'SOL',    score: 78, label: 'High Volatility',  color: 'text-orange-400', bar: 'bg-orange-400', factors: ['Momentum extended', 'RSI: 74', 'Options IV: 185%'] },
-  { asset: 'GOLD-T', score: 22, label: 'Stable Hedge',     color: 'text-emerald-400', bar: 'bg-emerald-400', factors: ['Tracks physical gold', 'Low 24h range: 0.3%', 'Safe haven demand'] },
-  { asset: 'TBILL',  score: 12, label: 'Safe Haven',       color: 'text-emerald-400', bar: 'bg-emerald-400', factors: ['US Gov. backed', '4.8% yield', 'Minimal price risk'] },
-  { asset: 'RE-NYC', score: 34, label: 'Low Risk',         color: 'text-blue-400',    bar: 'bg-blue-400', factors: ['Illiquid underlying', 'Rental yield: 5.2%', 'NAV-pegged'] },
-  { asset: 'BONK',   score: 95, label: 'Extreme Risk',     color: 'text-red-400',     bar: 'bg-red-400', factors: ['Memecoin, no utility', 'Volume 18x spike', 'Retail speculation'] },
-  { asset: 'JUP',    score: 65, label: 'Medium-High',      color: 'text-amber-400',   bar: 'bg-amber-400', factors: ['Small-cap', 'Airdrop dilution risk', 'Strong narrative'] },
-  { asset: 'ETH',    score: 60, label: 'Moderate',         color: 'text-amber-400',   bar: 'bg-amber-400', factors: ['ETF uncertainty', 'Staking: 4.1% APR', 'Range-bound'] },
-];
+
 
 const AI_NEWS = [
   { headline: 'Fed holds rates — crypto markets rally 6% on risk-on sentiment', impact: 'Bullish', tag: 'text-emerald-400', bg: 'bg-emerald-400/10', summary: 'Dovish Fed signals reduce macro headwinds; BTC and SOL leading the move higher.', factors: ['Macro: Fed rate decision', 'Sentiment: Risk-on shift', 'Volume: +140% spike on news'] },
