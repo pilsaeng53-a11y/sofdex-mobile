@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ALL_MARKETS, CRYPTO_MARKETS, formatPrice, formatChange } from '../components/shared/MarketData';
 import { useChartPrice } from '../components/shared/useChartPrice';
 import { formatSOFPrice } from '../components/shared/useSOFPrice';
