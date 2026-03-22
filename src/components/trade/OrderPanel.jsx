@@ -638,45 +638,13 @@ export default function OrderPanel({ asset, externalPrice }) {
 
         {/* Leverage */}
         <div>
-          <FieldLabel label={`Leverage — ${leverage}×`} />
-          <div className="flex gap-1 flex-wrap">
-            {LEVERAGE_PRESETS.filter(l => l <= maxLev).map(lev => {
-              const active = leverage === lev;
-              return (
-                <button
-                  key={lev}
-                  onClick={() => setLeverage(lev)}
-                  className="flex-1 min-w-[32px] py-1.5 rounded-lg text-[9px] font-black transition-all duration-150"
-                  style={active ? {
-                    background: 'rgba(0,212,170,0.1)',
-                    color: '#00d4aa',
-                    border: '1px solid rgba(0,212,170,0.22)',
-                    boxShadow: '0 0 10px rgba(0,212,170,0.1)',
-                  } : {
-                    background: 'rgba(4,6,14,0.8)',
-                    color: '#3d4f6b',
-                    border: '1px solid rgba(148,163,184,0.07)',
-                  }}
-                >
-                  {lev}×
-                </button>
-              );
-            })}
-          </div>
-          {/* Risk gradient bar */}
-          <div className="mt-2 h-1 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.06)' }}>
-            <div
-              className="h-full rounded-full transition-all duration-400"
-              style={{
-                width: `${(leverage / maxLev) * 100}%`,
-                background: leverage <= maxLev * 0.2 ? '#4ade80' : leverage <= maxLev * 0.5 ? '#f59e0b' : '#f87171',
-              }}
-            />
-          </div>
-          <div className="flex justify-between mt-0.5">
-            <span className="text-[8px]" style={{ color: '#2a3348' }}>Low risk</span>
-            <span className="text-[8px]" style={{ color: '#2a3348' }}>High risk</span>
-          </div>
+          <FieldLabel label="Leverage" />
+          <LeverageControls
+            leverage={leverage}
+            onChange={setLeverage}
+            maxLev={maxLev}
+            minLev={1}
+          />
         </div>
 
         {/* TP / SL */}
