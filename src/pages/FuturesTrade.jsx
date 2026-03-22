@@ -232,6 +232,9 @@ export default function FuturesTrade() {
           </table>
         </div>
       </div>
+
+      {/* Debug panel in development */}
+      {process.env.NODE_ENV === 'development' && <DebugRuntimePanel />}
     </div>
   );
 }
