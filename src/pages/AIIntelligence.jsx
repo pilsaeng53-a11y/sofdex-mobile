@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText, ShieldCheck, BarChart3, Target, PieChart, Info } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
-import { useMarketData, COMMODITY_SYMBOLS } from '../components/shared/MarketDataProvider';
+import { useMarketData } from '../components/shared/MarketDataProvider';
 import { CRYPTO_MARKETS, RWA_MARKETS } from '../components/shared/MarketData';
 import { useOverallAISignal, useAssetAISignals, ASSET_CONTEXT, getSignalLabel, getConfidenceLabel, SIGNAL_ASSETS } from '../hooks/useAISignal';
 
