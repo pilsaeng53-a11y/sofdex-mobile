@@ -29,6 +29,16 @@ export default function Trade() {
   const change = change24h ?? baseAsset.change;
   const positive = change >= 0;
 
+  // **HEADER COIN ICON** — normalize symbol and log resolution
+  const normalizeForIcon = (sym) => {
+    // ETH-PERP -> ETH, PERP_ETH_USDC -> ETH, ETH-USDT -> ETH
+    return sym.split(/[-_]/).find(part => /^[A-Z]{2,}$/.test(part)) || sym.slice(0, 3);
+  };
+  const normalizedIcon = normalizeForIcon(symbol);
+  React.useEffect(() => {
+    console.log(`[TRADE HEADER ICON] symbol="${symbol}", normalized="${normalizedIcon}"`);
+  }, [symbol, normalizedIcon]);
+
   // Deterministic funding rate from symbol (stable seed)
   const fundingVal = ((symbol.charCodeAt(0) % 10) - 4.5) * 0.003;
   const fundingPositive = fundingVal >= 0;
