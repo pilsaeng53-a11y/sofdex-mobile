@@ -54,9 +54,17 @@ export default function FuturesTrade() {
       {/* Center Panel: Chart */}
       <div className="flex-1 flex flex-col bg-[#05070d] border-r border-[rgba(148,163,184,0.1)]">
         <div className="border-b border-[rgba(148,163,184,0.1)] p-3 flex items-center justify-between bg-[#0f1525]">
-          <div>
-            <h2 className="text-sm font-bold text-white">{selectedSymbol}</h2>
-            <p className="text-xs text-slate-500">{currentAsset.name}</p>
+          <div className="flex items-center gap-2.5">
+            {(() => {
+              // Extract base symbol: EURUSD-T → EURUSD, GOLD-T → GOLD, BTC → BTC
+              const base = selectedSymbol.replace(/-T$/, '').split(/[/-]/)[0];
+              console.log('[FuturesTrade] header icon', { original: selectedSymbol, base });
+              return <CoinIcon symbol={base} size={28} debugLabel="FuturesTrade" />;
+            })()}
+            <div>
+              <h2 className="text-sm font-bold text-white">{selectedSymbol}</h2>
+              <p className="text-xs text-slate-500">{currentAsset.name}</p>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
