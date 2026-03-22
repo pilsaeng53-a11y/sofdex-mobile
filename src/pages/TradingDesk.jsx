@@ -159,7 +159,7 @@ export default function TradingDesk() {
       {/* ── Order panel (mobile) ── */}
       <div className="px-3 pt-3 lg:hidden">
         <OrderPanel
-          asset={{ symbol, price: orderlyPrice, maxLeverage: 100 }}
+          asset={{ symbol, price: markPrice, maxLeverage: 100 }}
           externalPrice={orderPrice}
         />
       </div>
@@ -171,7 +171,7 @@ export default function TradingDesk() {
         </div>
         <div className="w-[220px] xl:w-[240px] flex-shrink-0">
           <OrderPanel
-            asset={{ symbol, price: orderlyPrice, maxLeverage: 100 }}
+            asset={{ symbol, price: markPrice, maxLeverage: 100 }}
             externalPrice={orderPrice}
           />
         </div>
