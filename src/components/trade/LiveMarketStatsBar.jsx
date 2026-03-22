@@ -3,9 +3,11 @@ import {
   ArrowUpRight, ArrowDownRight, WifiOff, RefreshCw,
   TrendingUp, TrendingDown, BarChart2, Zap, Activity, Tag
 } from 'lucide-react';
-import { useMarketData } from '../shared/MarketDataProvider';
+// ⛔ MarketDataProvider (Binance/CoinGecko) intentionally NOT imported here.
+// All prices come exclusively from the Orderly ticker via resolveTradingPrice.
 import { useTicker } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
+import { resolveTradingPrice, priceSourceLabel } from '../../lib/trading/resolveTradingPrice';
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtPrice(v) {
