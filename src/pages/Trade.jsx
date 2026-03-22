@@ -35,7 +35,7 @@ export default function Trade() {
     return sym.split(/[-_]/).find(part => /^[A-Z]{2,}$/.test(part)) || sym.slice(0, 3);
   };
   const normalizedIcon = normalizeForIcon(symbol);
-  React.useEffect(() => {
+  useEffect(() => {
     console.log(`[TRADE HEADER ICON] symbol="${symbol}", normalized="${normalizedIcon}"`);
   }, [symbol, normalizedIcon]);
 
