@@ -5,6 +5,7 @@ import MiniChart from '../shared/MiniChart';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import AnimatedPrice from '../shared/AnimatedPrice';
+import CoinIcon from '../shared/CoinIcon';
 
 const ALL_ASSETS = [...CRYPTO_MARKETS, ...RWA_MARKETS];
 
@@ -114,6 +115,7 @@ export default function TopMovers() {
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-[11px] text-slate-600 font-medium w-4 num-highlight">{i + 1}</span>
+                      <CoinIcon symbol={asset.symbol} size={28} debugLabel="TopMovers" />
                       <div>
                         <p className="text-sm font-semibold text-slate-100 group-hover/row:text-[#00d4aa] fluid">{asset.symbol}</p>
                         <p className="text-[11px] text-slate-500">{asset.name}</p>
