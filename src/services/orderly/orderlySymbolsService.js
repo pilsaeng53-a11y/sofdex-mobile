@@ -31,8 +31,10 @@ export async function fetchAllSymbols() {
       .map(r => {
         // PERP_BTC_USDC  →  base=BTC  quote=USDC
         const parts = r.symbol.split('_');
-        const base  = parts[1] ?? r.symbol;
+        let base    = parts[1] ?? r.symbol;
         const quote = parts[2] ?? 'USDC';
+        // Normalize legacy rename: MATIC → POL
+        if (base === 'MATIC') base = 'POL';
         return {
           orderlySymbol: r.symbol,
           base,
@@ -44,6 +46,8 @@ export async function fetchAllSymbols() {
           lastPrice:   r['24h_close']   ?? r.mark_price ?? null,
         };
       })
+      // Remove RNDR from the list
+      .filter(r => r.base !== 'RNDR')
       .sort((a, b) => a.displayName.localeCompare(b.displayName));
 
     return _cachedSymbols;
