@@ -332,9 +332,14 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
           {/* HARD LOCK: Visible price source indicator */}
           <span
             className="text-[7px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
-            style={{ background: 'rgba(0,212,170,0.12)', color: '#00d4aa', border: '1px solid rgba(0,212,170,0.3)' }}
+            style={{
+              background: priceSource === 'mark' ? 'rgba(0,212,170,0.15)' : priceSource === 'last' ? 'rgba(59,130,246,0.15)' : 'rgba(139,92,246,0.15)',
+              color: priceSource === 'mark' ? '#00d4aa' : priceSource === 'last' ? '#3b82f6' : '#8b5cf6',
+              border: priceSource === 'mark' ? '1px solid rgba(0,212,170,0.3)' : priceSource === 'last' ? '1px solid rgba(59,130,246,0.3)' : '1px solid rgba(139,92,246,0.3)',
+            }}
+            title={priceSourceLabel(priceSource)}
           >
-            {priceSourceLabel(priceSource)}
+            {priceSource.toUpperCase()}
           </span>
         </div>
       </div>
