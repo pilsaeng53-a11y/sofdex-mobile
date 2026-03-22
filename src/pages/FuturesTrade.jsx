@@ -3,6 +3,7 @@ import { TRADING_ASSETS, LEVERAGE_TIERS, ACCOUNT_TYPES } from '@/data/futuresTra
 import { TrendingUp, TrendingDown, Settings, X, Plus, Minus, Send } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import CoinIcon from '../components/shared/CoinIcon';
+import DebugRuntimePanel from '../components/trade/DebugRuntimePanel';
 
 export default function FuturesTrade() {
   const { t } = useLang();
