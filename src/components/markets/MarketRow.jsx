@@ -5,17 +5,7 @@ import { formatPrice, formatChange } from '../shared/MarketData';
 import { useMarketData, COMMODITY_SYMBOLS } from '../shared/MarketDataProvider';
 import MiniChart from '../shared/MiniChart';
 import AnimatedPrice from '../shared/AnimatedPrice';
-
-const symbolColors = {
-  SOL:  'from-[#9945FF] to-[#14F195]',
-  BTC:  'from-[#F7931A] to-[#FFBA00]',
-  ETH:  'from-[#627EEA] to-[#8B9FEF]',
-  JUP:  'from-[#00C6A9] to-[#29B8B0]',
-  RAY:  'from-[#6E5CE6] to-[#A78BFA]',
-  RNDR: 'from-[#FF0000] to-[#FF6B6B]',
-  BONK: 'from-[#F59E0B] to-[#FDE68A]',
-  HNT:  'from-[#474DFF] to-[#7B80FF]',
-};
+import CoinIcon from '../shared/CoinIcon';
 
 const categoryLabels = {
   rwa:    { label: 'RWA',    color: 'text-purple-400 bg-purple-400/10' },
@@ -33,7 +23,6 @@ export default function MarketRow({ asset }) {
   const change = live.available ? live.change : (isCommodity ? 0   : asset.change);
   const sparkline = live.sparkline ?? null;
   const isPositive = change >= 0;
-  const gradient  = symbolColors[asset.symbol] || 'from-slate-600 to-slate-500';
   const catLabel  = categoryLabels[asset.category] || categoryLabels.crypto;
 
   return (
@@ -54,11 +43,8 @@ export default function MarketRow({ asset }) {
         onMouseDown={e => { e.currentTarget.style.transform = 'translateX(1px) scale(0.99)'; }}
         onMouseUp={e => { e.currentTarget.style.transform = 'translateX(2px)'; }}
       >
-        <div
-          className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0 shadow-md group-hover:scale-110 fluid-fast`}
-          style={{ transition: 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease' }}
-        >
-          <span className="text-[10px] font-black text-white">{asset.symbol.slice(0, 3)}</span>
+        <div className="flex-shrink-0 group-hover:scale-110 fluid-fast" style={{ transition: 'transform 0.25s cubic-bezier(0.34,1.56,0.64,1)' }}>
+          <CoinIcon symbol={asset.symbol} size={40} debugLabel="MarketRow" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 mb-0.5">
