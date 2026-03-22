@@ -207,8 +207,9 @@ export default function TradingDesk() {
         onSelect={handleSymbolSelect}
       />
 
-      {/* ── Debug panel (hidden by default) ── */}
+      {/* ── Debug panels ── */}
       <OrderlyDebugPanel />
+      {process.env.NODE_ENV === 'development' && <DebugRuntimePanel />}
     </div>
   );
 }
