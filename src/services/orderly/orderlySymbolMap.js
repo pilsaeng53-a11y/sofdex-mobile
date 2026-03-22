@@ -1,32 +1,22 @@
 /**
- * Orderly Network — public symbol mapping
+ * services/orderly/orderlySymbolMap.js
  *
- * Maps the app's short symbol strings (e.g. 'BTC') to the Orderly
- * perpetual futures instrument format (e.g. 'PERP_BTC_USDC').
+ * Re-exports from lib/trading/symbols (the canonical source).
+ * Also defines Orderly-specific network config that doesn't belong in the
+ * domain lib (API URLs, WS path, timeframe mapping).
  *
- * Verified against live API: https://api.orderly.org/v1/public/futures
+ * Import symbol helpers from lib/trading/symbols everywhere else.
+ * Only import from here when you specifically need ORDERLY_BASE_URL / ORDERLY_WS_URL.
  */
+
+export { ORDERLY_SYMBOL_MAP as SYMBOL_MAP, toOrderlySymbol } from '../../lib/trading/symbols';
 
 export const ORDERLY_BASE_URL = 'https://api.orderly.org';
 
-// For public market-data WS, Orderly requires an account_id in the URL path.
+// Public WS requires an account_id in the URL path.
 // Any valid hex-format string works for unauthenticated public topics.
 const PUBLIC_GUEST_ID = '0x0000000000000000000000000000000000000001';
 export const ORDERLY_WS_URL = `wss://ws-evm.orderly.org/ws/stream/${PUBLIC_GUEST_ID}`;
-
-/** Map app symbol → Orderly instrument string */
-export const SYMBOL_MAP = {
-  BTC:   'PERP_BTC_USDC',
-  ETH:   'PERP_ETH_USDC',
-  SOL:   'PERP_SOL_USDC',
-  BNB:   'PERP_BNB_USDC',
-  XRP:   'PERP_XRP_USDC',
-  ARB:   'PERP_ARB_USDC',
-  LINK:  'PERP_LINK_USDC',
-  UNI:   'PERP_UNI_USDC',
-  APT:   'PERP_APT_USDC',
-  TON:   'PERP_TON_USDC',
-};
 
 /**
  * WS timeframe → Orderly kline topic suffix
@@ -41,17 +31,3 @@ export const TIMEFRAME_MAP = {
   '1D':  '1d',
   '1d':  '1d',
 };
-
-/**
- * Resolve an app-level short symbol to an Orderly instrument string.
- * Handles formats: 'BTC', 'BTC-USDT', 'BTC/USDT', 'PERP_BTC_USDC'
- * Falls back to a best-guess PERP_X_USDC format if not in the map.
- */
-export function toOrderlySymbol(appSymbol) {
-  if (!appSymbol) return 'PERP_BTC_USDC';
-  // Already in Orderly format
-  if (appSymbol.startsWith('PERP_')) return appSymbol;
-  // Extract base from "BTC-USDT" or "BTC/USDT"
-  const base = appSymbol.split(/[-/]/)[0].toUpperCase();
-  return SYMBOL_MAP[base] ?? `PERP_${base}_USDC`;
-}
