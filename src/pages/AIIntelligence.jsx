@@ -162,28 +162,9 @@ export default function AIIntelligence() {
     setTimeout(() => setRefreshed(false), 1200);
   }, []);
 
-  // ── Compute all asset signals dynamically from live data ─────────────────
-  const assetSignals = useMemo(() => {
-    const result = {};
-    SIGNAL_ASSETS.forEach(sym => {
-      const live = liveData[sym];
-      const base = ALL_MARKETS_FLAT.find(m => m.symbol === sym);
-      const liveAvailable = !!live?.available;
-      const isCommodity = COMMODITY_SYMBOLS.has(sym);
-      const change = liveAvailable ? live.change : (base?.change ?? 0);
-      const price  = liveAvailable ? live.price  : (isCommodity ? null : (base?.price ?? null));
-      result[sym] = buildAssetSignal(sym, change, price, liveAvailable, base);
-    });
-    return result;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [liveData, refreshKey]);
-
-  // ── Overall market sentiment from live leaders ────────────────────────────
-  const overallSentiment = useMemo(
-    () => computeOverallSentiment(liveData, ALL_MARKETS_FLAT),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [liveData, refreshKey]
-  );
+  // ── Shared signal sources — same hooks used by AISentimentCard on Home ───
+  const overallSentiment = useOverallAISignal(refreshKey);
+  const assetSignals     = useAssetAISignals(refreshKey);
 
   // ── Live-driven volatility alerts ─────────────────────────────────────────
   const volatilityAlerts = useMemo(() => {
