@@ -361,6 +361,13 @@ export default function OrderPanel({ asset, externalPrice }) {
     ? side === 'buy' ? entryPrice - liqOffset : entryPrice + liqOffset
     : null;
 
+  const riskLevel = useMemo(() => {
+    const pct = leverage / maxLev;
+    if (pct <= 0.2) return 'Low';
+    if (pct <= 0.5) return 'Med';
+    return 'High';
+  }, [leverage, maxLev]);
+
   const priceIsValid  = mode === 'market' || (price !== '' && parseFloat(price) > 0);
   const amountIsValid = parsedAmt > 0;
 
