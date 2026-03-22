@@ -1,20 +1,19 @@
 /**
- * CoinIcon — renders a coin logo from the dedicated icon service.
+ * CoinIcon — renders a coin logo.
  *
- * Data flow:
- *   coinIconService (CryptoCompare CDN → CryptoCompare API → CoinGecko)
- *     → getCachedIcon() (sync, immediate)
- *     → subscribeIcon()  (notified when async resolution finishes)
+ * Priority:
+ *   1. Local map (data/coinIconMap.js) — instant, no network
+ *   2. coinIconService (CryptoCompare CDN → CoinGecko) — async fallback
+ *   3. Colored initials — always works offline
  *
- * Never touches Orderly or any trading/price data.
- * Shows branded colored initials as placeholder while loading or on failure.
+ * Accepts any symbol format: "BTC", "PERP_BTC_USDC", "BTC-USDT"
  */
 
 import { useState, useEffect } from 'react';
-import { getIconUrl } from '../../data/coinIconMap';
+import { extractBase, getIconUrl } from '../../data/coinIconMap';
 import { getCoinIcon, getCachedIcon, subscribeIcon } from '../../services/coinIconService';
 
-// Brand colors per symbol (used for placeholder + border tint)
+// Brand colors per base symbol
 const BRAND_COLORS = {
   BTC:  '#f7931a', ETH:  '#627eea', SOL:  '#9945ff', BNB:  '#f0b90b',
   XRP:  '#00aae4', ARB:  '#12aaff', LINK: '#2a5ada', UNI:  '#ff007a',
@@ -24,27 +23,39 @@ const BRAND_COLORS = {
   PEPE: '#4aab15', WIF:  '#c2a633', BONK: '#f7931a', SHIB: '#e2760b',
   ENA:  '#0f766e', SEI:  '#c21e56', NEAR: '#00c08b', FIL:  '#0090ff',
   LTC:  '#bfbbbb', BCH:  '#4cca41', ICP:  '#f15a24', STRK: '#ec796b',
-  BLUR: '#ff7700', GMX:  '#2d42fc', DYDX: '#6966ff', ZK:   '#1755f4',
-  TIA:  '#7b2bf9', JUP:  '#c7f284', PYTH: '#e5294c', WLD:  '#000000',
 };
 
-function getBrandColor(symbol) {
-  return BRAND_COLORS[symbol?.toUpperCase()] ?? '#00d4aa';
+function getBrandColor(base) {
+  return BRAND_COLORS[base?.toUpperCase()] ?? '#00d4aa';
 }
 
 export default function CoinIcon({ symbol, size = 24, className = '' }) {
-  const key = symbol?.toUpperCase() ?? '';
+  // Always normalise to base symbol first
+  const base = extractBase(symbol) || '';
 
-  // LOCAL MAP is checked first (synchronous, zero network cost)
-  const [url,    setUrl]    = useState(() => getIconUrl(key) ?? getCachedIcon(key) ?? null);
+  // Resolve URL: local map first, then service cache
+  function resolveUrl(b) {
+    const local = getIconUrl(b);
+    if (local) return local;
+    const cached = getCachedIcon(b);
+    return cached ?? null;
+  }
+
+  const [url,    setUrl]    = useState(() => resolveUrl(base));
   const [imgOk,  setImgOk]  = useState(false);
   const [imgErr, setImgErr] = useState(false);
 
   useEffect(() => {
-    if (!key) return;
+    if (!base) return;
 
-    // 1. Check local map first — instant, no fetch needed
-    const local = getIconUrl(key);
+    console.debug('[CoinIcon] mount', {
+      symbol,
+      base,
+      resolvedUrl: resolveUrl(base),
+    });
+
+    // 1. Local map — synchronous, no network
+    const local = getIconUrl(base);
     if (local) {
       setUrl(local);
       setImgOk(false);
@@ -52,24 +63,27 @@ export default function CoinIcon({ symbol, size = 24, className = '' }) {
       return;
     }
 
-    // 2. Fall back to the async icon service (CryptoCompare / CoinGecko)
-    const cached = getCachedIcon(key);
+    // 2. Async service — CryptoCompare / CoinGecko
+    const cached = getCachedIcon(base);
     setUrl(cached ?? null);
     setImgOk(false);
     setImgErr(false);
 
     if (cached === undefined) {
-      getCoinIcon(key);
-      const unsub = subscribeIcon(key, () => {
-        setUrl(getCachedIcon(key) ?? null);
+      getCoinIcon(base);
+      const unsub = subscribeIcon(base, () => {
+        const resolved = getCachedIcon(base) ?? null;
+        console.debug('[CoinIcon] service resolved', { base, resolved });
+        setUrl(resolved);
       });
       return unsub;
     }
-  }, [key]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [base]);
 
-  const color    = getBrandColor(symbol);
-  const initials = key.slice(0, 2) || '?';
-  const showImg  = url && !imgErr;
+  const color    = getBrandColor(base);
+  const initials = base.slice(0, 2) || '?';
+  const showImg  = !!url && !imgErr;
 
   return (
     <div
@@ -82,7 +96,7 @@ export default function CoinIcon({ symbol, size = 24, className = '' }) {
         transition: 'background 0.2s ease',
       }}
     >
-      {/* Colored initials — visible while loading or on error */}
+      {/* Colored initials — shown while loading or on error */}
       {(!showImg || !imgOk) && (
         <span
           style={{
@@ -97,15 +111,21 @@ export default function CoinIcon({ symbol, size = 24, className = '' }) {
         </span>
       )}
 
-      {/* Actual coin image */}
+      {/* Coin image */}
       {showImg && (
         <img
           src={url}
-          alt={symbol}
+          alt={base}
           width={size}
           height={size}
-          onLoad={() => setImgOk(true)}
-          onError={() => setImgErr(true)}
+          onLoad={() => {
+            console.debug('[CoinIcon] image loaded', { base, url });
+            setImgOk(true);
+          }}
+          onError={() => {
+            console.warn('[CoinIcon] image failed', { base, url });
+            setImgErr(true);
+          }}
           style={{
             position:   'absolute',
             inset:      0,
