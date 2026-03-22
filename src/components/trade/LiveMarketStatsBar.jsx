@@ -157,27 +157,27 @@ function Sep() {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
-  const { getLiveAsset } = useMarketData();
-  const asset = getLiveAsset(symbol);
-
-  // Live ticker from Orderly public REST (polls every 5s)
+  // Orderly ticker — sole price source. No Binance/CoinGecko fallback allowed.
   const { ticker, loading: tickerLoading } = useTicker(symbol);
 
-  // Prefer Orderly ticker; fall back to MarketDataProvider for price
-  const price     = ticker?.markPrice   ?? asset?.price  ?? null;
-  const lastPrice = ticker?.lastPrice   ?? null;
-  const change    = ticker?.change24h   ?? asset?.change ?? null;
-  // Use USDC quote amount for volume display (more meaningful than base qty)
-  const volume    = ticker?.amount24h   ?? ticker?.volume24h ?? asset?.volume ?? null;
-  const high24h   = ticker?.high24h     ?? null;
-  const low24h    = ticker?.low24h      ?? null;
-  const oiValue   = ticker?.openInterest ?? null;
-  // fundingRate from API is a decimal fraction (e.g. 0.000059) — display as %
-  const fundingRaw = ticker?.fundingRate ?? null;
-  const funding    = fundingRaw != null ? fundingRaw * 100 : null; // convert to %
+  // Resolve canonical trading price (mark → last → index)
+  const { price, source: priceSource } = resolveTradingPrice(ticker);
+  const resolvedPrice = price > 0 ? price : null;
+
+  const lastPrice  = ticker?.lastPrice    ?? null;
+  const change     = ticker?.change24h    ?? null;
+  const volume     = ticker?.amount24h    ?? ticker?.volume24h ?? null;
+  const high24h    = ticker?.high24h      ?? null;
+  const low24h     = ticker?.low24h       ?? null;
+  const oiValue    = ticker?.openInterest ?? null;
+  const fundingRaw = ticker?.fundingRate  ?? null;
+  const funding    = fundingRaw != null ? fundingRaw * 100 : null;
+
+  // Debug log — remove after verification
+  console.log('[LiveMarketStatsBar]', { symbol, priceSource, resolvedPrice, tickerLoaded: !!ticker });
 
   const status  = tickerLoading ? 'reconnecting' : ticker ? 'live' : 'offline';
-  const loading = tickerLoading && price == null;
+  const loading = tickerLoading && resolvedPrice == null;
 
   const changeColor  = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
   const fundingColor = funding == null ? '#94a3b8' : funding >= 0 ? '#4ade80' : '#f87171';
