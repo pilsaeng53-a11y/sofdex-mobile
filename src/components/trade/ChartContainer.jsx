@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
+import { resolveTradingPrice, priceSourceLabel } from '../../lib/trading/resolveTradingPrice';
 
 // NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
 // All prices in this chart come exclusively from Orderly market data:
