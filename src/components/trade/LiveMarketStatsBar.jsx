@@ -7,7 +7,7 @@ import {
 // All prices come exclusively from the Orderly ticker via resolveTradingPrice.
 import { useTicker } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
-import { resolveTradingPrice, priceSourceLabel } from '../../lib/trading/resolveTradingPrice';
+import { resolvePrice as resolveTradingPrice, priceSourceLabel } from '../../services/marketPriceResolver';
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtPrice(v) {

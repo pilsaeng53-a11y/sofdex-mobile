@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 import { Brain, ChevronRight } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { useLang } from '../shared/LanguageContext';
-import { useOverallAISignal } from '../../hooks/useAISignal';
+import { useOverallAISignal } from '../../services/aiSignalResolver';
 
 const SIGNAL_COLORS = {
   Bullish: 'text-emerald-400',

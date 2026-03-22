@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Wifi, WifiOff, RefreshCw, ChevronUp, ChevronDown, Bug } from 'lucide-react';
-import { useMarketData } from '../shared/MarketDataProvider';
-import { useOrderBook } from '../../hooks/useOrderlyMarket';
+import { useOrderBook, useTicker } from '../../hooks/useOrderlyMarket';
 import { toOrderlySymbol } from '../../services/orderly/orderlySymbolMap';
+import { resolvePrice, normalizeSymbol } from '../../services/marketPriceResolver';
 import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
