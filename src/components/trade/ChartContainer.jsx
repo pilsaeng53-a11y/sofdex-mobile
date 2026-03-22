@@ -3,9 +3,11 @@ import {
   TrendingUp, TrendingDown, Maximize2, BarChart2,
   RefreshCw, WifiOff, Activity, ChevronUp, ChevronDown
 } from 'lucide-react';
+import { useRef } from 'react';
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
 import { resolvePrice as resolveTradingPrice, priceSourceLabel, normalizeSymbol } from '../../services/marketPriceResolver';
+import { logPriceSource, logComponentRender } from '../../lib/debugRuntimeBinding';
 
 // NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
 // All prices in this chart come exclusively from Orderly market data:
