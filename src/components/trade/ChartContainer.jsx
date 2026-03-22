@@ -6,7 +6,7 @@ import {
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
 import { resolveTradingPrice, priceSourceLabel, logPriceResolution } from '../../services/tradingPriceResolver';
-import { normalizeSymbol } from '../../services/symbolResolver';
+import { toBaseSymbol } from '../../services/symbolResolver';
 import { logPriceSource, logComponentRender } from '../../lib/debugRuntimeBinding';
 
 // NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
@@ -177,7 +177,7 @@ function ReadyOverlay({ symbol, timeframe }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
-  const normalizedSymbol = normalizeSymbol(symbol);
+  const normalizedSymbol = toBaseSymbol(symbol);
   // ── HARD LOCKED: Price comes ONLY from Orderly ticker ──
   // NEVER market cap, metadata, or fallback prices
   // Priority: mark_price → last_price → index_price
