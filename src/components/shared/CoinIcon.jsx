@@ -8,7 +8,7 @@
  * No async, no network fetch — icons resolve instantly from bundled map.
  */
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { getIconForSymbol, extractBase } from '../../services/coinIconMapService';
 
 const BRAND_COLORS = {
@@ -34,13 +34,13 @@ export default function CoinIcon({ symbol, size = 24, className = '', debugLabel
 
   const [loaded, setLoaded] = useState(false);
   const [error,  setError]  = useState(false);
+  const _logged = useRef(false);
 
-  // Debug log — original symbol, extracted base, resolved URL, render location, fallback status
-  if (process.env.NODE_ENV !== 'production') {
-    const fallback = !url || error;
-    // Only log on first render (avoid flooding on price updates)
-    // eslint-disable-next-line no-console
-    console.debug(`[CoinIcon]${debugLabel ? ` [${debugLabel}]` : ''} symbol="${symbol}" base="${base}" url="${url}" fallback=${fallback}`);
+  // Debug log — fires once per mount to avoid flooding on price re-renders
+  if (!_logged.current) {
+    _logged.current = true;
+    const isFallback = !url || url.includes('generic.png');
+    console.log(`[CoinIcon]${debugLabel ? ` [${debugLabel}]` : ''} symbol="${symbol}" base="${base}" url="${url}" fallback=${isFallback}`);
   }
 
   const showImg = !!url && !error;
