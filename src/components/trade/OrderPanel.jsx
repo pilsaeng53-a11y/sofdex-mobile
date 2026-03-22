@@ -361,9 +361,9 @@ export default function OrderPanel({ asset, externalPrice }) {
   // It must never be a CoinGecko/Binance/metadata price
   const markPrice = asset?.price       ?? 0;
 
-  // Debug log — remove after verification
+  // HARD LOCK: Price must be from Orderly mark price only
   React.useEffect(() => {
-    console.log('[OrderPanel]', { symbol, priceSource: markPrice > 0 ? 'MARK (Orderly)' : 'NONE', markPrice });
+    console.log('[OrderPanel HARD LOCK]', { symbol, source: markPrice > 0 ? 'MARK' : 'NO DATA', price: markPrice });
   }, [symbol, markPrice]);
 
   const form = useOrderForm({ symbol, markPrice, maxLeverage: maxLev });
