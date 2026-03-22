@@ -11,7 +11,7 @@ import SymbolDrawer        from '../components/trade/SymbolDrawer';
 import OrderlyDebugPanel   from '../components/trade/OrderlyDebugPanel';
 import TokenInfoCard        from '../components/trade/TokenInfoCard';
 import LongShortSentiment  from '../components/trade/LongShortSentiment';
-import CoinIcon             from '../components/shared/CoinIcon';
+import CoinIcon             from '../components/shared/CoinIcon.jsx';
 import { BarChart2, BookOpen, ArrowDownUp, LayoutGrid, ChevronDown } from 'lucide-react';
 
 // ─── Active symbol pill (top-bar trigger) ──────────────────────────────────────
