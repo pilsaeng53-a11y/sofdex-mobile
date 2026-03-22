@@ -173,9 +173,11 @@ function SummaryRow({ label, value, valueColor, dimTop, highlight }) {
   );
 }
 
-function OrderSummary({ mode, side, denom, symbol, entryPrice, baseQty, quoteQty, leverage, fee, margin, liqPrice, balance, isReady }) {
+function OrderSummary({ mode, side, denom, symbol, entryPrice, baseQty, quoteQty, leverage, fee, margin, liqPrice, balance, isReady, riskLevel }) {
   const sideColor = side === 'buy' ? '#4ade80' : '#f87171';
-  const denomLabel = denom === 'base' ? symbol : denom === 'quote' ? 'USDC' : '% mode';
+
+  // Risk level color
+  const riskColor = riskLevel === 'Low' ? '#4ade80' : riskLevel === 'Med' ? '#f59e0b' : '#f87171';
 
   return (
     <div
@@ -192,20 +194,28 @@ function OrderSummary({ mode, side, denom, symbol, entryPrice, baseQty, quoteQty
         <span className="text-[8.5px] font-black uppercase tracking-widest" style={{ color: '#3d4f6b' }}>
           Order Summary
         </span>
-        <span
-          className="text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full"
-          style={{
-            background: isReady ? 'rgba(0,212,170,0.1)' : 'rgba(148,163,184,0.06)',
-            color: isReady ? '#00d4aa' : '#3d4f6b',
-          }}
-        >
-          {isReady ? 'READY' : 'PENDING'}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {/* Leverage badge */}
+          <span
+            className="text-[8px] font-black px-1.5 py-0.5 rounded-full font-mono"
+            style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', border: '1px solid rgba(0,212,170,0.2)' }}
+          >
+            {leverage}×
+          </span>
+          <span
+            className="text-[8.5px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full"
+            style={{
+              background: isReady ? 'rgba(0,212,170,0.1)' : 'rgba(148,163,184,0.06)',
+              color: isReady ? '#00d4aa' : '#3d4f6b',
+            }}
+          >
+            {isReady ? 'READY' : 'PENDING'}
+          </span>
+        </div>
       </div>
 
-      <SummaryRow label="Order Type"       value={mode === 'limit' ? 'Limit' : 'Market'}     valueColor="#64748b" />
-      <SummaryRow label="Direction"        value={side === 'buy' ? '▲ Long' : '▼ Short'}     valueColor={sideColor} />
-      <SummaryRow label="Amount Mode"      value={denomLabel}                                  valueColor="#94a3b8" />
+      <SummaryRow label="Direction"   value={side === 'buy' ? '▲ Long' : '▼ Short'}  valueColor={sideColor} />
+      <SummaryRow label="Order Type"  value={mode === 'limit' ? 'Limit' : 'Market'}   valueColor="#64748b" />
       <SummaryRow label="Entry Price"
         value={entryPrice > 0
           ? (mode === 'market' ? `~$${entryPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}` : `$${entryPrice.toLocaleString('en-US', { maximumFractionDigits: 2 })}`)
@@ -213,44 +223,42 @@ function OrderSummary({ mode, side, denom, symbol, entryPrice, baseQty, quoteQty
         valueColor="#94a3b8"
       />
       <SummaryRow
-        label="Est. Qty"
-        value={baseQty > 0 ? `${baseQty.toFixed(6)} ${symbol}` : '—'}
-        valueColor={baseQty > 0 ? '#e2e8f0' : undefined}
-        highlight={baseQty > 0}
-      />
-      <SummaryRow
-        label="Total Value"
+        label="Position Value"
         value={quoteQty > 0 ? fmtUSD(quoteQty) : '—'}
         valueColor={quoteQty > 0 ? '#e2e8f0' : undefined}
         highlight={quoteQty > 0}
       />
+      <SummaryRow
+        label="Est. Qty"
+        value={baseQty > 0 ? `${baseQty.toFixed(6)} ${symbol}` : '—'}
+        valueColor={baseQty > 0 ? '#94a3b8' : undefined}
+      />
 
       {/* Separator */}
-      <div className="pt-1" />
+      <div className="pt-0.5" />
 
       <SummaryRow
-        label="Margin Required"
+        label={`Margin (÷${leverage}×)`}
         value={margin > 0 ? fmtUSD(margin) : '—'}
         valueColor={margin > 0 ? '#f59e0b' : undefined}
+        highlight={margin > 0}
         dimTop
-      />
-      <SummaryRow
-        label="Available Balance"
-        value={`${balance.toLocaleString('en-US', { minimumFractionDigits: 2 })} USDC`}
-        valueColor="#475569"
       />
       <SummaryRow
         label="Balance After"
         value={margin > 0 ? fmtUSD(Math.max(0, balance - margin)) : '—'}
         valueColor={margin > 0 && (balance - margin) < balance * 0.2 ? '#f87171' : '#475569'}
       />
-
-      {/* Risk row */}
       <SummaryRow
         label="Liq. Price"
         value={liqPrice != null && liqPrice > 0 ? `$${fmt(liqPrice, 2)}` : '—'}
         valueColor={liqPrice != null && liqPrice > 0 ? '#f87171' : undefined}
         dimTop
+      />
+      <SummaryRow
+        label="Risk Level"
+        value={riskLevel ?? '—'}
+        valueColor={riskLevel ? riskColor : undefined}
       />
       <SummaryRow
         label={`Est. Fee (${mode === 'limit' ? '0.02%' : '0.05%'})`}
