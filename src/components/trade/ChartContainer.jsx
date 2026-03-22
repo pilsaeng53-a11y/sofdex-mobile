@@ -330,6 +330,13 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
           </button>
 
           <StatusPill state={status} />
+          {/* DEBUG: price source badge — remove after verification */}
+          <span
+            className="text-[7.5px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
+            style={{ background: 'rgba(251,191,36,0.08)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.15)' }}
+          >
+            {priceSourceLabel(priceSource)}
+          </span>
         </div>
       </div>
 
