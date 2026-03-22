@@ -31,7 +31,6 @@ export const SYMBOL_MAP = {
   // Solana ecosystem
   'JUP':        'BINANCE:JUPUSDT',
   'RAY':        'BINANCE:RAYUSDT',
-  'RNDR':       'BINANCE:RENDERUSDT',
   'BONK':       'BINANCE:BONKUSDT',
   'HNT':        'BINANCE:HNTUSDT',
   // SOF token — DEX-only on Raydium, no TradingView-supported exchange feed
