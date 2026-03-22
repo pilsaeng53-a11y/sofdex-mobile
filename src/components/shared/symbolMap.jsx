@@ -114,7 +114,7 @@ export const BINANCE_TICKER = {
   'AVAX':  'AVAXUSDT',
   'DOT':   'DOTUSDT',
   'LINK':  'LINKUSDT',
-  'MATIC': 'MATICUSDT',
+  'POL':   'POLUSDT',
   'LTC':   'LTCUSDT',
   'ATOM':  'ATOMUSDT',
   'UNI':   'UNIUSDT',
