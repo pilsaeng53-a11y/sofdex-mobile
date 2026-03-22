@@ -265,7 +265,8 @@ function PriceCopiedToast({ price }) {
 export default function OrderBook({ symbol = 'BTC', onPriceClick }) {
   const normalizedSymbol = normalizeSymbol(symbol);
   const { ticker } = useTicker(normalizedSymbol);
-  const { price: tickerPrice } = resolvePrice(ticker);
+  // HARD LOCK: Use only Orderly mark/last/index price — never metadata
+  const { price: tickerPrice } = resolveTradingPrice(ticker);
   const livePrice = tickerPrice > 0 ? tickerPrice : null;
 
   const { asks, bids, status: wsStatus, loading } = useOrderBook(normalizedSymbol);
