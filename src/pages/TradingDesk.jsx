@@ -9,8 +9,9 @@ import OrderPanel          from '../components/trade/OrderPanel';
 import TradingBottomPanel  from '../components/trade/TradingBottomPanel';
 import SymbolDrawer        from '../components/trade/SymbolDrawer';
 import OrderlyDebugPanel   from '../components/trade/OrderlyDebugPanel';
-import TokenInfoCard       from '../components/trade/TokenInfoCard';
-import CoinIcon            from '../components/shared/CoinIcon';
+import TokenInfoCard        from '../components/trade/TokenInfoCard';
+import LongShortSentiment  from '../components/trade/LongShortSentiment';
+import CoinIcon             from '../components/shared/CoinIcon';
 import { BarChart2, BookOpen, ArrowDownUp, LayoutGrid, ChevronDown } from 'lucide-react';
 
 // ─── Active symbol pill (top-bar trigger) ──────────────────────────────────────
@@ -143,6 +144,12 @@ export default function TradingDesk() {
 
         {/* Side panel: OrderBook / RecentTrades / Both */}
         <div className="flex flex-col gap-3 w-full lg:w-[220px] xl:w-[240px] flex-shrink-0">
+          {/* L/S sentiment — always visible, synced to active symbol */}
+          <LongShortSentiment
+            symbol={symbol}
+            orderlySymbol={activeSymbol.orderlySymbol}
+          />
+
           {showBook && (
             <div className={showTrades ? '' : 'flex-1'}>
               <OrderBook symbol={symbol} onPriceClick={p => setOrderPrice(p)} />
