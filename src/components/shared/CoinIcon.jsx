@@ -8,8 +8,9 @@
  * No async, no network fetch — icons resolve instantly from bundled map.
  */
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getIconForSymbol, extractBase } from '../../services/coinIconMapService';
+import { logIconRender } from '../../lib/debugRuntimeBinding';
 
 const BRAND_COLORS = {
   BTC: '#f7931a', ETH: '#627eea', SOL: '#9945ff', BNB: '#f0b90b',
