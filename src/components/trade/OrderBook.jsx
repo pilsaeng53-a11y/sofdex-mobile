@@ -3,7 +3,7 @@ import { Wifi, WifiOff, RefreshCw, ChevronUp, ChevronDown, Bug } from 'lucide-re
 import { useOrderBook, useTicker } from '../../hooks/useOrderlyMarket';
 import { toOrderlySymbol } from '../../services/orderly/orderlySymbolMap';
 import { resolveTradingPrice } from '../../services/tradingPriceResolver';
-import { normalizeSymbol } from '../../services/symbolResolver';
+import { toBaseSymbol } from '../../services/symbolResolver';
 import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
