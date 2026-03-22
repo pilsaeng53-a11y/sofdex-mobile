@@ -26,7 +26,7 @@ function brandColor(base) {
   return BRAND_COLORS[base?.toUpperCase()] ?? '#00d4aa';
 }
 
-export default function CoinIcon({ symbol, size = 24, className = '' }) {
+export default function CoinIcon({ symbol, size = 24, className = '', debugLabel = '' }) {
   const base     = extractBase(symbol);
   const color    = brandColor(base);
   const initials = base.slice(0, 2) || '?';
@@ -34,6 +34,14 @@ export default function CoinIcon({ symbol, size = 24, className = '' }) {
 
   const [loaded, setLoaded] = useState(false);
   const [error,  setError]  = useState(false);
+
+  // Debug log — original symbol, extracted base, resolved URL, render location, fallback status
+  if (process.env.NODE_ENV !== 'production') {
+    const fallback = !url || error;
+    // Only log on first render (avoid flooding on price updates)
+    // eslint-disable-next-line no-console
+    console.debug(`[CoinIcon]${debugLabel ? ` [${debugLabel}]` : ''} symbol="${symbol}" base="${base}" url="${url}" fallback=${fallback}`);
+  }
 
   const showImg = !!url && !error;
 
@@ -67,7 +75,7 @@ export default function CoinIcon({ symbol, size = 24, className = '' }) {
           width={size}
           height={size}
           onLoad={()  => setLoaded(true)}
-          onError={() => setError(true)}
+          onError={() => { setError(true); console.warn(`[CoinIcon] Image failed to load for base="${base}" url="${url}"`); }}
           style={{
             position:   'absolute',
             inset:      0,
