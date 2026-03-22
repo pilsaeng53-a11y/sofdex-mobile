@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
-import { resolvePrice as resolveTradingPrice, priceSourceLabel } from '../../services/marketPriceResolver';
+import { resolvePrice as resolveTradingPrice, priceSourceLabel, normalizeSymbol } from '../../services/marketPriceResolver';
 
 // NOTE: MarketDataProvider (Binance/CoinGecko) is intentionally NOT used here.
 // All prices in this chart come exclusively from Orderly market data:
@@ -175,10 +175,11 @@ function ReadyOverlay({ symbol, timeframe }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
+  const normalizedSymbol = normalizeSymbol(symbol);
   // ── Price comes exclusively from Orderly ticker ──
   // Priority: mark_price → lastPrice (24h_close) → indexPrice
   // MarketDataProvider (Binance/CoinGecko) is intentionally excluded here.
-  const { ticker } = useTicker(symbol);
+  const { ticker } = useTicker(normalizedSymbol);
   const { price: resolvedPrice, source: priceSource } = resolveTradingPrice(ticker);
   const price  = resolvedPrice > 0 ? resolvedPrice : null;
   const change = ticker?.change24h ?? null;
@@ -193,7 +194,7 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   const prevPrice = useRef(null);
 
   // Live klines from Orderly WebSocket (no public REST kline endpoint exists)
-  const { candles, loading, error, status: klinesStatus } = useKlines(symbol, timeframe);
+  const { candles, loading, error, status: klinesStatus } = useKlines(normalizedSymbol, timeframe);
 
   // Show 'live' once WS is connected (even if no candles yet — low-activity symbols)
   const status = klinesStatus === 'live' || candles.length > 0 ? 'live' : klinesStatus;
