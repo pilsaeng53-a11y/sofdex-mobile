@@ -8,6 +8,7 @@
  */
 
 import PriceEngine from './PriceEngine';
+import { loadIconMap } from './coinIconMapService';
 
 const CRITICAL_SYMBOLS = [
   // Crypto - top assets
@@ -43,6 +44,9 @@ export async function initializePriceEngine() {
 
   try {
     console.log('[PriceEngine] Initializing...');
+
+    // Load backend icon map in parallel with price fetch (non-blocking)
+    loadIconMap(); // fire-and-forget — icons update reactively via listeners
 
     // Fetch critical symbols first (parallel)
     await PriceEngine.updatePrices(CRITICAL_SYMBOLS);
