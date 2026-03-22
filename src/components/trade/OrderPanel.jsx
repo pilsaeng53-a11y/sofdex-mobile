@@ -354,9 +354,16 @@ function ReadinessBadge({ errors, isReady }) {
 export default function OrderPanel({ asset, externalPrice }) {
   const { isConnected, requireWallet } = useWallet();
 
-  const symbol   = asset?.symbol       ?? 'BTC';
-  const maxLev   = asset?.maxLeverage  ?? 50;
-  const markPrice = asset?.price        ?? 0;
+  const symbol    = asset?.symbol      ?? 'BTC';
+  const maxLev    = asset?.maxLeverage ?? 50;
+  // asset.price is always useOrderlyPrice(symbol).markPrice — set in TradingDesk
+  // It must never be a CoinGecko/Binance/metadata price
+  const markPrice = asset?.price       ?? 0;
+
+  // Debug log — remove after verification
+  React.useEffect(() => {
+    console.log('[OrderPanel]', { symbol, priceSource: markPrice > 0 ? 'MARK (Orderly)' : 'NONE', markPrice });
+  }, [symbol, markPrice]);
 
   const form = useOrderForm({ symbol, markPrice, maxLeverage: maxLev });
 
