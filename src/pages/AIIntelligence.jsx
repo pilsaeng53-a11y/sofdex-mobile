@@ -3,7 +3,7 @@ import { Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle, ArrowUpRigh
 import { useLang } from '../components/shared/LanguageContext';
 import { useMarketData } from '../components/shared/MarketDataProvider';
 import { CRYPTO_MARKETS, RWA_MARKETS } from '../components/shared/MarketData';
-import { useOverallAISignal, useAssetAISignals, ASSET_CONTEXT, getSignalLabel, getConfidenceLabel, SIGNAL_ASSETS } from '../hooks/useAISignal';
+import { useOverallAISignal, useAssetAISignals, ASSET_CONTEXT } from '../hooks/useAISignal';
 
 // ── Signal tab asset list (imported from shared hook, kept for clarity) ──────
 
