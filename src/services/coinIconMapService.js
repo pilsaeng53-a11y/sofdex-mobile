@@ -43,6 +43,9 @@ function writeCache(map) {
   catch { /* storage full */ }
 }
 
+// ── One-time cleanup: remove old cache keys with inverted priority ───────────
+try { localStorage.removeItem('solfort_icon_map_v2'); } catch { /* ignore */ }
+
 // ── Bootstrap: apply cached backend map immediately (non-blocking startup) ──
 (function bootstrap() {
   const cached = readCache();
