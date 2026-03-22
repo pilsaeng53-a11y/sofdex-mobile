@@ -105,4 +105,4 @@ export function isIconMapLoaded() {
 }
 
 // Re-export for convenience
-export { extractBase, FALLBACK_ICON };
+export { extractBase, FALLBACK_ICON, normalizeSymbol };
