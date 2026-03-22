@@ -1,0 +1,60 @@
+{
+  "_comment": "Canonical list of supported trading pairs. All trading UIs must reference this file for the available symbol list.",
+  "default_symbol": "BTC",
+  "quote_asset": "USDC",
+  "display_quote": "USDT",
+
+  "crypto_perps": [
+    { "base": "BTC",  "name": "Bitcoin",       "orderly": "PERP_BTC_USDC",  "category": "Large Cap",       "active": true  },
+    { "base": "ETH",  "name": "Ethereum",       "orderly": "PERP_ETH_USDC",  "category": "Large Cap",       "active": true  },
+    { "base": "SOL",  "name": "Solana",         "orderly": "PERP_SOL_USDC",  "category": "Large Cap",       "active": true  },
+    { "base": "BNB",  "name": "BNB",            "orderly": "PERP_BNB_USDC",  "category": "Exchange Token",  "active": true  },
+    { "base": "XRP",  "name": "XRP",            "orderly": "PERP_XRP_USDC",  "category": "Payments",        "active": true  },
+    { "base": "ADA",  "name": "Cardano",        "orderly": "PERP_ADA_USDC",  "category": "Layer 1",        "active": true  },
+    { "base": "DOGE", "name": "Dogecoin",       "orderly": "PERP_DOGE_USDC", "category": "Memecoin",        "active": true  },
+    { "base": "AVAX", "name": "Avalanche",      "orderly": "PERP_AVAX_USDC", "category": "Layer 1",        "active": true  },
+    { "base": "DOT",  "name": "Polkadot",       "orderly": "PERP_DOT_USDC",  "category": "Layer 0",        "active": true  },
+    { "base": "LINK", "name": "Chainlink",      "orderly": "PERP_LINK_USDC", "category": "Oracle",          "active": true  },
+    { "base": "POL",  "name": "Polygon",        "orderly": "PERP_POL_USDC",  "category": "Layer 2",        "active": true  },
+    { "base": "LTC",  "name": "Litecoin",       "orderly": "PERP_LTC_USDC",  "category": "Payments",        "active": true  },
+    { "base": "ATOM", "name": "Cosmos",         "orderly": "PERP_ATOM_USDC", "category": "Interoperability","active": true  },
+    { "base": "UNI",  "name": "Uniswap",        "orderly": "PERP_UNI_USDC",  "category": "DeFi",           "active": true  },
+    { "base": "APT",  "name": "Aptos",          "orderly": "PERP_APT_USDC",  "category": "Layer 1",        "active": true  },
+    { "base": "OP",   "name": "Optimism",       "orderly": "PERP_OP_USDC",   "category": "Layer 2",        "active": true  },
+    { "base": "ARB",  "name": "Arbitrum",       "orderly": "PERP_ARB_USDC",  "category": "Layer 2",        "active": true  },
+    { "base": "SUI",  "name": "Sui",            "orderly": "PERP_SUI_USDC",  "category": "Layer 1",        "active": true  },
+    { "base": "SEI",  "name": "Sei",            "orderly": "PERP_SEI_USDC",  "category": "Layer 1",        "active": true  },
+    { "base": "INJ",  "name": "Injective",      "orderly": "PERP_INJ_USDC",  "category": "DeFi",           "active": true  },
+    { "base": "PEPE", "name": "Pepe",           "orderly": "PERP_PEPE_USDC", "category": "Memecoin",        "active": true  },
+    { "base": "TIA",  "name": "Celestia",       "orderly": "PERP_TIA_USDC",  "category": "Modular L1",     "active": true  },
+    { "base": "NEAR", "name": "NEAR Protocol",  "orderly": "PERP_NEAR_USDC", "category": "Layer 1",        "active": true  },
+    { "base": "FTM",  "name": "Fantom",         "orderly": "PERP_FTM_USDC",  "category": "Layer 1",        "active": false },
+    { "base": "AAVE", "name": "Aave",           "orderly": "PERP_AAVE_USDC", "category": "DeFi",           "active": true  },
+    { "base": "JUP",  "name": "Jupiter",        "orderly": "PERP_JUP_USDC",  "category": "Solana DeFi",    "active": true  },
+    { "base": "RAY",  "name": "Raydium",        "orderly": "PERP_RAY_USDC",  "category": "Solana DeFi",    "active": true  },
+    { "base": "BONK", "name": "Bonk",           "orderly": "PERP_BONK_USDC", "category": "Solana Memecoin","active": true  },
+    { "base": "HNT",  "name": "Helium",         "orderly": "PERP_HNT_USDC",  "category": "DePIN",          "active": true  },
+    { "base": "TON",  "name": "Toncoin",        "orderly": "PERP_TON_USDC",  "category": "Layer 1",        "active": true  },
+    { "base": "TRX",  "name": "TRON",           "orderly": "PERP_TRX_USDC",  "category": "Payments",        "active": true  },
+    { "base": "SHIB", "name": "Shiba Inu",      "orderly": "PERP_SHIB_USDC", "category": "Memecoin",        "active": true  },
+    { "base": "ZEC",  "name": "Zcash",          "orderly": "PERP_ZEC_USDC",  "category": "Privacy",         "active": true  }
+  ],
+
+  "rwa_assets": [
+    { "base": "GOLD-T",   "name": "Tokenized Gold",        "category": "Commodity",   "price_feed": "yahoo:GC=F",   "active": true },
+    { "base": "CRUDE-T",  "name": "WTI Crude Oil",         "category": "Commodity",   "price_feed": "yahoo:CL=F",   "active": true },
+    { "base": "SILVER-T", "name": "Silver",                "category": "Commodity",   "price_feed": "yahoo:SI=F",   "active": true },
+    { "base": "SP500-T",  "name": "S&P 500 Index",         "category": "Equity Index","price_feed": "yahoo:^GSPC",  "active": true },
+    { "base": "NASDAQ-T", "name": "NASDAQ 100",            "category": "Equity Index","price_feed": "yahoo:^NDX",   "active": true },
+    { "base": "TBILL",    "name": "US 10Y Treasury",       "category": "Treasury",    "price_feed": "yahoo:^TNX",   "active": true },
+    { "base": "RE-NYC",   "name": "NYC Real Estate Token", "category": "Real Estate", "price_feed": "internal",     "active": true },
+    { "base": "RE-DXB",   "name": "Dubai Real Estate",     "category": "Real Estate", "price_feed": "internal",     "active": true }
+  ],
+
+  "forex_cfd": [
+    { "symbol": "EURUSD-T", "name": "EUR/USD", "spread": 1.2, "pip_value": 0.0001, "lot_size": 100000 },
+    { "symbol": "USDJPY-T", "name": "USD/JPY", "spread": 1.8, "pip_value": 0.01,   "lot_size": 100000 },
+    { "symbol": "GBPUSD-T", "name": "GBP/USD", "spread": 1.5, "pip_value": 0.0001, "lot_size": 100000 },
+    { "symbol": "AUDUSD-T", "name": "AUD/USD", "spread": 2.0, "pip_value": 0.0001, "lot_size": 100000 }
+  ]
+}

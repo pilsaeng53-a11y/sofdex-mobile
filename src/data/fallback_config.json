@@ -1,0 +1,73 @@
+{
+  "_comment": "Fallback values used when live data is unavailable. Keep in sync with MarketData.js static seeds. Never used for trading UI — only for display/discovery.",
+
+  "price_fallbacks": {
+    "BTC":      97200,
+    "ETH":      3850,
+    "SOL":      188,
+    "BNB":      605,
+    "XRP":      2.42,
+    "ADA":      0.92,
+    "DOGE":     0.38,
+    "AVAX":     36.5,
+    "DOT":      8.2,
+    "LINK":     18.4,
+    "POL":      0.56,
+    "LTC":      98,
+    "ATOM":     8.9,
+    "UNI":      12.3,
+    "APT":      11.8,
+    "OP":       2.4,
+    "ARB":      1.18,
+    "SUI":      2.85,
+    "SEI":      0.82,
+    "INJ":      28.5,
+    "PEPE":     0.0000148,
+    "TIA":      6.8,
+    "NEAR":     7.2,
+    "FTM":      0.9,
+    "AAVE":     245,
+    "JUP":      1.24,
+    "RAY":      3.8,
+    "BONK":     0.0000318,
+    "HNT":      7.1,
+    "TON":      5.9,
+    "TRX":      0.24,
+    "SHIB":     0.0000265,
+    "ZEC":      42,
+    "SOF":      0.08,
+    "GOLD-T":   3150,
+    "CRUDE-T":  82.5,
+    "SILVER-T": 33.2,
+    "SP500-T":  5820,
+    "NASDAQ-T": 20100,
+    "TBILL":    4.28,
+    "RE-NYC":   485000,
+    "RE-DXB":   320000
+  },
+
+  "change_fallbacks": {
+    "BTC":      2.4,
+    "ETH":      1.8,
+    "SOL":      4.2,
+    "BNB":      1.1,
+    "XRP":      3.5,
+    "JUP":      8.4,
+    "BONK":     6.1,
+    "GOLD-T":   0.8,
+    "TBILL":   -0.3
+  },
+
+  "stale_threshold_ms": 120000,
+  "price_precision": {
+    "high":   8,
+    "medium": 4,
+    "low":    2,
+    "large":  2
+  },
+  "price_thresholds": {
+    "micro": 0.001,
+    "small": 1,
+    "large": 1000
+  }
+}

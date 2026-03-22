@@ -1,0 +1,40 @@
+{
+  "_comment": "Default thresholds and weights for the AI signal scoring engine (hooks/useAISignal.js). Centralizing these allows tuning without touching component code.",
+
+  "scoring_weights": {
+    "trend_momentum":     0.30,
+    "volume_confirmation":0.20,
+    "volatility_condition":0.15,
+    "orderbook_pressure": 0.20,
+    "news_narrative":     0.15
+  },
+
+  "score_thresholds": {
+    "bullish_min": 68,
+    "neutral_min": 45,
+    "bearish_max": 44
+  },
+
+  "confidence_thresholds": {
+    "high_min":   75,
+    "medium_min": 55,
+    "low_max":    54
+  },
+
+  "volatility_levels": {
+    "extreme_pct": 12,
+    "high_pct":    7,
+    "moderate_pct":3
+  },
+
+  "overall_sentiment_leaders": ["BTC", "ETH", "SOL", "BNB", "XRP"],
+
+  "signal_assets": ["BTC", "SOL", "ETH", "JUP", "RNDR", "RAY", "BONK", "HNT"],
+
+  "risk_score_defaults": {
+    "rwa_base_risk":    20,
+    "crypto_base_risk": 40,
+    "rwa_multiplier":   1.5,
+    "crypto_multiplier":3.5
+  }
+}

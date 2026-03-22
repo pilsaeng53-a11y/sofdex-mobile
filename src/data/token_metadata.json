@@ -1,0 +1,169 @@
+{
+  "_comment": "Token metadata — descriptions, links, tags. Separate from trading market data and price feeds. Use for detail pages, asset cards, and discovery.",
+  "tokens": {
+    "BTC": {
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "description": "The original decentralized digital currency. Fixed supply of 21 million coins.",
+      "sector": "Large Cap Crypto",
+      "tags": ["store-of-value", "halving", "etf", "institutional"],
+      "website": "https://bitcoin.org",
+      "coingecko_id": "bitcoin",
+      "launch_year": 2009,
+      "max_supply": 21000000
+    },
+    "ETH": {
+      "name": "Ethereum",
+      "symbol": "ETH",
+      "description": "Smart contract platform powering DeFi, NFTs, and Layer 2 ecosystems.",
+      "sector": "Large Cap Crypto",
+      "tags": ["smart-contracts", "defi", "layer2", "staking", "eip-1559"],
+      "website": "https://ethereum.org",
+      "coingecko_id": "ethereum",
+      "launch_year": 2015,
+      "max_supply": null
+    },
+    "SOL": {
+      "name": "Solana",
+      "symbol": "SOL",
+      "description": "High-throughput Layer 1 blockchain. Home of DePIN, Memecoins, and DeFi on Solana.",
+      "sector": "Solana Ecosystem",
+      "tags": ["layer1", "depin", "defi", "memecoin", "high-tps"],
+      "website": "https://solana.com",
+      "coingecko_id": "solana",
+      "launch_year": 2020,
+      "max_supply": null
+    },
+    "BNB": {
+      "name": "BNB",
+      "symbol": "BNB",
+      "description": "Native token of BNB Chain and Binance ecosystem. Used for fees and governance.",
+      "sector": "Exchange Token",
+      "tags": ["exchange-token", "bnb-chain", "cex"],
+      "website": "https://www.bnbchain.org",
+      "coingecko_id": "binancecoin",
+      "launch_year": 2017,
+      "max_supply": 200000000
+    },
+    "XRP": {
+      "name": "XRP",
+      "symbol": "XRP",
+      "description": "Cross-border payment token built for financial institutions and remittance.",
+      "sector": "Payments",
+      "tags": ["payments", "cross-border", "ripple", "sec-clarity"],
+      "website": "https://ripple.com",
+      "coingecko_id": "ripple",
+      "launch_year": 2012,
+      "max_supply": 100000000000
+    },
+    "SOF": {
+      "name": "SolFort Token",
+      "symbol": "SOF",
+      "description": "Native utility and governance token of the SolFort ecosystem.",
+      "sector": "Platform Token",
+      "tags": ["utility", "governance", "solfort", "native"],
+      "website": "https://solfort.io",
+      "coingecko_id": null,
+      "launch_year": 2024,
+      "max_supply": 1000000000
+    },
+    "JUP": {
+      "name": "Jupiter",
+      "symbol": "JUP",
+      "description": "Leading DEX aggregator on Solana. Jupiverse expansion token.",
+      "sector": "Solana DeFi",
+      "tags": ["dex-aggregator", "solana", "airdrop", "governance"],
+      "website": "https://jup.ag",
+      "coingecko_id": "jupiter-exchange-solana",
+      "launch_year": 2024,
+      "max_supply": 10000000000
+    },
+    "RAY": {
+      "name": "Raydium",
+      "symbol": "RAY",
+      "description": "Automated market maker and liquidity provider built on Solana.",
+      "sector": "Solana DeFi",
+      "tags": ["amm", "liquidity", "solana", "dex"],
+      "website": "https://raydium.io",
+      "coingecko_id": "raydium",
+      "launch_year": 2021,
+      "max_supply": 555000000
+    },
+    "BONK": {
+      "name": "Bonk",
+      "symbol": "BONK",
+      "description": "First Solana memecoin. Community-driven dog token.",
+      "sector": "Solana Memecoin",
+      "tags": ["memecoin", "solana", "dog-coin", "community"],
+      "website": "https://bonkcoin.com",
+      "coingecko_id": "bonk",
+      "launch_year": 2022,
+      "max_supply": null
+    },
+    "HNT": {
+      "name": "Helium",
+      "symbol": "HNT",
+      "description": "Decentralized wireless network for IoT and Mobile connectivity.",
+      "sector": "DePIN",
+      "tags": ["depin", "iot", "wireless", "5g", "mobile"],
+      "website": "https://www.helium.com",
+      "coingecko_id": "helium",
+      "launch_year": 2019,
+      "max_supply": null
+    },
+    "GOLD-T": {
+      "name": "Tokenized Gold",
+      "symbol": "GOLD-T",
+      "description": "Tokenized representation of physical gold. Tracks spot gold price in real time.",
+      "sector": "RWA Commodity",
+      "tags": ["rwa", "gold", "commodity", "safe-haven", "inflation-hedge"],
+      "price_feed": "yahoo:GC=F",
+      "underlying": "XAU/USD spot gold"
+    },
+    "CRUDE-T": {
+      "name": "WTI Crude Oil",
+      "symbol": "CRUDE-T",
+      "description": "Tokenized WTI crude oil contract. Tracks front-month futures price.",
+      "sector": "RWA Commodity",
+      "tags": ["rwa", "oil", "commodity", "energy", "geopolitical"],
+      "price_feed": "yahoo:CL=F",
+      "underlying": "WTI front-month futures"
+    },
+    "SP500-T": {
+      "name": "S&P 500 Index",
+      "symbol": "SP500-T",
+      "description": "Tokenized exposure to the S&P 500 broad equity index.",
+      "sector": "RWA Equity",
+      "tags": ["rwa", "equity", "sp500", "index", "us-stocks"],
+      "price_feed": "yahoo:^GSPC",
+      "underlying": "S&P 500 Index"
+    },
+    "TBILL": {
+      "name": "US 10Y Treasury",
+      "symbol": "TBILL",
+      "description": "Tokenized US 10-year Treasury yield instrument.",
+      "sector": "RWA Treasury",
+      "tags": ["rwa", "treasury", "yield", "bonds", "rate-sensitive"],
+      "price_feed": "yahoo:^TNX",
+      "underlying": "US 10-Year T-Note yield"
+    },
+    "RE-NYC": {
+      "name": "NYC Real Estate Token",
+      "symbol": "RE-NYC",
+      "description": "Fractional tokenized real estate in New York City.",
+      "sector": "RWA Real Estate",
+      "tags": ["rwa", "real-estate", "nyc", "fractional", "yield"],
+      "price_feed": "internal",
+      "underlying": "NYC residential / commercial property index"
+    },
+    "RE-DXB": {
+      "name": "Dubai Real Estate",
+      "symbol": "RE-DXB",
+      "description": "Fractional tokenized real estate in Dubai. High-growth MENA market.",
+      "sector": "RWA Real Estate",
+      "tags": ["rwa", "real-estate", "dubai", "mena", "fractional", "yield"],
+      "price_feed": "internal",
+      "underlying": "Dubai residential property index"
+    }
+  }
+}
