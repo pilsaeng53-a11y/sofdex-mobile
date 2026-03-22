@@ -131,7 +131,6 @@ export const BINANCE_TICKER = {
   'AAVE':  'AAVEUSDT',
   'JUP':   'JUPUSDT',
   'RAY':   'RAYUSDT',
-  'RNDR':  'RENDERUSDT',
   'BONK':  'BONKUSDT',
   'HNT':   'HNTUSDT',
 };
