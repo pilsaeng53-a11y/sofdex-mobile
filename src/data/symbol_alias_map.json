@@ -1,0 +1,24 @@
+{
+  "_comment": "Canonical symbol alias map. All symbol normalization must go through services/marketPriceResolver.js or use normalizeSymbol() from this map.",
+  "aliases": {
+    "MATIC":    "POL",
+    "WBTC":     "BTC",
+    "WETH":     "ETH",
+    "WSOL":     "SOL",
+    "BTCB":     "BTC",
+    "ETHW":     "ETH",
+    "STETH":    "ETH",
+    "WBNB":     "BNB",
+    "BUSD":     "USDT",
+    "BTC-USDT": "BTC",
+    "BTC/USDT": "BTC",
+    "ETH-USDT": "ETH",
+    "ETH/USDT": "ETH",
+    "SOL-USDT": "SOL",
+    "SOL/USDT": "SOL"
+  },
+  "orderly_prefix": "PERP_",
+  "orderly_quote":  "_USDC",
+  "display_quote":  "USDT",
+  "perp_suffix":    "-PERP"
+}
