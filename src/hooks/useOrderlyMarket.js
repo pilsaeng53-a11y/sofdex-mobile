@@ -82,11 +82,19 @@ export function useTicker(symbol) {
 
 // ─── useOrderBook ─────────────────────────────────────────────────────────────
 export function useOrderBook(symbol) {
-  const [asks,    setAsks]    = useState([]);
-  const [bids,    setBids]    = useState([]);
-  const [status,  setStatus]  = useState('reconnecting');
-  const [loading, setLoading] = useState(true);
+  const [asks,      setAsks]      = useState([]);
+  const [bids,      setBids]      = useState([]);
+  const [status,    setStatus]    = useState('reconnecting');
+  const [loading,   setLoading]   = useState(true);
   const [reconnectKey, markReceived] = useStaleWatchdog(symbol, 'orderbook');
+
+  // Reset rows when symbol changes so stale rows are never shown for new symbol
+  useEffect(() => {
+    setAsks([]);
+    setBids([]);
+    setLoading(true);
+    setStatus('reconnecting');
+  }, [symbol]);
 
   useEffect(() => {
     if (!symbol) return;
@@ -94,13 +102,18 @@ export function useOrderBook(symbol) {
     const unsub = subscribeOrderBook(
       symbol,
       BOOK_ROWS,
-      ({ asks, bids }) => {
-        setAsks(asks);
-        setBids(bids);
-        setLoading(false);
-        markReceived();
+      ({ asks: newAsks, bids: newBids }) => {
+        if (newAsks.length > 0 || newBids.length > 0) {
+          setAsks(newAsks);
+          setBids(newBids);
+          setLoading(false);
+          markReceived();
+        }
       },
-      setStatus,
+      (s) => {
+        setStatus(s);
+        console.log(`[useOrderBook] status="${s}" symbol="${symbol}" reconnectKey=${reconnectKey}`);
+      },
     );
 
     return unsub;
