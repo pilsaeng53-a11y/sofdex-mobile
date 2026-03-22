@@ -59,8 +59,8 @@ export default function Trade() {
             onClick={() => setShowPicker(v => !v)}
             className="flex items-center gap-2.5"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center text-[11px] font-black text-[#00d4aa]">
-              {symbol.slice(0, 2)}
+            <div className="w-9 h-9 rounded-xl bg-[#1a2340] flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <CoinIcon symbol={normalizedIcon} size={36} />
             </div>
             <div className="text-left">
               <div className="flex items-center gap-1">
