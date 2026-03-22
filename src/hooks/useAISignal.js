@@ -7,6 +7,7 @@
 
 import { useMemo } from 'react';
 import { useMarketData, COMMODITY_SYMBOLS } from '../components/shared/MarketDataProvider';
+// Signal resolution is re-exported via services/aiSignalResolver — import from there in UI components
 import { CRYPTO_MARKETS, RWA_MARKETS } from '../components/shared/MarketData';
 
 // ── Asset context: narratives, sector, risk notes ─────────────────────────────
