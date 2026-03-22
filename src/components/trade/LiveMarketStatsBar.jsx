@@ -7,7 +7,7 @@ import {
 // All prices come exclusively from the Orderly ticker via resolveTradingPrice.
 import { useTicker } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
-import { resolvePrice as resolveTradingPrice, priceSourceLabel } from '../../services/marketPriceResolver';
+import { resolvePrice as resolveTradingPrice, priceSourceLabel, normalizeSymbol } from '../../services/marketPriceResolver';
 
 // ─── Formatters ───────────────────────────────────────────────────────────────
 function fmtPrice(v) {
@@ -157,8 +157,9 @@ function Sep() {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
+  const normalizedSymbol = normalizeSymbol(symbol);
   // Orderly ticker — sole price source. No Binance/CoinGecko fallback allowed.
-  const { ticker, loading: tickerLoading } = useTicker(symbol);
+  const { ticker, loading: tickerLoading } = useTicker(normalizedSymbol);
 
   // Resolve canonical trading price (mark → last → index)
   const { price, source: priceSource } = resolveTradingPrice(ticker);
