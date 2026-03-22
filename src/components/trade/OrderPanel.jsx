@@ -10,7 +10,6 @@ import LeverageControls from './LeverageControls';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const PCT_STEPS    = [25, 50, 75, 100];
-const LEVERAGE_PRESETS = [1, 2, 5, 10, 25, 50, 100];
 const MOCK_BALANCE = 4821.36;
 const TAKER_FEE    = 0.0005; // 0.05%
 const MAKER_FEE    = 0.0002; // 0.02%
