@@ -68,8 +68,12 @@ export default function FuturesTrade() {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <p className="text-lg font-bold text-[#00d4aa]">1.0892</p>
-              <p className="text-xs text-green-400">+42 pips (+0.39%)</p>
+              {/* DEBUG: Force mark price only — no market cap */}
+              <p className="text-lg font-bold text-[#00d4aa]">{currentAsset.currentPrice ?? '—'}</p>
+              <p className="text-xs text-green-400">{currentAsset.change24h ?? '—'}</p>
+              {process.env.NODE_ENV === 'development' && (
+                <p className="text-[7px] text-yellow-400 font-mono">PRICE: MARK</p>
+              )}
             </div>
             <button className="w-8 h-8 rounded-lg bg-[#151c2e] flex items-center justify-center hover:border-[#00d4aa]/20 border border-[rgba(148,163,184,0.1)]">
               <Settings className="w-3.5 h-3.5 text-slate-400" />
@@ -85,10 +89,10 @@ export default function FuturesTrade() {
         </div>
 
         <div className="border-t border-[rgba(148,163,184,0.1)] p-2 grid grid-cols-4 gap-2 bg-[#0f1525] text-[9px]">
-          <div><p className="text-slate-500 mb-0.5">Bid</p><p className="font-bold text-white">1.0891</p></div>
-          <div><p className="text-slate-500 mb-0.5">Ask</p><p className="font-bold text-white">1.0892</p></div>
-          <div><p className="text-slate-500 mb-0.5">{t('ft_high24h')}</p><p className="font-bold text-white">1.0920</p></div>
-          <div><p className="text-slate-500 mb-0.5">{t('ft_low24h')}</p><p className="font-bold text-white">1.0845</p></div>
+          <div><p className="text-slate-500 mb-0.5">Bid</p><p className="font-bold text-white">{currentAsset.bid ?? '—'}</p></div>
+          <div><p className="text-slate-500 mb-0.5">Ask</p><p className="font-bold text-white">{currentAsset.ask ?? '—'}</p></div>
+          <div><p className="text-slate-500 mb-0.5">{t('ft_high24h')}</p><p className="font-bold text-white">{currentAsset.high24h ?? '—'}</p></div>
+          <div><p className="text-slate-500 mb-0.5">{t('ft_low24h')}</p><p className="font-bold text-white">{currentAsset.low24h ?? '—'}</p></div>
         </div>
       </div>
 
