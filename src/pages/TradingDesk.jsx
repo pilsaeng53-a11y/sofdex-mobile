@@ -9,6 +9,7 @@ import OrderPanel          from '../components/trade/OrderPanel';
 import TradingBottomPanel  from '../components/trade/TradingBottomPanel';
 import SymbolDrawer        from '../components/trade/SymbolDrawer';
 import OrderlyDebugPanel   from '../components/trade/OrderlyDebugPanel';
+import DebugRuntimePanel   from '../components/trade/DebugRuntimePanel';
 import TokenInfoCard        from '../components/trade/TokenInfoCard';
 import LongShortSentiment  from '../components/trade/LongShortSentiment';
 import CoinIcon             from '../components/shared/CoinIcon';
