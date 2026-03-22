@@ -731,6 +731,14 @@ export default function OrderPanel({ asset, externalPrice }) {
 
         {/* Readiness badge */}
         <ReadinessBadge errors={errors} isReady={isReady} />
+
+        {/* Submit error (e.g. from Orderly API) */}
+        {errors.submit && (
+          <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl" style={{ background: 'rgba(248,113,113,0.06)', border: '1px solid rgba(248,113,113,0.15)' }}>
+            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" style={{ color: '#f87171' }} />
+            <span className="text-[10px] font-semibold leading-snug" style={{ color: '#f87171' }}>{errors.submit}</span>
+          </div>
+        )}
       </div>
 
       {/* ── Submit footer ── */}
