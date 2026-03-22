@@ -1,28 +1,6 @@
 import React, { useState } from 'react';
 import { Brain, BarChart2, TrendingUp, TrendingDown, Minus, RefreshCw, ChevronDown } from 'lucide-react';
-
-const SIGNALS = [
-  {
-    asset: 'BTC', direction: 'long', confidence: 87,
-    reasoning: 'Institutional accumulation above $97K support. RSI oversold on 4H. Whale wallets added 2,400 BTC in 24h.',
-    entry: '$97,200', target: '$104,500', stop: '$94,800',
-  },
-  {
-    asset: 'SOL', direction: 'long', confidence: 74,
-    reasoning: 'DeFi TVL breakout on Solana. Network activity up 40% WoW. Price consolidating above key EMA.',
-    entry: '$184', target: '$210', stop: '$172',
-  },
-  {
-    asset: 'ETH', direction: 'neutral', confidence: 52,
-    reasoning: 'Mixed signals. ETF inflows positive but gas fees rising. Wait for clear break above $3,900.',
-    entry: '-', target: '-', stop: '-',
-  },
-  {
-    asset: 'BNB', direction: 'short', confidence: 68,
-    reasoning: 'Exchange outflows declining. RSI divergence on daily. Watch for rejection at $580 resistance.',
-    entry: '$577', target: '$540', stop: '$592',
-  },
-];
+import { useAssetAISignals } from '../../services/aiSignalResolver';
 
 const INDICATORS = [
   { name: 'RSI', asset: 'BTC', value: '42.3', signal: 'Oversold → Buy', color: 'text-emerald-400', trend: 'long' },
