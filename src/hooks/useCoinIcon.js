@@ -1,34 +1,15 @@
 /**
  * useCoinIcon — React hook for resolving a coin icon URL.
  *
- * Returns the icon URL string (or null if not found / still loading).
- * Reads from sync cache instantly, then subscribes to async resolution.
- * Completely isolated from trading data.
+ * Uses the bundled coinIconMapService (data/coinIconMap.js) as source of truth.
+ * Returns the icon URL instantly (synchronous — no network fetch needed).
+ * Completely isolated from trading price data.
  */
 
-import { useState, useEffect } from 'react';
-import { getCoinIcon, getCachedIcon, subscribeIcon } from '../services/coinIconService';
+import { getIconForSymbol } from '../services/coinIconMapService';
 
 export function useCoinIcon(symbol) {
-  // Normalize legacy rename: MATIC → POL
-  const raw = symbol?.toUpperCase() ?? '';
-  const key = raw === 'MATIC' ? 'POL' : raw;
-  const [url, setUrl] = useState(() => getCachedIcon(key) ?? null);
-
-  useEffect(() => {
-    if (!key) { setUrl(null); return; }
-
-    const cached = getCachedIcon(key);
-    setUrl(cached ?? null);
-
-    if (cached === undefined) {
-      getCoinIcon(key); // trigger resolution
-      const unsub = subscribeIcon(key, () => {
-        setUrl(getCachedIcon(key) ?? null);
-      });
-      return unsub;
-    }
-  }, [key]);
-
-  return url;
+  // getIconForSymbol handles all normalization (MATIC→POL, PERP_ prefix, etc.)
+  // and always returns a valid URL — never null/undefined.
+  return getIconForSymbol(symbol);
 }
