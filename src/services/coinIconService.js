@@ -187,11 +187,15 @@ async function tryGecko(symbol) {
 
 /**
  * Resolve a coin icon URL for the given base symbol (e.g. 'BTC').
+ * Accepts any symbol format — extracts base automatically.
  * Returns a Promise<string|null>. Caches to localStorage.
  */
 export async function getCoinIcon(symbol) {
   if (!symbol) return null;
-  const key = symbol.toUpperCase();
+  // Normalise: PERP_BTC_USDC → BTC, BTC-USDT → BTC
+  let key = symbol.toUpperCase().trim();
+  if (key.startsWith('PERP_')) key = key.split('_')[1] ?? key;
+  else if (key.includes('-') || key.includes('/')) key = key.split(/[-/]/)[0];
 
   // 1. Memory / localStorage cache hit
   if (key in _cache) return _cache[key];
