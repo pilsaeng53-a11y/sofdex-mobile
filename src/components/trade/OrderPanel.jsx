@@ -715,6 +715,7 @@ export default function OrderPanel({ asset, externalPrice }) {
           liqPrice={liqPrice}
           balance={MOCK_BALANCE}
           isReady={isReady}
+          riskLevel={riskLevel}
         />
 
         {/* Readiness badge */}
