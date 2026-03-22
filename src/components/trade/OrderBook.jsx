@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Wifi, WifiOff, RefreshCw, ChevronUp, ChevronDown, Bug } from 'lucide-react';
 import { useOrderBook, useTicker } from '../../hooks/useOrderlyMarket';
 import { toOrderlySymbol } from '../../services/orderly/orderlySymbolMap';
-import { resolvePrice, normalizeSymbol } from '../../services/marketPriceResolver';
+import { resolveTradingPrice, normalizeSymbol } from '../../services/tradingPriceResolver';
 import CoinIcon from '../shared/CoinIcon';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
