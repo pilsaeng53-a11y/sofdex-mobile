@@ -1,26 +1,26 @@
 /**
  * coinIconMapService.js
  *
- * Fetches the coin icon map from the Render backend ONCE per session.
- * On subsequent page loads the map is served from localStorage (TTL: 1 hour).
- * All trading data services are completely isolated from this module.
+ * Single source of truth for coin icon resolution.
+ * Uses the bundled COIN_ICON_MAP (data/coinIconMap.js) as primary source.
+ * Optionally merges with backend overrides from Render (extra/custom icons).
  *
- * Source of truth: https://solfort-api.onrender.com/coin-icons
- * Shape: { BTC: "https://...", ETH: "https://...", ... }
+ * No trading data ever flows through this module.
  */
 
-const ENDPOINT   = 'https://solfort-api.onrender.com/coin-icons';
-const CACHE_KEY  = 'solfort_icon_map_v1';
-const CACHE_TTL  = 60 * 60 * 1000; // 1 hour in ms
-const FALLBACK   = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/generic.png';
+import { COIN_ICON_MAP, FALLBACK_ICON, extractBase } from '../data/coinIconMap';
 
-// ── In-memory state ────────────────────────────────────────────────────────
-let _iconMap      = {};
-let _loaded       = false;
-let _fetchPromise = null;
-const _listeners  = new Set();
+const BACKEND_ENDPOINT = 'https://solfort-api.onrender.com/coin-icons';
+const CACHE_KEY        = 'solfort_icon_map_v2';
+const CACHE_TTL        = 60 * 60 * 1000; // 1 hour
 
-// ── localStorage helpers ───────────────────────────────────────────────────
+// ── In-memory state ─────────────────────────────────────────────────────────
+// Start with the bundled map — icons work immediately without any fetch
+let _iconMap  = { ...COIN_ICON_MAP };
+let _loaded   = true;  // bundled map is always available
+const _listeners = new Set();
+
+// ── localStorage helpers ────────────────────────────────────────────────────
 function readCache() {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
@@ -33,95 +33,69 @@ function readCache() {
 
 function writeCache(map) {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), map })); }
-  catch { /* storage full — silently skip */ }
+  catch { /* storage full */ }
 }
 
-// ── Symbol extraction ──────────────────────────────────────────────────────
-/**
- * Extracts the plain base asset from any symbol format.
- *   "BTC"           → "BTC"
- *   "BTC-USDT"      → "BTC"
- *   "BTC/USDC"      → "BTC"
- *   "PERP_BTC_USDC" → "BTC"
- */
-export function extractBase(symbol) {
-  if (!symbol) return '';
-  const s = symbol.trim().toUpperCase();
-  if (s.startsWith('PERP_')) return s.split('_')[1] ?? s;
-  if (s.includes('-') || s.includes('/')) return s.split(/[-/]/)[0];
-  return s;
-}
-
-// ── Core loader ────────────────────────────────────────────────────────────
-/**
- * Load the icon map. Order of precedence:
- *   1. Already in memory (hot)
- *   2. localStorage cache within TTL (warm)
- *   3. Network fetch from Render backend (cold)
- *
- * Safe to call multiple times — only one network request is ever made.
- */
-export async function loadIconMap() {
-  if (_loaded) return _iconMap;
-  if (_fetchPromise) return _fetchPromise;
-
-  // Warm path — serve from cache without hitting the network
+// ── Bootstrap: merge cached backend overrides if available ──────────────────
+(function bootstrap() {
   const cached = readCache();
   if (cached && Object.keys(cached).length > 0) {
-    _iconMap = cached;
-    _loaded  = true;
-    const keys = Object.keys(cached);
-    console.log(`[CoinIconMap] ✅ Restored ${keys.length} icons from cache (${keys.slice(0, 6).join(', ')}, …)`);
+    // Bundled map takes priority; backend only fills gaps
+    _iconMap = { ...cached, ...COIN_ICON_MAP };
+    console.log(`[CoinIconMap] ✅ Bundled ${Object.keys(COIN_ICON_MAP).length} icons + ${Object.keys(cached).length} from cache`);
+  } else {
+    console.log(`[CoinIconMap] ✅ Bundled ${Object.keys(COIN_ICON_MAP).length} icons (no cache)`);
+  }
+})();
+
+// ── Background fetch: merge backend overrides (non-blocking) ────────────────
+let _fetchStarted = false;
+export async function loadIconMap() {
+  if (_fetchStarted) return _iconMap;
+  _fetchStarted = true;
+
+  try {
+    const res  = await fetch(BACKEND_ENDPOINT, { signal: AbortSignal.timeout(8000) });
+    const map  = await res.json();
+    // Bundled map takes priority over backend — backend only adds extras
+    _iconMap   = { ...map, ...COIN_ICON_MAP };
+    writeCache(map);
+    const keys = Object.keys(map);
+    console.log(`[CoinIconMap] ✅ Backend merged ${keys.length} icons (bundled takes priority)`);
     _listeners.forEach(fn => fn());
-    return _iconMap;
+  } catch (err) {
+    console.info('[CoinIconMap] Backend fetch skipped (using bundled):', err.message);
   }
 
-  // Cold path — fetch from backend
-  _fetchPromise = fetch(ENDPOINT, { signal: AbortSignal.timeout(8000) })
-    .then(async (res) => {
-      const map = await res.json();
-      _iconMap  = map;
-      _loaded   = true;
-      writeCache(map);
-
-      const keys   = Object.keys(map);
-      const sample = keys.slice(0, 8).join(', ');
-      console.log(`[CoinIconMap] ✅ Fetched ${keys.length} icons from backend — keys: ${sample}`);
-
-      _listeners.forEach(fn => fn());
-      return map;
-    })
-    .catch((err) => {
-      console.warn('[CoinIconMap] ⚠️ Backend fetch failed, icons will use fallback:', err.message);
-      _loaded = true; // don't retry endlessly
-      _listeners.forEach(fn => fn());
-      return {};
-    })
-    .finally(() => { _fetchPromise = null; });
-
-  return _fetchPromise;
+  return _iconMap;
 }
 
-// ── Public API ─────────────────────────────────────────────────────────────
-/** Subscribe to map-loaded event. Fires immediately if already loaded. Returns unsubscribe fn. */
+// ── Public API ───────────────────────────────────────────────────────────────
+
+/** Subscribe to map updates. Fires immediately since bundled map is pre-loaded. */
 export function onIconMapLoaded(cb) {
-  if (_loaded) { cb(); return () => {}; }
+  // Always fire immediately — bundled map is ready from module init
+  cb();
   _listeners.add(cb);
   return () => _listeners.delete(cb);
 }
 
 /**
- * Synchronously resolve an icon URL for any symbol format.
- * Always returns a string (URL or FALLBACK) — never undefined/null.
+ * Resolve icon URL for any symbol format.
+ * Always returns a valid URL string — never null/undefined.
  */
 export function getIconForSymbol(symbol) {
   const base = extractBase(symbol);
   const url  = _iconMap[base];
-  // Treat missing entries and the backend's "/icons/fallback-coin.png" placeholder as no icon
-  return (url && !url.startsWith('/icons/')) ? url : FALLBACK;
+  // Reject backend placeholder paths
+  if (url && !url.startsWith('/icons/')) return url;
+  return FALLBACK_ICON;
 }
 
-/** Whether the map has been fetched (success or failure). */
+/** Whether the icon map is ready (always true since bundled). */
 export function isIconMapLoaded() {
-  return _loaded;
+  return true;
 }
+
+// Re-export for convenience
+export { extractBase, FALLBACK_ICON };
