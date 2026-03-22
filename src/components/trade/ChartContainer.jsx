@@ -185,19 +185,11 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   const price  = resolvedPrice > 0 ? resolvedPrice : null;
   const change = ticker?.change24h ?? null;
 
-  // Debug log — comprehensive price source tracing
+  // HARD LOCK: Log price resolution from trading resolver
   useEffect(() => {
-    logPriceSource('ChartContainer', symbol, ticker, 'mark/last/index', price);
-    logComponentRender('ChartContainer', { symbol, priceSource, price, tickerKeys: ticker ? Object.keys(ticker) : [] });
-    console.log('[ChartContainer DETAIL]', {
-      symbol,
-      priceSource,
-      price,
-      tickerLoaded: !!ticker,
-      tickerKeys: ticker ? Object.keys(ticker).slice(0, 10) : null,
-      tickerObject: ticker,
-    });
-  }, [symbol, priceSource, price, ticker]);
+    logPriceResolution(symbol, ticker, { price: resolvedPrice, source: priceSource });
+    logComponentRender('ChartContainer', { symbol, priceSource, price, tickerLoaded: !!ticker });
+  }, [symbol, priceSource, resolvedPrice, ticker]);
 
   const [timeframe, setTimeframe] = useState('1h');
   const [priceDir,  setPriceDir]  = useState(null);
