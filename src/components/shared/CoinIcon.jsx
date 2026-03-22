@@ -10,7 +10,8 @@
  * Shows branded colored initials as placeholder while loading or on failure.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { getIconUrl } from '../../data/coinIconMap';
 import { getCoinIcon, getCachedIcon, subscribeIcon } from '../../services/coinIconService';
 
 // Brand colors per symbol (used for placeholder + border tint)
@@ -34,22 +35,31 @@ function getBrandColor(symbol) {
 export default function CoinIcon({ symbol, size = 24, className = '' }) {
   const key = symbol?.toUpperCase() ?? '';
 
-  // Initialize from sync cache immediately — no flicker on re-renders
-  const [url,     setUrl]     = useState(() => getCachedIcon(key) ?? null);
-  const [imgOk,   setImgOk]   = useState(false);
-  const [imgErr,  setImgErr]  = useState(false);
+  // LOCAL MAP is checked first (synchronous, zero network cost)
+  const [url,    setUrl]    = useState(() => getIconUrl(key) ?? getCachedIcon(key) ?? null);
+  const [imgOk,  setImgOk]  = useState(false);
+  const [imgErr, setImgErr] = useState(false);
 
-  // When symbol changes, reset image state and re-read cache
   useEffect(() => {
     if (!key) return;
+
+    // 1. Check local map first — instant, no fetch needed
+    const local = getIconUrl(key);
+    if (local) {
+      setUrl(local);
+      setImgOk(false);
+      setImgErr(false);
+      return;
+    }
+
+    // 2. Fall back to the async icon service (CryptoCompare / CoinGecko)
     const cached = getCachedIcon(key);
     setUrl(cached ?? null);
     setImgOk(false);
     setImgErr(false);
 
-    // If not cached yet, trigger resolution and subscribe to completion
     if (cached === undefined) {
-      getCoinIcon(key); // fire-and-forget
+      getCoinIcon(key);
       const unsub = subscribeIcon(key, () => {
         setUrl(getCachedIcon(key) ?? null);
       });
