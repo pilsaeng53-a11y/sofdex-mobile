@@ -207,7 +207,10 @@ export default function FuturesTrade() {
             <tbody>
               {positions.map((pos, idx) => (
                 <tr key={idx} className="border-b border-[rgba(148,163,184,0.05)] hover:bg-[#1a2340]">
-                  <td className="px-3 py-2 font-bold text-white">{pos.symbol}</td>
+                  <td className="px-3 py-2 font-bold text-white flex items-center gap-2">
+                    <CoinIcon symbol={pos.symbol.replace(/-T$/, '')} size={20} />
+                    {pos.symbol}
+                  </td>
                   <td className={`px-3 py-2 font-bold ${pos.type === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
                     {pos.type === 'buy' ? t('common_buy') : t('common_sell')}
                   </td>
