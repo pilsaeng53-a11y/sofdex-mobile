@@ -1,33 +1,44 @@
 /**
  * data/coinIconMap.js
  *
- * Primary static icon map. Sourced from coin_icon_map.json.
- * Symbols marked as fallback are kept in RAW but getIconUrl() returns null for them,
- * so the component falls through to coinIconService.
+ * Coin icon resolution using the GitHub-hosted spothq/cryptocurrency-icons
+ * package via jsDelivr CDN.
+ *
+ * CDN pattern:
+ *   https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color/{symbol}.png
  *
  * extractBase() normalises any symbol format to a plain base symbol:
- *   "BTC"          → "BTC"
- *   "BTC-USDT"     → "BTC"
- *   "BTC/USDC"     → "BTC"
- *   "PERP_BTC_USDC"→ "BTC"
+ *   "BTC"            → "BTC"
+ *   "BTC-USDT"       → "BTC"
+ *   "BTC/USDC"       → "BTC"
+ *   "PERP_BTC_USDC"  → "BTC"
  */
 
-const FALLBACK_PATH = "/icons/fallback-coin.png";
+const CDN_BASE = 'https://cdn.jsdelivr.net/gh/spothq/cryptocurrency-icons@master/32/color';
 
-// Symbols that have real CoinGecko URLs in the uploaded map
-const ICON_URLS = {
-  APT:  "https://coin-images.coingecko.com/coins/images/26455/thumb/Aptos-Network-Symbol-Black-RGB-1x.png?17161789140",
-  ARB:  "https://coin-images.coingecko.com/coins/images/16547/thumb/arb.jpg?1721358242",
-  BNB:  "https://coin-images.coingecko.com/coins/images/825/thumb/bnb-icon2_2x.png?1696501970",
-  BTC:  "https://coin-images.coingecko.com/coins/images/1/thumb/bitcoin.png?1696501400",
-  DOGE: "https://coin-images.coingecko.com/coins/images/5/thumb/dogecoin.png?1696501409",
-  DOT:  "https://coin-images.coingecko.com/coins/images/12171/thumb/polkadot.jpg?1766533446",
-  SOL:  "https://coin-images.coingecko.com/coins/images/4128/thumb/solana.png?1718769756",
-  SUI:  "https://coin-images.coingecko.com/coins/images/26375/thumb/sui-ocean-square.png?1727791290",
+/**
+ * Symbols known to exist in the spothq/cryptocurrency-icons repo.
+ * Keeping a whitelist avoids 404s for obscure or non-existent symbols.
+ * Add more as needed.
+ */
+const KNOWN_SYMBOLS = new Set([
+  'ADA','ALGO','APE','APT','ARB','ATOM','AVAX','AXS','BCH','BNB',
+  'BTC','CELO','CHZ','COMP','CRO','CRV','DOGE','DOT','DYDX','ENJ',
+  'EOS','ETC','ETH','FIL','FTM','GAL','GMT','GRT','ICP','IMX',
+  'INJ','KAVA','LINK','LRC','LTC','MANA','MATIC','NEAR','ONE','OP',
+  'PEPE','POL','POLS','RUNE','SAND','SHIB','SOL','STX','SUI',
+  'TRX','UNI','USDC','USDT','VET','WLD','XLM','XRP','ZEC','ZIL',
+]);
+
+// Manual overrides for symbols that exist under a different slug in the repo
+// or need a known-good external URL.
+const OVERRIDES = {
+  // spothq uses 'matic' for the Polygon token
+  POL:  `${CDN_BASE}/matic.png`,
 };
 
 /**
- * Extracts the base symbol from any symbol format.
+ * Extracts the base symbol from any trading-pair format.
  *
  * "PERP_BTC_USDC" → "BTC"
  * "BTC-USDT"      → "BTC"
@@ -37,12 +48,10 @@ const ICON_URLS = {
 export function extractBase(symbol) {
   if (!symbol) return '';
   const s = symbol.trim().toUpperCase();
-  // Orderly perpetual format: PERP_BASE_QUOTE
   if (s.startsWith('PERP_')) {
     const parts = s.split('_');
     return parts[1] ?? s;
   }
-  // Hyphen or slash separated: BTC-USDT, BTC/USDC
   if (s.includes('-') || s.includes('/')) {
     return s.split(/[-/]/)[0];
   }
@@ -50,8 +59,7 @@ export function extractBase(symbol) {
 }
 
 /**
- * Returns the icon URL for any symbol format, or null if not found.
- * Always extracts the base symbol first, then looks up the map.
+ * Returns the CDN icon URL for any symbol format, or null if unknown.
  *
  * @param {string} symbol - any format: "BTC", "PERP_BTC_USDC", "BTC-USDT"
  * @returns {string|null}
@@ -59,10 +67,20 @@ export function extractBase(symbol) {
 export function getIconUrl(symbol) {
   const base = extractBase(symbol);
   if (!base) return null;
-  const url = ICON_URLS[base];
-  console.debug('[CoinIcon] resolve', { input: symbol, base, url: url ?? null });
-  return url ?? null;
-}
 
-/** Exported map for use outside CoinIcon (e.g. preloading, SymbolDrawer). */
-export const COIN_ICON_MAP = { ...ICON_URLS };
+  // Manual override
+  if (OVERRIDES[base]) {
+    console.debug('[CoinIcon]', symbol, '→', base, '→ override', OVERRIDES[base]);
+    return OVERRIDES[base];
+  }
+
+  // CDN whitelist
+  if (KNOWN_SYMBOLS.has(base)) {
+    const url = `${CDN_BASE}/${base.toLowerCase()}.png`;
+    console.debug('[CoinIcon]', symbol, '→', base, '→', url);
+    return url;
+  }
+
+  console.debug('[CoinIcon]', symbol, '→', base, '→ not in map, will fallback');
+  return null;
+}
