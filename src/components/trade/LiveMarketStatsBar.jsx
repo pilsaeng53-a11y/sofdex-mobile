@@ -242,8 +242,8 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
           label="Mark Price"
           Icon={TrendingUp}
           iconColor="#00d4aa"
-          rawValue={price}
-          displayValue={price != null ? `$${fmtPrice(price)}` : '—'}
+          rawValue={resolvedPrice}
+          displayValue={resolvedPrice != null ? `$${fmtPrice(resolvedPrice)}` : '—'}
           subLabel={change != null ? fmtChange(change) : null}
           subColor={changeColor}
           loading={loading}
@@ -254,7 +254,7 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
           Icon={Tag}
           iconColor="#3b82f6"
           rawValue={lastPrice}
-          displayValue={lastPrice != null ? `$${fmtPrice(lastPrice)}` : price != null ? `$${fmtPrice(price)}` : '—'}
+          displayValue={lastPrice != null ? `$${fmtPrice(lastPrice)}` : resolvedPrice != null ? `$${fmtPrice(resolvedPrice)}` : '—'}
           loading={loading}
         />
         <Sep />
