@@ -39,6 +39,18 @@ function DirectionBadge({ direction }) {
 export default function AISignalsPanel() {
   const [tab, setTab] = useState('signals');
   const [expanded, setExpanded] = useState(null);
+  const assetSignals = useAssetAISignals();
+
+  // Map resolver signals to the display format this panel uses
+  const SIGNALS = Object.entries(assetSignals).map(([asset, sig]) => ({
+    asset,
+    direction: sig.signal === 'Bullish' ? 'long' : sig.signal === 'Bearish' ? 'short' : 'neutral',
+    confidence: sig.score,
+    reasoning: sig.factors?.join(' ') ?? '',
+    entry: sig.basis ?? '-',
+    target: '-',
+    stop: '-',
+  }));
 
   return (
     <div className="space-y-3">
