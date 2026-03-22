@@ -147,7 +147,7 @@ export const COINGECKO_ID = {
   'AVAX':  'avalanche-2',
   'DOT':   'polkadot',
   'LINK':  'chainlink',
-  'MATIC': 'matic-network',
+  'POL':   'polygon-ecosystem-token',
   'LTC':   'litecoin',
   'ATOM':  'cosmos',
   'UNI':   'uniswap',
