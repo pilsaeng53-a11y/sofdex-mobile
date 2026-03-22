@@ -3,7 +3,7 @@ import {
   TrendingUp, TrendingDown, Maximize2, BarChart2,
   RefreshCw, WifiOff, Activity, ChevronUp, ChevronDown
 } from 'lucide-react';
-import { useRef } from 'react';
+import { useEffect } from 'react';
 import { useTicker, useKlines } from '../../hooks/useOrderlyMarket';
 import CoinIcon from '../shared/CoinIcon';
 import { resolvePrice as resolveTradingPrice, priceSourceLabel, normalizeSymbol } from '../../services/marketPriceResolver';
