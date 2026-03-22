@@ -328,10 +328,10 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
           </button>
 
           <StatusPill state={status} />
-          {/* DEBUG: price source badge — remove after verification */}
+          {/* HARD LOCK: Visible price source indicator */}
           <span
-            className="text-[7.5px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
-            style={{ background: 'rgba(251,191,36,0.08)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.15)' }}
+            className="text-[7px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
+            style={{ background: 'rgba(0,212,170,0.12)', color: '#00d4aa', border: '1px solid rgba(0,212,170,0.3)' }}
           >
             {priceSourceLabel(priceSource)}
           </span>
