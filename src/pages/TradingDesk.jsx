@@ -70,23 +70,21 @@ function SideTabs({ active, onChange }) {
 // ─── Main layout ──────────────────────────────────────────────────────────────
 export default function TradingDesk() {
   // Active symbol state — now any Orderly symbol, not just a hardcoded list
-  const [activeSymbol, setActiveSymbol] = useState({
-    base: 'BTC', quote: 'USDC', orderlySymbol: 'PERP_BTC_USDC', displayName: 'BTC-USDC',
-  });
+  const [activeSymbol, setActiveSymbol] = useState(DEFAULT_SYMBOL);
   const [drawerOpen,   setDrawerOpen]   = useState(false);
   const [sideTab,      setSideTab]      = useState('both');
   const [orderPrice,   setOrderPrice]   = useState(null);
 
-  const symbol = activeSymbol.base;   // short key used by all hooks
+  const symbol = activeSymbol.base;
 
-  // Price for OrderPanel: exclusively from Orderly ticker (mark → last → index)
-  // NOT from MarketDataProvider (Binance/CoinGecko) — that would pollute trading data
-  const { ticker: orderlyTicker } = useTicker(symbol);
-  const orderlyPrice = orderlyTicker?.markPrice ?? orderlyTicker?.lastPrice ?? orderlyTicker?.indexPrice ?? 0;
+  // markPrice: exclusively from Orderly ticker — mark → last → index
+  // Never mix in Binance/CoinGecko prices here; those are for portfolio display only
+  const { markPrice, isStale } = useOrderlyPrice(symbol);
 
   function handleSymbolSelect(sym) {
-    console.log(`[TradingDesk] Symbol switch: ${activeSymbol.base} → ${sym.base}`);
-    setActiveSymbol(sym);
+    // Accept both full descriptor objects (from SymbolDrawer) and base strings
+    const descriptor = typeof sym === 'string' ? buildSymbolDescriptor(sym) : sym;
+    setActiveSymbol(descriptor);
     setOrderPrice(null);
   }
 
