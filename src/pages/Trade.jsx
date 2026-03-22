@@ -9,10 +9,11 @@ import OrderPanel from '../components/trade/OrderPanel';
 import OrderBook from '../components/trade/OrderBook';
 import RecentTrades from '../components/trade/RecentTrades';
 import PositionsPanel from '../components/trade/PositionsPanel';
-import { TrendingUp, TrendingDown, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import PositionCalculator from '../components/trade/PositionCalculator.jsx';
 import CoinIcon from '../components/shared/CoinIcon';
+import ChartPrice from '../components/trade/ChartPrice';
 
 export default function Trade() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -23,9 +24,9 @@ export default function Trade() {
   const { t } = useLang();
   const baseAsset = ALL_MARKETS.find(a => a.symbol === symbol) || CRYPTO_MARKETS[0];
   
-  // **CHART PRICE IS MASTER** — all prices derive from this hook
+  // **CHART PRICE IS MASTER** — hard-locked to Orderly trading price (mark/last/index only)
   const { price, change24h } = useChartPrice(symbol);
-  const price_display = price ?? baseAsset.price;
+  const price_display = price > 0 ? price : null;
   const change = change24h ?? baseAsset.change;
   const positive = change >= 0;
 
@@ -72,11 +73,7 @@ export default function Trade() {
           </button>
 
           <div className="text-right">
-            <p className="text-lg font-bold text-white font-mono">${symbol === 'SOF' ? formatSOFPrice(price_display) : formatPrice(price_display)}</p>
-            <div className={`flex items-center justify-end gap-1 text-xs font-semibold ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
-              {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-              {formatChange(change)}
-            </div>
+            <ChartPrice symbol={symbol} />
           </div>
         </div>
 
