@@ -8,7 +8,14 @@
  * No trading data ever flows through this module.
  */
 
-import { COIN_ICON_MAP, FALLBACK_ICON, extractBase } from '../data/coinIconMap';
+import { COIN_ICON_MAP, FALLBACK_ICON, extractBase as extractBaseRaw } from '../data/coinIconMap';
+import { normalizeSymbol } from './marketPriceResolver';
+
+// Wrap extractBase to apply alias normalization after extraction
+function extractBase(symbol) {
+  const raw = extractBaseRaw(symbol);
+  return normalizeSymbol(raw);
+}
 
 const BACKEND_ENDPOINT = 'https://solfort-api.onrender.com/coin-icons';
 const CACHE_KEY        = 'solfort_icon_map_v2';
