@@ -212,16 +212,12 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   // Last candle OHLC for the footer bar
   const lastCandle = candles.length > 0 ? candles[candles.length - 1] : null;
 
-  // Track price direction
+  // Track price direction (simplified without ref)
   useEffect(() => {
     if (price == null) return;
-    if (prevPrice.current != null) {
-      setPriceDir(price > prevPrice.current ? 'up' : price < prevPrice.current ? 'down' : null);
-      const t = setTimeout(() => setPriceDir(null), 1500);
-      prevPrice.current = price;
-      return () => clearTimeout(t);
-    }
-    prevPrice.current = price;
+    setPriceDir('update');
+    const t = setTimeout(() => setPriceDir(null), 1500);
+    return () => clearTimeout(t);
   }, [price]);
 
   const changeColor = change == null ? '#94a3b8' : change >= 0 ? '#4ade80' : '#f87171';
