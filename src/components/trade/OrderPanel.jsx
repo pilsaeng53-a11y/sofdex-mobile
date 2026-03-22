@@ -21,6 +21,7 @@ import CoinIcon from '../shared/CoinIcon';
 import LeverageControls from './LeverageControls';
 import useOrderForm, { MOCK_BALANCE } from '../../hooks/useOrderForm';
 import { fmt, fmtUSD, fmtPct, smartDecimals, fmtQty } from '../../lib/trading/formatters';
+import { hardLockTradingPrice } from '../../services/tradingPriceResolver';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const PCT_STEPS = [25, 50, 75, 100];
