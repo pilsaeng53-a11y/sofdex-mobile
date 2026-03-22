@@ -202,7 +202,6 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
 
   const [timeframe, setTimeframe] = useState('1h');
   const [priceDir,  setPriceDir]  = useState(null);
-  const prevPrice = useRef(null);
 
   // Live klines from Orderly WebSocket (no public REST kline endpoint exists)
   const { candles, loading, error, status: klinesStatus } = useKlines(normalizedSymbol, timeframe);
