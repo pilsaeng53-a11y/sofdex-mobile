@@ -146,12 +146,7 @@ function InstrumentRow({ item, onSelect, isActive }) {
       }}
     >
       <div className="flex items-center gap-2.5 min-w-0">
-        <div
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-[9px] font-black flex-shrink-0"
-          style={{ background: 'rgba(59,130,246,0.1)', color: '#3b82f6' }}
-        >
-          {item.symbol.slice(0, 3)}
-        </div>
+        <CoinIcon symbol={item.symbol.split(/[/-]/)[0]} size={32} debugLabel="OverseasFutures" />
         <div className="min-w-0">
           <p className="text-[11px] font-bold text-white truncate">{item.symbol}</p>
           <p className="text-[8.5px] truncate" style={{ color: '#3d4f6b' }}>{item.name}</p>
