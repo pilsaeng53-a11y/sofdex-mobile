@@ -64,6 +64,10 @@ export default function FuturesTrade() {
             <div>
               <h2 className="text-sm font-bold text-white">{selectedSymbol}</h2>
               <p className="text-xs text-slate-500">{currentAsset.name}</p>
+              {/* DEBUG: price source badge */}
+              {process.env.NODE_ENV === 'development' && (
+                <p className="text-[7px] text-yellow-400 font-mono uppercase tracking-widest">PRICE: MARK (Broker)</p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3">
