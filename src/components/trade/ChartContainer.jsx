@@ -177,9 +177,9 @@ function ReadyOverlay({ symbol, timeframe }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   const normalizedSymbol = normalizeSymbol(symbol);
-  // ── Price comes exclusively from Orderly ticker ──
-  // Priority: mark_price → lastPrice (24h_close) → indexPrice
-  // MarketDataProvider (Binance/CoinGecko) is intentionally excluded here.
+  // ── HARD LOCKED: Price comes ONLY from Orderly ticker ──
+  // NEVER market cap, metadata, or fallback prices
+  // Priority: mark_price → last_price → index_price
   const { ticker } = useTicker(normalizedSymbol);
   const { price: resolvedPrice, source: priceSource } = resolveTradingPrice(ticker);
   const price  = resolvedPrice > 0 ? resolvedPrice : null;
