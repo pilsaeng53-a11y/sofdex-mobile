@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useTicker } from '../hooks/useOrderlyMarket';
+import { useOrderlyPrice } from '../hooks/useOrderlyPrice';
+import { DEFAULT_SYMBOL, buildSymbolDescriptor } from '../lib/trading/symbols';
 import LiveMarketStatsBar  from '../components/trade/LiveMarketStatsBar';
 import ChartContainer      from '../components/trade/ChartContainer';
 import OrderBook           from '../components/trade/OrderBook';
