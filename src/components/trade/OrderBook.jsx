@@ -263,11 +263,12 @@ function PriceCopiedToast({ price }) {
 
 // ─── Main OrderBook ───────────────────────────────────────────────────────────
 export default function OrderBook({ symbol = 'BTC', onPriceClick }) {
-  const { getLiveAsset } = useMarketData();
-  const liveAsset = getLiveAsset(symbol);
-  const livePrice = liveAsset?.price;
+  const normalizedSymbol = normalizeSymbol(symbol);
+  const { ticker } = useTicker(normalizedSymbol);
+  const { price: tickerPrice } = resolvePrice(ticker);
+  const livePrice = tickerPrice > 0 ? tickerPrice : null;
 
-  const { asks, bids, status: wsStatus, loading } = useOrderBook(symbol);
+  const { asks, bids, status: wsStatus, loading } = useOrderBook(normalizedSymbol);
 
   const [priceDir, setPriceDir] = useState(null);
   const [selectedPrice, setSelectedPrice] = useState(null);
