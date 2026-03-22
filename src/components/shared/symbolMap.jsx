@@ -12,7 +12,7 @@ export const SYMBOL_MAP = {
   'AVAX':       'BINANCE:AVAXUSDT',
   'DOT':        'BINANCE:DOTUSDT',
   'LINK':       'BINANCE:LINKUSDT',
-  'MATIC':      'BINANCE:MATICUSDT',
+  'POL':        'BINANCE:POLUSDT',
   'LTC':        'BINANCE:LTCUSDT',
   'ATOM':       'BINANCE:ATOMUSDT',
   'UNI':        'BINANCE:UNIUSDT',
