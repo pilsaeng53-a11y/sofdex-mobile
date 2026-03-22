@@ -10,7 +10,9 @@ import { useState, useEffect } from 'react';
 import { getCoinIcon, getCachedIcon, subscribeIcon } from '../services/coinIconService';
 
 export function useCoinIcon(symbol) {
-  const key = symbol?.toUpperCase() ?? '';
+  // Normalize legacy rename: MATIC → POL
+  const raw = symbol?.toUpperCase() ?? '';
+  const key = raw === 'MATIC' ? 'POL' : raw;
   const [url, setUrl] = useState(() => getCachedIcon(key) ?? null);
 
   useEffect(() => {
