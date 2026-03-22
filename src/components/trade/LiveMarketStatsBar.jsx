@@ -224,6 +224,13 @@ export default function LiveMarketStatsBar({ symbol = 'BTC' }) {
           </span>
         </div>
         <StatusBadge state={status} />
+        {/* DEBUG: price source badge — remove after verification */}
+        <span
+          className="text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest ml-1"
+          style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.2)' }}
+        >
+          {debugLabel}
+        </span>
       </div>
 
       {/* Stats row — horizontally scrollable on mobile */}
