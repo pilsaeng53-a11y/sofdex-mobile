@@ -37,12 +37,22 @@ export default function CoinIcon({ symbol, size = 24, className = '', debugLabel
   const [error,  setError]  = useState(false);
   const _logged = useRef(false);
 
-  // Debug log — fires once per mount to avoid flooding on price re-renders
-  if (!_logged.current) {
-    _logged.current = true;
-    const isFallback = !url || url.includes('generic.png');
-    console.log(`[CoinIcon]${debugLabel ? ` [${debugLabel}]` : ''} symbol="${symbol}" base="${base}" url="${url}" fallback=${isFallback}`);
-  }
+  // Debug log — fires once per mount with full tracing
+  useEffect(() => {
+    if (!_logged.current) {
+      _logged.current = true;
+      const isFallback = !url || url.includes('generic.png');
+      const fallbackReason = !url ? 'no_url_from_map' : url.includes('generic.png') ? 'generic_fallback' : null;
+      logIconRender(
+        `CoinIcon${debugLabel ? ` [${debugLabel}]` : ''}`,
+        symbol,
+        base,
+        url,
+        fallbackReason
+      );
+      console.log(`[CoinIcon]${debugLabel ? ` [${debugLabel}]` : ''} symbol="${symbol}" base="${base}" url="${url}" fallback=${isFallback}`);
+    }
+  }, [symbol, base, url, debugLabel]);
 
   const showImg = !!url && !error;
 
