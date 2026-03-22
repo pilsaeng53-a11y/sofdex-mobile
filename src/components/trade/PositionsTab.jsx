@@ -114,9 +114,15 @@ function PositionCard({ position }) {
   const base   = position.symbol?.split('/')?.[0] ?? position.symbol;
   const symKey = base; // e.g. 'BTC' → useTicker expects short key
 
-  // Live mark price from Orderly ticker
+  // Live mark price from Orderly ticker — mark → last (never metadata)
   const { ticker } = useTicker(symKey);
   const liveMark   = ticker?.markPrice ?? ticker?.lastPrice ?? null;
+
+  // Debug log — remove after verification
+  React.useEffect(() => {
+    const src = ticker?.markPrice ? 'MARK' : ticker?.lastPrice ? 'LAST' : 'NONE';
+    console.log('[PositionsTab]', { symbol: symKey, priceSource: src, liveMark });
+  }, [symKey, liveMark]);
 
   const risk = useMemo(
     () => calcLiqRisk(position, liveMark),
