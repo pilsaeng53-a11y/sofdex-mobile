@@ -179,8 +179,14 @@ export default function ChartContainer({ symbol = 'BTC', onFullscreen }) {
   // Priority: mark_price → lastPrice (24h_close) → indexPrice
   // MarketDataProvider (Binance/CoinGecko) is intentionally excluded here.
   const { ticker } = useTicker(symbol);
-  const price  = ticker?.markPrice ?? ticker?.lastPrice ?? ticker?.indexPrice ?? null;
+  const { price: resolvedPrice, source: priceSource } = resolveTradingPrice(ticker);
+  const price  = resolvedPrice > 0 ? resolvedPrice : null;
   const change = ticker?.change24h ?? null;
+
+  // Debug log — remove after verification
+  useEffect(() => {
+    console.log('[ChartContainer]', { symbol, priceSource, price, tickerLoaded: !!ticker });
+  }, [symbol, priceSource, price]);
 
   const [timeframe, setTimeframe] = useState('1h');
   const [priceDir,  setPriceDir]  = useState(null);
