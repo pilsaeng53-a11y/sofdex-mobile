@@ -13,6 +13,7 @@ import { ChevronDown } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
 import PositionCalculator from '../components/trade/PositionCalculator.jsx';
 import CoinIcon from '../components/shared/CoinIcon';
+import { normalizeSymbol } from '../services/solfortApi';
 import ChartPrice from '../components/trade/ChartPrice';
 
 export default function Trade() {
@@ -30,15 +31,8 @@ export default function Trade() {
   const change = change24h ?? baseAsset.change;
   const positive = change >= 0;
 
-  // **HEADER COIN ICON** — normalize symbol and log resolution
-  const normalizeForIcon = (sym) => {
-    // ETH-PERP -> ETH, PERP_ETH_USDC -> ETH, ETH-USDT -> ETH
-    return sym.split(/[-_]/).find(part => /^[A-Z]{2,}$/.test(part)) || sym.slice(0, 3);
-  };
-  const normalizedIcon = normalizeForIcon(symbol);
-  useEffect(() => {
-    console.log(`[TRADE HEADER ICON] symbol="${symbol}", normalized="${normalizedIcon}"`);
-  }, [symbol, normalizedIcon]);
+  // **HEADER COIN ICON** — always use normalizeSymbol, never slice/initials
+  const normalizedIcon = normalizeSymbol(symbol);
 
   // Deterministic funding rate from symbol (stable seed)
   const fundingVal = ((symbol.charCodeAt(0) % 10) - 4.5) * 0.003;
