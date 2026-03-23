@@ -15,6 +15,7 @@ import PositionCalculator from '../components/trade/PositionCalculator.jsx';
 import CoinIcon from '../components/shared/CoinIcon';
 import { normalizeSymbol } from '../services/solfortApi';
 import ChartPrice from '../components/trade/ChartPrice';
+import TradeNewsPanel from '../components/trade/TradeNewsPanel';
 
 export default function Trade() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -145,6 +146,7 @@ export default function Trade() {
           { val: 'Trades', label: 'Trades' },
           { val: 'Positions', label: 'Positions' },
           { val: 'Calculator', label: 'Calc' },
+          { val: 'News', label: 'News' },
         ].map(item => (
           <button
             key={item.val}
@@ -167,6 +169,7 @@ export default function Trade() {
          {tab === 'Trades' && <RecentTrades price={price_display} />}
          {tab === 'Positions' && <PositionsPanel />}
          {tab === 'Calculator' && <PositionCalculator price={price_display} symbol={symbol} maxLeverage={baseAsset.maxLeverage || 20} />}
+         {tab === 'News' && <TradeNewsPanel symbol={symbol} />}
        </div>
     </div>
   );
