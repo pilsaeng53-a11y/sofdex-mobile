@@ -13,8 +13,9 @@ import { DisconnectedState, NotApprovedState, CheckingState } from '@/components
 import { DEV_MODE, DEV_WALLET, DEV_SALES_PARTNER } from '@/components/shared/devConfig';
 import CustomerRegistrationForm from '@/components/sofpartner/CustomerRegistrationForm';
 import CustomerTable from '@/components/sofpartner/CustomerTable';
+import RetailSalesForm from '@/components/sofpartner/RetailSalesForm';
 import { formatNumber } from '@/components/sofpartner/SOFQuantityCalc';
-import { UserPlus, List, Users } from 'lucide-react';
+import { UserPlus, List, Users, ShoppingBag } from 'lucide-react';
 
 function StatCard({ label, value, sub, color = '#00d4aa' }) {
   return (
@@ -40,6 +41,7 @@ export default function SOFSalesPartnerDashboard() {
 
   const TABS = [
     { id: 'register', labelKey: 'sof_sales_register', icon: UserPlus },
+    { id: 'retail',   label: '도소매 파트너', icon: ShoppingBag },
     { id: 'manage',   labelKey: 'sof_sales_customers', icon: Users },
     { id: 'history',  labelKey: 'sof_sales_history', icon: List },
   ];
@@ -149,13 +151,13 @@ export default function SOFSalesPartnerDashboard() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all ${
-                activeTab === tab.id
-                  ? 'bg-[#00d4aa]/15 text-[#00d4aa]'
-                  : 'text-slate-500 hover:text-slate-300'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span className="text-[8px] font-bold leading-tight text-center">{t(tab.labelKey)}</span>
+                    activeTab === tab.id
+                      ? 'bg-[#00d4aa]/15 text-[#00d4aa]'
+                      : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                  <span className="text-[8px] font-bold leading-tight text-center">{tab.label ?? t(tab.labelKey)}</span>
             </button>
           );
         })}
@@ -167,6 +169,20 @@ export default function SOFSalesPartnerDashboard() {
           partnerWallet={address}
           onSubmitSuccess={() => { loadSubmissions(); setActiveTab('manage'); }}
         />
+      )}
+
+      {/* Tab: 도소매 파트너 */}
+      {activeTab === 'retail' && (
+        <div>
+          <div className="glass-card rounded-2xl p-4 mb-4">
+            <div className="flex items-center gap-2 mb-1">
+              <ShoppingBag className="w-4 h-4 text-[#00d4aa]" />
+              <p className="text-xs font-bold text-white">도소매 세일즈 파트너</p>
+            </div>
+            <p className="text-[10px] text-slate-500">매출 기반으로 SOF 수량을 계산하고 재단에 제출합니다.</p>
+          </div>
+          <RetailSalesForm partnerWallet={DEV_MODE ? DEV_WALLET : address} />
+        </div>
       )}
 
       {/* Tab: Manage */}
