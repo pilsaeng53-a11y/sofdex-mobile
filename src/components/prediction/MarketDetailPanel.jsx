@@ -40,27 +40,37 @@ function daysLeft(dateStr) {
 function OutcomeButton({ outcome, selected, blocked, onSelect }) {
   const prob    = outcome.prob;
   const payout  = (1 / Math.max(prob, 0.001)).toFixed(2);
+  const cents   = Math.round(prob * 100);
   const isYes   = outcome.id === 'YES' || outcome.label === 'YES';
   const isNo    = outcome.id === 'NO'  || outcome.label === 'NO';
   const color   = isNo ? '#ef4444' : isYes ? '#22c55e' : '#00d4aa';
-  const glow    = isNo ? 'rgba(239,68,68,0.2)' : isYes ? 'rgba(34,197,94,0.2)' : 'rgba(0,212,170,0.2)';
+  const glow    = isNo ? 'rgba(239,68,68,0.18)' : isYes ? 'rgba(34,197,94,0.18)' : 'rgba(0,212,170,0.18)';
 
   return (
     <button onClick={() => !blocked && onSelect(outcome.id)}
       disabled={blocked}
-      className={`relative flex flex-col items-start px-3 py-2.5 rounded-xl font-bold text-left transition-all ${blocked ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+      className={`relative flex flex-col gap-2 px-3.5 py-3 rounded-xl font-bold text-left transition-all w-full ${blocked ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
       style={selected
-        ? { background: `${color}12`, border: `1px solid ${color}40`, boxShadow: `0 0 16px ${glow}` }
-        : { background: 'rgba(26,35,64,0.6)', border: '1px solid rgba(148,163,184,0.08)' }}>
-      <div className="flex items-center justify-between w-full mb-1">
-        <span className="text-[11px] font-black" style={selected ? { color } : { color: '#94a3b8' }}>{outcome.label}</span>
-        <span className="text-[10px] font-black font-mono" style={selected ? { color } : { color: '#64748b' }}>{payout}x</span>
+        ? { background: `${color}10`, border: `1.5px solid ${color}50`, boxShadow: `0 0 20px ${glow}` }
+        : { background: 'rgba(15,21,37,0.8)', border: '1px solid rgba(148,163,184,0.09)' }}>
+      {/* Top row: label + payout */}
+      <div className="flex items-center justify-between w-full">
+        <span className="text-[12px] font-black" style={selected ? { color } : { color: '#e2e8f0' }}>{outcome.label}</span>
+        <span className="text-[11px] font-black font-mono px-2 py-0.5 rounded-lg"
+          style={selected
+            ? { background: `${color}15`, color, border: `1px solid ${color}30` }
+            : { background: 'rgba(26,35,64,0.8)', color: '#94a3b8', border: '1px solid rgba(148,163,184,0.08)' }}>
+          {payout}x
+        </span>
       </div>
-      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.1)' }}>
-        <div className="h-full rounded-full" style={{ width: `${Math.round(prob * 100)}%`, background: color }} />
+      {/* Prob bar */}
+      <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.08)' }}>
+        <div className="h-full rounded-full transition-all" style={{ width: `${cents}%`, background: color, boxShadow: selected ? `0 0 6px ${color}` : 'none' }} />
       </div>
-      <div className="text-[8px] mt-1" style={selected ? { color } : { color: '#64748b' }}>
-        {Math.round(prob * 100)}% probability
+      {/* Bottom row: prob + cents */}
+      <div className="flex items-center justify-between w-full">
+        <span className="text-[9px]" style={selected ? { color } : { color: '#64748b' }}>{cents}% probability</span>
+        <span className="text-[9px] font-mono" style={selected ? { color } : { color: '#64748b' }}>{cents}¢</span>
       </div>
     </button>
   );
@@ -234,19 +244,24 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
 
             {/* Payout summary */}
             {outcome && amt > 0 && (
-              <div className="rounded-xl p-3 space-y-1.5 border border-[rgba(148,163,184,0.06)]"
-                style={{ background: 'rgba(26,35,64,0.4)' }}>
-                <div className="flex justify-between text-[10px]">
+              <div className="rounded-xl overflow-hidden border border-[rgba(148,163,184,0.07)]"
+                style={{ background: 'rgba(15,21,37,0.9)' }}>
+                <div className="px-3 py-2 border-b border-[rgba(148,163,184,0.05)] flex justify-between text-[10px]">
                   <span className="text-slate-500">Outcome</span>
                   <span className="font-bold text-white">{outcome.label}</span>
                 </div>
-                <div className="flex justify-between text-[10px]">
+                <div className="px-3 py-2 border-b border-[rgba(148,163,184,0.05)] flex justify-between text-[10px]">
+                  <span className="text-slate-500">Stake</span>
+                  <span className="font-mono text-slate-300">{amt} {asset}</span>
+                </div>
+                <div className="px-3 py-2 border-b border-[rgba(148,163,184,0.05)] flex justify-between text-[10px]">
                   <span className="text-slate-500">Payout rate</span>
                   <span className="font-mono font-black text-[#00d4aa]">{finalPayout.toFixed(2)}x</span>
                 </div>
-                <div className="flex justify-between text-[10px] border-t border-[rgba(148,163,184,0.06)] pt-1.5">
-                  <span className="text-slate-300 font-bold">If correct</span>
-                  <span className="font-mono text-emerald-400 font-black">+{profit.toFixed(2)} {asset}</span>
+                <div className="px-3 py-3 flex justify-between items-center"
+                  style={{ background: 'rgba(34,197,94,0.05)' }}>
+                  <span className="text-[11px] font-black text-slate-200">If correct</span>
+                  <span className="text-[15px] font-black font-mono text-emerald-400">+{profit.toFixed(2)} {asset}</span>
                 </div>
               </div>
             )}

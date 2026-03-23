@@ -62,8 +62,16 @@ function Skeleton({ rows = 4 }) {
   );
 }
 
+const SECTION_ACCENT = {
+  aiPick:   { gradient: 'rgba(0,212,170,0.08)',   border: 'rgba(0,212,170,0.15)',   icon: '🤖' },
+  trending: { gradient: 'rgba(249,115,22,0.07)',  border: 'rgba(249,115,22,0.15)',  icon: '🔥' },
+  popular:  { gradient: 'rgba(59,130,246,0.07)',  border: 'rgba(59,130,246,0.15)',  icon: '📊' },
+  payout:   { gradient: 'rgba(251,191,36,0.07)',  border: 'rgba(251,191,36,0.15)',  icon: '💰' },
+  ending:   { gradient: 'rgba(239,68,68,0.07)',   border: 'rgba(239,68,68,0.15)',   icon: '⏰' },
+};
+
 // ─── Explore tab ──────────────────────────────────────────────────────────
-function ExploreTab({ onBet, participatedIds }) {
+function ExploreTab({ onBet, participatedIds, onViewAll }) {
   const { top, loading } = useTopMarkets();
 
   const allEmpty = !loading && TOP_SECTIONS.every(s => !(top[s.key]?.length));
@@ -77,18 +85,37 @@ function ExploreTab({ onBet, participatedIds }) {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {TOP_SECTIONS.map(sec => {
         const markets = top[sec.key] ?? [];
         if (!markets.length) return null;
+        const accent = SECTION_ACCENT[sec.key] ?? {};
         return (
           <div key={sec.key}>
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-black text-white">{sec.label}</p>
-              <span className="text-[9px] text-slate-600">{markets.length} markets</span>
+            {/* Section header */}
+            <div className="flex items-center justify-between mb-2 px-0.5">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 rounded-lg flex items-center justify-center text-[13px]"
+                  style={{ background: accent.gradient, border: `1px solid ${accent.border}` }}>
+                  {accent.icon}
+                </div>
+                <span className="text-[12px] font-black text-white">
+                  {sec.label.replace(/^[^\s]+ /, '')}
+                </span>
+                <span className="text-[8px] font-bold px-1.5 py-0.5 rounded-full"
+                  style={{ background: accent.gradient, color: '#94a3b8', border: `1px solid ${accent.border}` }}>
+                  {markets.length}
+                </span>
+              </div>
+              <button onClick={() => onViewAll(sec.key)}
+                className="text-[9px] font-bold text-slate-500 hover:text-[#00d4aa] transition-colors">
+                View all →
+              </button>
             </div>
-            <div className="rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.07)]">
-              {markets.slice(0, 5).map(m => (
+            {/* Market list */}
+            <div className="rounded-2xl overflow-hidden"
+              style={{ border: `1px solid ${accent.border ?? 'rgba(148,163,184,0.07)'}` }}>
+              {markets.slice(0, 4).map(m => (
                 <MarketRow key={m.id} market={m}
                   participated={participatedIds.has(m.id)}
                   onBet={onBet} />
@@ -388,7 +415,7 @@ export default function PredictionMarket() {
           )}
 
           <div className="px-4 py-4">
-            {tab === 'explore'     && <ExploreTab onBet={handleBet} participatedIds={participatedIds} />}
+            {tab === 'explore'     && <ExploreTab onBet={handleBet} participatedIds={participatedIds} onViewAll={(key) => { setTab('markets'); }} />}
             {tab === 'crypto'      && (
               <CryptoShortMarkets
                 participatedIds={participatedIds}
