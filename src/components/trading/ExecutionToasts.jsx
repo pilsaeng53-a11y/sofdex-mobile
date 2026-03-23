@@ -2,7 +2,7 @@
  * ExecutionToasts — shared execution feedback overlay.
  * Used by both FuturesTrade and CryptoTerminal.
  */
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 
 const TYPE_STYLES = {
   success: 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300',

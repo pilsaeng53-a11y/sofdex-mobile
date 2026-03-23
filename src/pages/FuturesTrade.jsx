@@ -15,6 +15,8 @@ import FuturesBottomPanel from '../components/futures/FuturesBottomPanel';
 import TradeNewsPanel from '../components/trade/TradeNewsPanel';
 import MarketDepthPanel from '../components/futures/MarketDepthPanel';
 import { fmtPrice, fmtSpread } from '../lib/trading/priceFormat';
+import ExecutionToasts, { useExecutionToasts } from '../components/trading/ExecutionToasts';
+import TradingStatusBar from '../components/trading/TradingStatusBar';
 
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D', '1W'];
 
@@ -94,14 +96,8 @@ export default function FuturesTrade() {
 
   // ── Trading simulator ──
   const sim = useTradeSimulator();
-  const [toasts, setToasts] = useState([]);
+  const [toasts, addToast] = useExecutionToasts();
   const [depthClickPrice, setDepthClickPrice] = useState(null);
-
-  const addToast = useCallback((msg, type = 'info') => {
-    const id = Date.now();
-    setToasts(prev => [...prev.slice(-4), { id, msg, type }]);
-    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
-  }, []);
 
   // Wire simulator events → toasts
   useEffect(() => {
@@ -187,6 +183,15 @@ export default function FuturesTrade() {
           </div>
         </div>
       </div>
+
+      {/* ── Status bar ── */}
+      <TradingStatusBar
+        wsStatus={wsStatus}
+        hasQuote={!!mp.ask}
+        symbol={symbol}
+        price={mp.ask ?? mp.last}
+        priceSource={selectedQuote ? 'live' : 'fallback'}
+      />
 
       {/* ── BID/ASK + Stats bar ── */}
       <div className="flex items-center gap-4 px-3 py-1.5 bg-[#0b0f1a] border-b border-[rgba(148,163,184,0.06)] overflow-x-auto scrollbar-none flex-shrink-0">
@@ -323,19 +328,7 @@ export default function FuturesTrade() {
         </div>
       </div>
 
-      {/* ── Execution Toasts ── */}
-      <div className="fixed bottom-24 right-3 z-50 flex flex-col gap-1.5 pointer-events-none">
-        {toasts.map(t => (
-          <div key={t.id} className={`px-3 py-2 rounded-xl text-[11px] font-bold shadow-2xl border backdrop-blur-md animate-fadeIn ${
-            t.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300'
-            : t.type === 'danger'  ? 'bg-red-950/90 border-red-500/30 text-red-300'
-            : t.type === 'pending' ? 'bg-amber-950/90 border-amber-500/30 text-amber-300'
-            : 'bg-[#0f1525]/90 border-[rgba(148,163,184,0.15)] text-slate-300'
-          }`}>
-            {t.msg}
-          </div>
-        ))}
-      </div>
+      <ExecutionToasts toasts={toasts} />
 
       {/* ── Bottom panel ── */}
       <FuturesBottomPanel
