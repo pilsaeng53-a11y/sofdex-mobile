@@ -19,9 +19,14 @@ async function apiFetch(path, options = {}) {
 }
 
 // ─── Market Data ─────────────────────────────────────────────
-/** GET /market-data — full live market snapshot */
+/**
+ * GET /market-data
+ * Returns normalized array: [{symbol, normalizedSymbol, liveTradingPrice}]
+ */
 export async function getMarketData() {
-  return apiFetch('/market-data');
+  const res = await apiFetch('/market-data');
+  // Unwrap { success, data: [...] } envelope
+  return Array.isArray(res) ? res : (res.data ?? []);
 }
 
 /** GET /symbols — all tradable symbol definitions */
@@ -56,14 +61,16 @@ export async function submitSale(payload) {
 // ─── Price resolver ──────────────────────────────────────────
 /**
  * Resolve canonical trading price from any API ticker object.
- * Priority: markPrice → lastPrice → indexPrice
- * NEVER use market cap or token metadata.
+ * Priority: liveTradingPrice → markPrice → lastPrice → indexPrice
+ * NEVER use market cap, fdv, metadata, or summary price.
  */
 export function resolveTradingPrice(ticker) {
   if (!ticker) return { price: 0, source: 'none' };
+  const live  = Number(ticker.liveTradingPrice ?? 0);
   const mark  = Number(ticker.markPrice  ?? 0);
   const last  = Number(ticker.lastPrice  ?? 0);
   const index = Number(ticker.indexPrice ?? 0);
+  if (live  > 0) return { price: live,  source: 'live'  };
   if (mark  > 0) return { price: mark,  source: 'mark'  };
   if (last  > 0) return { price: last,  source: 'last'  };
   if (index > 0) return { price: index, source: 'index' };
