@@ -19,6 +19,7 @@ const TABS = [
 const NEWS_SYMBOLS = ['BTC', 'ETH', 'SOL', 'XRP'];
 const ENDPOINTS = [
   { label: 'Root',         path: '/' },
+  { label: 'Health',       path: '/health' },
   { label: 'Market Data',  path: '/market-data' },
   { label: 'News (BTC)',   path: '/news?symbol=BTC' },
   { label: 'Sales Submit', path: '/sales/submit' },
@@ -261,16 +262,17 @@ function NewsMonitorTab() {
 
   const load = useCallback(async (sym) => {
     setLoading(true);
-    try { setArticles(await getNews(sym)); }
+    try { const { articles: a } = await getNews(sym); setArticles(a); }
     catch { setArticles([]); }
     finally { setLoading(false); }
   }, []);
 
   useEffect(() => { load(activeSymbol); }, [activeSymbol, load]);
 
-  const bullish = articles.filter(a => (a.sentiment || a.impact || '').toLowerCase() === 'bullish').length;
-  const bearish = articles.filter(a => (a.sentiment || a.impact || '').toLowerCase() === 'bearish').length;
-  const neutral = articles.filter(a => (a.sentiment || a.impact || '').toLowerCase() === 'neutral').length;
+  const getSent = (a) => (a.sentiment || a.impact || '').toLowerCase();
+  const bullish = articles.filter(a => getSent(a) === 'bullish' || getSent(a) === 'positive').length;
+  const bearish = articles.filter(a => getSent(a) === 'bearish' || getSent(a) === 'negative').length;
+  const neutral = articles.filter(a => getSent(a) === 'neutral').length;
 
   return (
     <div className="space-y-4">
