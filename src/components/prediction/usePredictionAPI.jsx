@@ -1,103 +1,191 @@
 /**
- * usePredictionAPI — Backend-ready data layer.
- * Falls back to mock data until /prediction/* endpoints are live.
+ * usePredictionAPI — Live backend data layer for SolFort Prediction Exchange.
  *
- * Endpoints consumed:
+ * Endpoints:
+ *   GET /prediction/health
  *   GET /prediction/categories
- *   GET /prediction/markets?category=&sub=&limit=&offset=
- *   GET /prediction/top?type=trending|popular|ending|payout
+ *   GET /prediction/top
+ *   GET /prediction/markets?limit=&category=&source=
  *   GET /prediction/market/:source/:id
  */
-import { useState, useEffect, useRef } from 'react';
-import { MARKETS, CATEGORY_TREE } from './mockData';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 const API_BASE = 'https://solfort-api.onrender.com';
-const USE_MOCK = true; // flip to false when backend is ready
 
-function normalize(raw) {
-  // Accept either our internal schema or Polymarket/Kalshi shape
+// ─── Normalizer ────────────────────────────────────────────────────────────
+// Accepts Polymarket, Kalshi, or internal shape and returns a unified object.
+export function normalizeMarket(raw) {
   if (!raw) return null;
+
+  // Outcomes: handle both arrays and binary yes/no fields
+  let outcomes = raw.outcomes;
+  if (!outcomes || !outcomes.length) {
+    const yesP = raw.yes_probability ?? raw.yesPrice ?? raw.bestYes ?? 0.5;
+    const noP  = 1 - yesP;
+    outcomes = [
+      { id: 'YES', label: 'YES', prob: parseFloat(yesP) || 0.5 },
+      { id: 'NO',  label: 'NO',  prob: parseFloat(noP)  || 0.5 },
+    ];
+  } else {
+    outcomes = outcomes.map(o => ({
+      id:    o.id    ?? o.outcome_id    ?? o.label ?? String(o.index ?? 0),
+      label: o.label ?? o.name          ?? o.title ?? o.id ?? 'Option',
+      prob:  parseFloat(o.prob ?? o.probability ?? o.price ?? o.yes_probability ?? 0.5) || 0.001,
+    }));
+  }
+
+  const volume = parseFloat(
+    raw.volume ?? raw.volume_24h ?? raw.volumeNum ?? raw.totalVolume ??
+    raw.total_volume ?? raw.liquidity ?? 0
+  ) || 0;
+
+  const endDate =
+    raw.endDate ?? raw.end_date ?? raw.expiration_date ??
+    raw.end_datetime ?? raw.close_time ?? raw.resolution_time ?? '';
+
+  const tags = raw.tags ?? [];
+  if (raw.featured)     tags.push('HOT');
+  if (raw.trending)     tags.push('TRENDING');
+  if (raw.new)          tags.push('NEW');
+  if (raw.closing_soon) tags.push('ENDING SOON');
+
   return {
-    id:       raw.id       ?? raw.conditionId ?? raw.market_id,
-    category: raw.category ?? raw.group       ?? 'explore',
-    sub:      raw.sub      ?? raw.subCategory ?? raw.sub_category ?? '',
-    type:     raw.type     ?? (raw.outcomes?.length === 2 ? 'binary' : 'multi'),
-    question: raw.question ?? raw.title       ?? raw.market_title,
-    outcomes: raw.outcomes ?? [
-      { id: 'YES', label: 'YES', prob: raw.yes_probability ?? 0.5 },
-      { id: 'NO',  label: 'NO',  prob: raw.no_probability  ?? 0.5 },
-    ],
-    volume:    raw.volume    ?? raw.volumeNum    ?? raw.total_volume ?? 0,
-    endDate:   raw.endDate   ?? raw.end_date     ?? raw.expiration_date ?? '',
-    tags:      raw.tags      ?? [],
-    liquidity: raw.liquidity ?? raw.liquidity_num ?? 0,
-    source:    raw.source    ?? 'internal',
+    id:       raw.id         ?? raw.condition_id  ?? raw.market_id    ?? raw.slug ?? String(Math.random()),
+    category: (raw.category  ?? raw.group         ?? raw.category_id  ?? 'explore').toLowerCase(),
+    sub:      raw.sub        ?? raw.subCategory   ?? raw.sub_category ?? raw.event_category ?? '',
+    type:     raw.type       ?? raw.market_type   ?? (outcomes.length === 2 ? 'binary' : 'multi'),
+    question: raw.question   ?? raw.title         ?? raw.market_title ?? raw.name ?? 'Untitled',
+    outcomes,
+    volume,
+    endDate:  typeof endDate === 'number' ? new Date(endDate * 1000).toISOString() : String(endDate),
+    tags:     [...new Set(tags)],
+    liquidity: parseFloat(raw.liquidity ?? raw.open_interest ?? 0) || 0,
+    source:   raw.source     ?? raw.provider      ?? 'internal',
+    slug:     raw.slug       ?? raw.id            ?? '',
+    image:    raw.image      ?? raw.icon          ?? null,
   };
 }
 
-export function useMarkets({ category = 'explore', sub = '' } = {}) {
-  const [markets, setMarkets]   = useState([]);
-  const [loading, setLoading]   = useState(true);
+function parseList(data) {
+  const arr = Array.isArray(data) ? data
+    : data?.markets ?? data?.results ?? data?.data ?? data?.items ?? [];
+  return arr.map(normalizeMarket).filter(Boolean);
+}
+
+// ─── Health check ─────────────────────────────────────────────────────────
+export function useAPIHealth() {
+  const [status, setStatus] = useState('checking');
+  useEffect(() => {
+    fetch(`${API_BASE}/prediction/health`)
+      .then(r => r.ok ? setStatus('ok') : setStatus('degraded'))
+      .catch(() => setStatus('offline'));
+  }, []);
+  return status;
+}
+
+// ─── Categories ───────────────────────────────────────────────────────────
+export function useCategories() {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/prediction/categories`)
+      .then(r => r.json())
+      .then(data => {
+        const raw = Array.isArray(data) ? data : data?.categories ?? [];
+        const normalized = raw.map(c => ({
+          id:    (c.id ?? c.slug ?? c.name ?? '').toLowerCase().replace(/\s+/g,'-'),
+          label: c.label ?? c.name ?? c.title ?? c.id ?? 'Category',
+          emoji: c.emoji ?? c.icon ?? '',
+          subs:  (c.sub_categories ?? c.subcategories ?? c.subs ?? c.children ?? []).map(s =>
+            typeof s === 'string' ? s : (s.name ?? s.label ?? s.title ?? '')
+          ),
+          count: c.count ?? c.market_count ?? 0,
+        }));
+        setCategories(normalized);
+      })
+      .catch(() => setCategories([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { categories, loading };
+}
+
+// ─── Top sections ─────────────────────────────────────────────────────────
+export function useTopMarkets() {
+  const [top, setTop] = useState({ trending: [], popular: [], payout: [], ending: [], aiPick: [] });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/prediction/top`)
+      .then(r => r.json())
+      .then(data => {
+        setTop({
+          trending: parseList(data.trending ?? data.Trending ?? []),
+          popular:  parseList(data.popular  ?? data.Popular  ?? data.most_popular ?? []),
+          payout:   parseList(data.payout   ?? data.highest_payout ?? data.highestPayout ?? []),
+          ending:   parseList(data.ending   ?? data.ending_soon    ?? data.endingSoon    ?? []),
+          aiPick:   parseList(data.aiPick   ?? data.ai_picks       ?? data.featured      ?? []),
+        });
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  return { top, loading };
+}
+
+// ─── Market list ──────────────────────────────────────────────────────────
+export function useMarkets({ category = '', sub = '', source = '', limit = 200 } = {}) {
+  const [markets, setMarkets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [total,   setTotal]   = useState(0);
   const abortRef = useRef(null);
 
   useEffect(() => {
     abortRef.current?.abort();
     abortRef.current = new AbortController();
     setLoading(true);
+    setMarkets([]);
 
-    if (USE_MOCK) {
-      const filtered = MARKETS.filter(m => {
-        if (category === 'explore') return true;
-        if (sub) return m.category === category && m.sub === sub;
-        return m.category === category;
-      });
-      setMarkets(filtered);
-      setLoading(false);
-      return;
-    }
-
-    const params = new URLSearchParams({ category, limit: 50 });
-    if (sub) params.set('sub', sub);
+    const params = new URLSearchParams({ limit });
+    if (category && category !== 'explore') params.set('category', category);
+    if (source)   params.set('source', source);
 
     fetch(`${API_BASE}/prediction/markets?${params}`, { signal: abortRef.current.signal })
       .then(r => r.json())
-      .then(data => setMarkets((data.markets ?? data).map(normalize)))
-      .catch(() => setMarkets(MARKETS.filter(m => m.category === category)))
+      .then(data => {
+        const list = parseList(data);
+        // client-side sub filter (backend may not support it)
+        const filtered = sub ? list.filter(m => m.sub?.toLowerCase() === sub.toLowerCase()) : list;
+        setMarkets(filtered);
+        setTotal(data.total ?? data.count ?? filtered.length);
+      })
+      .catch(err => { if (err.name !== 'AbortError') setMarkets([]); })
       .finally(() => setLoading(false));
 
     return () => abortRef.current?.abort();
-  }, [category, sub]);
+  }, [category, sub, source, limit]);
 
-  return { markets, loading };
+  return { markets, loading, total };
 }
 
-export function useTopMarkets() {
-  const [top, setTop] = useState({
-    trending: [],
-    popular:  [],
-    ending:   [],
-    payout:   [],
-    aiPick:   [],
-  });
+// ─── Single market detail ─────────────────────────────────────────────────
+export function useMarketDetail(source, id) {
+  const [market,  setMarket]  = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState(null);
 
   useEffect(() => {
-    if (USE_MOCK) {
-      const all = MARKETS;
-      setTop({
-        trending: all.filter(m => m.tags.includes('TRENDING')).slice(0, 6),
-        popular:  [...all].sort((a,b) => b.volume - a.volume).slice(0, 6),
-        ending:   all.filter(m => m.tags.includes('ENDING SOON') || (new Date(m.endDate) - new Date() < 8*86400000)).slice(0, 6),
-        payout:   all.filter(m => m.tags.includes('HIGH PAYOUT')).slice(0, 6),
-        aiPick:   all.filter(m => m.tags.includes('AI PICK')).slice(0, 6),
-      });
-      return;
-    }
-    Promise.all(['trending','popular','ending','payout'].map(type =>
-      fetch(`${API_BASE}/prediction/top?type=${type}`).then(r => r.json())
-    )).then(([trending, popular, ending, payout]) => {
-      setTop({ trending: trending.map(normalize), popular: popular.map(normalize), ending: ending.map(normalize), payout: payout.map(normalize), aiPick: [] });
-    }).catch(() => {});
-  }, []);
+    if (!source || !id) return;
+    setLoading(true);
+    setError(null);
+    fetch(`${API_BASE}/prediction/market/${source}/${id}`)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(data => setMarket(normalizeMarket(data?.market ?? data)))
+      .catch(e => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [source, id]);
 
-  return top;
+  return { market, loading, error };
 }
