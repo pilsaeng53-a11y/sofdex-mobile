@@ -7,7 +7,7 @@ import {
   BarChart2, Layers, Globe, Calculator, Menu, TrendingUp, TrendingDown
 } from 'lucide-react';
 import CoinIcon from '../components/shared/CoinIcon';
-import TradingViewChart from '../components/trade/TradingViewChart';
+import CandleChart from '../components/futures/CandleChart';
 import InstrumentSidebar from '../components/futures/InstrumentSidebar';
 import FuturesOrderPanel from '../components/futures/FuturesOrderPanel';
 import FuturesBottomPanel from '../components/futures/FuturesBottomPanel';
@@ -273,10 +273,15 @@ export default function FuturesTrade() {
             ))}
           </div>
 
-          {/* TradingView chart */}
+          {/* Backend-driven candlestick chart */}
           <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
-            {/* key forces remount when tvSymbol changes so chart always matches selected instrument */}
-            <TradingViewChart key={tvSymbol || symbol} symbol={tvSymbol || symbol} autoFill={true} />
+            <CandleChart
+              candles={candles}
+              loading={loadingCandles}
+              lastPrice={mp.last ?? mp.ask ?? mp.bid}
+              symbol={baseSymbol}
+              interval={timeframe}
+            />
           </div>
         </div>
 
