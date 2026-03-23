@@ -20,18 +20,22 @@ export function normalizeMarket(raw) {
   // Outcomes: handle both arrays and binary yes/no fields
   let outcomes = raw.outcomes;
   if (!outcomes || !outcomes.length) {
-    const yesP = raw.yes_probability ?? raw.yesPrice ?? raw.bestYes ?? 0.5;
-    const noP  = 1 - yesP;
+    const yesP = parseFloat(raw.yes_probability ?? raw.yesPrice ?? raw.bestYes ?? 0.5) || 0.5;
     outcomes = [
-      { id: 'YES', label: 'YES', prob: parseFloat(yesP) || 0.5 },
-      { id: 'NO',  label: 'NO',  prob: parseFloat(noP)  || 0.5 },
+      { id: 'YES', label: 'YES', prob: yesP },
+      { id: 'NO',  label: 'NO',  prob: parseFloat((1 - yesP).toFixed(4)) },
     ];
   } else {
-    outcomes = outcomes.map(o => ({
-      id:    o.id    ?? o.outcome_id    ?? o.label ?? String(o.index ?? 0),
-      label: o.label ?? o.name          ?? o.title ?? o.id ?? 'Option',
-      prob:  parseFloat(o.prob ?? o.probability ?? o.price ?? o.yes_probability ?? 0.5) || 0.001,
+    outcomes = outcomes.map((o, idx) => ({
+      id:    String(o.id ?? o.outcome_id ?? o.label ?? idx),
+      label: String(o.label ?? o.name ?? o.title ?? o.id ?? 'Option'),
+      prob:  Math.max(parseFloat(o.prob ?? o.probability ?? o.price ?? o.yes_probability ?? 0.5) || 0.001, 0.001),
     }));
+    // Normalize probs so they sum to ~1
+    const total = outcomes.reduce((s, o) => s + o.prob, 0);
+    if (total > 0 && Math.abs(total - 1) > 0.05) {
+      outcomes = outcomes.map(o => ({ ...o, prob: parseFloat((o.prob / total).toFixed(4)) }));
+    }
   }
 
   const volume = parseFloat(
@@ -43,26 +47,34 @@ export function normalizeMarket(raw) {
     raw.endDate ?? raw.end_date ?? raw.expiration_date ??
     raw.end_datetime ?? raw.close_time ?? raw.resolution_time ?? '';
 
-  const tags = raw.tags ?? [];
+  const tags = [...(raw.tags ?? [])];
   if (raw.featured)     tags.push('HOT');
   if (raw.trending)     tags.push('TRENDING');
   if (raw.new)          tags.push('NEW');
   if (raw.closing_soon) tags.push('ENDING SOON');
 
+  // Detect source from payload shape if not explicit
+  let source = raw.source ?? raw.provider ?? '';
+  if (!source) {
+    if (raw.condition_id || raw.clob_token_ids) source = 'polymarket';
+    else if (raw.ticker || raw.series_ticker)  source = 'kalshi';
+    else source = 'internal';
+  }
+
   return {
-    id:       raw.id         ?? raw.condition_id  ?? raw.market_id    ?? raw.slug ?? String(Math.random()),
-    category: (raw.category  ?? raw.group         ?? raw.category_id  ?? 'explore').toLowerCase(),
-    sub:      raw.sub        ?? raw.subCategory   ?? raw.sub_category ?? raw.event_category ?? '',
-    type:     raw.type       ?? raw.market_type   ?? (outcomes.length === 2 ? 'binary' : 'multi'),
-    question: raw.question   ?? raw.title         ?? raw.market_title ?? raw.name ?? 'Untitled',
+    id:       String(raw.id ?? raw.condition_id ?? raw.market_id ?? raw.ticker ?? Math.random()),
+    category: (raw.category ?? raw.group ?? raw.category_id ?? raw.event_category ?? 'explore').toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    sub:      raw.sub ?? raw.subCategory ?? raw.sub_category ?? raw.event_category ?? '',
+    type:     raw.type ?? raw.market_type ?? (outcomes.length === 2 ? 'binary' : 'multi'),
+    question: String(raw.question ?? raw.title ?? raw.market_title ?? raw.name ?? 'Untitled'),
     outcomes,
     volume,
     endDate:  typeof endDate === 'number' ? new Date(endDate * 1000).toISOString() : String(endDate),
     tags:     [...new Set(tags)],
     liquidity: parseFloat(raw.liquidity ?? raw.open_interest ?? 0) || 0,
-    source:   raw.source     ?? raw.provider      ?? 'internal',
-    slug:     raw.slug       ?? raw.id            ?? '',
-    image:    raw.image      ?? raw.icon          ?? null,
+    source,
+    slug:     raw.slug ?? raw.id ?? '',
+    image:    raw.image ?? raw.icon ?? null,
   };
 }
 
