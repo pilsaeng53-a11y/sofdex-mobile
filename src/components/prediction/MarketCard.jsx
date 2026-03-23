@@ -1,78 +1,94 @@
 import React from 'react';
-import { Clock, TrendingUp, Users } from 'lucide-react';
+import { Clock, TrendingUp } from 'lucide-react';
 
 const TAG_STYLES = {
-  'HOT':          'bg-orange-500/15 text-orange-400 border-orange-500/20',
-  'TRENDING':     'bg-purple-500/15 text-purple-400 border-purple-500/20',
-  'HIGH PAYOUT':  'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
-  'AI PICK':      'bg-[#00d4aa]/15 text-[#00d4aa] border-[#00d4aa]/20',
-  'ENDING SOON':  'bg-red-500/15 text-red-400 border-red-500/20',
+  'HOT':         { bg: 'rgba(249,115,22,0.12)', text: '#f97316', border: 'rgba(249,115,22,0.25)' },
+  'TRENDING':    { bg: 'rgba(139,92,246,0.12)', text: '#a78bfa', border: 'rgba(139,92,246,0.25)' },
+  'HIGH PAYOUT': { bg: 'rgba(251,191,36,0.12)', text: '#fbbf24', border: 'rgba(251,191,36,0.25)' },
+  'AI PICK':     { bg: 'rgba(0,212,170,0.12)',  text: '#00d4aa', border: 'rgba(0,212,170,0.25)' },
+  'ENDING SOON': { bg: 'rgba(239,68,68,0.12)',  text: '#f87171', border: 'rgba(239,68,68,0.25)' },
 };
-
-function daysLeft(dateStr) {
-  const diff = new Date(dateStr) - new Date();
-  const d = Math.ceil(diff / 86400000);
-  if (d <= 0) return 'Ended';
-  if (d === 1) return '1 day';
-  return `${d}d`;
-}
 
 function fmtVol(n) {
   if (n >= 1e6) return `$${(n/1e6).toFixed(1)}M`;
   if (n >= 1e3) return `$${(n/1e3).toFixed(0)}K`;
   return `$${n}`;
 }
+function daysLeft(dateStr) {
+  const d = Math.ceil((new Date(dateStr) - new Date()) / 86400000);
+  if (d <= 0) return 'Ended';
+  if (d === 1) return '1d';
+  if (d < 30)  return `${d}d`;
+  return `${Math.round(d/30)}mo`;
+}
 
 export default function MarketCard({ market, participated, onBet }) {
-  const { question, yesProb, payoutYes, payoutNo, volume, endDate, tags, category } = market;
-  const noProb = 1 - yesProb;
-  const yesW = Math.round(yesProb * 100);
-  const noW  = 100 - yesW;
+  const topOutcome = market.outcomes.reduce((b, o) => o.prob > b.prob ? o : b, market.outcomes[0]);
+  const maxPayout  = (1 / market.outcomes.reduce((m, o) => Math.min(m, o.prob), 1)).toFixed(1);
+  const isBinary   = market.outcomes.length === 2;
 
   return (
-    <div
-      onClick={() => !participated && onBet(market)}
-      className={`rounded-2xl border p-4 transition-all cursor-pointer hover-scale ${participated ? 'opacity-75 cursor-default' : ''}`}
-      style={{ background: 'rgba(15,21,37,0.9)', borderColor: 'rgba(148,163,184,0.09)', boxShadow: '0 2px 16px rgba(0,0,0,0.3)' }}>
+    <div onClick={() => onBet(market)}
+      className={`rounded-2xl border p-4 transition-all cursor-pointer ${participated ? 'opacity-60' : 'hover:border-[rgba(0,212,170,0.15)] hover:bg-[#111827]'}`}
+      style={{ background: 'rgba(13,18,32,0.9)', borderColor: 'rgba(148,163,184,0.08)' }}>
 
       {/* Tags */}
-      <div className="flex flex-wrap gap-1 mb-2">
-        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded border text-slate-600 border-slate-700">{category}</span>
-        {tags.map(tag => (
-          <span key={tag} className={`text-[8px] font-black px-1.5 py-0.5 rounded border ${TAG_STYLES[tag] ?? 'bg-slate-700 text-slate-400'}`}>{tag}</span>
-        ))}
-        {participated && (
-          <span className="text-[8px] font-black px-1.5 py-0.5 rounded border bg-[#00d4aa]/10 text-[#00d4aa] border-[#00d4aa]/20">✓ JOINED</span>
-        )}
+      <div className="flex flex-wrap gap-1 mb-2.5">
+        {market.tags.slice(0,3).map(tag => {
+          const s = TAG_STYLES[tag];
+          return s ? <span key={tag} className="text-[8px] font-black px-1.5 py-0.5 rounded border"
+            style={{ background: s.bg, color: s.text, borderColor: s.border }}>{tag}</span> : null;
+        })}
+        {participated && <span className="text-[8px] font-black px-1.5 py-0.5 rounded border"
+          style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', borderColor: 'rgba(0,212,170,0.2)' }}>✓ IN</span>}
       </div>
 
       {/* Question */}
-      <p className="text-sm font-bold text-white leading-snug mb-3">{question}</p>
+      <p className="text-[12px] font-bold text-white leading-snug mb-3">{market.question}</p>
 
-      {/* Probability bar */}
-      <div className="flex rounded-lg overflow-hidden h-6 mb-2">
-        <div className="flex items-center justify-center text-[10px] font-black text-white bg-emerald-500/80 transition-all"
-          style={{ width: `${yesW}%` }}>{yesW >= 15 ? `YES ${yesW}%` : ''}</div>
-        <div className="flex items-center justify-center text-[10px] font-black text-white bg-red-500/80 transition-all"
-          style={{ width: `${noW}%` }}>{noW >= 15 ? `NO ${noW}%` : ''}</div>
-      </div>
-
-      {/* Payouts */}
-      <div className="flex justify-between text-[10px] mb-3">
-        <span className="text-emerald-400 font-mono font-bold">YES: {payoutYes.toFixed(2)}x</span>
-        <span className="text-red-400 font-mono font-bold">NO: {payoutNo.toFixed(2)}x</span>
-      </div>
+      {/* Outcome visual */}
+      {isBinary ? (
+        <div className="mb-3">
+          <div className="flex rounded-lg overflow-hidden h-5 mb-1.5">
+            {market.outcomes.map(o => (
+              <div key={o.id} className="flex items-center justify-center text-[9px] font-black text-white transition-all"
+                style={{ width: `${Math.round(o.prob*100)}%`, background: o.id==='YES'||o.id===market.outcomes[0].id ? 'rgba(34,197,94,0.7)' : 'rgba(239,68,68,0.7)' }}>
+                {Math.round(o.prob*100) > 18 ? `${o.label} ${Math.round(o.prob*100)}%` : ''}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between text-[9px]">
+            {market.outcomes.map(o => (
+              <span key={o.id} className="font-mono font-bold"
+                style={{ color: o.id==='YES'||o.id===market.outcomes[0].id ? '#22c55e' : '#ef4444' }}>
+                {o.label}: {(1/o.prob).toFixed(2)}x
+              </span>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-1 mb-3">
+          {market.outcomes.slice(0,3).map(o => (
+            <div key={o.id} className="flex items-center gap-2">
+              <span className="text-[9px] text-slate-400 w-20 truncate">{o.label}</span>
+              <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.1)' }}>
+                <div className="h-full rounded-full" style={{ width: `${Math.round(o.prob*100)}%`, background: '#00d4aa' }} />
+              </div>
+              <span className="text-[9px] font-mono font-bold text-slate-400 w-10 text-right">{Math.round(o.prob*100)}%</span>
+              <span className="text-[9px] font-mono text-yellow-400 font-bold w-10 text-right">{(1/o.prob).toFixed(1)}x</span>
+            </div>
+          ))}
+          {market.outcomes.length > 3 && <p className="text-[8px] text-slate-600">+{market.outcomes.length-3} more</p>}
+        </div>
+      )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-[10px] text-slate-500">
+      <div className="flex items-center justify-between text-[9px] text-slate-500 pt-2 border-t border-[rgba(148,163,184,0.05)]">
+        <div className="flex items-center gap-1"><TrendingUp className="w-3 h-3" />{fmtVol(market.volume)}</div>
         <div className="flex items-center gap-1">
-          <TrendingUp className="w-3 h-3" />
-          <span>{fmtVol(volume)}</span>
+          <span className="text-yellow-400 font-black">Max {maxPayout}x</span>
         </div>
-        <div className="flex items-center gap-1">
-          <Clock className="w-3 h-3" />
-          <span className={daysLeft(endDate) === 'Ended' ? 'text-red-400' : daysLeft(endDate).includes('1 day') || daysLeft(endDate).includes('2d') ? 'text-orange-400' : ''}>{daysLeft(endDate)}</span>
-        </div>
+        <div className="flex items-center gap-1"><Clock className="w-3 h-3" />{daysLeft(market.endDate)}</div>
       </div>
     </div>
   );
