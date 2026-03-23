@@ -29,7 +29,12 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
   };
 
   const calc = useMemo(() => {
-    return calcSOFQuantity(form.purchase_amount, form.sof_unit_price, form.promotion_percent);
+    const result = calcSOFQuantity(form.purchase_amount, form.sof_unit_price, form.promotion_percent);
+    // Add effective SOF price for display
+    const sp = parseFloat(form.sof_unit_price);
+    const mult = result.multiplier || 0;
+    result.effectiveSOFPrice = (result.isValid && mult > 0) ? sp / mult : 0;
+    return result;
   }, [form.purchase_amount, form.sof_unit_price, form.promotion_percent]);
 
   const errors = useMemo(() => {
@@ -185,7 +190,11 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] text-slate-400">프로모션 배수</span>
-              <span className="text-xs font-bold text-amber-400">{calc.multiplier.toFixed(2)}x (프로모션 배수: {calc.multiplier.toFixed(1)}배)</span>
+              <span className="text-xs font-bold text-amber-400">{calc.multiplier.toFixed(2)}x ({calc.multiplier.toFixed(1)}배)</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-slate-400">실효 SOF 가격</span>
+              <span className="text-xs font-bold text-slate-200">${formatNumber(calc.effectiveSOFPrice, 4)} / SOF</span>
             </div>
             <div className="flex items-center justify-between border-t border-[rgba(0,212,170,0.1)] pt-2">
               <span className="text-sm font-bold text-white">최종 SOF 수량</span>
