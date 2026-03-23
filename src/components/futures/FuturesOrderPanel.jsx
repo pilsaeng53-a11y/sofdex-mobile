@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Minus, Plus, Zap, AlertTriangle } from 'lucide-react';
 
 const ORDER_TYPES = ['Market', 'Limit', 'Stop', 'Stop-Limit'];
