@@ -9,8 +9,8 @@ export function decimalsFor(symbol = '') {
   if (['XRP', 'ADA', 'DOGE', 'MATIC', 'LINK', 'DOT', 'UNI'].some(x => s.includes(x))) return 4;
   if (['EURUSD', 'GBPUSD', 'AUDUSD', 'NZDUSD', 'USDCAD', 'USDCHF', 'EURGBP'].some(x => s.includes(x))) return 5;
   if (['BTC', 'ETH', 'BNB', 'SOL', 'GOLD', 'XAU', 'OIL', 'WTI', 'SP500', 'NDX', 'NASDAQ', 'DAX', 'NQ', 'YM', 'ES', 'SILVER', 'XAG'].some(x => s.includes(x))) return 2;
-  // Generic fallback: large numbers = 2 dp, small = 5 dp
-  return null; // caller decides from price magnitude
+  // Default: 2 decimals for all other symbols
+  return 2;
 }
 
 /**
@@ -21,7 +21,7 @@ export function decimalsFor(symbol = '') {
  */
 export function fmtPrice(price, symbol = '', override = null) {
   if (price == null || !isFinite(price)) return '—';
-  const dec = override ?? decimalsFor(symbol) ?? (price > 999 ? 2 : price > 10 ? 3 : 5);
+  const dec = override ?? decimalsFor(symbol);
   return price.toFixed(dec);
 }
 
