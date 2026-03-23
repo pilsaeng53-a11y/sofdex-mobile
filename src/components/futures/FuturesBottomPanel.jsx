@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, TrendingUp, TrendingDown, Clock } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Clock, BarChart2 } from 'lucide-react';
 import CoinIcon from '../shared/CoinIcon';
+import { fmtPrice, decimalsFor } from '../../lib/trading/priceFormat';
 
 const TABS = ['Positions', 'Pending', 'Orders', 'Trades', 'PnL'];
 
@@ -14,22 +15,26 @@ function Badge({ side }) {
 }
 
 function Pnl({ value }) {
+  if (value == null || !isFinite(value)) return <span className="text-xs font-mono text-slate-500">—</span>;
   const pos = value >= 0;
-  return <span className={`text-xs font-black font-mono ${pos ? 'text-emerald-400' : 'text-red-400'}`}>{pos ? '+' : ''}${value.toFixed(2)}</span>;
+  return <span className={`text-xs font-black font-mono ${pos ? 'text-emerald-400' : 'text-red-400'}`}>{pos ? '+' : ''}${Math.abs(value).toFixed(2)}</span>;
 }
 
-function fmt(n, dec = 4) {
-  return n != null ? Number(n).toFixed(dec) : '—';
+function fmt(n, symbol = '') {
+  if (n == null || !isFinite(Number(n))) return '—';
+  return fmtPrice(Number(n), symbol);
 }
 
 function PositionsTab({ positions, onClose }) {
   const unrealized = positions.reduce((s, p) => {
-    const diff = p.side === 'buy' ? p.currentPrice - p.entryPrice : p.entryPrice - p.currentPrice;
+    const diff = p.side === 'buy'
+      ? (p.currentPrice ?? p.entryPrice) - p.entryPrice
+      : p.entryPrice - (p.currentPrice ?? p.entryPrice);
     return s + diff * p.volume * (p.lotSize ?? 100000);
   }, 0);
-  const totalMargin = positions.reduce((s, p) => s + (p.volume * (p.lotSize ?? 100000) * p.entryPrice / p.leverage), 0);
+  const totalMargin = positions.reduce((s, p) => s + (p.volume * (p.lotSize ?? 100000) * (p.entryPrice || 1) / (p.leverage || 1)), 0);
 
-  if (!positions.length) return <Empty text="No open positions" />;
+  if (!positions.length) return <Empty text="No open positions" icon="chart" />;
 
   return (
     <div>
@@ -62,10 +67,10 @@ function PositionsTab({ positions, onClose }) {
                   </td>
                   <td className="px-2 py-2"><Badge side={p.side} /></td>
                   <td className="px-2 py-2 font-mono text-slate-300">{p.volume}</td>
-                  <td className="px-2 py-2 font-mono text-slate-400">{fmt(p.entryPrice, dec)}</td>
-                  <td className="px-2 py-2 font-mono text-[#00d4aa]">{fmt(p.currentPrice, dec)}</td>
-                  <td className="px-2 py-2 font-mono text-red-400">{p.sl ? fmt(p.sl, dec) : '—'}</td>
-                  <td className="px-2 py-2 font-mono text-emerald-400">{p.tp ? fmt(p.tp, dec) : '—'}</td>
+                  <td className="px-2 py-2 font-mono text-slate-400">{fmt(p.entryPrice, p.symbol)}</td>
+                  <td className="px-2 py-2 font-mono text-[#00d4aa]">{fmt(p.currentPrice, p.symbol)}</td>
+                  <td className="px-2 py-2 font-mono text-red-400">{p.sl ? fmt(p.sl, p.symbol) : '—'}</td>
+                  <td className="px-2 py-2 font-mono text-emerald-400">{p.tp ? fmt(p.tp, p.symbol) : '—'}</td>
                   <td className="px-2 py-2"><Pnl value={pnl} /></td>
                   <td className="px-2 py-2">
                     <button onClick={() => onClose(p.id, p.currentPrice)}
@@ -102,9 +107,9 @@ function PendingTab({ pendingOrders, onCancel }) {
               <td className="px-2 py-2"><Badge side={o.side} /></td>
               <td className="px-2 py-2 text-slate-400">{o.orderType}</td>
               <td className="px-2 py-2 font-mono text-slate-300">{o.volume}</td>
-              <td className="px-2 py-2 font-mono text-amber-400">{o.limitPrice ? fmt(o.limitPrice, 4) : '—'}</td>
-              <td className="px-2 py-2 font-mono text-red-400">{o.sl ? fmt(o.sl, 4) : '—'}</td>
-              <td className="px-2 py-2 font-mono text-emerald-400">{o.tp ? fmt(o.tp, 4) : '—'}</td>
+              <td className="px-2 py-2 font-mono text-amber-400">{o.limitPrice ? fmt(o.limitPrice, o.symbol) : '—'}</td>
+              <td className="px-2 py-2 font-mono text-red-400">{o.sl ? fmt(o.sl, o.symbol) : '—'}</td>
+              <td className="px-2 py-2 font-mono text-emerald-400">{o.tp ? fmt(o.tp, o.symbol) : '—'}</td>
               <td className="px-2 py-2 text-slate-600 whitespace-nowrap">{o.submittedAt?.slice(11,16)}</td>
               <td className="px-2 py-2">
                 <button onClick={() => onCancel(o.id)}
@@ -140,7 +145,7 @@ function OrdersTab({ orderHistory }) {
               <td className="px-2 py-2"><Badge side={o.side} /></td>
               <td className="px-2 py-2 text-slate-400">{o.orderType}</td>
               <td className="px-2 py-2 font-mono text-slate-300">{o.volume}</td>
-              <td className="px-2 py-2 font-mono text-slate-400">{o.filledPrice ? fmt(o.filledPrice, 4) : o.limitPrice ? fmt(o.limitPrice, 4) : 'Market'}</td>
+              <td className="px-2 py-2 font-mono text-slate-400">{o.filledPrice ? fmt(o.filledPrice, o.symbol) : o.limitPrice ? fmt(o.limitPrice, o.symbol) : 'Market'}</td>
               <td className={`px-2 py-2 font-bold ${STATUS_COLOR[o.status] ?? 'text-slate-400'}`}>{o.status}</td>
               <td className="px-2 py-2 text-slate-600 whitespace-nowrap">{o.submittedAt?.slice(11,16)}</td>
             </tr>
@@ -165,15 +170,14 @@ function TradesTab({ tradeHistory }) {
         </thead>
         <tbody>
           {tradeHistory.map(t => {
-            const dec = t.entryPrice > 100 ? 2 : 4;
             return (
               <tr key={t.id} className="border-b border-[rgba(148,163,184,0.04)] hover:bg-[#151c2e]/50">
                 <td className="px-2 py-2 font-bold text-white">{t.symbol}</td>
                 <td className="px-2 py-2"><Badge side={t.side} /></td>
                 <td className="px-2 py-2 font-mono text-slate-300">{t.volume}</td>
-                <td className="px-2 py-2 font-mono text-slate-400">{fmt(t.entryPrice, dec)}</td>
-                <td className="px-2 py-2 font-mono text-slate-300">{fmt(t.exitPrice, dec)}</td>
-                <td className="px-2 py-2 font-mono text-slate-500">${t.fee.toFixed(2)}</td>
+                <td className="px-2 py-2 font-mono text-slate-400">{fmt(t.entryPrice, t.symbol)}</td>
+                <td className="px-2 py-2 font-mono text-slate-300">{fmt(t.exitPrice, t.symbol)}</td>
+                <td className="px-2 py-2 font-mono text-slate-500">${(t.fee ?? 0).toFixed(2)}</td>
                 <td className="px-2 py-2"><Pnl value={t.pnl} /></td>
                 <td className="px-2 py-2 text-slate-600 whitespace-nowrap">{t.closedAt?.slice(11,16)}</td>
               </tr>
@@ -186,30 +190,36 @@ function TradesTab({ tradeHistory }) {
 }
 
 function PnLTab({ unrealizedPnl, realizedPnl, totalFees }) {
-  const net = unrealizedPnl + realizedPnl - totalFees;
+  const net = (unrealizedPnl || 0) + (realizedPnl || 0) - (totalFees || 0);
+  const items = [
+    { label: 'Unrealized PnL', value: unrealizedPnl || 0,  signed: true },
+    { label: 'Realized PnL',   value: realizedPnl || 0,    signed: true },
+    { label: 'Total Fees',     value: totalFees || 0,       signed: false, color: 'text-red-400' },
+    { label: 'Net PnL',        value: net,                  signed: true },
+  ];
   return (
     <div className="p-3 grid grid-cols-2 gap-3">
-      {[
-        { label: 'Unrealized PnL', value: unrealizedPnl },
-        { label: 'Realized PnL',   value: realizedPnl },
-        { label: 'Total Fees',     value: -totalFees },
-        { label: 'Net PnL',        value: net },
-      ].map(s => (
-        <div key={s.label} className="bg-[#0b0f1a] rounded-xl p-3 border border-[rgba(148,163,184,0.06)]">
-          <p className="text-[9px] text-slate-500 mb-0.5">{s.label}</p>
-          <p className={`text-base font-black ${s.value >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-            {s.value >= 0 ? '+' : ''}${s.value.toFixed(2)}
-          </p>
-        </div>
-      ))}
+      {items.map(s => {
+        const color = s.color ?? (s.signed ? (s.value >= 0 ? 'text-emerald-400' : 'text-red-400') : 'text-red-400');
+        const display = s.color ? `-$${Math.abs(s.value).toFixed(2)}` : `${s.signed && s.value > 0 ? '+' : ''}$${s.value.toFixed(2)}`;
+        return (
+          <div key={s.label} className="bg-[#0b0f1a] rounded-xl p-3 border border-[rgba(148,163,184,0.06)]">
+            <p className="text-[9px] text-slate-500 mb-0.5">{s.label}</p>
+            <p className={`text-base font-black ${color}`}>{display}</p>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
-function Empty({ text }) {
+function Empty({ text, icon = 'clock' }) {
   return (
     <div className="flex flex-col items-center justify-center py-8 gap-2">
-      <Clock className="w-6 h-6 text-slate-700" />
+      {icon === 'chart'
+        ? <BarChart2 className="w-6 h-6 text-slate-700" />
+        : <Clock className="w-6 h-6 text-slate-700" />
+      }
       <p className="text-[11px] text-slate-600">{text}</p>
     </div>
   );
