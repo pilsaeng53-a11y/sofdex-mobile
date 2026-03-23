@@ -145,16 +145,16 @@ export default function FuturesTrade() {
   const baseSymbol = normalizeSymbol(symbol);
   const positive = mp.change >= 0;
 
-  // TradingView symbol mapping
+  // TradingView symbol mapping with exchange prefixes
   const tvSymbol = useMemo(() => {
     const map = {
-      'EURUSD-T': 'EURUSD', 'USDJPY-T': 'USDJPY', 'GBPUSD-T': 'GBPUSD', 'AUDUSD-T': 'AUDUSD',
-      'GOLD-T': 'XAUUSD', 'OIL-T': 'USOIL', 'SILVER-T': 'XAGUSD', 'NATGAS-T': 'NGAS',
-      'SP500-T': 'SPX', 'NASDAQ-T': 'NDX', 'DAX-T': 'DAX', 'FTSE-T': 'UK100',
-      'AAPL-T': 'AAPL', 'GOOGL-T': 'GOOGL', 'MSFT-T': 'MSFT', 'TSLA-T': 'TSLA', 'NVDA-T': 'NVDA',
-      'BTC-PERP': 'BTC', 'ETH-PERP': 'ETH', 'SOL-PERP': 'SOL',
+      'EURUSD-T': 'FX:EURUSD', 'USDJPY-T': 'FX:USDJPY', 'GBPUSD-T': 'FX:GBPUSD', 'AUDUSD-T': 'FX:AUDUSD',
+      'GOLD-T': 'TVC:GOLD', 'OIL-T': 'TVC:USOIL', 'SILVER-T': 'TVC:SILVER', 'NATGAS-T': 'TVC:NATURALGAS',
+      'SP500-T': 'FOREXCOM:SPXUSD', 'NASDAQ-T': 'FOREXCOM:NSXUSD', 'DAX-T': 'FOREXCOM:DEU40', 'FTSE-T': 'FOREXCOM:UK100',
+      'AAPL-T': 'NASDAQ:AAPL', 'GOOGL-T': 'NASDAQ:GOOGL', 'MSFT-T': 'NASDAQ:MSFT', 'TSLA-T': 'NASDAQ:TSLA', 'NVDA-T': 'NASDAQ:NVDA',
+      'BTC-PERP': 'BINANCE:BTCUSDT', 'ETH-PERP': 'BINANCE:ETHUSDT', 'SOL-PERP': 'BINANCE:SOLUSDT',
     };
-    return map[symbol] || symbol.replace(/-T$|-PERP$/, '');
+    return map[symbol] || `FX:${symbol.replace(/-T$|-PERP$/, '')}`;
   }, [symbol]);
 
   return (
@@ -261,8 +261,8 @@ export default function FuturesTrade() {
           </div>
 
           {/* TradingView chart */}
-          <div className="flex-1 overflow-hidden">
-            <TradingViewChart symbol={tvSymbol} height={undefined} className="h-full" />
+          <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
+            <TradingViewChart symbol={tvSymbol} autoFill={true} />
           </div>
         </div>
 

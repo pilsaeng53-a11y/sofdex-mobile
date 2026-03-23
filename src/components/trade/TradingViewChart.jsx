@@ -1,11 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getTVSymbol } from '../shared/symbolMap';
 
-export default function TradingViewChart({ symbol = 'BTC', height = 280 }) {
+export default function TradingViewChart({ symbol = 'BTC', height = 280, autoFill = false }) {
   const containerRef = useRef(null);
   const widgetRef = useRef(null);
   const [status, setStatus] = useState('loading'); // loading | ready | unavailable
-  const tvSymbol = getTVSymbol(symbol);
+  // If symbol already has exchange prefix (e.g. FX:EURUSD), use as-is
+  const tvSymbol = symbol.includes(':') ? symbol : getTVSymbol(symbol);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -36,7 +37,7 @@ export default function TradingViewChart({ symbol = 'BTC', height = 280 }) {
       widgetRef.current = new window.TradingView.widget({
         autosize: true,
         symbol: tvSymbol,
-        interval: '60',
+        interval: '15',
         timezone: 'Etc/UTC',
         theme: 'dark',
         style: '1',
@@ -49,7 +50,7 @@ export default function TradingViewChart({ symbol = 'BTC', height = 280 }) {
         container_id: containerId,
         backgroundColor: '#0a0e1a',
         gridColor: 'rgba(148,163,184,0.05)',
-        hide_side_toolbar: true,
+        hide_side_toolbar: false,
         withdateranges: false,
         allow_symbol_change: false,
       });
@@ -97,7 +98,7 @@ export default function TradingViewChart({ symbol = 'BTC', height = 280 }) {
   }
 
   return (
-    <div className="relative rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.1)]" style={{ height }}>
+    <div className="relative overflow-hidden" style={autoFill ? { width: '100%', height: '100%' } : { height, borderRadius: '1rem', border: '1px solid rgba(148,163,184,0.1)' }}>
       {status === 'loading' && (
         <div className="absolute inset-0 flex items-center justify-center bg-[#0d1220] z-10">
           <div className="w-6 h-6 border-2 border-[#00d4aa]/30 border-t-[#00d4aa] rounded-full animate-spin" />
