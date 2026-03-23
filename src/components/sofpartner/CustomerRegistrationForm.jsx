@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { base44 } from '@/api/base44Client';
 import { calcSOFQuantity, isValidSolanaAddress, formatNumber } from './SOFQuantityCalc';
+import { submitSale } from '@/services/solfortApi';
 import { AlertCircle, CheckCircle, Send, Calculator, Info } from 'lucide-react';
 import { useLang } from '@/components/shared/LanguageContext';
 import { DEV_MODE, DEV_WALLET } from '@/components/shared/devConfig';
@@ -71,6 +72,7 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
     setSubmitting(true);
     setResult(null);
     try {
+      // Save to internal DB
       await base44.entities.SOFSaleSubmission.create({
         partner_wallet: DEV_MODE ? DEV_WALLET : partnerWallet,
         customer_name: form.customer_name.trim(),
@@ -82,10 +84,17 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         status: 'Processing',
         submitted_at: new Date().toISOString(),
       });
+      // Also POST to live API
+      await submitSale({
+        customerName: form.customer_name.trim(),
+        walletAddress: form.customer_wallet.trim(),
+        sales: parseFloat(form.purchase_amount),
+        quantity: calc.sofQuantity,
+        price: parseFloat(form.sof_unit_price),
+        promotion: parseFloat(form.promotion_percent),
+        sofAmount: calc.sofQuantity,
+      }).catch(() => {}); // non-blocking — internal DB is source of truth
 
-      setResult({ type: 'success', msg: t('sof_reg_success') });
-      setForm(EMPTY_FORM);
-      setTouched({});
       if (onSubmitSuccess) onSubmitSuccess();
     } catch (err) {
       setResult({ type: 'error', msg: t('sof_reg_error') });
