@@ -14,7 +14,7 @@ function Row({ label, value, valueClass = 'text-slate-300' }) {
   );
 }
 
-export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading = false }) {
+export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, loading = false, onSubmit }) {
   const [orderType, setOrderType] = useState('Market');
   const [side, setSide] = useState('buy');
   const [volume, setVolume] = useState(0.1);
@@ -53,7 +53,21 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
   const RISK_COLOR = { low: 'text-emerald-400', medium: 'text-amber-400', high: 'text-red-400' };
 
   const handleSubmit = () => {
-    if (oneClick) { setSubmitted(true); setTimeout(() => setSubmitted(false), 2000); return; }
+    if (!currentPrice) return;
+    onSubmit?.({
+      symbol,
+      side,
+      orderType,
+      volume,
+      leverage,
+      sl,
+      tp,
+      limitPrice: orderType !== 'Market' ? limitPrice : null,
+      askPrice,
+      bidPrice,
+      lotSize:  asset?.lot_size  ?? 100000,
+      pipValue: asset?.pip_value ?? 0.0001,
+    });
     setSubmitted(true);
     setTimeout(() => setSubmitted(false), 2000);
   };

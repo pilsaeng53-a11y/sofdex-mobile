@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { TRADING_ASSETS } from '@/data/futuresTradingAssets';
 import { normalizeSymbol as normSym, rawToTVSymbol } from '../lib/trading/symbolMapper';
 import useFuturesMarket from '../hooks/useFuturesMarket';
+import useTradeSimulator from '../hooks/useTradeSimulator';
 import {
   LayoutGrid, BookOpen, Activity, ChevronDown, Clock,
   BarChart2, Layers, Globe, Calculator, Menu, TrendingUp, TrendingDown
@@ -137,6 +138,14 @@ export default function FuturesTrade() {
   const {
     selectedQuote, quotesMap, candles, liveCandle, loadingQuote, loadingCandles, wsStatus
   } = useFuturesMarket(symbol, timeframe);
+
+  // ── Trading simulator ──
+  const sim = useTradeSimulator();
+
+  // Tick simulator on every quote update
+  useEffect(() => {
+    if (Object.keys(quotesMap).length > 0) sim.tickQuotes(quotesMap);
+  }, [quotesMap]);
 
   const allAssets = useMemo(() => Object.values(TRADING_ASSETS).flat(), []);
   const asset = allAssets.find(a => a.symbol === symbol) || allAssets[0];
@@ -305,7 +314,14 @@ export default function FuturesTrade() {
 
           <div className="flex-1 overflow-y-auto scrollbar-none">
             {sideTab === 'order' && (
-              <FuturesOrderPanel asset={asset} askPrice={mp.ask} bidPrice={mp.bid} loading={loadingQuote} />
+              <FuturesOrderPanel
+                asset={asset}
+                symbol={symbol}
+                askPrice={mp.ask}
+                bidPrice={mp.bid}
+                loading={loadingQuote}
+                onSubmit={sim.submitOrder}
+              />
             )}
             {sideTab === 'depth' && (
               <MarketDepthPanel ask={mp.ask} bid={mp.bid} />
@@ -326,6 +342,15 @@ export default function FuturesTrade() {
       <FuturesBottomPanel
         expanded={bottomExpanded}
         onToggle={() => setBottomExpanded(v => !v)}
+        positions={sim.positions}
+        pendingOrders={sim.pendingOrders}
+        orderHistory={sim.orderHistory}
+        tradeHistory={sim.tradeHistory}
+        unrealizedPnl={sim.unrealizedPnl}
+        realizedPnl={sim.realizedPnl}
+        totalFees={sim.totalFees}
+        onClosePosition={sim.closePosition}
+        onCancelOrder={sim.cancelOrder}
       />
     </div>
   );
