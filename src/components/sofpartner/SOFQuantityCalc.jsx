@@ -1,38 +1,34 @@
 /**
  * SOFQuantityCalc.js
  * Pure calculation logic for SOF Sales Partner submissions.
- * Completely separate from FeeEngine / referral logic.
  *
- * Formula:
- *   effective_price = sof_unit_price * (1 - promotion_percent / 100)
- *   sof_quantity    = purchase_amount / effective_price
+ * Formula (multiplier-based):
+ *   sofQuantity = (purchaseAmount / sofUnitPrice) * (promotionPercent / 100)
  *
- * If promotion_percent = 0, effective_price = sof_unit_price (no discount).
+ * 100% = 1x, 200% = 2x, 300% = 3x, etc.
  */
 
 /**
- * Calculate the final SOF quantity for a customer purchase.
- * @param {number} purchaseAmount  - USDT amount paid by customer
- * @param {number} sofUnitPrice    - SOF price in USD (per token)
- * @param {number} promotionPercent - promotion/discount percent (0–100)
- * @returns {{ effectivePrice: number, sofQuantity: number, isValid: boolean, errorMsg: string|null }}
+ * Calculate the final SOF quantity using multiplier logic.
+ * @param {number} purchaseAmount   - USDT amount paid by customer
+ * @param {number} sofUnitPrice     - SOF price in USD (per token)
+ * @param {number} promotionPercent - promotion multiplier as percent (100 = 1x, 200 = 2x)
+ * @returns {{ multiplier: number, sofQuantity: number, isValid: boolean, errorMsg: string|null }}
  */
 export function calcSOFQuantity(purchaseAmount, sofUnitPrice, promotionPercent) {
   const pa = parseFloat(purchaseAmount);
   const sp = parseFloat(sofUnitPrice);
   const pp = parseFloat(promotionPercent);
 
-  if (isNaN(pa) || pa <= 0) return { sofQuantity: 0, effectivePrice: 0, isValid: false, errorMsg: 'Purchase amount must be positive.' };
-  if (isNaN(sp) || sp <= 0) return { sofQuantity: 0, effectivePrice: 0, isValid: false, errorMsg: 'SOF unit price must be positive.' };
-  if (isNaN(pp) || pp < 0 || pp > 100) return { sofQuantity: 0, effectivePrice: 0, isValid: false, errorMsg: 'Promotion must be between 0 and 100%.' };
+  if (isNaN(pa) || pa <= 0) return { sofQuantity: 0, multiplier: 0, isValid: false, errorMsg: '매출 금액을 입력하세요.' };
+  if (isNaN(sp) || sp <= 0) return { sofQuantity: 0, multiplier: 0, isValid: false, errorMsg: 'SOF 단가를 입력하세요.' };
+  if (isNaN(pp) || pp <= 0) return { sofQuantity: 0, multiplier: 0, isValid: false, errorMsg: '프로모션 비율은 0보다 커야 합니다.' };
 
-  const effectivePrice = sp * (1 - pp / 100);
-  if (effectivePrice <= 0) return { sofQuantity: 0, effectivePrice: 0, isValid: false, errorMsg: 'Effective price cannot be zero.' };
-
-  const sofQuantity = pa / effectivePrice;
+  const multiplier = pp / 100;
+  const sofQuantity = (pa / sp) * multiplier;
 
   return {
-    effectivePrice,
+    multiplier,
     sofQuantity,
     isValid: true,
     errorMsg: null,
