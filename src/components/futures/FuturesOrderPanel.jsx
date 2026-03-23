@@ -22,6 +22,7 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
   const [sl, setSl] = useState('');
   const [tp, setTp] = useState('');
   const [limitPrice, setLimitPrice] = useState('');
+  const [accountBalance, setAccountBalance] = useState('10000');
   const [oneClick, setOneClick] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -35,16 +36,12 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
   const feePerLot = 3.5;
   const fee = volume * feePerLot;
 
-  const slPips = sl && currentPrice ? Math.abs(currentPrice - parseFloat(sl)) / pipValue : null;
-  const tpPips = tp && currentPrice ? Math.abs(parseFloat(tp) - currentPrice) / pipValue : null;
-  const riskAmount = slPips ? slPips * pipValue * lotSize * volume : null;
-
-  // Liquidation price estimate
-  const liqPrice = currentPrice
-    ? side === 'buy'
-      ? currentPrice * (1 - 1 / leverage * 0.8)
-      : currentPrice * (1 + 1 / leverage * 0.8)
-    : null;
+  const slPips    = sl && currentPrice ? Math.abs(currentPrice - parseFloat(sl)) / pipValue : null;
+  const tpPips    = tp && currentPrice ? Math.abs(parseFloat(tp) - currentPrice) / pipValue : null;
+  const riskAmount   = slPips ? slPips * pipValue * lotSize * volume : null;
+  const rewardAmount = tpPips ? tpPips * pipValue * lotSize * volume : null;
+  const balance      = parseFloat(accountBalance) || 10000;
+  const riskPct      = riskAmount != null ? (riskAmount / balance) * 100 : null;
 
   const riskLevel = margin > 5000 ? 'high' : margin > 1000 ? 'medium' : 'low';
   const RISK_COLOR = { low: 'text-emerald-400', medium: 'text-amber-400', high: 'text-red-400' };
@@ -99,6 +96,13 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
           </div>
         )}
 
+        {/* Account Balance */}
+        <div>
+          <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Account Balance ($)</label>
+          <input type="number" value={accountBalance} onChange={e => setAccountBalance(e.target.value)}
+            className="w-full bg-[#1a2340] border border-[rgba(148,163,184,0.1)] rounded-xl px-3 py-2 text-xs text-white font-mono focus:outline-none focus:border-[#00d4aa]/40" />
+        </div>
+
         {/* Volume */}
         <div>
           <label className="text-[9px] font-bold text-slate-500 uppercase mb-1 block">Volume (Lots)</label>
@@ -144,15 +148,25 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
         <div className="space-y-2">
           <div>
             <label className="text-[9px] font-bold text-red-400 uppercase mb-1 block">Stop Loss</label>
-            <input type="number" value={sl} onChange={e => setSl(e.target.value)} placeholder="0.00"
+            <input type="number" value={sl} onChange={e => setSl(e.target.value)} placeholder={currentPrice ? (side === 'buy' ? (currentPrice * 0.998).toFixed(4) : (currentPrice * 1.002).toFixed(4)) : '0.00'}
               className="w-full bg-[#1a2340] border border-red-500/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-red-500/40" />
-            {slPips && <p className="text-[9px] text-red-400 mt-0.5">{slPips.toFixed(1)} pips · risk ${riskAmount?.toFixed(2)}</p>}
+            {slPips != null && (
+              <div className="flex justify-between text-[9px] text-red-400 mt-0.5">
+                <span>{slPips.toFixed(1)} pips · ${riskAmount?.toFixed(2)}</span>
+                {riskPct != null && <span className={riskPct > 5 ? 'text-red-500 font-bold' : ''}>{riskPct.toFixed(2)}% risk</span>}
+              </div>
+            )}
           </div>
           <div>
             <label className="text-[9px] font-bold text-emerald-400 uppercase mb-1 block">Take Profit</label>
-            <input type="number" value={tp} onChange={e => setTp(e.target.value)} placeholder="0.00"
+            <input type="number" value={tp} onChange={e => setTp(e.target.value)} placeholder={currentPrice ? (side === 'buy' ? (currentPrice * 1.004).toFixed(4) : (currentPrice * 0.996).toFixed(4)) : '0.00'}
               className="w-full bg-[#1a2340] border border-emerald-500/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/40" />
-            {tpPips && <p className="text-[9px] text-emerald-400 mt-0.5">{tpPips.toFixed(1)} pips</p>}
+            {tpPips != null && (
+              <div className="flex justify-between text-[9px] text-emerald-400 mt-0.5">
+                <span>{tpPips.toFixed(1)} pips · ${rewardAmount?.toFixed(2)}</span>
+                {riskPct != null && rewardAmount != null && <span>R:R {(rewardAmount / (riskAmount || 1)).toFixed(1)}</span>}
+              </div>
+            )}
           </div>
         </div>
 
@@ -164,14 +178,9 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
           <Row label="Margin" value={`$${margin.toFixed(2)}`} valueClass={RISK_COLOR[riskLevel]} />
           <Row label="Notional" value={notional > 1e6 ? `$${(notional/1e6).toFixed(2)}M` : `$${notional.toFixed(0)}`} />
           {liqPrice && <Row label="Liq. Price" value={liqPrice.toFixed(4)} valueClass="text-red-400" />}
-        </div>
-
-        {/* Risk indicator */}
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border ${riskLevel === 'high' ? 'border-red-500/20 bg-red-500/05' : riskLevel === 'medium' ? 'border-amber-500/20 bg-amber-500/05' : 'border-emerald-500/20 bg-emerald-500/05'}`}>
-          <AlertTriangle className={`w-3.5 h-3.5 ${RISK_COLOR[riskLevel]}`} />
-          <span className={`text-[10px] font-semibold ${RISK_COLOR[riskLevel]}`}>
-            {riskLevel === 'high' ? 'High risk position' : riskLevel === 'medium' ? 'Moderate risk' : 'Low risk'}
-          </span>
+          {riskAmount != null && <Row label="SL Risk" value={`$${riskAmount.toFixed(2)}`} valueClass="text-red-400" />}
+          {rewardAmount != null && <Row label="TP Reward" value={`$${rewardAmount.toFixed(2)}`} valueClass="text-emerald-400" />}
+          {riskPct != null && <Row label="Risk %" value={`${riskPct.toFixed(2)}%`} valueClass={riskPct > 5 ? 'text-red-400' : riskPct > 2 ? 'text-amber-400' : 'text-emerald-400'} />}
         </div>
 
         {/* One-click mode */}
