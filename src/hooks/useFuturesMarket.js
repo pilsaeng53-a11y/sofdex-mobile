@@ -16,6 +16,16 @@ import { TRADING_ASSETS } from '../data/futuresTradingAssets';
 const API_BASE = 'https://solfort-api.onrender.com';
 const WS_BASE  = 'wss://solfort-api.onrender.com';
 
+const INTERVAL_SECONDS = {
+  '1m': 60, '5m': 300, '15m': 900, '30m': 1800,
+  '1h': 3600, '4h': 14400, '1d': 86400, '1D': 86400, '1W': 604800,
+};
+
+function getBucketTime(intervalKey) {
+  const secs = INTERVAL_SECONDS[intervalKey] ?? 3600;
+  return Math.floor(Date.now() / 1000 / secs) * secs;
+}
+
 // Static fallback symbol list (used before /symbols responds)
 const STATIC_SYMBOLS = [...new Set(
   Object.values(TRADING_ASSETS).flat().map(a => normalizeSymbol(a.symbol))
@@ -42,6 +52,7 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
   const [availableSymbols, setAvailableSymbols] = useState(STATIC_SYMBOLS);
   const [quotesMap,        setQuotesMap]        = useState({});
   const [candles,          setCandles]          = useState([]);
+  const [liveCandle,       setLiveCandle]       = useState(null);
   const [loadingQuote,     setLoadingQuote]     = useState(true);
   const [loadingCandles,   setLoadingCandles]   = useState(true);
   const [wsStatus,         setWsStatus]         = useState('connecting');
@@ -52,6 +63,9 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
   const mountedRef      = useRef(true);
   const baseSymbolRef   = useRef(baseSymbol);
   baseSymbolRef.current = baseSymbol;
+  const intervalRef     = useRef(interval);
+  intervalRef.current   = interval;
+  const liveCandleRef   = useRef(null); // track live candle without re-render for same bucket
 
   // ── 1. Fetch available symbols once ───────────────────────────────
   useEffect(() => {
@@ -132,7 +146,31 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
           const q   = parseQuote(msg);
           if (q) {
             setQuotesMap(prev => ({ ...prev, [sym]: q }));
-            if (sym === baseSymbolRef.current) setLoadingQuote(false);
+            if (sym === baseSymbolRef.current) {
+              setLoadingQuote(false);
+              // Live candle merge
+              const price = q.last ?? q.ask ?? q.bid;
+              if (price != null) {
+                const bucketTime = getBucketTime(intervalRef.current);
+                const prev = liveCandleRef.current;
+                if (prev && prev.time === bucketTime) {
+                  // Same bucket — update H/L/C
+                  const updated = {
+                    ...prev,
+                    high:  Math.max(prev.high, price),
+                    low:   Math.min(prev.low,  price),
+                    close: price,
+                  };
+                  liveCandleRef.current = updated;
+                  setLiveCandle({ ...updated });
+                } else {
+                  // New bucket — open new candle
+                  const candle = { time: bucketTime, open: price, high: price, low: price, close: price };
+                  liveCandleRef.current = candle;
+                  setLiveCandle({ ...candle });
+                }
+              }
+            }
           }
         }
         // 'connected' / 'subscribed' messages — no action needed
@@ -158,6 +196,12 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
     };
   }, [connectWS]);
 
+  // Reset live candle when symbol or interval changes
+  useEffect(() => {
+    liveCandleRef.current = null;
+    setLiveCandle(null);
+  }, [baseSymbol, interval]);
+
   const selectedQuote = quotesMap[baseSymbol] ?? null;
 
   return {
@@ -165,6 +209,7 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
     selectedQuote,
     quotesMap,
     candles,
+    liveCandle,
     loadingQuote,
     loadingCandles,
     wsStatus,

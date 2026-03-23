@@ -65,12 +65,13 @@ function toChartCandles(raw = []) {
  * CandleChart
  * Props:
  *  candles       — array from useFuturesMarket
+ *  liveCandle    — single live candle {time,open,high,low,close} (updated via WS)
  *  loading       — bool
  *  lastPrice     — number (for price line)
  *  symbol        — display string
  *  interval      — display string
  */
-export default function CandleChart({ candles = [], loading = false, lastPrice, symbol, interval }) {
+export default function CandleChart({ candles = [], liveCandle, loading = false, lastPrice, symbol, interval }) {
   const containerRef = useRef(null);
   const chartRef     = useRef(null);
   const seriesRef    = useRef(null);
@@ -107,7 +108,7 @@ export default function CandleChart({ candles = [], loading = false, lastPrice, 
     };
   }, []);
 
-  // ── Update candle data ─────────────────────────────────────────────
+  // ── Update full candle dataset ────────────────────────────────────
   useEffect(() => {
     if (!seriesRef.current || loading) return;
     const data = toChartCandles(candles);
@@ -115,6 +116,12 @@ export default function CandleChart({ candles = [], loading = false, lastPrice, 
     seriesRef.current.setData(data);
     chartRef.current?.timeScale().fitContent();
   }, [candles, loading]);
+
+  // ── Stream live candle updates (update last / append new) ──────────
+  useEffect(() => {
+    if (!seriesRef.current || !liveCandle) return;
+    seriesRef.current.update(liveCandle);
+  }, [liveCandle]);
 
   // ── Update live price line ─────────────────────────────────────────
   useEffect(() => {

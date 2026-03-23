@@ -135,7 +135,7 @@ export default function FuturesTrade() {
 
   // ── Live market data (REST + WebSocket + Candles) ──
   const {
-    selectedQuote, quotesMap, candles, loadingQuote, loadingCandles, wsStatus
+    selectedQuote, quotesMap, candles, liveCandle, loadingQuote, loadingCandles, wsStatus
   } = useFuturesMarket(symbol, timeframe);
 
   const allAssets = useMemo(() => Object.values(TRADING_ASSETS).flat(), []);
@@ -278,6 +278,7 @@ export default function FuturesTrade() {
           <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
             <CandleChart
               candles={candles}
+              liveCandle={liveCandle}
               loading={loadingCandles}
               lastPrice={mp.last ?? mp.ask ?? mp.bid}
               symbol={baseSymbol}
