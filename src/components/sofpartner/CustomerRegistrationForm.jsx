@@ -45,7 +45,7 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
       e.sof_unit_price = t('sof_reg_positive_num');
     if (touched.promotion_percent) {
       const pp = parseFloat(form.promotion_percent);
-      if (isNaN(pp) || pp < 0 || pp > 100) e.promotion_percent = t('sof_reg_promo_range');
+      if (isNaN(pp) || pp <= 0) e.promotion_percent = '프로모션 비율은 0보다 커야 합니다 (100 = 1배)';
     }
     return e;
   }, [form, touched, t]);
@@ -55,8 +55,7 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
     isValidSolanaAddress(form.customer_wallet) &&
     parseFloat(form.purchase_amount) > 0 &&
     parseFloat(form.sof_unit_price) > 0 &&
-    parseFloat(form.promotion_percent) >= 0 &&
-    parseFloat(form.promotion_percent) <= 100 &&
+    parseFloat(form.promotion_percent) > 0 &&
     calc.isValid;
 
   async function handleSubmit(e) {
@@ -152,17 +151,25 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         </div>
 
         <div>
-          <label className={labelCls}>{t('sof_reg_promo')}</label>
+          <label className={labelCls}>프로모션 비율 (%)</label>
           <div className="flex items-center gap-3">
             <input
-              type="number" min="0" max="100" step="0.1"
+              type="number" min="0" step="1"
               value={form.promotion_percent}
               onChange={e => set('promotion_percent', e.target.value)}
-              placeholder="0"
+              placeholder="100"
               className={`${inputCls} flex-1`}
             />
             <span className="text-sm font-bold text-slate-400 flex-shrink-0">%</span>
           </div>
+          {/* Real-time multiplier display */}
+          {parseFloat(form.promotion_percent) > 0 && (
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[9px] text-slate-500">프로모션 배수:</span>
+              <span className="text-xs font-bold text-[#00d4aa]">{(parseFloat(form.promotion_percent) / 100).toFixed(1)}x</span>
+              <span className="text-[9px] text-slate-500">(실질 {(parseFloat(form.promotion_percent) / 100).toFixed(1)}배 지급)</span>
+            </div>
+          )}
           {errors.promotion_percent && <p className="text-[9px] text-red-400 mt-1">{errors.promotion_percent}</p>}
         </div>
       </div>
@@ -177,15 +184,15 @@ export default function CustomerRegistrationForm({ partnerWallet, onSubmitSucces
         {calc.isValid ? (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] text-slate-400">{t('sof_reg_effective_price')}</span>
-              <span className="text-xs font-bold text-slate-200">${formatNumber(calc.effectivePrice, 4)}</span>
+              <span className="text-[10px] text-slate-400">프로모션 배수</span>
+              <span className="text-xs font-bold text-amber-400">{calc.multiplier.toFixed(2)}x (프로모션 배수: {calc.multiplier.toFixed(1)}배)</span>
             </div>
             <div className="flex items-center justify-between border-t border-[rgba(0,212,170,0.1)] pt-2">
-              <span className="text-sm font-bold text-white">{t('sof_reg_final_qty')}</span>
+              <span className="text-sm font-bold text-white">최종 SOF 수량</span>
               <span className="text-xl font-bold text-[#00d4aa]">{formatNumber(calc.sofQuantity, 4)} SOF</span>
             </div>
             <p className="text-[8px] text-slate-500">
-              Formula: {formatNumber(parseFloat(form.purchase_amount) || 0, 2)} USDT ÷ ${formatNumber(calc.effectivePrice, 4)} = {formatNumber(calc.sofQuantity, 4)} SOF
+              공식: ({formatNumber(parseFloat(form.purchase_amount) || 0, 2)} USDT ÷ ${formatNumber(parseFloat(form.sof_unit_price) || 0, 4)}) × {calc.multiplier.toFixed(2)} = {formatNumber(calc.sofQuantity, 4)} SOF
             </p>
           </div>
         ) : (
