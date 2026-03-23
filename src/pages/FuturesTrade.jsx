@@ -11,7 +11,7 @@ import InstrumentSidebar from '../components/futures/InstrumentSidebar';
 import FuturesOrderPanel from '../components/futures/FuturesOrderPanel';
 import FuturesBottomPanel from '../components/futures/FuturesBottomPanel';
 import TradeNewsPanel from '../components/trade/TradeNewsPanel';
-import { normalizeSymbol } from '../services/solfortApi';
+// normalizeSymbol now sourced from lib/trading/symbolMapper via normSym
 
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D', '1W'];
 
