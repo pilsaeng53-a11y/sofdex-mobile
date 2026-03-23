@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Minus, Plus, Zap, AlertTriangle, Info } from 'lucide-react';
+import React, { useState } from 'react';
+import { Minus, Plus, Zap, AlertTriangle } from 'lucide-react';
 
 const ORDER_TYPES = ['Market', 'Limit', 'Stop', 'Stop-Limit'];
 const LOT_PRESETS = [0.01, 0.1, 0.5, 1.0, 5.0];

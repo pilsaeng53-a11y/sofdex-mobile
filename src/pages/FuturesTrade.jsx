@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { TRADING_ASSETS } from '@/data/futuresTradingAssets';
+import { normalizeSymbol as normSym, rawToTVSymbol } from '../lib/trading/symbolMapper';
 import {
   LayoutGrid, BookOpen, Activity, ChevronDown, Clock,
   BarChart2, Layers, Globe, Calculator, Menu, TrendingUp, TrendingDown
@@ -142,20 +143,11 @@ export default function FuturesTrade() {
   const allAssets = useMemo(() => Object.values(TRADING_ASSETS).flat(), []);
   const asset = allAssets.find(a => a.symbol === symbol) || allAssets[0];
   const mp = MOCK_PRICES[symbol] || { bid: null, ask: null, change: 0, high: null, low: null, vol: '—' };
-  const baseSymbol = normalizeSymbol(symbol);
+  const baseSymbol = normSym(symbol);      // e.g. 'EURUSD', 'BTC'
+  const tvSymbol = rawToTVSymbol(symbol);  // e.g. 'FX:EURUSD', 'BINANCE:BTCUSDT'
   const positive = mp.change >= 0;
 
-  // TradingView symbol mapping with exchange prefixes
-  const tvSymbol = useMemo(() => {
-    const map = {
-      'EURUSD-T': 'FX:EURUSD', 'USDJPY-T': 'FX:USDJPY', 'GBPUSD-T': 'FX:GBPUSD', 'AUDUSD-T': 'FX:AUDUSD',
-      'GOLD-T': 'TVC:GOLD', 'OIL-T': 'TVC:USOIL', 'SILVER-T': 'TVC:SILVER', 'NATGAS-T': 'TVC:NATURALGAS',
-      'SP500-T': 'FOREXCOM:SPXUSD', 'NASDAQ-T': 'FOREXCOM:NSXUSD', 'DAX-T': 'FOREXCOM:DEU40', 'FTSE-T': 'FOREXCOM:UK100',
-      'AAPL-T': 'NASDAQ:AAPL', 'GOOGL-T': 'NASDAQ:GOOGL', 'MSFT-T': 'NASDAQ:MSFT', 'TSLA-T': 'NASDAQ:TSLA', 'NVDA-T': 'NASDAQ:NVDA',
-      'BTC-PERP': 'BINANCE:BTCUSDT', 'ETH-PERP': 'BINANCE:ETHUSDT', 'SOL-PERP': 'BINANCE:SOLUSDT',
-    };
-    return map[symbol] || `FX:${symbol.replace(/-T$|-PERP$/, '')}`;
-  }, [symbol]);
+  // tvSymbol already derived above via rawToTVSymbol — no local mapping needed
 
   return (
     <div className="flex flex-col bg-[#05070d] text-slate-100" style={{ height: 'calc(100vh - 108px)' }}>
@@ -262,7 +254,8 @@ export default function FuturesTrade() {
 
           {/* TradingView chart */}
           <div className="flex-1 overflow-hidden" style={{ minHeight: 0 }}>
-            <TradingViewChart symbol={tvSymbol} autoFill={true} />
+            {/* key forces remount when tvSymbol changes so chart always matches selected instrument */}
+            <TradingViewChart key={tvSymbol || symbol} symbol={tvSymbol || symbol} autoFill={true} />
           </div>
         </div>
 

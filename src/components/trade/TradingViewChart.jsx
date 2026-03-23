@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { getTVSymbol } from '../shared/symbolMap';
+import { toTradingViewSymbol, normalizeSymbol } from '../../lib/trading/symbolMapper';
 
 export default function TradingViewChart({ symbol = 'BTC', height = 280, autoFill = false }) {
   const containerRef = useRef(null);
   const widgetRef = useRef(null);
   const [status, setStatus] = useState('loading'); // loading | ready | unavailable
-  // If symbol already has exchange prefix (e.g. FX:EURUSD), use as-is
-  const tvSymbol = symbol.includes(':') ? symbol : getTVSymbol(symbol);
+  // If symbol already has exchange prefix (e.g. FX:EURUSD), use as-is; otherwise map through shared utility
+  const tvSymbol = symbol.includes(':') ? symbol : toTradingViewSymbol(normalizeSymbol(symbol));
 
   useEffect(() => {
     if (!containerRef.current) return;
