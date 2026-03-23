@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Minus, Plus, Loader2 } from 'lucide-react';
 import { fmtPrice } from '../../lib/trading/priceFormat';
 

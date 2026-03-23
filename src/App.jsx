@@ -70,6 +70,7 @@ import AssetOnboarding from './pages/AssetOnboarding';
 import MySubmissions from './pages/MySubmissions';
 import RWAInsights from './pages/RWAInsights';
 import TradingDesk from './pages/TradingDesk';
+import CryptoTerminal from './pages/CryptoTerminal';
 import OverseasFutures from './pages/OverseasFutures';
 import AdminDashboard from './pages/AdminDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -145,6 +146,7 @@ const AuthenticatedApp = () => {
       <Route path="/MySubmissions" element={<LayoutWrapper currentPageName="MySubmissions"><MySubmissions /></LayoutWrapper>} />
       <Route path="/RWAInsights" element={<LayoutWrapper currentPageName="RWAInsights"><RWAInsights /></LayoutWrapper>} />
       <Route path="/TradingDesk" element={<LayoutWrapper currentPageName="TradingDesk"><TradingDesk /></LayoutWrapper>} />
+      <Route path="/CryptoTerminal" element={<LayoutWrapper currentPageName="CryptoTerminal"><CryptoTerminal /></LayoutWrapper>} />
       <Route path="/OverseasFutures" element={<LayoutWrapper currentPageName="OverseasFutures"><OverseasFutures /></LayoutWrapper>} />
       <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
