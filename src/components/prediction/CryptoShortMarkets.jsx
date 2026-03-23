@@ -1,35 +1,46 @@
 /**
- * CryptoShortMarkets — ultra-short to weekly crypto prediction markets.
- * Renders segmented time buckets with live countdown timers + betting lock.
+ * CryptoShortMarkets — SolFort custom short-duration crypto prediction markets.
+ * Fetches backend data from /prediction/markets?source=solfort&category=crypto
+ * Enforces lock rule: betting disabled 20s before resolution.
  */
 import React, { useState, useMemo } from 'react';
-import { TrendingUp, TrendingDown, Zap, Lock } from 'lucide-react';
-import { generateMarkets, SEGMENTS } from './cryptoShortData';
+import { Zap, Lock, Loader2, AlertCircle } from 'lucide-react';
+import { useMarkets } from './usePredictionAPI';
 import CryptoMarketTimer, { useMarketStatus, StatusBadge } from './CryptoMarketTimer';
+
+const SEGMENT_MAP = {
+  ultra:  { label: '⚡ Ultra Short', minDuration: 0,      maxDuration: 300 },
+  hourly: { label: '🕐 Hourly',      minDuration: 900,    maxDuration: 3600 },
+  four:   { label: '🕰️ 4-Hour',      minDuration: 3600,   maxDuration: 14400 },
+  daily:  { label: '📅 Daily',       minDuration: 14400,  maxDuration: 86400 },
+};
 
 const ASSETS   = ['USDT', 'SOL', 'ETH'];
 const BALANCES = { USDT: 10000, SOL: 24.5, ETH: 3.2 };
 const PRESETS  = [10, 50, 100, 500];
 
 // ─── Single market row with live timer ────────────────────────────────────
-function CryptoMarketRow({ market, participated, onBet }) {
-  const { secsLeft, status } = useMarketStatus(market.resolvesAt);
-  const locked = status === 'locked' || status === 'resolved';
+function CryptoMarketRow({ market, participated, onBet, locked }) {
+  const endTime = new Date(market.endDate || market.resolvesAt).getTime();
+  const lockTime = endTime - 20000; // 20s before resolution
+  const now = Date.now();
+  const { secsLeft, status } = useMarketStatus(market.endDate || market.resolvesAt);
+  const isLocked = now >= lockTime;
+  const urgent   = status === 'closing_soon' || isLocked;
 
-  const topOutcome = market.outcomes[0];
-  const maxPayout  = (1 / Math.max(...market.outcomes.map(o => o.prob))).toFixed(2);
-  const urgent     = status === 'closing_soon' || status === 'locked';
+  const maxPayout = (1 / Math.max(...market.outcomes.map(o => o.prob), 0.001)).toFixed(2);
+  const symbol = market.question.match(/([A-Z]{2,})/)?.[1] || '??';
 
   return (
     <div
-      className={`flex items-center gap-3 px-4 py-3 border-b transition-all ${locked ? 'opacity-60' : 'hover:bg-[#111827]/60 cursor-pointer'} ${urgent && !locked ? 'bg-amber-500/03' : ''}`}
-      style={{ borderColor: 'rgba(148,163,184,0.05)', borderLeft: urgent ? `2px solid ${status==='locked' ? '#ef4444' : '#fbbf24'}` : '2px solid transparent' }}
-      onClick={() => !locked && onBet(market, status)}>
+      className={`flex items-center gap-3 px-4 py-3 border-b transition-all ${isLocked || locked ? 'opacity-60' : 'hover:bg-[#111827]/60 cursor-pointer'} ${urgent ? 'bg-amber-500/03' : ''}`}
+      style={{ borderColor: 'rgba(148,163,184,0.05)', borderLeft: urgent ? `2px solid ${isLocked ? '#ef4444' : '#fbbf24'}` : '2px solid transparent' }}
+      onClick={() => !isLocked && !locked && onBet(market, status)}>
 
       {/* Symbol badge */}
       <div className="w-9 h-9 rounded-xl flex items-center justify-center font-black text-[10px] flex-shrink-0"
         style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.15)', color: '#00d4aa' }}>
-        {market.base}
+        {symbol}
       </div>
 
       {/* Question + outcomes */}
@@ -38,8 +49,8 @@ function CryptoMarketRow({ market, participated, onBet }) {
         <div className="flex items-center gap-2">
           {market.outcomes.map(o => (
             <span key={o.id} className="text-[8px] font-bold font-mono"
-              style={{ color: o.id === 'UP' || o.id === 'ABOVE' ? '#22c55e' : '#ef4444' }}>
-              {o.label} {(1/Math.max(o.prob,0.01)).toFixed(2)}x
+              style={{ color: o.prob >= 0.5 ? '#22c55e' : '#ef4444' }}>
+              {o.label} {(1/Math.max(o.prob,0.001)).toFixed(2)}x
             </span>
           ))}
           <span className="text-[8px] text-slate-600 font-mono">${(market.volume/1000).toFixed(0)}K vol</span>
@@ -48,13 +59,13 @@ function CryptoMarketRow({ market, participated, onBet }) {
 
       {/* Timer + status */}
       <div className="flex-shrink-0 text-right">
-        <CryptoMarketTimer resolvesAt={market.resolvesAt} status={status} secsLeft={secsLeft} compact />
+        <CryptoMarketTimer resolvesAt={market.endDate || market.resolvesAt} status={status} secsLeft={secsLeft} compact />
         {participated && (
           <span className="text-[7px] font-black text-[#00d4aa] block mt-0.5">✓ IN</span>
         )}
-        {locked && !participated && (
+        {(isLocked || locked) && !participated && (
           <span className="text-[7px] font-black text-red-400 flex items-center gap-0.5 justify-end mt-0.5">
-            <Lock className="w-2.5 h-2.5" />Closed
+            <Lock className="w-2.5 h-2.5" />Locked
           </span>
         )}
       </div>
@@ -68,7 +79,10 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
   const [amount,   setAmount]   = useState('50');
   const [asset,    setAsset]    = useState('USDT');
 
-  const locked  = status === 'locked' || status === 'resolved';
+  const endTime = new Date(market.endDate || market.resolvesAt).getTime();
+  const lockTime = endTime - 20000; // 20s before resolution
+  const now = Date.now();
+  const locked = now >= lockTime || status === 'resolved';
   const blocked = existingBet && existingBet.outcomeId !== selected;
   const outcome = market.outcomes.find(o => o.id === selected);
   const amt     = parseFloat(amount) || 0;
@@ -77,7 +91,7 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
 
   const handlePlace = () => {
     if (!outcome || locked || blocked || !amt) return;
-    onPlace({ marketId: market.id, outcomeId: selected, outcomeLabel: outcome.label, side: outcome.label, amount: amt, asset, payout, question: market.question });
+    onPlace({ marketId: market.id, outcomeId: selected, outcomeLabel: outcome.label, side: outcome.label, amount: amt, asset, payout, question: market.question, source: market.source });
     onClose();
   };
 
@@ -86,17 +100,17 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
       style={{ background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(6px)' }}
       onClick={e => e.target === e.currentTarget && onClose()}>
 
-      <div className="w-full max-w-lg rounded-t-3xl pb-8 fade-in"
+      <div className="w-full max-w-lg rounded-t-3xl pb-8 fade-in overflow-y-auto max-h-[92vh]"
         style={{ background: '#0d1220', border: '1px solid rgba(148,163,184,0.1)', borderBottom: 'none' }}>
 
-        <div className="flex justify-center pt-3 pb-1"><div className="w-8 h-1 rounded-full bg-slate-700" /></div>
+        <div className="flex justify-center pt-3 pb-1 flex-shrink-0"><div className="w-8 h-1 rounded-full bg-slate-700" /></div>
 
-        <div className="px-5 pt-2 pb-4 border-b border-[rgba(148,163,184,0.06)]">
+        <div className="px-5 pt-2 pb-4 border-b border-[rgba(148,163,184,0.06)] flex-shrink-0">
           <div className="flex items-start justify-between">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="font-black text-[10px] px-1.5 py-0.5 rounded"
-                  style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa' }}>{market.base} · {market.durLabel}</span>
+                <span className="font-black text-[8px] px-1.5 py-0.5 rounded border"
+                  style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', borderColor: 'rgba(0,212,170,0.2)' }}>SolFort</span>
                 <StatusBadge status={status} />
               </div>
               <p className="text-sm font-bold text-white leading-snug">{market.question}</p>
@@ -106,12 +120,19 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
         </div>
 
         <div className="px-5 py-4 space-y-4">
+          {/* Lock rule notice */}
+          <div className="flex items-start gap-2 px-3 py-2.5 rounded-xl text-[10px]"
+            style={{ background: 'rgba(99,102,241,0.08)', border: '1px solid rgba(99,102,241,0.15)', color: '#a78bfa' }}>
+            <Zap className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+            <span className="leading-snug">Betting closes 20 seconds before resolution</span>
+          </div>
+
           {/* Locked warning */}
           {locked && (
             <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[11px] font-bold"
               style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
               <Lock className="w-3.5 h-3.5" />
-              Betting closed. Market {status === 'resolved' ? 'has resolved.' : `locks in ${secsLeft}s.`}
+              Betting locked. Market resolves in {secsLeft}s.
             </div>
           )}
 
@@ -121,7 +142,7 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
               style={{ background: secsLeft <= 60 ? 'rgba(251,191,36,0.06)' : 'rgba(26,35,64,0.4)', borderColor: secsLeft <= 60 ? 'rgba(251,191,36,0.2)' : 'rgba(148,163,184,0.07)' }}>
               <span className="text-[10px] text-slate-400">Locks in</span>
               <span className={`text-base font-black font-mono ${secsLeft <= 20 ? 'text-red-400' : secsLeft <= 60 ? 'text-amber-400' : 'text-white'}`}>
-                {String(Math.floor(secsLeft/60)).padStart(2,'0')}:{String(secsLeft%60).padStart(2,'0')}
+                {String(Math.floor(secsLeft/60)).padStart(2,'0')}:{String(Math.floor(secsLeft%60)).padStart(2,'0')}
               </span>
             </div>
           )}
@@ -129,7 +150,7 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
           {/* Outcomes */}
           <div className={`grid gap-2 ${market.outcomes.length === 2 ? 'grid-cols-2' : 'grid-cols-1'}`}>
             {market.outcomes.map(o => {
-              const isUp    = o.id === 'UP' || o.id === 'ABOVE';
+              const isUp    = o.prob >= 0.5;
               const clr     = isUp ? '#22c55e' : '#ef4444';
               const glw     = isUp ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)';
               const isSel   = selected === o.id;
@@ -196,7 +217,7 @@ function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, on
             disabled={!outcome || locked || blocked || !amt}
             className="w-full py-3.5 rounded-xl font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed"
             style={{ background: locked ? '#1e293b' : 'linear-gradient(135deg, #00d4aa, #06b6d4)', color: locked ? '#64748b' : '#fff', boxShadow: locked ? 'none' : '0 4px 24px rgba(0,212,170,0.25)' }}>
-            {locked ? '🔒 Betting Closed' : !outcome ? 'Select outcome' : `Bet ${outcome.label} · ${amt} ${asset}`}
+            {locked ? '🔒 Betting Locked' : !outcome ? 'Select outcome' : `Bet ${outcome.label} · ${amt} ${asset}`}
           </button>
         </div>
       </div>
@@ -209,25 +230,39 @@ export default function CryptoShortMarkets({ participatedIds = new Set(), onPlac
   const [activeSeg, setActiveSeg] = useState('ultra');
   const [activeSheet, setActiveSheet] = useState(null); // { market, status, secsLeft }
 
-  // Generate markets once per render cycle — they're time-based so always fresh
-  const allMarkets = useMemo(() => generateMarkets(), []);
+  // Fetch SolFort custom crypto markets from backend
+  const { markets: allBackendMarkets, loading, error } = useMarkets({
+    category: 'crypto',
+    source: 'solfort',
+    limit: 100
+  });
 
-  const segMarkets = useMemo(() =>
-    allMarkets.filter(m => m.segment === activeSeg),
-  [allMarkets, activeSeg]);
+  // Filter by active timeframe segment
+  const segMarkets = useMemo(() => {
+    const seg = SEGMENT_MAP[activeSeg];
+    if (!seg || !allBackendMarkets.length) return [];
+
+    return allBackendMarkets.filter(m => {
+      if (!m.endDate) return false;
+      const now = Date.now();
+      const endMs = new Date(m.endDate).getTime();
+      const durationMs = endMs - now;
+      const durationSecs = durationMs / 1000;
+      return durationSecs >= seg.minDuration && durationSecs <= seg.maxDuration;
+    });
+  }, [allBackendMarkets, activeSeg]);
 
   return (
     <div>
       {/* Segment tabs */}
       <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1 mb-3">
-        {SEGMENTS.map(seg => (
-          <button key={seg.id} onClick={() => setActiveSeg(seg.id)}
-            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold transition-all border ${activeSeg === seg.id
+        {Object.entries(SEGMENT_MAP).map(([segId, segCfg]) => (
+          <button key={segId} onClick={() => setActiveSeg(segId)}
+            className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-bold transition-all border ${activeSeg === segId
               ? 'bg-[#00d4aa]/12 text-[#00d4aa] border-[#00d4aa]/25'
               : 'bg-[#1a2340] text-slate-500 border-[rgba(148,163,184,0.07)] hover:text-slate-300'}`}>
-            <span>{seg.emoji}</span>
-            <span>{seg.label}</span>
-            {seg.intervalSec <= 900 && <span className="text-[7px] font-black px-1 py-0.5 rounded"
+            <span>{segCfg.label}</span>
+            {segCfg.maxDuration <= 900 && <span className="text-[7px] font-black px-1 py-0.5 rounded"
               style={{ background: 'rgba(249,115,22,0.15)', color: '#f97316' }}>FAST</span>}
           </button>
         ))}
@@ -238,29 +273,56 @@ export default function CryptoShortMarkets({ participatedIds = new Set(), onPlac
         <div className="flex items-center gap-2">
           <Zap className="w-3.5 h-3.5 text-amber-400" />
           <span className="text-[10px] font-black text-white">
-            {SEGMENTS.find(s => s.id === activeSeg)?.label} Crypto Markets
+            {SEGMENT_MAP[activeSeg]?.label || 'Crypto'} Markets
           </span>
         </div>
         <span className="text-[9px] text-slate-600">{segMarkets.length} markets</span>
       </div>
 
+      {/* Loading state */}
+      {loading && !allBackendMarkets.length && (
+        <div className="flex items-center justify-center py-8 gap-2">
+          <Loader2 className="w-4 h-4 text-slate-500 animate-spin" />
+          <span className="text-[11px] text-slate-500">Loading SolFort markets...</span>
+        </div>
+      )}
+
       {/* Market list */}
-      <div className="rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.07)]">
-        {segMarkets.map(m => (
-          <CryptoMarketRow key={m.id} market={m}
-            participated={participatedIds.has(m.id)}
-            onBet={(market, status) => {
-              // Get current timer values at click time
-              const now = Math.floor(Date.now() / 1000);
-              const secs = Math.max(market.resolvesAt - now, 0);
-              let st = 'open';
-              if (secs <= 0) st = 'resolved';
-              else if (secs <= 20) st = 'locked';
-              else if (secs <= 60) st = 'closing_soon';
-              setActiveSheet({ market, status: st, secsLeft: secs });
-            }} />
-        ))}
-      </div>
+      {!loading && segMarkets.length > 0 && (
+        <div className="rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.07)]">
+          {segMarkets.map(m => (
+            <CryptoMarketRow key={m.id} market={m}
+              participated={participatedIds.has(m.id)}
+              locked={false}
+              onBet={(market, status) => {
+                const now = Math.floor(Date.now() / 1000);
+                const endTime = new Date(market.endDate).getTime() / 1000;
+                const secs = Math.max(endTime - now, 0);
+                let st = 'open';
+                if (secs <= 0) st = 'resolved';
+                else if (secs <= 20) st = 'locked';
+                else if (secs <= 60) st = 'closing_soon';
+                setActiveSheet({ market, status: st, secsLeft: secs });
+              }} />
+          ))}
+        </div>
+      )}
+
+      {/* No markets state */}
+      {!loading && allBackendMarkets.length > 0 && segMarkets.length === 0 && (
+        <div className="text-center py-8 text-slate-600 text-[11px]">
+          No SolFort crypto markets in this timeframe
+        </div>
+      )}
+
+      {/* Error state */}
+      {error && (
+        <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl text-[11px]" 
+          style={{ background: 'rgba(239,68,68,0.08)', color: '#f87171' }}>
+          <AlertCircle className="w-3.5 h-3.5" />
+          Failed to load crypto markets
+        </div>
+      )}
 
       {/* Betting sheet */}
       {activeSheet && (
