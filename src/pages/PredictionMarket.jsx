@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
   TrendingUp, Trophy, MessageSquare, CalendarDays, Briefcase,
   History, Compass, BarChart2, Filter, Search, Sparkles, Loader2,
-  ChevronDown, Wifi, WifiOff, RefreshCw
+  ChevronDown, Wifi, WifiOff, RefreshCw, Zap
 } from 'lucide-react';
 import CategorySidebar from '../components/prediction/CategorySidebar';
 import MarketCard from '../components/prediction/MarketCard';
@@ -14,10 +14,12 @@ import EventsTab from '../components/prediction/EventsTab';
 import {
   useAPIHealth, useCategories, useTopMarkets, useMarkets
 } from '../components/prediction/usePredictionAPI';
+import CryptoShortMarkets from '../components/prediction/CryptoShortMarkets';
 
 // ─── Tab config ────────────────────────────────────────────────────────────
 const TABS = [
   { id: 'explore',    label: 'Explore',   icon: Compass },
+  { id: 'crypto',     label: '₿ Crypto',  icon: Zap },
   { id: 'markets',    label: 'Markets',   icon: BarChart2 },
   { id: 'portfolio',  label: 'Portfolio', icon: Briefcase },
   { id: 'history',    label: 'History',   icon: History },
@@ -387,6 +389,12 @@ export default function PredictionMarket() {
 
           <div className="px-4 py-4">
             {tab === 'explore'     && <ExploreTab onBet={handleBet} participatedIds={participatedIds} />}
+            {tab === 'crypto'      && (
+              <CryptoShortMarkets
+                participatedIds={participatedIds}
+                onPlaceBet={(bet) => setBets(prev => prev.find(b => b.marketId === bet.marketId) ? prev : [...prev, bet])}
+              />
+            )}
             {tab === 'markets'     && <MarketsTab category={category} sub={activeSub} source={source} onBet={handleBet} participatedIds={participatedIds} />}
             {tab === 'portfolio'   && <PortfolioTab bets={bets} />}
             {tab === 'history'     && <HistoryTab />}
