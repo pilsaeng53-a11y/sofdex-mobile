@@ -1,48 +1,118 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { Newspaper, ArrowRight, Zap } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Newspaper, ArrowRight, ExternalLink, RefreshCw, Zap } from 'lucide-react';
+import { getNews, normalizeSymbol } from '../../services/solfortApi';
 
-const HEADLINES = [
-  { cat: 'Bitcoin', title: 'BTC Breaks $100,000 — Institutional FOMO Fuels Historic Rally', time: '12m ago', hot: true },
-  { cat: 'Regulation', title: 'SEC Approves Spot Ethereum ETF — Landmark Crypto Decision', time: '38m ago', hot: true },
-  { cat: 'Solana', title: 'Solana DeFi TVL Hits $18B — SOL Ecosystem Overtakes Ethereum L2s', time: '1h ago', hot: false },
-  { cat: 'RWA', title: 'BlackRock BUIDL Fund Crosses $5B in Tokenized Treasury AUM', time: '2h ago', hot: false },
-];
+function timeAgo(dateStr) {
+  if (!dateStr) return '';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `${hrs}h ago`;
+  return `${Math.floor(hrs / 24)}d ago`;
+}
 
-export default function NewsPreview() {
+export default function NewsPreview({ symbol = 'BTC' }) {
+  const baseSymbol = normalizeSymbol(symbol);
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchNews = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getNews(baseSymbol);
+      setArticles(data.slice(0, 5));
+    } catch (e) {
+      setError('Failed to load news');
+      setArticles([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [baseSymbol]);
+
+  // Refetch on symbol change + every 30s
+  useEffect(() => {
+    fetchNews();
+    const timer = setInterval(fetchNews, 30_000);
+    return () => clearInterval(timer);
+  }, [fetchNews]);
+
   return (
     <div className="px-4 mb-6">
-      {/* Breaking strip */}
-      <div className="flex items-center gap-2 bg-orange-400/8 border border-orange-400/15 rounded-xl px-3 py-2 mb-3 overflow-hidden">
-        <span className="flex-shrink-0 text-[9px] font-black text-orange-400 bg-orange-400/20 px-1.5 py-0.5 rounded uppercase tracking-wider">Live</span>
-        <p className="text-[11px] text-orange-300/80 truncate">BTC $100K · ETH ETF APPROVED · SOL DeFi $18B TVL</p>
-      </div>
-
+      {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Newspaper className="w-4 h-4 text-[#00d4aa]" />
-          <span className="text-sm font-bold text-white">Breaking Headlines</span>
+          <span className="text-sm font-bold text-white">
+            {baseSymbol} News
+          </span>
+          {loading && (
+            <RefreshCw className="w-3 h-3 text-slate-500 animate-spin" />
+          )}
         </div>
-        <Link to={createPageUrl('News')}>
-          <span className="text-[11px] text-[#00d4aa] font-medium flex items-center gap-1">All News <ArrowRight className="w-3 h-3" /></span>
-        </Link>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] text-slate-500">Live · 30s</span>
+        </div>
       </div>
 
+      {/* Articles */}
       <div className="glass-card rounded-2xl overflow-hidden divide-y divide-[rgba(148,163,184,0.05)]">
-        {HEADLINES.map((h, i) => (
-          <Link key={i} to={createPageUrl('News')}>
-            <div className="px-3.5 py-3 flex items-start gap-2.5 hover:bg-[#1a2340] transition-colors">
+        {loading && articles.length === 0 && (
+          Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="px-3.5 py-3 space-y-2">
+              <div className="skeleton h-2.5 w-20 rounded" />
+              <div className="skeleton h-3 w-full rounded" />
+              <div className="skeleton h-3 w-4/5 rounded" />
+            </div>
+          ))
+        )}
+
+        {error && (
+          <div className="px-3.5 py-4 text-center text-[11px] text-slate-500">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && articles.length === 0 && (
+          <div className="px-3.5 py-4 text-center text-[11px] text-slate-500">
+            No news found for {baseSymbol}
+          </div>
+        )}
+
+        {articles.map((article, i) => (
+          <a
+            key={i}
+            href={article.url || article.link || '#'}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-3.5 py-3 hover:bg-[#1a2340] transition-colors"
+          >
+            <div className="flex items-start gap-2.5">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5 mb-1">
-                  {h.hot && <Zap className="w-3 h-3 text-orange-400 flex-shrink-0" />}
-                  <span className="text-[10px] font-semibold text-[#00d4aa]">{h.cat}</span>
-                  <span className="text-[10px] text-slate-600">· {h.time}</span>
+                  {i === 0 && <Zap className="w-3 h-3 text-orange-400 flex-shrink-0" />}
+                  <span className="text-[10px] font-semibold text-[#00d4aa] truncate">
+                    {article.source?.name || article.source || 'News'}
+                  </span>
+                  <span className="text-[10px] text-slate-600 flex-shrink-0">
+                    · {timeAgo(article.publishedAt || article.published_at)}
+                  </span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-snug">{h.title}</p>
+                <p className="text-[11px] text-slate-300 leading-snug line-clamp-2">
+                  {article.title}
+                </p>
+                {article.summary || article.description ? (
+                  <p className="text-[10px] text-slate-500 leading-snug mt-1 line-clamp-2">
+                    {article.summary || article.description}
+                  </p>
+                ) : null}
               </div>
+              <ExternalLink className="w-3 h-3 text-slate-600 flex-shrink-0 mt-0.5" />
             </div>
-          </Link>
+          </a>
         ))}
       </div>
     </div>
