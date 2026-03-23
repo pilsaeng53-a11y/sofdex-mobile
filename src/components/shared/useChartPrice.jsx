@@ -12,7 +12,6 @@
 
 import { useMarketData, COMMODITY_SYMBOLS } from './MarketDataProvider';
 import { useSOFPrice } from './useSOFPrice';
-import { getMarketBySymbol } from './MarketData';
 
 export function useChartPrice(symbol) {
   const { getLiveAsset } = useMarketData();
@@ -33,18 +32,12 @@ export function useChartPrice(symbol) {
       price     = live.price;
       change24h = live.change;
       isLive    = true;
-    } else if (COMMODITY_SYMBOLS.has(symbol)) {
-      // Non-crypto (RWA / TradFi / xStocks / xETFs): return null until live
-      // data arrives from Yahoo Finance polling. Never use static seed —
-      // the chart shows the real market price, the list must match exactly.
+    } else {
+      // No live price yet — return null for ALL asset types.
+      // Chart must NOT fall back to static seeds (MarketData.price = stale/mock data).
+      // NEVER use marketCap, fdv, metadata, or summary values.
       price     = null;
       change24h = 0;
-      isLive    = false;
-    } else {
-      // Pure crypto — static seed is close enough while WS connects
-      const base = getMarketBySymbol(symbol);
-      price     = base?.price ?? null;
-      change24h = base?.change ?? 0;
       isLive    = false;
     }
   }
