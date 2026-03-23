@@ -5,7 +5,8 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { getMarketData, getSymbols, getCoinIcons, normalizeSymbol, resolveTradingPrice } from '@/services/solfortApi';
+import { normalizeSymbol, resolveTradingPrice } from '@/services/solfortApi';
+import { fetchMarketData } from '@/services/marketDataService';
 
 const POLL_INTERVAL = 5000; // 5s refresh
 
@@ -19,14 +20,9 @@ export function useSolfortMarket() {
 
   const fetchAll = useCallback(async () => {
     try {
-      const [market, syms, icons] = await Promise.all([
-        getMarketData(),
-        getSymbols(),
-        getCoinIcons(),
-      ]);
-      setMarketData(market);
-      setSymbols(Array.isArray(syms) ? syms : []);
-      setCoinIcons(icons && typeof icons === 'object' ? icons : {});
+      const data = await fetchMarketData();
+      setMarketData(data);
+      setSymbols(data.map(d => d.symbol).filter(Boolean));
       setError(null);
     } catch (e) {
       setError(e.message);
@@ -41,23 +37,16 @@ export function useSolfortMarket() {
     return () => clearInterval(interval);
   }, [fetchAll]);
 
-  /** Get resolved trading price for a symbol */
+  /** Get resolved trading price for a symbol — uses liveTradingPrice only */
   const getPriceForSymbol = useCallback((rawSymbol) => {
     if (!marketData) return { price: 0, source: 'none' };
     const base = normalizeSymbol(rawSymbol);
-    // Try to find ticker in market data (support various shapes)
-    const tickers = Array.isArray(marketData) ? marketData : (marketData.tickers ?? marketData.data ?? []);
-    const ticker = tickers.find(t => normalizeSymbol(t.symbol ?? t.pair ?? '') === base);
+    const ticker = marketData.find(t => normalizeSymbol(t.symbol ?? '') === base
+      || normalizeSymbol(t.normalizedSymbol ?? '') === base);
     return resolveTradingPrice(ticker);
   }, [marketData]);
 
-  /** Get icon URL for a symbol */
-  const getIconUrl = useCallback((rawSymbol) => {
-    const base = normalizeSymbol(rawSymbol);
-    return coinIcons[base] ?? coinIcons[rawSymbol] ?? null;
-  }, [coinIcons]);
-
-  return { marketData, symbols, coinIcons, loading, error, getPriceForSymbol, getIconUrl };
+  return { marketData, symbols, coinIcons, loading, error, getPriceForSymbol };
 }
 
 /** Single symbol price hook */
