@@ -140,7 +140,7 @@ export default function TradeNewsPanel({ symbol = 'BTC' }) {
   }, [fetchNews]);
 
   // Client-side filter (fallback when API doesn't support region/sentiment filtering)
-  const filtered = articles.filter(a => {
+  const filtered = (articles || []).filter(a => {
     if (filter === 'All') return true;
     const s = getSentiment(a);
     if (filter === 'Bullish') return s === 'bullish';
