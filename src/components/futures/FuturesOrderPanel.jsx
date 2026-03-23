@@ -14,7 +14,7 @@ function Row({ label, value, valueClass = 'text-slate-300' }) {
   );
 }
 
-export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, loading = false, onSubmit }) {
+export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, loading = false, onSubmit, externalLimitPrice }) {
   const [orderType, setOrderType] = useState('Market');
   const [side, setSide] = useState('buy');
   const [volume, setVolume] = useState(0.1);
@@ -25,6 +25,14 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
   const [accountBalance, setAccountBalance] = useState('10000');
   const [oneClick, setOneClick] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  // Sync depth-clicked price into limitPrice field and switch to Limit order type
+  React.useEffect(() => {
+    if (externalLimitPrice != null) {
+      setLimitPrice(externalLimitPrice.toFixed(5));
+      setOrderType('Limit');
+    }
+  }, [externalLimitPrice]);
 
   const currentPrice = side === 'buy' ? askPrice : bidPrice;
   const lotSize = asset?.lot_size ?? 100000;

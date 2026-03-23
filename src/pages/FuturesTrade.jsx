@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { TRADING_ASSETS } from '@/data/futuresTradingAssets';
 import { normalizeSymbol as normSym, rawToTVSymbol } from '../lib/trading/symbolMapper';
 import useFuturesMarket from '../hooks/useFuturesMarket';
@@ -13,7 +13,7 @@ import InstrumentSidebar from '../components/futures/InstrumentSidebar';
 import FuturesOrderPanel from '../components/futures/FuturesOrderPanel';
 import FuturesBottomPanel from '../components/futures/FuturesBottomPanel';
 import TradeNewsPanel from '../components/trade/TradeNewsPanel';
-// normalizeSymbol now sourced from lib/trading/symbolMapper via normSym
+import MarketDepthPanel from '../components/futures/MarketDepthPanel';
 
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D', '1W'];
 
@@ -39,54 +39,6 @@ const SIDE_PANEL_TABS = [
   { id: 'news',    icon: Globe,       label: 'News' },
   { id: 'calc',    icon: Calculator,  label: 'Calc' },
 ];
-
-function MarketDepthPanel({ ask, bid }) {
-  const midPrice = ask && bid ? (ask + bid) / 2 : null;
-  const depthRows = [
-    [ask ? (ask * 1.0004).toFixed(4) : '—', '142.5', 12],
-    [ask ? (ask * 1.0003).toFixed(4) : '—', '87.2', 23],
-    [ask ? (ask * 1.0002).toFixed(4) : '—', '220.0', 45],
-    [ask ? (ask * 1.0001).toFixed(4) : '—', '95.8', 62],
-    [ask?.toFixed(4) ?? '—', '380.2', 80],
-  ];
-  const bidRows = [
-    [bid?.toFixed(4) ?? '—', '290.1', 78],
-    [bid ? (bid * 0.9999).toFixed(4) : '—', '115.4', 58],
-    [bid ? (bid * 0.9998).toFixed(4) : '—', '63.2', 41],
-    [bid ? (bid * 0.9997).toFixed(4) : '—', '47.8', 28],
-    [bid ? (bid * 0.9996).toFixed(4) : '—', '31.5', 15],
-  ];
-
-  return (
-    <div className="flex flex-col h-full bg-[#0f1525] p-3 space-y-2">
-      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Market Depth</p>
-      <div className="space-y-0.5">
-        {depthRows.map(([price, size, pct], i) => (
-          <div key={i} className="relative flex items-center justify-between text-[9px] py-0.5 px-1">
-            <div className="absolute inset-0 right-0 bg-red-500/10 rounded" style={{ width: `${pct}%`, left: 'auto' }} />
-            <span className="font-mono text-red-400 relative z-10">{price}</span>
-            <span className="text-slate-500 relative z-10">{size}K</span>
-          </div>
-        ))}
-      </div>
-      {midPrice && (
-        <div className="flex items-center gap-2 py-1 border-y border-[rgba(148,163,184,0.1)]">
-          <span className="text-xs font-black text-[#00d4aa]">{midPrice.toFixed(4)}</span>
-          <span className="text-[9px] text-slate-600">Spread: {ask && bid ? ((ask - bid) * 10000).toFixed(1) : '—'} pts</span>
-        </div>
-      )}
-      <div className="space-y-0.5">
-        {bidRows.map(([price, size, pct], i) => (
-          <div key={i} className="relative flex items-center justify-between text-[9px] py-0.5 px-1">
-            <div className="absolute inset-0 bg-emerald-500/10 rounded" style={{ width: `${pct}%` }} />
-            <span className="font-mono text-emerald-400 relative z-10">{price}</span>
-            <span className="text-slate-500 relative z-10">{size}K</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 function RiskCalculatorPanel({ asset }) {
   const [balance, setBalance] = useState('10000');
@@ -141,6 +93,28 @@ export default function FuturesTrade() {
 
   // ── Trading simulator ──
   const sim = useTradeSimulator();
+  const [toasts, setToasts] = useState([]);
+  const [depthClickPrice, setDepthClickPrice] = useState(null);
+
+  const addToast = useCallback((msg, type = 'info') => {
+    const id = Date.now();
+    setToasts(prev => [...prev.slice(-4), { id, msg, type }]);
+    setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 4000);
+  }, []);
+
+  // Wire simulator events → toasts
+  useEffect(() => {
+    sim.setOnEvent((type, data) => {
+      if (type === 'market_fill')   addToast(`✓ ${data.pos.side.toUpperCase()} ${data.pos.volume} lots @ ${data.entryPrice.toFixed(4)}`, 'success');
+      if (type === 'pending_placed') addToast(`⏳ ${data.order.orderType} order placed @ ${data.order.limitPrice?.toFixed(4)}`, 'pending');
+      if (type === 'pending_filled') addToast(`✓ Pending filled: ${data.order.side.toUpperCase()} @ ${data.fillPrice.toFixed(4)}`, 'success');
+      if (type === 'sl_triggered')  addToast(`🛑 Stop Loss hit on ${data.pos.symbol} · PnL $${data.pnl.toFixed(2)}`, 'danger');
+      if (type === 'tp_triggered')  addToast(`🎯 Take Profit hit on ${data.pos.symbol} · PnL $${data.pnl.toFixed(2)}`, 'success');
+      if (type === 'liquidated')    addToast(`⚡ LIQUIDATED ${data.pos.symbol} · $${data.pnl.toFixed(2)}`, 'danger');
+      if (type === 'position_closed') addToast(`Closed ${data.pos.symbol} · PnL $${data.pnl.toFixed(2)}`, 'info');
+      if (type === 'order_cancelled') addToast('Order cancelled', 'info');
+    });
+  }, []);
 
   // Tick simulator on every quote update
   useEffect(() => {
@@ -321,10 +295,18 @@ export default function FuturesTrade() {
                 bidPrice={mp.bid}
                 loading={loadingQuote}
                 onSubmit={sim.submitOrder}
+                externalLimitPrice={depthClickPrice}
               />
             )}
             {sideTab === 'depth' && (
-              <MarketDepthPanel ask={mp.ask} bid={mp.bid} />
+              <MarketDepthPanel
+                ask={mp.ask}
+                bid={mp.bid}
+                onPriceClick={(price) => {
+                  setDepthClickPrice(price);
+                  setSideTab('order');
+                }}
+              />
             )}
             {sideTab === 'news' && (
               <div className="p-2">
@@ -336,6 +318,20 @@ export default function FuturesTrade() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* ── Execution Toasts ── */}
+      <div className="fixed bottom-24 right-3 z-50 flex flex-col gap-1.5 pointer-events-none">
+        {toasts.map(t => (
+          <div key={t.id} className={`px-3 py-2 rounded-xl text-[11px] font-bold shadow-2xl border backdrop-blur-md animate-fadeIn ${
+            t.type === 'success' ? 'bg-emerald-950/90 border-emerald-500/30 text-emerald-300'
+            : t.type === 'danger'  ? 'bg-red-950/90 border-red-500/30 text-red-300'
+            : t.type === 'pending' ? 'bg-amber-950/90 border-amber-500/30 text-amber-300'
+            : 'bg-[#0f1525]/90 border-[rgba(148,163,184,0.15)] text-slate-300'
+          }`}>
+            {t.msg}
+          </div>
+        ))}
       </div>
 
       {/* ── Bottom panel ── */}
