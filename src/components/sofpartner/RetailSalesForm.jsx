@@ -6,6 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { formatNumber, isValidSolanaAddress } from './SOFQuantityCalc';
+import { submitSale } from '@/services/solfortApi';
 import { AlertCircle, CheckCircle, Send, Calculator } from 'lucide-react';
 
 const inputCls = "w-full bg-[#0f1525] border border-[rgba(148,163,184,0.1)] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-600 focus:border-[#00d4aa]/40 outline-none transition-all";
@@ -72,19 +73,15 @@ export default function RetailSalesForm({ partnerWallet }) {
     setSubmitting(true);
     setResult(null);
     try {
-      const res = await fetch('https://solfort-api.onrender.com/sales/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          customerName: form.name.trim(),
-          walletAddress: form.wallet.trim(),
-          salesAmount: parseFloat(form.sales),
-          sofPrice: parseFloat(form.price),
-          promotionPercent: parseFloat(form.promotion),
-          sofAmount: calc.sofAmount,
-        }),
+      await submitSale({
+        customerName: form.name.trim(),
+        walletAddress: form.wallet.trim(),
+        sales: parseFloat(form.sales),
+        quantity: calc.sofAmount,
+        price: parseFloat(form.price),
+        promotion: parseFloat(form.promotion),
+        sofAmount: calc.sofAmount,
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setResult({ type: 'success', msg: '재단에 성공적으로 제출되었습니다.' });
       setForm(EMPTY);
       setTouched({});
