@@ -146,6 +146,7 @@ export default function FuturesTrade() {
   const mp = {
     bid:           selectedQuote?.bid           ?? fb.bid   ?? null,
     ask:           selectedQuote?.ask           ?? fb.ask   ?? null,
+    last:          selectedQuote?.last          ?? selectedQuote?.ask ?? fb.ask ?? null,
     changePercent: selectedQuote?.changePercent ?? fb.changePercent ?? 0,
     high:          selectedQuote?.high          ?? fb.high  ?? null,
     low:           selectedQuote?.low           ?? fb.low   ?? null,
