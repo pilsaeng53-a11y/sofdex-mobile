@@ -87,6 +87,20 @@ export async function getNews(symbol) {
   return Array.isArray(res) ? res : (res.data ?? res.articles ?? []);
 }
 
+// ─── Health checks ──────────────────────────────────────────
+/**
+ * Check a specific endpoint's health. Returns { ok, latencyMs, error }.
+ */
+export async function checkEndpoint(path) {
+  const start = Date.now();
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, { method: 'GET' });
+    return { ok: res.ok, latencyMs: Date.now() - start, error: res.ok ? null : `HTTP ${res.status}` };
+  } catch (e) {
+    return { ok: false, latencyMs: Date.now() - start, error: e.message };
+  }
+}
+
 // ─── Symbol normalizer ────────────────────────────────────────
 /**
  * Extract base symbol from any exchange format.
