@@ -43,6 +43,12 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading =
   const balance      = parseFloat(accountBalance) || 10000;
   const riskPct      = riskAmount != null ? (riskAmount / balance) * 100 : null;
 
+  const liqPrice = currentPrice
+    ? side === 'buy'
+      ? currentPrice * (1 - 1 / leverage * 0.8)
+      : currentPrice * (1 + 1 / leverage * 0.8)
+    : null;
+
   const riskLevel = margin > 5000 ? 'high' : margin > 1000 ? 'medium' : 'low';
   const RISK_COLOR = { low: 'text-emerald-400', medium: 'text-amber-400', high: 'text-red-400' };
 
