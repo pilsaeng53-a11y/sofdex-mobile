@@ -37,6 +37,16 @@ export default function CoinIcon({ symbol, size = 24, className = '', debugLabel
   const [error,  setError]  = useState(false);
   const _logged = useRef(false);
 
+  // Reset state whenever the resolved URL changes (i.e. symbol switched)
+  const prevUrl = useRef(url);
+  if (prevUrl.current !== url) {
+    prevUrl.current = url;
+    // Synchronous state reset so the new image gets a clean slate
+    if (loaded) setLoaded(false);
+    if (error)  setError(false);
+    _logged.current = false; // allow re-log for new symbol
+  }
+
   // Debug log — fires once per mount with full tracing
   useEffect(() => {
     if (!_logged.current) {
