@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Minus, Plus, Zap, AlertTriangle } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Minus, Plus, Zap, Loader2 } from 'lucide-react';
+import { fmtPrice, decimalsFor } from '../../lib/trading/priceFormat';
 
 const ORDER_TYPES = ['Market', 'Limit', 'Stop', 'Stop-Limit'];
 const LOT_PRESETS = [0.01, 0.1, 0.5, 1.0, 5.0];
@@ -24,16 +25,26 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
   const [limitPrice, setLimitPrice] = useState('');
   const [accountBalance, setAccountBalance] = useState('10000');
   const [oneClick, setOneClick] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const submitLock = useRef(false);
+  const dec = decimalsFor(symbol);
 
   // Sync depth-clicked price into limitPrice field and switch to Limit order type
   React.useEffect(() => {
     if (externalLimitPrice != null) {
-      setLimitPrice(externalLimitPrice.toFixed(5));
+      setLimitPrice(fmtPrice(externalLimitPrice, symbol));
       setOrderType('Limit');
     }
   }, [externalLimitPrice]);
 
+  // When switching to Market, clear the limit price field
+  const handleOrderTypeChange = (t) => {
+    setOrderType(t);
+    if (t === 'Market') setLimitPrice('');
+  };
+
+  // Buy executes at ask, sell executes at bid
   const currentPrice = side === 'buy' ? askPrice : bidPrice;
   const lotSize = asset?.lot_size ?? 100000;
   const spread = asset?.spread ?? 1.2;
@@ -61,7 +72,10 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
   const RISK_COLOR = { low: 'text-emerald-400', medium: 'text-amber-400', high: 'text-red-400' };
 
   const handleSubmit = () => {
-    if (!currentPrice) return;
+    if (!currentPrice || submitLock.current) return;
+    submitLock.current = true;
+    setIsSubmitting(true);
+    setSubmitted(false);
     onSubmit?.({
       symbol,
       side,
@@ -76,8 +90,12 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
       lotSize:  asset?.lot_size  ?? 100000,
       pipValue: asset?.pip_value ?? 0.0001,
     });
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 2000);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      submitLock.current = false;
+      setTimeout(() => setSubmitted(false), 1800);
+    }, 600);
   };
 
   const adjVol = (delta) => setVolume(v => Math.max(0.01, Math.round((v + delta) * 100) / 100));
@@ -87,7 +105,7 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
       {/* Order type tabs */}
       <div className="grid grid-cols-4 border-b border-[rgba(148,163,184,0.08)]">
         {ORDER_TYPES.map(t => (
-          <button key={t} onClick={() => setOrderType(t)}
+          <button key={t} onClick={() => handleOrderTypeChange(t)}
             className={`py-2 text-[9px] font-bold transition-all ${orderType === t ? 'bg-[#151c2e] text-[#00d4aa] border-b-2 border-[#00d4aa]' : 'text-slate-500 hover:text-slate-300'}`}>
             {t}
           </button>
@@ -101,7 +119,7 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
             className={`py-3 rounded-xl font-black text-sm transition-all ${side === 'buy' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-[#1a2340] text-slate-500 border border-[rgba(148,163,184,0.08)]'}`}>
             {loading
               ? <div className="w-14 h-3 bg-emerald-900/50 rounded mx-auto mb-1 animate-pulse" />
-              : <div className="text-xs opacity-70 font-mono">{askPrice != null ? askPrice.toFixed(4) : '—'}</div>
+              : <div className="text-xs opacity-70 font-mono">{fmtPrice(askPrice, symbol)}</div>
             }
             BUY
           </button>
@@ -109,7 +127,7 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
             className={`py-3 rounded-xl font-black text-sm transition-all ${side === 'sell' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[#1a2340] text-slate-500 border border-[rgba(148,163,184,0.08)]'}`}>
             {loading
               ? <div className="w-14 h-3 bg-red-900/50 rounded mx-auto mb-1 animate-pulse" />
-              : <div className="text-xs opacity-70 font-mono">{bidPrice != null ? bidPrice.toFixed(4) : '—'}</div>
+              : <div className="text-xs opacity-70 font-mono">{fmtPrice(bidPrice, symbol)}</div>
             }
             SELL
           </button>
@@ -176,7 +194,7 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
         <div className="space-y-2">
           <div>
             <label className="text-[9px] font-bold text-red-400 uppercase mb-1 block">Stop Loss</label>
-            <input type="number" value={sl} onChange={e => setSl(e.target.value)} placeholder={currentPrice ? (side === 'buy' ? (currentPrice * 0.998).toFixed(4) : (currentPrice * 1.002).toFixed(4)) : '0.00'}
+            <input type="number" value={sl} onChange={e => setSl(e.target.value)} placeholder={currentPrice ? fmtPrice(side === 'buy' ? currentPrice * 0.998 : currentPrice * 1.002, symbol) : '0.00'}
               className="w-full bg-[#1a2340] border border-red-500/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-red-500/40" />
             {slPips != null && (
               <div className="flex justify-between text-[9px] text-red-400 mt-0.5">
@@ -187,7 +205,7 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
           </div>
           <div>
             <label className="text-[9px] font-bold text-emerald-400 uppercase mb-1 block">Take Profit</label>
-            <input type="number" value={tp} onChange={e => setTp(e.target.value)} placeholder={currentPrice ? (side === 'buy' ? (currentPrice * 1.004).toFixed(4) : (currentPrice * 0.996).toFixed(4)) : '0.00'}
+            <input type="number" value={tp} onChange={e => setTp(e.target.value)} placeholder={currentPrice ? fmtPrice(side === 'buy' ? currentPrice * 1.004 : currentPrice * 0.996, symbol) : '0.00'}
               className="w-full bg-[#1a2340] border border-emerald-500/20 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/40" />
             {tpPips != null && (
               <div className="flex justify-between text-[9px] text-emerald-400 mt-0.5">
@@ -205,7 +223,7 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
           <Row label="Swap/day" value={`${swapRate}%`} />
           <Row label="Margin" value={`$${margin.toFixed(2)}`} valueClass={RISK_COLOR[riskLevel]} />
           <Row label="Notional" value={notional > 1e6 ? `$${(notional/1e6).toFixed(2)}M` : `$${notional.toFixed(0)}`} />
-          {liqPrice && <Row label="Liq. Price" value={liqPrice.toFixed(4)} valueClass="text-red-400" />}
+          {liqPrice && <Row label="Liq. Price" value={fmtPrice(liqPrice, symbol)} valueClass="text-red-400" />}
           {riskAmount != null && <Row label="SL Risk" value={`$${riskAmount.toFixed(2)}`} valueClass="text-red-400" />}
           {rewardAmount != null && <Row label="TP Reward" value={`$${rewardAmount.toFixed(2)}`} valueClass="text-emerald-400" />}
           {riskPct != null && <Row label="Risk %" value={`${riskPct.toFixed(2)}%`} valueClass={riskPct > 5 ? 'text-red-400' : riskPct > 2 ? 'text-amber-400' : 'text-emerald-400'} />}
@@ -226,15 +244,24 @@ export default function FuturesOrderPanel({ asset, symbol, askPrice, bidPrice, l
 
       {/* Submit button */}
       <div className="p-3 border-t border-[rgba(148,163,184,0.08)]">
-        <button onClick={handleSubmit}
-          className={`w-full py-3 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 ${
+        <button
+          onClick={handleSubmit}
+          disabled={isSubmitting || submitted || !currentPrice}
+          className={`w-full py-3 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed ${
             submitted
               ? 'bg-slate-600 text-slate-300'
-              : side === 'buy'
-                ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40'
-                : 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40'
+              : isSubmitting
+                ? (side === 'buy' ? 'bg-emerald-700 text-white' : 'bg-red-700 text-white')
+                : side === 'buy'
+                  ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40'
+                  : 'bg-gradient-to-r from-red-500 to-red-600 text-white shadow-lg shadow-red-500/25 hover:shadow-red-500/40'
           }`}>
-          {submitted ? '✓ Order Placed' : `${side === 'buy' ? 'BUY' : 'SELL'} ${volume} LOTS`}
+          {isSubmitting
+            ? <><Loader2 className="w-4 h-4 animate-spin" /> Processing...</>
+            : submitted
+              ? '✓ Order Placed'
+              : `${side === 'buy' ? 'BUY' : 'SELL'} ${volume} LOTS`
+          }
         </button>
         <p className="text-[9px] text-slate-600 text-center mt-1.5">
           {orderType} · Margin: ${margin.toFixed(2)} · Lev: 1:{leverage}
