@@ -5,7 +5,6 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
 import { formatNumber, isValidSolanaAddress } from './SOFQuantityCalc';
 import { AlertCircle, CheckCircle, Send, Calculator } from 'lucide-react';
 
@@ -36,11 +35,12 @@ export default function RetailSalesForm({ partnerWallet }) {
     const price = parseFloat(form.price);
     const promo = parseFloat(form.promotion);
     if (!sales || !price || !promo || sales <= 0 || price <= 0 || promo <= 0) {
-      return { isValid: false, sofAmount: 0, multiplier: 0 };
+      return { isValid: false, sofAmount: 0, multiplier: 0, effectiveSOFPrice: 0 };
     }
     const multiplier = promo / 100;
     const sofAmount = (sales / price) * multiplier;
-    return { isValid: true, sofAmount, multiplier };
+    const effectiveSOFPrice = price / multiplier; // 실효 SOF 가격
+    return { isValid: true, sofAmount, multiplier, effectiveSOFPrice };
   }, [form.sales, form.price, form.promotion]);
 
   const errors = useMemo(() => {
@@ -72,22 +72,24 @@ export default function RetailSalesForm({ partnerWallet }) {
     setSubmitting(true);
     setResult(null);
     try {
-      await base44.entities.SOFSaleSubmission.create({
-        partner_wallet: partnerWallet,
-        customer_name: form.name.trim(),
-        customer_wallet: form.wallet.trim(),
-        purchase_amount: parseFloat(form.sales),
-        sof_unit_price: parseFloat(form.price),
-        promotion_percent: parseFloat(form.promotion),
-        sof_quantity: calc.sofAmount,
-        status: 'Processing',
-        submitted_at: new Date().toISOString(),
+      const res = await fetch('https://solfort-api.onrender.com/sales/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: form.name.trim(),
+          walletAddress: form.wallet.trim(),
+          salesAmount: parseFloat(form.sales),
+          sofPrice: parseFloat(form.price),
+          promotionPercent: parseFloat(form.promotion),
+          sofAmount: calc.sofAmount,
+        }),
       });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
       setResult({ type: 'success', msg: '재단에 성공적으로 제출되었습니다.' });
       setForm(EMPTY);
       setTouched({});
-    } catch {
-      setResult({ type: 'error', msg: '제출 중 오류가 발생했습니다. 다시 시도하세요.' });
+    } catch (err) {
+      setResult({ type: 'error', msg: `제출 중 오류가 발생했습니다: ${err.message}` });
     }
     setSubmitting(false);
   }
@@ -189,7 +191,11 @@ export default function RetailSalesForm({ partnerWallet }) {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-[10px] text-slate-400">프로모션 배수</span>
-              <span className="text-xs font-bold text-amber-400">{calc.multiplier.toFixed(2)}x (프로모션 배수: {calc.multiplier.toFixed(1)}배)</span>
+              <span className="text-xs font-bold text-amber-400">{calc.multiplier.toFixed(2)}x ({calc.multiplier.toFixed(1)}배)</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-slate-400">실효 SOF 가격</span>
+              <span className="text-xs font-bold text-slate-200">${formatNumber(calc.effectiveSOFPrice, 4)} / SOF</span>
             </div>
             <div className="flex items-center justify-between border-t border-[rgba(0,212,170,0.1)] pt-2">
               <span className="text-sm font-bold text-white">최종 SOF 수량</span>
