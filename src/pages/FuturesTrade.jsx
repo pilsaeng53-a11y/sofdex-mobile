@@ -133,8 +133,10 @@ export default function FuturesTrade() {
   const [sideTab, setSideTab] = useState('order');
   const [bottomExpanded, setBottomExpanded] = useState(true);
 
-  // ── Live market data (REST + WebSocket) ──
-  const { selectedQuote, quotesMap, loadingQuote, wsStatus } = useFuturesMarket(symbol);
+  // ── Live market data (REST + WebSocket + Candles) ──
+  const {
+    selectedQuote, quotesMap, candles, loadingQuote, loadingCandles, wsStatus
+  } = useFuturesMarket(symbol, timeframe);
 
   const allAssets = useMemo(() => Object.values(TRADING_ASSETS).flat(), []);
   const asset = allAssets.find(a => a.symbol === symbol) || allAssets[0];
