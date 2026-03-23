@@ -87,16 +87,6 @@ export async function getNews(symbol) {
   return Array.isArray(res) ? res : (res.data ?? res.articles ?? []);
 }
 
-// ─── News ────────────────────────────────────────────────────
-/**
- * GET /news?symbol={symbol}
- * Returns array of news articles for the given normalized symbol.
- */
-export async function getNews(symbol) {
-  const res = await apiFetch(`/news?symbol=${encodeURIComponent(symbol)}`);
-  return Array.isArray(res) ? res : (res.data ?? res.articles ?? []);
-}
-
 // ─── Symbol normalizer ────────────────────────────────────────
 /**
  * Extract base symbol from any exchange format.
