@@ -66,8 +66,13 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
   const intervalRef     = useRef(interval);
   intervalRef.current   = interval;
   const liveCandleRef   = useRef(null);
+  // Track quotes in a ref so the WS handler always sees current data
+  const quotesMapRef    = useRef({});
 
-  // ── 1. Fetch available symbols once ───────────────────────────────
+  // Keep quotesMapRef in sync
+  useEffect(() => { quotesMapRef.current = quotesMap; }, [quotesMap]);
+
+  // 1. Fetch available symbols once
   useEffect(() => {
     fetch(`${API_BASE}/symbols`)
       .then(r => r.json())
@@ -78,14 +83,21 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
           : STATIC_SYMBOLS;
         if (list.length) setAvailableSymbols(list);
       })
-      .catch(() => {/* keep static fallback */});
+      .catch(() => {});
   }, []);
 
-  // ── 2. Fetch REST quote for selected symbol ────────────────────────
+  // 2. Fetch REST quote for selected symbol on symbol change
   useEffect(() => {
     if (!baseSymbol) return;
     let cancelled = false;
-    setLoadingQuote(true);
+
+    // Only show loading spinner if we have no cached quote yet
+    if (!quotesMapRef.current[baseSymbol]) {
+      setLoadingQuote(true);
+    } else {
+      setLoadingQuote(false);
+    }
+
     fetch(`${API_BASE}/quotes?symbol=${baseSymbol}`)
       .then(r => r.json())
       .then(data => {
@@ -95,33 +107,33 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
       })
       .catch(() => {})
       .finally(() => { if (!cancelled && mountedRef.current) setLoadingQuote(false); });
+
     return () => { cancelled = true; };
   }, [baseSymbol]);
 
-  // ── 3. Fetch candles on symbol + interval change ───────────────────
+  // 3. Fetch candles — clear stale data immediately on symbol/interval change
   useEffect(() => {
     if (!baseSymbol) return;
     let cancelled = false;
+
+    // Clear stale candles immediately so chart doesn't show wrong symbol data
+    setCandles([]);
+    setLiveCandle(null);
+    liveCandleRef.current = null;
     setLoadingCandles(true);
 
     const url = `${API_BASE}/candles?symbol=${baseSymbol}&interval=${interval}&limit=300`;
-    console.log('[FuturesMarket] Fetching candles:', url);
 
     fetch(url)
       .then(r => r.json())
       .then(data => {
         if (cancelled || !mountedRef.current) return;
-        console.log('[FuturesMarket] Raw candles API response:', data);
 
-        // Handle all common envelope shapes: array, { data }, { candles }, { result }, { bars }
         const raw = Array.isArray(data)
           ? data
           : (data?.data ?? data?.candles ?? data?.result ?? data?.bars ?? []);
 
-        console.log('[FuturesMarket] Extracted raw candles count:', raw.length, '| first:', raw[0]);
-
         const mapped = raw.map(c => ({
-          // Support multiple field name conventions
           time:      c.time      ?? c.timestamp ?? c.t ?? null,
           timestamp: c.timestamp ?? c.time      ?? c.t ?? null,
           open:      c.open      ?? c.o,
@@ -131,18 +143,15 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
           volume:    c.volume    ?? c.v ?? 0,
         }));
 
-        console.log('[FuturesMarket] Mapped candles count:', mapped.length, '| sample:', mapped.slice(0, 2));
         setCandles(mapped);
       })
-      .catch(err => {
-        console.error('[FuturesMarket] Candles fetch error:', err);
-        if (!cancelled && mountedRef.current) setCandles([]);
-      })
+      .catch(() => { if (!cancelled && mountedRef.current) setCandles([]); })
       .finally(() => { if (!cancelled && mountedRef.current) setLoadingCandles(false); });
+
     return () => { cancelled = true; };
   }, [baseSymbol, interval]);
 
-  // ── 4. Stable WebSocket (never reconnects on symbol change) ────────
+  // 4. Stable WebSocket — subscribes to all symbols, updates quotesMap for all
   const connectWS = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN ||
         wsRef.current?.readyState === WebSocket.CONNECTING) return;
@@ -163,29 +172,31 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
         if (msg.type === 'quote' && msg.symbol) {
           const sym = normalizeSymbol(msg.symbol);
           const q   = parseQuote(msg);
-          if (q) {
-            setQuotesMap(prev => ({ ...prev, [sym]: q }));
-            if (sym === baseSymbolRef.current) {
-              setLoadingQuote(false);
-              // Live candle merge
-              const price = q.last ?? q.ask ?? q.bid;
-              if (price != null) {
-                const bucketTime = getBucketTime(intervalRef.current);
-                const prev = liveCandleRef.current;
-                if (prev && prev.time === bucketTime) {
-                  const updated = {
-                    ...prev,
-                    high:  Math.max(prev.high, price),
-                    low:   Math.min(prev.low,  price),
-                    close: price,
-                  };
-                  liveCandleRef.current = updated;
-                  setLiveCandle({ ...updated });
-                } else {
-                  const candle = { time: bucketTime, open: price, high: price, low: price, close: price };
-                  liveCandleRef.current = candle;
-                  setLiveCandle({ ...candle });
-                }
+          if (!q) return;
+
+          // Update quotes map for ALL symbols (simulator needs all of them)
+          setQuotesMap(prev => ({ ...prev, [sym]: q }));
+
+          // Live candle only for currently selected symbol
+          if (sym === baseSymbolRef.current) {
+            setLoadingQuote(false);
+            const price = q.last ?? q.ask ?? q.bid;
+            if (price != null) {
+              const bucketTime = getBucketTime(intervalRef.current);
+              const prev = liveCandleRef.current;
+              if (prev && prev.time === bucketTime) {
+                const updated = {
+                  ...prev,
+                  high:  Math.max(prev.high, price),
+                  low:   Math.min(prev.low,  price),
+                  close: price,
+                };
+                liveCandleRef.current = updated;
+                setLiveCandle({ ...updated });
+              } else {
+                const candle = { time: bucketTime, open: price, high: price, low: price, close: price };
+                liveCandleRef.current = candle;
+                setLiveCandle({ ...candle });
               }
             }
           }
@@ -211,12 +222,6 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
       wsRef.current?.close();
     };
   }, [connectWS]);
-
-  // Reset live candle when symbol or interval changes
-  useEffect(() => {
-    liveCandleRef.current = null;
-    setLiveCandle(null);
-  }, [baseSymbol, interval]);
 
   const selectedQuote = quotesMap[baseSymbol] ?? null;
 
