@@ -65,7 +65,7 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
   baseSymbolRef.current = baseSymbol;
   const intervalRef     = useRef(interval);
   intervalRef.current   = interval;
-  const liveCandleRef   = useRef(null); // track live candle without re-render for same bucket
+  const liveCandleRef   = useRef(null);
 
   // ── 1. Fetch available symbols once ───────────────────────────────
   useEffect(() => {
@@ -103,22 +103,41 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
     if (!baseSymbol) return;
     let cancelled = false;
     setLoadingCandles(true);
-    fetch(`${API_BASE}/candles?symbol=${baseSymbol}&interval=${interval}&limit=200`)
+
+    const url = `${API_BASE}/candles?symbol=${baseSymbol}&interval=${interval}&limit=300`;
+    console.log('[FuturesMarket] Fetching candles:', url);
+
+    fetch(url)
       .then(r => r.json())
       .then(data => {
         if (cancelled || !mountedRef.current) return;
-        const raw = Array.isArray(data) ? data : data?.candles ?? [];
-        setCandles(raw.map(c => ({
-          time:      c.time      ?? c.timestamp ?? null,
-          timestamp: c.timestamp ?? c.time      ?? null,
-          open:      c.open,
-          high:      c.high,
-          low:       c.low,
-          close:     c.close,
-          volume:    c.volume ?? 0,
-        })));
+        console.log('[FuturesMarket] Raw candles API response:', data);
+
+        // Handle all common envelope shapes: array, { data }, { candles }, { result }, { bars }
+        const raw = Array.isArray(data)
+          ? data
+          : (data?.data ?? data?.candles ?? data?.result ?? data?.bars ?? []);
+
+        console.log('[FuturesMarket] Extracted raw candles count:', raw.length, '| first:', raw[0]);
+
+        const mapped = raw.map(c => ({
+          // Support multiple field name conventions
+          time:      c.time      ?? c.timestamp ?? c.t ?? null,
+          timestamp: c.timestamp ?? c.time      ?? c.t ?? null,
+          open:      c.open      ?? c.o,
+          high:      c.high      ?? c.h,
+          low:       c.low       ?? c.l,
+          close:     c.close     ?? c.c,
+          volume:    c.volume    ?? c.v ?? 0,
+        }));
+
+        console.log('[FuturesMarket] Mapped candles count:', mapped.length, '| sample:', mapped.slice(0, 2));
+        setCandles(mapped);
       })
-      .catch(() => { if (!cancelled && mountedRef.current) setCandles([]); })
+      .catch(err => {
+        console.error('[FuturesMarket] Candles fetch error:', err);
+        if (!cancelled && mountedRef.current) setCandles([]);
+      })
       .finally(() => { if (!cancelled && mountedRef.current) setLoadingCandles(false); });
     return () => { cancelled = true; };
   }, [baseSymbol, interval]);
@@ -154,7 +173,6 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
                 const bucketTime = getBucketTime(intervalRef.current);
                 const prev = liveCandleRef.current;
                 if (prev && prev.time === bucketTime) {
-                  // Same bucket — update H/L/C
                   const updated = {
                     ...prev,
                     high:  Math.max(prev.high, price),
@@ -164,7 +182,6 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
                   liveCandleRef.current = updated;
                   setLiveCandle({ ...updated });
                 } else {
-                  // New bucket — open new candle
                   const candle = { time: bucketTime, open: price, high: price, low: price, close: price };
                   liveCandleRef.current = candle;
                   setLiveCandle({ ...candle });
@@ -173,7 +190,6 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
             }
           }
         }
-        // 'connected' / 'subscribed' messages — no action needed
       } catch { /* ignore malformed */ }
     };
 
@@ -184,7 +200,7 @@ export default function useFuturesMarket(rawSymbol, interval = '1h') {
     };
 
     ws.onerror = () => ws.close();
-  }, [availableSymbols]); // re-create only when symbol list changes
+  }, [availableSymbols]);
 
   useEffect(() => {
     mountedRef.current = true;

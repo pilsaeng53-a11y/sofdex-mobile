@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createChart } from 'lightweight-charts';
 
 const CHART_OPTS = {
@@ -22,38 +22,54 @@ const CHART_OPTS = {
     textColor:   '#64748b',
   },
   timeScale: {
-    borderColor:      'rgba(148,163,184,0.08)',
-    textColor:        '#64748b',
-    timeVisible:      true,
-    secondsVisible:   false,
-    fixLeftEdge:      true,
-    fixRightEdge:     true,
+    borderColor:    'rgba(148,163,184,0.08)',
+    textColor:      '#64748b',
+    timeVisible:    true,
+    secondsVisible: false,
+    fixLeftEdge:    true,
+    fixRightEdge:   true,
   },
-  handleScroll:    true,
-  handleScale:     true,
+  handleScroll: true,
+  handleScale:  true,
 };
 
 const CANDLE_STYLE = {
-  upColor:          '#22c55e',
-  downColor:        '#475569',
-  borderUpColor:    '#22c55e',
-  borderDownColor:  '#475569',
-  wickUpColor:      '#22c55e',
-  wickDownColor:    '#64748b',
+  upColor:         '#22c55e',
+  downColor:       '#ef4444',
+  borderUpColor:   '#22c55e',
+  borderDownColor: '#ef4444',
+  wickUpColor:     '#22c55e',
+  wickDownColor:   '#ef4444',
 };
 
+/**
+ * Normalize raw candle array → lightweight-charts format.
+ * Handles ms timestamps, ISO strings, and unix seconds.
+ * Deduplicates by time and sorts ascending.
+ */
 function toChartCandles(raw = []) {
   const seen = new Set();
   return raw
     .map(c => {
       const t = c.time ?? c.timestamp;
-      const ts = typeof t === 'number'
-        ? (t > 1e10 ? Math.floor(t / 1000) : t)   // ms → s if needed
-        : Math.floor(new Date(t).getTime() / 1000);
-      return { time: ts, open: +c.open, high: +c.high, low: +c.low, close: +c.close };
+      let ts;
+      if (typeof t === 'number') {
+        ts = t > 1e10 ? Math.floor(t / 1000) : Math.floor(t); // ms → s
+      } else if (typeof t === 'string') {
+        const ms = new Date(t).getTime();
+        ts = isNaN(ms) ? null : Math.floor(ms / 1000);
+      } else {
+        ts = null;
+      }
+      const open  = parseFloat(c.open);
+      const high  = parseFloat(c.high);
+      const low   = parseFloat(c.low);
+      const close = parseFloat(c.close);
+      return { time: ts, open, high, low, close };
     })
     .filter(c => {
-      if (!isFinite(c.time) || !isFinite(c.open)) return false;
+      if (c.time == null || !isFinite(c.time)) return false;
+      if (!isFinite(c.open) || !isFinite(c.close)) return false;
       if (seen.has(c.time)) return false;
       seen.add(c.time);
       return true;
@@ -64,12 +80,12 @@ function toChartCandles(raw = []) {
 /**
  * CandleChart
  * Props:
- *  candles       — array from useFuturesMarket
- *  liveCandle    — single live candle {time,open,high,low,close} (updated via WS)
- *  loading       — bool
- *  lastPrice     — number (for price line)
- *  symbol        — display string
- *  interval      — display string
+ *  candles    — raw array from useFuturesMarket
+ *  liveCandle — single live candle updated via WS
+ *  loading    — bool
+ *  lastPrice  — number (for price line)
+ *  symbol     — display string
+ *  interval   — display string
  */
 export default function CandleChart({ candles = [], liveCandle, loading = false, lastPrice, symbol, interval }) {
   const containerRef = useRef(null);
@@ -81,12 +97,21 @@ export default function CandleChart({ candles = [], liveCandle, loading = false,
   // ── Create chart once ──────────────────────────────────────────────
   useEffect(() => {
     if (!containerRef.current) return;
-    const chart = createChart(containerRef.current, {
-      ...CHART_OPTS,
-      width:  containerRef.current.clientWidth,
-      height: containerRef.current.clientHeight,
-    });
-    const series = chart.addCandlestickSeries(CANDLE_STYLE);
+
+    const w = containerRef.current.clientWidth  || 600;
+    const h = containerRef.current.clientHeight || 300;
+    console.log('[CandleChart] Init — container size:', w, 'x', h);
+
+    let chart, series;
+    try {
+      chart  = createChart(containerRef.current, { ...CHART_OPTS, width: w, height: h });
+      series = chart.addCandlestickSeries(CANDLE_STYLE);
+      console.log('[CandleChart] Chart + series created OK');
+    } catch (e) {
+      console.error('[CandleChart] Init FAILED:', e);
+      return;
+    }
+
     chartRef.current  = chart;
     seriesRef.current = series;
 
@@ -108,35 +133,52 @@ export default function CandleChart({ candles = [], liveCandle, loading = false,
     };
   }, []);
 
-  // ── Update full candle dataset ────────────────────────────────────
+  // ── Update full candle dataset when candles prop changes ──────────
   useEffect(() => {
+    console.log('[CandleChart] candles prop updated — symbol:', symbol, '| interval:', interval, '| raw count:', candles.length, '| loading:', loading);
     if (!seriesRef.current || loading) return;
+
     const data = toChartCandles(candles);
-    if (!data.length) return;
-    seriesRef.current.setData(data);
-    chartRef.current?.timeScale().fitContent();
+    console.log('[CandleChart] After toChartCandles — valid count:', data.length, '| first:', data[0], '| last:', data[data.length - 1]);
+
+    if (!data.length) {
+      console.warn('[CandleChart] No valid candles to render — setData skipped');
+      return;
+    }
+
+    try {
+      seriesRef.current.setData(data);
+      chartRef.current?.timeScale().fitContent();
+      console.log('[CandleChart] setData OK ✓');
+    } catch (e) {
+      console.error('[CandleChart] setData FAILED:', e);
+    }
   }, [candles, loading]);
 
-  // ── Stream live candle updates (update last / append new) ──────────
+  // ── Stream live candle updates ─────────────────────────────────────
   useEffect(() => {
     if (!seriesRef.current || !liveCandle) return;
-    seriesRef.current.update(liveCandle);
+    try {
+      seriesRef.current.update(liveCandle);
+    } catch (e) {
+      console.error('[CandleChart] live update FAILED:', e);
+    }
   }, [liveCandle]);
 
   // ── Update live price line ─────────────────────────────────────────
   useEffect(() => {
     if (!seriesRef.current || lastPrice == null) return;
-    if (lineRef.current) {
-      seriesRef.current.removePriceLine(lineRef.current);
-    }
-    lineRef.current = seriesRef.current.createPriceLine({
-      price:       lastPrice,
-      color:       'rgba(0,212,170,0.7)',
-      lineWidth:   1,
-      lineStyle:   2, // dashed
-      axisLabelVisible: true,
-      title:       '',
-    });
+    try {
+      if (lineRef.current) seriesRef.current.removePriceLine(lineRef.current);
+      lineRef.current = seriesRef.current.createPriceLine({
+        price:            lastPrice,
+        color:            'rgba(0,212,170,0.7)',
+        lineWidth:        1,
+        lineStyle:        2,
+        axisLabelVisible: true,
+        title:            '',
+      });
+    } catch { /* ignore */ }
   }, [lastPrice]);
 
   return (
@@ -155,16 +197,14 @@ export default function CandleChart({ candles = [], liveCandle, loading = false,
         )}
       </div>
 
-      {/* Canvas container */}
+      {/* Canvas container — must fill parent */}
       <div ref={containerRef} className="w-full h-full" />
 
-      {/* Empty state */}
+      {/* Empty state (only show after load attempt) */}
       {!loading && candles.length === 0 && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none">
-          <div className="w-8 h-8 rounded-xl bg-[#151c2e] flex items-center justify-center">
-            <span className="text-base">📊</span>
-          </div>
-          <p className="text-[11px] text-slate-600">No candle data available</p>
+          <span className="text-2xl">📊</span>
+          <p className="text-[11px] text-slate-600">No candle data — check console for details</p>
         </div>
       )}
     </div>
