@@ -61,7 +61,7 @@ function OverviewTab() {
           getMarketData(),
         ]);
         setMarketStatus(mh.status === 'fulfilled' ? mh.value : { ok: false });
-        setNewsCount(nd.status === 'fulfilled' ? nd.value.length : 0);
+        setNewsCount(nd.status === 'fulfilled' ? nd.value.articles.length : 0);
         setMarketCount(md.status === 'fulfilled' ? md.value.length : 0);
       } finally {
         setLoading(false);
