@@ -14,6 +14,7 @@ import FuturesOrderPanel from '../components/futures/FuturesOrderPanel';
 import FuturesBottomPanel from '../components/futures/FuturesBottomPanel';
 import TradeNewsPanel from '../components/trade/TradeNewsPanel';
 import MarketDepthPanel from '../components/futures/MarketDepthPanel';
+import { fmtPrice, fmtSpread } from '../lib/trading/priceFormat';
 
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D', '1W'];
 
@@ -105,13 +106,15 @@ export default function FuturesTrade() {
   // Wire simulator events → toasts
   useEffect(() => {
     sim.setOnEvent((type, data) => {
-      if (type === 'market_fill')   addToast(`✓ ${data.pos.side.toUpperCase()} ${data.pos.volume} lots @ ${data.entryPrice.toFixed(4)}`, 'success');
-      if (type === 'pending_placed') addToast(`⏳ ${data.order.orderType} order placed @ ${data.order.limitPrice?.toFixed(4)}`, 'pending');
-      if (type === 'pending_filled') addToast(`✓ Pending filled: ${data.order.side.toUpperCase()} @ ${data.fillPrice.toFixed(4)}`, 'success');
-      if (type === 'sl_triggered')  addToast(`🛑 Stop Loss hit on ${data.pos.symbol} · PnL $${data.pnl.toFixed(2)}`, 'danger');
-      if (type === 'tp_triggered')  addToast(`🎯 Take Profit hit on ${data.pos.symbol} · PnL $${data.pnl.toFixed(2)}`, 'success');
-      if (type === 'liquidated')    addToast(`⚡ LIQUIDATED ${data.pos.symbol} · $${data.pnl.toFixed(2)}`, 'danger');
-      if (type === 'position_closed') addToast(`Closed ${data.pos.symbol} · PnL $${data.pnl.toFixed(2)}`, 'info');
+      const p = (v, sym) => fmtPrice(v, sym ?? '');
+      const pnlStr = (v) => `${v >= 0 ? '+' : ''}$${Math.abs(v).toFixed(2)}`;
+      if (type === 'market_fill')    addToast(`✓ ${data.pos.side.toUpperCase()} ${data.pos.volume} lots @ ${p(data.entryPrice, data.pos.symbol)}`, 'success');
+      if (type === 'pending_placed') addToast(`⏳ ${data.order.orderType} order placed @ ${p(data.order.limitPrice, data.order.symbol)}`, 'pending');
+      if (type === 'pending_filled') addToast(`✓ ${data.order.side.toUpperCase()} filled @ ${p(data.fillPrice, data.order.symbol)}`, 'success');
+      if (type === 'sl_triggered')   addToast(`🛑 SL hit · ${data.pos.symbol} · ${pnlStr(data.pnl)}`, 'danger');
+      if (type === 'tp_triggered')   addToast(`🎯 TP hit · ${data.pos.symbol} · ${pnlStr(data.pnl)}`, 'success');
+      if (type === 'liquidated')     addToast(`⚡ LIQUIDATED ${data.pos.symbol} · ${pnlStr(data.pnl)}`, 'danger');
+      if (type === 'position_closed') addToast(`Closed ${data.pos.symbol} · ${pnlStr(data.pnl)}`, 'info');
       if (type === 'order_cancelled') addToast('Order cancelled', 'info');
     });
   }, []);
@@ -172,7 +175,7 @@ export default function FuturesTrade() {
             <div className="w-16 h-4 bg-[#1a2340] rounded animate-pulse mb-1" />
           ) : (
             <p className={`text-base font-black ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
-              {mp.ask != null ? mp.ask.toFixed(symbol.includes('JPY') ? 3 : symbol.includes('PERP') ? (mp.ask > 100 ? 2 : 4) : 4) : '—'}
+              {fmtPrice(mp.ask, symbol)}
             </p>
           )}
           <div className="flex items-center gap-1 justify-end">
@@ -192,24 +195,24 @@ export default function FuturesTrade() {
             <p className="text-[8px] text-slate-600 uppercase">Bid</p>
             {loadingQuote
               ? <div className="w-12 h-3 bg-[#1a2340] rounded animate-pulse mt-0.5" />
-              : <p className="text-[11px] font-black text-red-400">{mp.bid != null ? mp.bid.toFixed(symbol.includes('JPY') ? 3 : 4) : '—'}</p>
+              : <p className="text-[11px] font-black text-red-400">{fmtPrice(mp.bid, symbol)}</p>
             }
           </div>
           <div className="text-[8px] text-slate-600 font-mono">
-            {mp.spread != null ? mp.spread.toFixed(1) : mp.bid && mp.ask ? ((mp.ask - mp.bid) * 10000).toFixed(1) : asset.spread}<br/>
+            {fmtSpread(mp.ask, mp.bid, symbol)}<br/>
             <span className="text-[7px]">spread</span>
           </div>
           <div className="text-center">
             <p className="text-[8px] text-slate-600 uppercase">Ask</p>
             {loadingQuote
               ? <div className="w-12 h-3 bg-[#1a2340] rounded animate-pulse mt-0.5" />
-              : <p className="text-[11px] font-black text-emerald-400">{mp.ask != null ? mp.ask.toFixed(symbol.includes('JPY') ? 3 : 4) : '—'}</p>
+              : <p className="text-[11px] font-black text-emerald-400">{fmtPrice(mp.ask, symbol)}</p>
             }
           </div>
         </div>
         {[
-          { label: 'High', value: mp.high != null ? mp.high.toFixed(symbol.includes('JPY') ? 3 : 4) : '—' },
-          { label: 'Low',  value: mp.low  != null ? mp.low.toFixed(symbol.includes('JPY') ? 3 : 4)  : '—' },
+          { label: 'High', value: fmtPrice(mp.high, symbol) },
+          { label: 'Low',  value: fmtPrice(mp.low,  symbol) },
           { label: 'Vol',  value: mp.vol },
           { label: 'Swap', value: '0.02%' },
           { label: 'Lots', value: asset.lot_size?.toLocaleString() ?? '—' },
