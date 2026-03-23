@@ -77,6 +77,16 @@ export function resolveTradingPrice(ticker) {
   return             { price: 0,     source: 'none'  };
 }
 
+// ─── News ─────────────────────────────────────────────────────
+/**
+ * GET /news?symbol=BTC
+ * Returns array of news articles for the given base symbol.
+ */
+export async function getNews(symbol) {
+  const res = await apiFetch(`/news?symbol=${encodeURIComponent(symbol)}`);
+  return Array.isArray(res) ? res : (res.data ?? res.articles ?? []);
+}
+
 // ─── Symbol normalizer ────────────────────────────────────────
 /**
  * Extract base symbol from any exchange format.
