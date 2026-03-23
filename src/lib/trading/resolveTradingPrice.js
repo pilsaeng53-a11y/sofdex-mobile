@@ -18,16 +18,22 @@
  */
 
 /**
- * @param {object|null} ticker — raw Orderly ticker object
- * @returns {{ price: number, source: 'mark'|'last'|'index'|'none' }}
+ * @param {object|null} ticker — Orderly ticker OR SolFort API market data object
+ * @returns {{ price: number, source: 'live'|'mark'|'last'|'index'|'none' }}
+ *
+ * Priority: liveTradingPrice → markPrice → lastPrice → indexPrice
+ * FORBIDDEN: marketCap, fdv, summaryPrice, metadataPrice, tokenPrice
+ * If no valid trading price exists, returns price=0, source='none'. Never falls back to market cap.
  */
 export function resolveTradingPrice(ticker) {
   if (!ticker) return { price: 0, source: 'none' };
 
-  const mark  = ticker.markPrice  ?? 0;
-  const last  = ticker.lastPrice  ?? 0;
-  const index = ticker.indexPrice ?? 0;
+  const live  = Number(ticker.liveTradingPrice ?? 0);
+  const mark  = Number(ticker.markPrice        ?? 0);
+  const last  = Number(ticker.lastPrice        ?? 0);
+  const index = Number(ticker.indexPrice       ?? 0);
 
+  if (live  > 0) return { price: live,  source: 'live'  };
   if (mark  > 0) return { price: mark,  source: 'mark'  };
   if (last  > 0) return { price: last,  source: 'last'  };
   if (index > 0) return { price: index, source: 'index' };
