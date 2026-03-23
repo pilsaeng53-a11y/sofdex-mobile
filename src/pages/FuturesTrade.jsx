@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { TRADING_ASSETS } from '@/data/futuresTradingAssets';
 import { normalizeSymbol as normSym, rawToTVSymbol } from '../lib/trading/symbolMapper';
+import useFuturesMarket from '../hooks/useFuturesMarket';
 import {
   LayoutGrid, BookOpen, Activity, ChevronDown, Clock,
   BarChart2, Layers, Globe, Calculator, Menu, TrendingUp, TrendingDown
@@ -15,28 +16,20 @@ import TradeNewsPanel from '../components/trade/TradeNewsPanel';
 
 const TIMEFRAMES = ['1m', '5m', '15m', '1h', '4h', '1D', '1W'];
 
-// Mock live data per symbol
-const MOCK_PRICES = {
-  'EURUSD-T': { bid: 1.0870, ask: 1.0873, change: 0.12, high: 1.0901, low: 1.0842, vol: '142.3B' },
-  'USDJPY-T': { bid: 149.80, ask: 149.84, change: -0.31, high: 150.22, low: 149.15, vol: '89.1B' },
-  'GBPUSD-T': { bid: 1.2639, ask: 1.2643, change: 0.08, high: 1.2701, low: 1.2598, vol: '67.5B' },
-  'AUDUSD-T': { bid: 0.6510, ask: 0.6514, change: -0.22, high: 0.6548, low: 0.6492, vol: '41.2B' },
-  'GOLD-T':   { bid: 2340.5, ask: 2341.5, change: 0.55, high: 2358.0, low: 2318.0, vol: '94.7B' },
-  'OIL-T':    { bid: 78.30, ask: 78.38, change: -1.12, high: 79.80, low: 77.50, vol: '32.1B' },
-  'SILVER-T': { bid: 27.79, ask: 27.83, change: 0.34, high: 28.10, low: 27.40, vol: '18.4B' },
-  'NATGAS-T': { bid: 1.929, ask: 1.935, change: -2.14, high: 2.010, low: 1.920, vol: '8.2B' },
-  'SP500-T':  { bid: 5213.0, ask: 5215.2, change: 1.08, high: 5224.0, low: 5180.0, vol: '312B' },
-  'NASDAQ-T': { bid: 18315.0, ask: 18322.0, change: 1.43, high: 18450.0, low: 18100.0, vol: '198B' },
-  'DAX-T':    { bid: 17890.0, ask: 17895.0, change: 0.67, high: 17960.0, low: 17780.0, vol: '87B' },
-  'FTSE-T':   { bid: 7850.0, ask: 7854.0, change: -0.19, high: 7900.0, low: 7820.0, vol: '54B' },
-  'AAPL-T':   { bid: 172.40, ask: 172.50, change: 0.88, high: 174.20, low: 171.00, vol: '14.2B' },
-  'GOOGL-T':  { bid: 175.15, ask: 175.25, change: 1.11, high: 176.80, low: 173.20, vol: '10.8B' },
-  'MSFT-T':   { bid: 415.20, ask: 415.40, change: 0.52, high: 418.50, low: 413.00, vol: '18.9B' },
-  'TSLA-T':   { bid: 182.50, ask: 182.70, change: -2.41, high: 188.00, low: 181.20, vol: '22.3B' },
-  'NVDA-T':   { bid: 879.00, ask: 880.00, change: 3.22, high: 892.00, low: 852.00, vol: '45.1B' },
-  'BTC-PERP': { bid: 67380.0, ask: 67450.0, change: 2.14, high: 68200.0, low: 65800.0, vol: '38.4B' },
-  'ETH-PERP': { bid: 3538.0, ask: 3542.0, change: 1.88, high: 3580.0, low: 3490.0, vol: '14.2B' },
-  'SOL-PERP': { bid: 178.20, ask: 178.50, change: 4.11, high: 182.0, low: 170.0, vol: '3.8B' },
+// Fallback static prices — used only when API quote is unavailable
+const FALLBACK_PRICES = {
+  'EURUSD-T': { bid: 1.0870, ask: 1.0873, changePercent: 0.12, high: 1.0901, low: 1.0842, vol: '142.3B' },
+  'USDJPY-T': { bid: 149.80, ask: 149.84, changePercent: -0.31, high: 150.22, low: 149.15, vol: '89.1B' },
+  'GBPUSD-T': { bid: 1.2639, ask: 1.2643, changePercent: 0.08, high: 1.2701, low: 1.2598, vol: '67.5B' },
+  'AUDUSD-T': { bid: 0.6510, ask: 0.6514, changePercent: -0.22, high: 0.6548, low: 0.6492, vol: '41.2B' },
+  'GOLD-T':   { bid: 2340.5, ask: 2341.5, changePercent: 0.55, high: 2358.0, low: 2318.0, vol: '94.7B' },
+  'OIL-T':    { bid: 78.30,  ask: 78.38,  changePercent: -1.12, high: 79.80, low: 77.50, vol: '32.1B' },
+  'SILVER-T': { bid: 27.79,  ask: 27.83,  changePercent: 0.34, high: 28.10, low: 27.40, vol: '18.4B' },
+  'SP500-T':  { bid: 5213.0, ask: 5215.2, changePercent: 1.08, high: 5224.0, low: 5180.0, vol: '312B' },
+  'NASDAQ-T': { bid: 18315.0, ask: 18322.0, changePercent: 1.43, high: 18450.0, low: 18100.0, vol: '198B' },
+  'BTC-PERP': { bid: 67380.0, ask: 67450.0, changePercent: 2.14, high: 68200.0, low: 65800.0, vol: '38.4B' },
+  'ETH-PERP': { bid: 3538.0,  ask: 3542.0,  changePercent: 1.88, high: 3580.0, low: 3490.0, vol: '14.2B' },
+  'SOL-PERP': { bid: 178.20,  ask: 178.50,  changePercent: 4.11, high: 182.0,  low: 170.0,  vol: '3.8B' },
 };
 
 const SIDE_PANEL_TABS = [
@@ -140,14 +133,27 @@ export default function FuturesTrade() {
   const [sideTab, setSideTab] = useState('order');
   const [bottomExpanded, setBottomExpanded] = useState(true);
 
+  // ── Live market data (REST + WebSocket) ──
+  const { selectedQuote, quotesMap, loadingQuote, wsStatus } = useFuturesMarket(symbol);
+
   const allAssets = useMemo(() => Object.values(TRADING_ASSETS).flat(), []);
   const asset = allAssets.find(a => a.symbol === symbol) || allAssets[0];
-  const mp = MOCK_PRICES[symbol] || { bid: null, ask: null, change: 0, high: null, low: null, vol: '—' };
-  const baseSymbol = normSym(symbol);      // e.g. 'EURUSD', 'BTC'
-  const tvSymbol = rawToTVSymbol(symbol);  // e.g. 'FX:EURUSD', 'BINANCE:BTCUSDT'
-  const positive = mp.change >= 0;
 
-  // tvSymbol already derived above via rawToTVSymbol — no local mapping needed
+  // Merge live quote with fallback static data
+  const fb = FALLBACK_PRICES[symbol] || {};
+  const mp = {
+    bid:           selectedQuote?.bid           ?? fb.bid   ?? null,
+    ask:           selectedQuote?.ask           ?? fb.ask   ?? null,
+    changePercent: selectedQuote?.changePercent ?? fb.changePercent ?? 0,
+    high:          selectedQuote?.high          ?? fb.high  ?? null,
+    low:           selectedQuote?.low           ?? fb.low   ?? null,
+    vol:           selectedQuote?.volume        ?? fb.vol   ?? '—',
+    spread:        selectedQuote?.spread        ?? null,
+  };
+
+  const baseSymbol = normSym(symbol);     // e.g. 'EURUSD', 'BTC'
+  const tvSymbol   = rawToTVSymbol(symbol); // e.g. 'FX:EURUSD', 'BINANCE:BTCUSDT'
+  const positive   = mp.changePercent >= 0;
 
   return (
     <div className="flex flex-col bg-[#05070d] text-slate-100" style={{ height: 'calc(100vh - 108px)' }}>
@@ -174,15 +180,22 @@ export default function FuturesTrade() {
           </div>
         </div>
 
-        {/* Live price */}
+        {/* Live price + WS status */}
         <div className="text-right flex-shrink-0">
-          <p className={`text-base font-black ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
-            {mp.ask?.toFixed(symbol.includes('JPY') ? 3 : symbol.includes('PERP') ? (mp.ask > 100 ? 2 : 4) : 4) ?? '—'}
-          </p>
-          <p className={`text-[10px] font-bold flex items-center gap-0.5 justify-end ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
-            {positive ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
-            {positive ? '+' : ''}{mp.change?.toFixed(2)}%
-          </p>
+          {loadingQuote ? (
+            <div className="w-16 h-4 bg-[#1a2340] rounded animate-pulse mb-1" />
+          ) : (
+            <p className={`text-base font-black ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
+              {mp.ask != null ? mp.ask.toFixed(symbol.includes('JPY') ? 3 : symbol.includes('PERP') ? (mp.ask > 100 ? 2 : 4) : 4) : '—'}
+            </p>
+          )}
+          <div className="flex items-center gap-1 justify-end">
+            <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${wsStatus === 'connected' ? 'bg-emerald-400' : wsStatus === 'connecting' ? 'bg-amber-400 animate-pulse' : 'bg-red-400'}`} />
+            <p className={`text-[10px] font-bold flex items-center gap-0.5 ${positive ? 'text-emerald-400' : 'text-red-400'}`}>
+              {positive ? <TrendingUp className="w-2.5 h-2.5" /> : <TrendingDown className="w-2.5 h-2.5" />}
+              {positive ? '+' : ''}{mp.changePercent?.toFixed(2)}%
+            </p>
+          </div>
         </div>
       </div>
 
@@ -191,20 +204,26 @@ export default function FuturesTrade() {
         <div className="flex items-center gap-3 flex-shrink-0">
           <div className="text-center">
             <p className="text-[8px] text-slate-600 uppercase">Bid</p>
-            <p className="text-[11px] font-black text-red-400">{mp.bid?.toFixed(4) ?? '—'}</p>
+            {loadingQuote
+              ? <div className="w-12 h-3 bg-[#1a2340] rounded animate-pulse mt-0.5" />
+              : <p className="text-[11px] font-black text-red-400">{mp.bid != null ? mp.bid.toFixed(symbol.includes('JPY') ? 3 : 4) : '—'}</p>
+            }
           </div>
           <div className="text-[8px] text-slate-600 font-mono">
-            {mp.bid && mp.ask ? ((mp.ask - mp.bid) * 10000).toFixed(1) : asset.spread}<br/>
+            {mp.spread != null ? mp.spread.toFixed(1) : mp.bid && mp.ask ? ((mp.ask - mp.bid) * 10000).toFixed(1) : asset.spread}<br/>
             <span className="text-[7px]">spread</span>
           </div>
           <div className="text-center">
             <p className="text-[8px] text-slate-600 uppercase">Ask</p>
-            <p className="text-[11px] font-black text-emerald-400">{mp.ask?.toFixed(4) ?? '—'}</p>
+            {loadingQuote
+              ? <div className="w-12 h-3 bg-[#1a2340] rounded animate-pulse mt-0.5" />
+              : <p className="text-[11px] font-black text-emerald-400">{mp.ask != null ? mp.ask.toFixed(symbol.includes('JPY') ? 3 : 4) : '—'}</p>
+            }
           </div>
         </div>
         {[
-          { label: 'High', value: mp.high?.toFixed(4) ?? '—' },
-          { label: 'Low',  value: mp.low?.toFixed(4) ?? '—' },
+          { label: 'High', value: mp.high != null ? mp.high.toFixed(symbol.includes('JPY') ? 3 : 4) : '—' },
+          { label: 'Low',  value: mp.low  != null ? mp.low.toFixed(symbol.includes('JPY') ? 3 : 4)  : '—' },
           { label: 'Vol',  value: mp.vol },
           { label: 'Swap', value: '0.02%' },
           { label: 'Lots', value: asset.lot_size?.toLocaleString() ?? '—' },
@@ -277,7 +296,7 @@ export default function FuturesTrade() {
 
           <div className="flex-1 overflow-y-auto scrollbar-none">
             {sideTab === 'order' && (
-              <FuturesOrderPanel asset={asset} askPrice={mp.ask} bidPrice={mp.bid} />
+              <FuturesOrderPanel asset={asset} askPrice={mp.ask} bidPrice={mp.bid} loading={loadingQuote} />
             )}
             {sideTab === 'depth' && (
               <MarketDepthPanel ask={mp.ask} bid={mp.bid} />

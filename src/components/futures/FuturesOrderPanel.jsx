@@ -14,7 +14,7 @@ function Row({ label, value, valueClass = 'text-slate-300' }) {
   );
 }
 
-export default function FuturesOrderPanel({ asset, askPrice, bidPrice }) {
+export default function FuturesOrderPanel({ asset, askPrice, bidPrice, loading = false }) {
   const [orderType, setOrderType] = useState('Market');
   const [side, setSide] = useState('buy');
   const [volume, setVolume] = useState(0.1);
@@ -74,12 +74,18 @@ export default function FuturesOrderPanel({ asset, askPrice, bidPrice }) {
         <div className="grid grid-cols-2 gap-2">
           <button onClick={() => setSide('buy')}
             className={`py-3 rounded-xl font-black text-sm transition-all ${side === 'buy' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'bg-[#1a2340] text-slate-500 border border-[rgba(148,163,184,0.08)]'}`}>
-            <div className="text-xs opacity-70 font-mono">{askPrice?.toFixed(4) ?? '—'}</div>
+            {loading
+              ? <div className="w-14 h-3 bg-emerald-900/50 rounded mx-auto mb-1 animate-pulse" />
+              : <div className="text-xs opacity-70 font-mono">{askPrice != null ? askPrice.toFixed(4) : '—'}</div>
+            }
             BUY
           </button>
           <button onClick={() => setSide('sell')}
             className={`py-3 rounded-xl font-black text-sm transition-all ${side === 'sell' ? 'bg-red-500 text-white shadow-lg shadow-red-500/20' : 'bg-[#1a2340] text-slate-500 border border-[rgba(148,163,184,0.08)]'}`}>
-            <div className="text-xs opacity-70 font-mono">{bidPrice?.toFixed(4) ?? '—'}</div>
+            {loading
+              ? <div className="w-14 h-3 bg-red-900/50 rounded mx-auto mb-1 animate-pulse" />
+              : <div className="text-xs opacity-70 font-mono">{bidPrice != null ? bidPrice.toFixed(4) : '—'}</div>
+            }
             SELL
           </button>
         </div>
