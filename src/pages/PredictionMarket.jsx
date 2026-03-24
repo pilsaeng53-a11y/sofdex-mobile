@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HIGH_ROLLER_MINIMUM } from '../lib/prediction/monetization';
 import LiveBetFeed from '../components/prediction/LiveBetFeed';
 import PersonalStats from '../components/prediction/PersonalStats';
