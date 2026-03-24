@@ -217,6 +217,31 @@ export function useMarkets({ category = '', sub = '', source = '', limit = 200 }
 }
 
 // ─── Single market detail ─────────────────────────────────────────────────
+export function useArchivedMarkets({ limit = 1000 } = {}) {
+  const [markets, setMarkets] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [total,   setTotal]   = useState(0);
+
+  useEffect(() => {
+    const params = new URLSearchParams({ limit });
+    fetch(`${API_BASE}/prediction/archive?${params}`)
+      .then(r => r.json())
+      .then(data => {
+        const list = parseList(data);
+        const tagged = list.map(m => ({
+          ...m,
+          status: m.status === 'resolved' ? 'resolved' : m.status || 'archived',
+        }));
+        setMarkets(tagged);
+        setTotal(data.total ?? data.count ?? tagged.length);
+      })
+      .catch(() => setMarkets([]))
+      .finally(() => setLoading(false));
+  }, [limit]);
+
+  return { markets, loading, total };
+}
+
 export function useMarketDetail(source, id) {
   const [market,  setMarket]  = useState(null);
   const [loading, setLoading] = useState(false);
