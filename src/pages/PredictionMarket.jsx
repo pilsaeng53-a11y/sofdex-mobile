@@ -1,4 +1,6 @@
 import React, { useState, useMemo } from 'react';
+import LiveBetFeed from '../components/prediction/LiveBetFeed';
+import PersonalStats from '../components/prediction/PersonalStats';
 import {
   TrendingUp, Trophy, MessageSquare, CalendarDays, Briefcase,
   History, Compass, BarChart2, Filter, Search, Sparkles, Loader2,
@@ -131,7 +133,7 @@ function ExploreTab({ onBet, participatedIds, onViewAll }) {
 // ─── Markets tab ──────────────────────────────────────────────────────────
 const PAGE_SIZE = 30;
 
-function MarketsTab({ category, sub, source, onBet, participatedIds }) {
+function MarketsTab({ category, sub, source, onBet, participatedIds, watchlist, onWatchlist }) {
   const [view,         setView]    = useState('row');
   const [search,       setSearch]  = useState('');
   const [visibleCount, setVisible] = useState(PAGE_SIZE);
@@ -181,11 +183,11 @@ function MarketsTab({ category, sub, source, onBet, participatedIds }) {
           </div>
        ) : view === 'card' ? (
           <div className="space-y-3">
-            {visible.map(m => <MarketCard key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />)}
+            {visible.map(m => <MarketCard key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} watchlist={watchlist} onWatchlist={onWatchlist} />)}
           </div>
        ) : (
           <div className="rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.07)]">
-            {visible.map(m => <MarketRow key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />)}
+            {visible.map(m => <MarketRow key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} watchlist={watchlist} onWatchlist={onWatchlist} />)}
           </div>
        )}
 
@@ -291,13 +293,20 @@ export default function PredictionMarket() {
   const [source,       setSource]       = useState('');
   const [sidebarOpen,  setSidebarOpen]  = useState(false);
   const [bets,         setBets]         = useState([]);
-  const [activeMkt,    setActiveMkt]    = useState(null); // { market, existingBet }
+  const [activeMkt,    setActiveMkt]    = useState(null);
+  const [watchlist,    setWatchlist]    = useState(() => new Set());
+
+  const handleWatchlist = (id) => setWatchlist(prev => {
+    const next = new Set(prev);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
 
   const apiStatus                       = useAPIHealth();
   const { categories, loading: catLoading } = useCategories();
 
   // Total count for stats header
-  const { total }  = useMarkets({ limit: 1 });
+  const { markets: allForFeed, total } = useMarkets({ limit: 50 });
   const participatedIds = useMemo(() => new Set(bets.map(b => b.marketId)), [bets]);
 
   const handleCategorySelect = (cat, sub) => {
@@ -433,14 +442,21 @@ export default function PredictionMarket() {
           )}
 
           <div className="px-4 py-4">
-            {tab === 'explore'     && <ExploreTab onBet={handleBet} participatedIds={participatedIds} onViewAll={(key) => { setTab('markets'); }} />}
+            {tab === 'explore'     && (
+              <div className="space-y-4">
+                {bets.length > 0 && <PersonalStats bets={bets} />}
+                <ExploreTab onBet={handleBet} participatedIds={participatedIds} onViewAll={() => setTab('markets')} />
+                <LiveBetFeed markets={allForFeed}
+                  onCopyBet={(bet) => bet.market && handleBet(bet.market)} />
+              </div>
+            )}
             {tab === 'crypto'      && (
               <CryptoShortMarkets
                 participatedIds={participatedIds}
                 onPlaceBet={(bet) => setBets(prev => prev.find(b => b.marketId === bet.marketId) ? prev : [...prev, bet])}
               />
             )}
-            {tab === 'markets'     && <MarketsTab category={category} sub={activeSub} source={source} onBet={handleBet} participatedIds={participatedIds} />}
+            {tab === 'markets'     && <MarketsTab category={category} sub={activeSub} source={source} onBet={handleBet} participatedIds={participatedIds} watchlist={watchlist} onWatchlist={handleWatchlist} />}
             {tab === 'portfolio'   && <PortfolioTab bets={bets} />}
             {tab === 'history'     && <HistoryTab />}
             {tab === 'leaderboard' && <LeaderboardTab />}
