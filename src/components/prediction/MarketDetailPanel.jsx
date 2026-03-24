@@ -2,8 +2,8 @@
  * MarketDetailPanel — Full detail + betting UI for a single prediction market.
  * Fetches GET /prediction/market/:source/:id on open.
  */
-import React, { useState } from 'react';
-import { X, TrendingUp, TrendingDown, Clock, BarChart2, AlertCircle, Loader2, ExternalLink, Zap, ShieldCheck, Crown, LogOut } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, TrendingUp, TrendingDown, Clock, BarChart2, AlertCircle, Loader2, ExternalLink, Zap, ShieldCheck, Crown, Lock } from 'lucide-react';
 import { useMarketDetail } from './usePredictionAPI';
 import { calcFees, calcCashOut, calcInsuranceRefund, applySpread, isHighRoller, PLATFORM_FEE_RATE, INSURANCE_RATE, CASHOUT_FEE_RATE, HIGH_ROLLER_MINIMUM } from '../../lib/prediction/monetization';
 
@@ -14,8 +14,34 @@ const BALANCES = { USDT: 10000, SOL: 24.5, ETH: 3.2 };
 const SOURCE_BADGE = {
   polymarket: { bg: 'rgba(99,102,241,0.15)', text: '#818cf8', border: 'rgba(99,102,241,0.3)', label: 'Polymarket' },
   kalshi:     { bg: 'rgba(16,185,129,0.12)', text: '#34d399', border: 'rgba(16,185,129,0.25)', label: 'Kalshi' },
+  solfort:    { bg: 'rgba(0,212,170,0.12)',  text: '#00d4aa', border: 'rgba(0,212,170,0.25)', label: 'SolFort' },
   internal:   { bg: 'rgba(0,212,170,0.12)',  text: '#00d4aa', border: 'rgba(0,212,170,0.25)', label: 'SolFort' },
 };
+
+function useCountdown(endDate) {
+  const [secsLeft, setSecsLeft] = useState(0);
+  useEffect(() => {
+    if (!endDate) return;
+    const tick = () => {
+      const diff = Math.max(0, Math.floor((new Date(endDate) - Date.now()) / 1000));
+      setSecsLeft(diff);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [endDate]);
+  return secsLeft;
+}
+
+function formatCountdown(secs) {
+  if (secs <= 0) return 'Ended';
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = secs % 60;
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m ${String(s).padStart(2,'0')}s`;
+  return `${s}s`;
+}
 
 const BOOSTERS = [
   { id: 'boost',     label: '⚡ Bet Boost',  desc: `+15% payout (+$${5})`,           cost: 5,  color: '#f97316' },
@@ -98,7 +124,13 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
   const blocked    = existingBet && existingBet.outcomeId !== selectedOutcome;
   const amt        = parseFloat(amount) || 0;
   const hrMode     = isHighRoller(amt);
-  const srcBadge   = SOURCE_BADGE[market?.source] ?? SOURCE_BADGE.internal;
+  const srcBadge   = SOURCE_BADGE[market?.source] ?? SOURCE_BADGE.solfort;
+
+  // Countdown + lock state
+  const secsLeft   = useCountdown(market?.endDate);
+  const isLockLocked = market?.status === 'locked' ||
+    (market?.endDate && secsLeft <= 20 && secsLeft >= 0 && market?.source === 'solfort');
+  const isBettingBlocked = isLockLocked || market?.status === 'resolved' || secsLeft <= 0;
 
   const fees = outcome && amt > 0
     ? calcFees({ stake: amt, outcome, boosts, isHighRoller: hrMode })
