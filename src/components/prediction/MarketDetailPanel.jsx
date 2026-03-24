@@ -132,7 +132,8 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
   const hasEndDate = !!(market?.endDate && String(market.endDate).length > 5);
   const isLockLocked = market?.status === 'locked' ||
     (hasEndDate && secsLeft <= 20 && secsLeft >= 0 && market?.source === 'solfort');
-  const isBettingBlocked = isLockLocked || market?.status === 'resolved' || (hasEndDate && secsLeft <= 0);
+  const isBettingBlocked = isLockLocked || market?.status === 'resolved' ||
+    market?.status === 'archived' || (hasEndDate && secsLeft <= 0);
 
   const fees = outcome && amt > 0
     ? calcFees({ stake: amt, outcome, boosts, isHighRoller: hrMode })
@@ -231,14 +232,19 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
               </div>
             )}
 
-            {/* Locked banner */}
+            {/* Status banner */}
             {isBettingBlocked && (
               <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold"
-                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
+                style={market.status === 'archived'
+                  ? { background: 'rgba(148,163,184,0.08)', border: '1px solid rgba(148,163,184,0.2)', color: '#94a3b8' }
+                  : market.status === 'resolved'
+                  ? { background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)', color: '#60a5fa' }
+                  : { background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
                 <Lock className="w-3.5 h-3.5" />
                 <span className="text-[11px]">
-                  {market.status === 'resolved' ? 'Market resolved' :
-                   secsLeft <= 0 ? 'Market closed' :
+                  {market.status === 'archived'  ? 'Market archived — view only' :
+                   market.status === 'resolved'  ? 'Market resolved — betting closed' :
+                   secsLeft <= 0                 ? 'Market closed' :
                    `Betting locked · resolves in ${formatCountdown(secsLeft)}`}
                 </span>
               </div>

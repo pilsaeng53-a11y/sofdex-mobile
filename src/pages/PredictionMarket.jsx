@@ -6,7 +6,7 @@ import ParlayBuilder from '../components/prediction/ParlayBuilder';
 import {
   TrendingUp, Trophy, MessageSquare, CalendarDays, Briefcase,
   History, Compass, BarChart2, Filter, Search, Sparkles, Loader2,
-  ChevronDown, Wifi, WifiOff, RefreshCw, Zap, Crown
+  ChevronDown, Wifi, WifiOff, RefreshCw, Zap, Crown, Archive
 } from 'lucide-react';
 import CategorySidebar from '../components/prediction/CategorySidebar';
 import MarketCard from '../components/prediction/MarketCard';
@@ -16,7 +16,7 @@ import LeaderboardTab from '../components/prediction/LeaderboardTab';
 import SocialFeedTab from '../components/prediction/SocialFeedTab';
 import EventsTab from '../components/prediction/EventsTab';
 import {
-  useAPIHealth, useCategories, useTopMarkets, useMarkets
+  useAPIHealth, useCategories, useTopMarkets, useMarkets, useArchivedMarkets
 } from '../components/prediction/usePredictionAPI';
 import CryptoShortMarkets from '../components/prediction/CryptoShortMarkets';
 
@@ -28,6 +28,7 @@ const TABS = [
   { id: 'highroller', label: '👑 VIP',       icon: TrendingUp },
   { id: 'portfolio',  label: 'Portfolio',   icon: Briefcase },
   { id: 'history',    label: 'History',     icon: History },
+  { id: 'archive',    label: 'Archive',     icon: Archive },
   { id: 'leaderboard',label: 'Leaders',     icon: Trophy },
   { id: 'social',     label: 'Social',      icon: MessageSquare },
   { id: 'events',     label: 'Events',      icon: CalendarDays },
@@ -290,6 +291,91 @@ function HistoryTab() {
   );
 }
 
+// ─── Archive tab ───────────────────────────────────────────────────
+const STATUS_COLORS = {
+  resolved: { bg: 'rgba(59,130,246,0.1)',  text: '#60a5fa' },
+  archived: { bg: 'rgba(148,163,184,0.1)', text: '#94a3b8' },
+  locked:   { bg: 'rgba(239,68,68,0.1)',   text: '#f87171' },
+};
+
+function ArchiveTab({ onBet }) {
+  const { markets, loading, total } = useArchivedMarkets({ limit: 1000 });
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [visibleCount, setVisible] = useState(PAGE_SIZE);
+
+  const filtered = useMemo(() => {
+    let list = markets;
+    if (statusFilter) list = list.filter(m => m.status === statusFilter);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      list = list.filter(m => m.question.toLowerCase().includes(q) || m.category?.toLowerCase().includes(q));
+    }
+    return list;
+  }, [markets, search, statusFilter]);
+
+  const visible  = filtered.slice(0, visibleCount);
+  const hasMore  = visibleCount < filtered.length;
+
+  const statusGroups = useMemo(() => {
+    const counts = {};
+    markets.forEach(m => { counts[m.status] = (counts[m.status] ?? 0) + 1; });
+    return counts;
+  }, [markets]);
+
+  return (
+    <div>
+      {/* Stats row */}
+      {!loading && total > 0 && (
+        <div className="flex items-center gap-3 mb-3 px-1">
+          <span className="text-[10px] text-slate-500">{total} past markets</span>
+          <div className="flex gap-1 ml-auto">
+            {[['', 'All'], ['resolved', 'Resolved'], ['archived', 'Archived']].map(([val, label]) => (
+              <button key={val} onClick={() => { setStatusFilter(val); setVisible(PAGE_SIZE); }}
+                className={`px-2 py-1 rounded text-[8px] font-bold transition-all ${
+                  statusFilter === val ? 'bg-[#00d4aa]/15 text-[#00d4aa]' : 'text-slate-600 hover:text-slate-400'
+                }`}>
+                {label}{val && statusGroups[val] ? ` (${statusGroups[val]})` : ''}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Search */}
+      <div className="flex items-center gap-2 bg-[#1a2340] rounded-xl px-3 py-2 border border-[rgba(148,163,184,0.07)] mb-3">
+        <Search className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
+        <input value={search} onChange={e => { setSearch(e.target.value); setVisible(PAGE_SIZE); }}
+          placeholder="Search archived markets..."
+          className="bg-transparent text-[11px] text-slate-300 placeholder-slate-600 focus:outline-none flex-1" />
+      </div>
+
+      {loading ? <Skeleton rows={6} /> :
+       filtered.length === 0 ? (
+        <div className="flex flex-col items-center py-16 gap-3">
+          <Archive className="w-8 h-8 text-slate-700" />
+          <p className="text-sm text-slate-500">{search || statusFilter ? 'No matching archived markets.' : 'No archived markets yet.'}</p>
+        </div>
+       ) : (
+        <div className="rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.07)]">
+          {visible.map(m => (
+            <MarketRow key={m.id} market={m} participated={false}
+              onBet={onBet} />
+          ))}
+        </div>
+       )}
+
+      {!loading && hasMore && (
+        <button onClick={() => setVisible(v => v + PAGE_SIZE)}
+          className="w-full mt-4 py-3 rounded-2xl text-[11px] font-bold border transition-all"
+          style={{ background: 'rgba(148,163,184,0.04)', borderColor: 'rgba(148,163,184,0.12)', color: '#64748b' }}>
+          Load More — {filtered.length - visibleCount} remaining
+        </button>
+      )}
+    </div>
+  );
+}
+
 // ─── High Roller tab ─────────────────────────────────────────────────────
 function HighRollerTab({ onBet, participatedIds }) {
   const { markets, loading } = useMarkets({ limit: 100 });
@@ -518,6 +604,7 @@ export default function PredictionMarket() {
             )}
             {tab === 'portfolio'   && <PortfolioTab bets={bets} />}
             {tab === 'history'     && <HistoryTab />}
+            {tab === 'archive'     && <ArchiveTab onBet={handleBet} />}
             {tab === 'leaderboard' && <LeaderboardTab />}
             {tab === 'social'      && <SocialFeedTab />}
             {tab === 'events'      && <EventsTab />}
