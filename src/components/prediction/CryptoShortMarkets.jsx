@@ -237,17 +237,23 @@ export default function CryptoShortMarkets({ participatedIds = new Set(), onPlac
     limit: 100
   });
 
-  // Filter by active timeframe segment
+  // Filter by active timeframe segment; also match backend timeframe field
   const segMarkets = useMemo(() => {
     const seg = SEGMENT_MAP[activeSeg];
     if (!seg || !allBackendMarkets.length) return [];
 
+    // Timeframe keyword mapping for SolFort backend
+    const TF_MAP = { ultra: ['5m','15m'], hourly: ['1h'], four: ['4h'], daily: ['1d'] };
+    const tfKeys = TF_MAP[activeSeg] ?? [];
+
     return allBackendMarkets.filter(m => {
+      // Match by explicit timeframe field if available
+      if (m.timeframe && tfKeys.length) return tfKeys.includes(m.timeframe);
+      // Fallback: filter by time remaining
       if (!m.endDate) return false;
       const now = Date.now();
       const endMs = new Date(m.endDate).getTime();
-      const durationMs = endMs - now;
-      const durationSecs = durationMs / 1000;
+      const durationSecs = (endMs - now) / 1000;
       return durationSecs >= seg.minDuration && durationSecs <= seg.maxDuration;
     });
   }, [allBackendMarkets, activeSeg]);
@@ -308,10 +314,19 @@ export default function CryptoShortMarkets({ participatedIds = new Set(), onPlac
         </div>
       )}
 
-      {/* No markets state */}
-      {!loading && allBackendMarkets.length > 0 && segMarkets.length === 0 && (
-        <div className="text-center py-8 text-slate-600 text-[11px]">
-          No SolFort crypto markets in this timeframe
+      {/* No markets for this segment */}
+      {!loading && !error && allBackendMarkets.length > 0 && segMarkets.length === 0 && (
+        <div className="text-center py-10 text-slate-600 text-[11px]">
+          <Zap className="w-6 h-6 mx-auto mb-2 text-slate-700" />
+          No active markets for this timeframe
+        </div>
+      )}
+
+      {/* Empty from backend */}
+      {!loading && !error && allBackendMarkets.length === 0 && (
+        <div className="text-center py-10 text-slate-600 text-[11px]">
+          <AlertCircle className="w-6 h-6 mx-auto mb-2 text-slate-700" />
+          No SolFort crypto markets available right now
         </div>
       )}
 
