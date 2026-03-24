@@ -287,6 +287,42 @@ function HistoryTab() {
   );
 }
 
+// ─── High Roller tab ─────────────────────────────────────────────────────
+function HighRollerTab({ onBet, participatedIds }) {
+  const { markets, loading } = useMarkets({ limit: 100 });
+  const highValue = useMemo(() => markets.filter(m => m.volume >= 100000).sort((a, b) => b.volume - a.volume), [markets]);
+
+  return (
+    <div className="space-y-4">
+      <div className="rounded-2xl p-4 border" style={{ background: 'linear-gradient(135deg, rgba(251,191,36,0.06), rgba(249,115,22,0.06))', borderColor: 'rgba(251,191,36,0.2)' }}>
+        <div className="flex items-center gap-2 mb-1">
+          <Crown className="w-5 h-5 text-yellow-400" />
+          <span className="text-[13px] font-black text-yellow-400">VIP High Roller</span>
+        </div>
+        <p className="text-[10px] text-slate-400">Minimum $1,000 stake · +5% payout bonus · Priority settlement</p>
+        <div className="grid grid-cols-3 gap-2 mt-3">
+          {[{ label: 'Min Stake', value: '$1,000' }, { label: 'Bonus', value: '+5%' }, { label: 'Fee', value: '1.5%' }].map(s => (
+            <div key={s.label} className="text-center">
+              <p className="text-[12px] font-black text-yellow-400">{s.value}</p>
+              <p className="text-[8px] text-slate-500">{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {loading ? <Skeleton rows={4} /> : highValue.length === 0 ? (
+        <div className="text-center py-12 text-slate-500 text-sm">No high-volume markets available.</div>
+      ) : (
+        <div className="rounded-2xl overflow-hidden border border-[rgba(251,191,36,0.15)]">
+          {highValue.slice(0, 20).map(m => (
+            <MarketRow key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main page ─────────────────────────────────────────────────────────────
 export default function PredictionMarket() {
   const [tab,          setTab]          = useState('explore');
@@ -482,6 +518,7 @@ export default function PredictionMarket() {
             {tab === 'leaderboard' && <LeaderboardTab />}
             {tab === 'social'      && <SocialFeedTab />}
             {tab === 'events'      && <EventsTab />}
+            {tab === 'highroller'  && <HighRollerTab onBet={handleBet} participatedIds={participatedIds} />}
           </div>
         </div>
       </div>
