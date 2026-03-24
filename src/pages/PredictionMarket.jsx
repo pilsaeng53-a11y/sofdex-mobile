@@ -69,11 +69,12 @@ function Skeleton({ rows = 4 }) {
 }
 
 const SECTION_ACCENT = {
-  aiPick:   { gradient: 'rgba(0,212,170,0.08)',   border: 'rgba(0,212,170,0.15)',   icon: '🤖' },
-  trending: { gradient: 'rgba(249,115,22,0.07)',  border: 'rgba(249,115,22,0.15)',  icon: '🔥' },
-  popular:  { gradient: 'rgba(59,130,246,0.07)',  border: 'rgba(59,130,246,0.15)',  icon: '📊' },
-  payout:   { gradient: 'rgba(251,191,36,0.07)',  border: 'rgba(251,191,36,0.15)',  icon: '💰' },
-  ending:   { gradient: 'rgba(239,68,68,0.07)',   border: 'rgba(239,68,68,0.15)',   icon: '⏰' },
+  aiPick:      { gradient: 'rgba(0,212,170,0.08)',   border: 'rgba(0,212,170,0.15)',   icon: '🤖' },
+  trending:    { gradient: 'rgba(249,115,22,0.07)',  border: 'rgba(249,115,22,0.15)',  icon: '🔥' },
+  popular:     { gradient: 'rgba(59,130,246,0.07)',  border: 'rgba(59,130,246,0.15)',  icon: '📊' },
+  payout:      { gradient: 'rgba(251,191,36,0.07)',  border: 'rgba(251,191,36,0.15)',  icon: '💰' },
+  ending:      { gradient: 'rgba(239,68,68,0.07)',   border: 'rgba(239,68,68,0.15)',   icon: '⏰' },
+  highestOdds: { gradient: 'rgba(139,92,246,0.07)', border: 'rgba(139,92,246,0.15)', icon: '🎯' },
 };
 
 // ─── Explore tab ──────────────────────────────────────────────────────────
