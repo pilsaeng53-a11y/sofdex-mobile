@@ -129,28 +129,35 @@ function ExploreTab({ onBet, participatedIds, onViewAll }) {
 }
 
 // ─── Markets tab ──────────────────────────────────────────────────────────
+const PAGE_SIZE = 30;
+
 function MarketsTab({ category, sub, source, onBet, participatedIds }) {
-  const [view,   setView]   = useState('row');
-  const [search, setSearch] = useState('');
-  const { markets, loading, total } = useMarkets({ category, sub, source, limit: 300 });
+  const [view,         setView]    = useState('row');
+  const [search,       setSearch]  = useState('');
+  const [visibleCount, setVisible] = useState(PAGE_SIZE);
+  const { markets, loading, total } = useMarkets({ category, sub, source, limit: 500 });
+
+  React.useEffect(() => { setVisible(PAGE_SIZE); setSearch(''); }, [category, sub, source]);
 
   const filtered = useMemo(() => {
     if (!search.trim()) return markets;
     const q = search.toLowerCase();
     return markets.filter(m =>
       m.question.toLowerCase().includes(q) ||
-      m.category.toLowerCase().includes(q) ||
+      m.category?.toLowerCase().includes(q) ||
       m.sub?.toLowerCase().includes(q)
     );
   }, [markets, search]);
 
+  const visible = filtered.slice(0, visibleCount);
+  const hasMore = visibleCount < filtered.length;
+
   return (
     <div>
-      {/* Toolbar */}
       <div className="flex items-center gap-2 mb-3">
         <div className="flex-1 flex items-center gap-2 bg-[#1a2340] rounded-xl px-3 py-2 border border-[rgba(148,163,184,0.07)]">
           <Search className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-          <input value={search} onChange={e => setSearch(e.target.value)}
+          <input value={search} onChange={e => { setSearch(e.target.value); setVisible(PAGE_SIZE); }}
             placeholder="Search markets..."
             className="bg-transparent text-[11px] text-slate-300 placeholder-slate-600 focus:outline-none flex-1" />
         </div>
@@ -160,24 +167,35 @@ function MarketsTab({ category, sub, source, onBet, participatedIds }) {
         </button>
       </div>
 
-      {total > 0 && !loading && (
-        <p className="text-[9px] text-slate-600 mb-2">{filtered.length} of {total} markets{search ? ` matching "${search}"` : ''}</p>
+      {!loading && filtered.length > 0 && (
+        <p className="text-[9px] text-slate-600 mb-2">
+          Showing {visible.length} of {filtered.length} markets{total > filtered.length ? ` (${total} total)` : ''}{search ? ` matching “${search}”` : ''}
+        </p>
       )}
 
-      {loading ? <Skeleton rows={5} />
+      {loading ? <Skeleton rows={6} />
        : filtered.length === 0 ? (
-          <div className="text-center py-16 text-slate-600 text-sm">
-            {search ? `No markets matching "${search}"` : 'No markets in this category yet.'}
+          <div className="flex flex-col items-center py-16 gap-3">
+            <BarChart2 className="w-8 h-8 text-slate-700" />
+            <p className="text-sm text-slate-500">{search ? `No markets matching “${search}”` : 'No markets in this category yet.'}</p>
           </div>
        ) : view === 'card' ? (
           <div className="space-y-3">
-            {filtered.map(m => <MarketCard key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />)}
+            {visible.map(m => <MarketCard key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />)}
           </div>
        ) : (
           <div className="rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.07)]">
-            {filtered.map(m => <MarketRow key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />)}
+            {visible.map(m => <MarketRow key={m.id} market={m} participated={participatedIds.has(m.id)} onBet={onBet} />)}
           </div>
        )}
+
+      {!loading && hasMore && (
+        <button onClick={() => setVisible(v => v + PAGE_SIZE)}
+          className="w-full mt-4 py-3 rounded-2xl text-[11px] font-bold border transition-all"
+          style={{ background: 'rgba(0,212,170,0.06)', borderColor: 'rgba(0,212,170,0.15)', color: '#00d4aa' }}>
+          Load More — {filtered.length - visibleCount} remaining
+        </button>
+      )}
     </div>
   );
 }
@@ -278,8 +296,8 @@ export default function PredictionMarket() {
   const apiStatus                       = useAPIHealth();
   const { categories, loading: catLoading } = useCategories();
 
-  // All markets for stat header (limit=50 for speed)
-  const { markets: allMarkets, total }  = useMarkets({ limit: 50 });
+  // Total count for stats header
+  const { total }  = useMarkets({ limit: 1 });
   const participatedIds = useMemo(() => new Set(bets.map(b => b.marketId)), [bets]);
 
   const handleCategorySelect = (cat, sub) => {
