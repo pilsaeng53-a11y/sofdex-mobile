@@ -3,11 +3,12 @@
  * Fetches GET /prediction/market/:source/:id on open.
  */
 import React, { useState } from 'react';
-import { X, TrendingUp, TrendingDown, Clock, BarChart2, AlertCircle, Loader2, ExternalLink, Zap, ShieldCheck } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, Clock, BarChart2, AlertCircle, Loader2, ExternalLink, Zap, ShieldCheck, Crown, LogOut } from 'lucide-react';
 import { useMarketDetail } from './usePredictionAPI';
+import { calcFees, calcCashOut, calcInsuranceRefund, applySpread, isHighRoller, PLATFORM_FEE_RATE, INSURANCE_RATE, CASHOUT_FEE_RATE, HIGH_ROLLER_MINIMUM } from '../../lib/prediction/monetization';
 
 const ASSETS   = ['USDT', 'SOL', 'ETH'];
-const PRESETS  = [10, 50, 100, 500];
+const PRESETS  = [10, 50, 100, 500, 1000];
 const BALANCES = { USDT: 10000, SOL: 24.5, ETH: 3.2 };
 
 const SOURCE_BADGE = {
@@ -17,9 +18,9 @@ const SOURCE_BADGE = {
 };
 
 const BOOSTERS = [
-  { id: 'boost',     label: '⚡ Bet Boost',  desc: '+15% payout', cost: 5,  color: '#f97316' },
-  { id: 'insurance', label: '🛡️ Insurance',  desc: '50% back if wrong', cost: 8, color: '#3b82f6' },
-  { id: 'cashout',   label: '💸 Cash Out',   desc: 'Enable early exit', cost: 0, color: '#00d4aa' },
+  { id: 'boost',     label: '⚡ Bet Boost',  desc: `+15% payout (+$${5})`,           cost: 5,  color: '#f97316' },
+  { id: 'insurance', label: '🛡️ Insurance',  desc: `50% refund if wrong (${(INSURANCE_RATE*100).toFixed(0)}% fee)`, cost: null, color: '#3b82f6' },
+  { id: 'cashout',   label: '💸 Cash Out',   desc: 'Early exit enabled',             cost: 0,  color: '#00d4aa' },
 ];
 
 function fmtVol(n) {
@@ -76,28 +77,40 @@ function OutcomeButton({ outcome, selected, blocked, onSelect }) {
   );
 }
 
-export default function MarketDetailPanel({ preloaded, source, id, existingBet, onClose, onPlace }) {
+export default function MarketDetailPanel({ preloaded, source, id, existingBet, onClose, onPlace, onAddToParlay }) {
   const { market: fetched, loading, error } = useMarketDetail(
     preloaded ? null : source,
     preloaded ? null : id
   );
-  const market = preloaded ?? fetched;
+  const rawMarket = preloaded ?? fetched;
+  // Apply spread to outcomes for platform margin
+  const market = rawMarket ? { ...rawMarket, outcomes: applySpread(rawMarket.outcomes) } : rawMarket;
 
   const [selectedOutcome, setSelectedOutcome] = useState(existingBet?.outcomeId ?? null);
-  const [amount,  setAmount]  = useState('100');
-  const [asset,   setAsset]   = useState('USDT');
-  const [boosts,  setBoosts]  = useState([]);
+  const [amount,     setAmount]     = useState('100');
+  const [asset,      setAsset]      = useState('USDT');
+  const [boosts,     setBoosts]     = useState([]);
   const [submitting, setSubmitting] = useState(false);
-  const [done,    setDone]    = useState(false);
+  const [done,       setDone]       = useState(false);
+  const [cashedOut,  setCashedOut]  = useState(false);
 
   const outcome    = market?.outcomes?.find(o => o.id === selectedOutcome);
   const blocked    = existingBet && existingBet.outcomeId !== selectedOutcome;
   const amt        = parseFloat(amount) || 0;
-  const basePayout = outcome ? 1 / Math.max(outcome.prob, 0.001) : 0;
-  const boostMult  = boosts.includes('boost') ? 1.15 : 1;
-  const finalPayout= basePayout * boostMult;
-  const profit     = amt * finalPayout - amt;
+  const hrMode     = isHighRoller(amt);
   const srcBadge   = SOURCE_BADGE[market?.source] ?? SOURCE_BADGE.internal;
+
+  const fees = outcome && amt > 0
+    ? calcFees({ stake: amt, outcome, boosts, isHighRoller: hrMode })
+    : null;
+
+  const cashOutValue = existingBet && outcome
+    ? calcCashOut({ stake: existingBet.amount, outcome, currentProb: outcome.prob })
+    : 0;
+
+  const insuranceRefund = boosts.includes('insurance') && amt > 0
+    ? calcInsuranceRefund(amt)
+    : 0;
 
   const toggleBoost = (bid) => setBoosts(prev => prev.includes(bid) ? prev.filter(b => b !== bid) : [...prev, bid]);
 
@@ -107,9 +120,22 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
     setTimeout(() => {
       setSubmitting(false);
       setDone(true);
-      onPlace?.({ marketId: market.id, outcomeId: selectedOutcome, outcomeLabel: outcome.label, side: outcome.label, amount: amt, asset, payout: finalPayout, boosts, source: market.source });
+      onPlace?.({
+        marketId: market.id, outcomeId: selectedOutcome,
+        outcomeLabel: outcome.label, side: outcome.label,
+        amount: fees?.totalCost ?? amt, asset,
+        payout: fees?.finalMultiplier ?? 1,
+        boosts, source: market.source,
+        fees: { entry: fees?.entryFee, settle: fees?.settleFee },
+      });
       setTimeout(onClose, 1200);
     }, 700);
+  };
+
+  const handleCashOut = () => {
+    if (!cashOutValue) return;
+    setCashedOut(true);
+    setTimeout(onClose, 1000);
   };
 
   return (
