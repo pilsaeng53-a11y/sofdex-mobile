@@ -159,12 +159,15 @@ export function useTopMarkets() {
     fetch(`${API_BASE}/prediction/top`)
       .then(r => r.json())
       .then(data => {
+        // Support multiple backend key shapes
+        const raw = data?.data ?? data;
         setTop({
-          trending: parseList(data.trending ?? data.Trending ?? []),
-          popular:  parseList(data.popular  ?? data.Popular  ?? data.most_popular ?? []),
-          payout:   parseList(data.payout   ?? data.highest_payout ?? data.highestPayout ?? []),
-          ending:   parseList(data.ending   ?? data.ending_soon    ?? data.endingSoon    ?? []),
-          aiPick:   parseList(data.aiPick   ?? data.ai_picks       ?? data.featured      ?? []),
+          trending:     parseList(raw.trending     ?? raw.Trending     ?? []),
+          popular:      parseList(raw.popular      ?? raw.Popular      ?? raw.most_popular    ?? []),
+          payout:       parseList(raw.payout       ?? raw.highest_payout ?? raw.highestPayout ?? raw.highestOdds ?? []),
+          ending:       parseList(raw.ending       ?? raw.ending_soon  ?? raw.endingSoon     ?? []),
+          aiPick:       parseList(raw.aiPick       ?? raw.ai_picks     ?? raw.featured       ?? []),
+          highestOdds:  parseList(raw.highestOdds  ?? raw.highest_odds ?? raw.best_odds      ?? []),
         });
       })
       .catch(() => {})
