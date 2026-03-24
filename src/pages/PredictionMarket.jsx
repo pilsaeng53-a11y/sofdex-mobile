@@ -21,14 +21,15 @@ import CryptoShortMarkets from '../components/prediction/CryptoShortMarkets';
 
 // ─── Tab config ────────────────────────────────────────────────────────────
 const TABS = [
-  { id: 'explore',    label: 'Explore',   icon: Compass },
-  { id: 'crypto',     label: '₿ Crypto',  icon: Zap },
-  { id: 'markets',    label: 'Markets',   icon: BarChart2 },
-  { id: 'portfolio',  label: 'Portfolio', icon: Briefcase },
-  { id: 'history',    label: 'History',   icon: History },
-  { id: 'leaderboard',label: 'Leaders',   icon: Trophy },
-  { id: 'social',     label: 'Social',    icon: MessageSquare },
-  { id: 'events',     label: 'Events',    icon: CalendarDays },
+  { id: 'explore',    label: 'Explore',     icon: Compass },
+  { id: 'crypto',     label: '₿ Crypto',    icon: Zap },
+  { id: 'markets',    label: 'Markets',     icon: BarChart2 },
+  { id: 'highroller', label: '👑 VIP',       icon: TrendingUp },
+  { id: 'portfolio',  label: 'Portfolio',   icon: Briefcase },
+  { id: 'history',    label: 'History',     icon: History },
+  { id: 'leaderboard',label: 'Leaders',     icon: Trophy },
+  { id: 'social',     label: 'Social',      icon: MessageSquare },
+  { id: 'events',     label: 'Events',      icon: CalendarDays },
 ];
 
 const SOURCE_FILTERS = [
