@@ -57,9 +57,17 @@ export function normalizeMarket(raw) {
   let source = raw.source ?? raw.provider ?? '';
   if (!source) {
     if (raw.condition_id || raw.clob_token_ids) source = 'polymarket';
-    else if (raw.ticker || raw.series_ticker)  source = 'kalshi';
-    else source = 'internal';
+    else if (raw.ticker || raw.series_ticker)   source = 'kalshi';
+    else source = 'solfort';
   }
+  // Normalize legacy 'internal' alias
+  if (source === 'internal') source = 'solfort';
+
+  // SolFort-specific fields
+  const metadata   = raw.metadata ?? {};
+  const lockAt     = raw.lockAt ?? raw.lock_at ?? metadata.lockAt ?? null;
+  const lockSeconds = raw.lockSeconds ?? raw.lock_seconds ?? metadata.lockSeconds ?? null;
+  const marketStatus = raw.status ?? metadata.status ?? 'open';
 
   return {
     id:       String(raw.id ?? raw.condition_id ?? raw.market_id ?? raw.externalId ?? raw.ticker ?? Math.random()),
@@ -75,6 +83,14 @@ export function normalizeMarket(raw) {
     source,
     slug:     raw.slug ?? raw.id ?? '',
     image:    raw.image ?? raw.icon ?? null,
+    // SolFort-specific
+    status:       marketStatus,
+    lockAt:       lockAt,
+    lockSeconds:  lockSeconds,
+    timeframe:    metadata.timeframe ?? null,
+    resolutionType: metadata.resolutionType ?? null,
+    targetPrice:  metadata.targetPrice ?? null,
+    lockRule:     metadata.lockRule ?? null,
   };
 }
 
