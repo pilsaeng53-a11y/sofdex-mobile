@@ -62,8 +62,8 @@ export function normalizeMarket(raw) {
   }
 
   return {
-    id:       String(raw.id ?? raw.condition_id ?? raw.market_id ?? raw.ticker ?? Math.random()),
-    category: (raw.category ?? raw.group ?? raw.category_id ?? raw.event_category ?? 'explore').toLowerCase().replace(/[^a-z0-9]/g, '-'),
+    id:       String(raw.id ?? raw.condition_id ?? raw.market_id ?? raw.externalId ?? raw.ticker ?? Math.random()),
+    category: raw.category ?? raw.group ?? raw.category_id ?? raw.event_category ?? 'explore',
     sub:      raw.sub ?? raw.subCategory ?? raw.sub_category ?? raw.event_category ?? '',
     type:     raw.type ?? raw.market_type ?? (outcomes.length === 2 ? 'binary' : 'multi'),
     question: String(raw.question ?? raw.title ?? raw.market_title ?? raw.name ?? 'Untitled'),
