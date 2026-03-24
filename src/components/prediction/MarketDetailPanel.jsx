@@ -268,28 +268,67 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
               </div>
             </div>
 
-            {/* Payout summary */}
-            {outcome && amt > 0 && (
+            {/* High Roller badge */}
+            {hrMode && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl"
+                style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
+                <Crown className="w-3.5 h-3.5 text-yellow-400" />
+                <span className="text-[11px] font-black text-yellow-400">High Roller — +5% payout bonus</span>
+              </div>
+            )}
+
+            {/* Cash out (for existing bets) */}
+            {existingBet && !cashedOut && cashOutValue > 0 && (
+              <div className="rounded-xl border p-3 space-y-2"
+                style={{ background: 'rgba(0,212,170,0.04)', borderColor: 'rgba(0,212,170,0.15)' }}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-black text-[#00d4aa]">💸 Cash Out Now</p>
+                    <p className="text-[8px] text-slate-500">{(CASHOUT_FEE_RATE*100).toFixed(0)}% early exit fee applied</p>
+                  </div>
+                  <span className="text-[13px] font-black font-mono text-[#00d4aa]">${cashOutValue}</span>
+                </div>
+                <button onClick={handleCashOut}
+                  className="w-full py-1.5 rounded-lg text-[10px] font-black transition-all"
+                  style={{ background: 'rgba(0,212,170,0.15)', border: '1px solid rgba(0,212,170,0.3)', color: '#00d4aa' }}>
+                  {cashedOut ? '✓ Cashed Out!' : `Exit for $${cashOutValue}`}
+                </button>
+              </div>
+            )}
+
+            {/* Fee breakdown */}
+            {fees && (
               <div className="rounded-xl overflow-hidden border border-[rgba(148,163,184,0.07)]"
                 style={{ background: 'rgba(15,21,37,0.9)' }}>
-                <div className="px-3 py-2 border-b border-[rgba(148,163,184,0.05)] flex justify-between text-[10px]">
-                  <span className="text-slate-500">Outcome</span>
-                  <span className="font-bold text-white">{outcome.label}</span>
-                </div>
-                <div className="px-3 py-2 border-b border-[rgba(148,163,184,0.05)] flex justify-between text-[10px]">
-                  <span className="text-slate-500">Stake</span>
-                  <span className="font-mono text-slate-300">{amt} {asset}</span>
-                </div>
-                <div className="px-3 py-2 border-b border-[rgba(148,163,184,0.05)] flex justify-between text-[10px]">
-                  <span className="text-slate-500">Payout rate</span>
-                  <span className="font-mono font-black text-[#00d4aa]">{finalPayout.toFixed(2)}x</span>
-                </div>
+                {[
+                  { label: 'Stake',             value: `${amt} ${asset}`,             color: '#e2e8f0' },
+                  { label: `Entry fee (${(PLATFORM_FEE_RATE*100).toFixed(0)}%)`, value: `-$${fees.entryFee}`, color: '#f87171' },
+                  { label: 'Net stake',          value: `$${fees.netStake}`,           color: '#94a3b8' },
+                  { label: 'Payout multiplier',  value: `${fees.finalMultiplier}x`,    color: '#00d4aa' },
+                  boosts.includes('insurance') ? { label: `Insurance cost (${(INSURANCE_RATE*100).toFixed(0)}%)`, value: `-$${fees.insuranceCost}`, color: '#f87171' } : null,
+                  boosts.includes('insurance') ? { label: 'If wrong, refund', value: `+$${insuranceRefund}`, color: '#3b82f6' } : null,
+                  { label: 'Total cost',         value: `$${fees.totalCost} ${asset}`, color: '#94a3b8', bold: true },
+                ].filter(Boolean).map((row, i) => (
+                  <div key={i} className="px-3 py-1.5 flex justify-between text-[10px] border-b" style={{ borderColor: 'rgba(148,163,184,0.04)' }}>
+                    <span className="text-slate-500">{row.label}</span>
+                    <span className={`font-mono font-bold ${row.bold ? 'text-white' : ''}`} style={{ color: row.bold ? undefined : row.color }}>{row.value}</span>
+                  </div>
+                ))}
                 <div className="px-3 py-3 flex justify-between items-center"
                   style={{ background: 'rgba(34,197,94,0.05)' }}>
                   <span className="text-[11px] font-black text-slate-200">If correct</span>
-                  <span className="text-[15px] font-black font-mono text-emerald-400">+{profit.toFixed(2)} {asset}</span>
+                  <span className="text-[15px] font-black font-mono text-emerald-400">+${fees.profit.toFixed(2)} {asset}</span>
                 </div>
               </div>
+            )}
+
+            {/* Add to Parlay */}
+            {outcome && !existingBet && (
+              <button onClick={() => onAddToParlay?.({ market, outcome })}
+                className="w-full py-2 rounded-xl text-[10px] font-black transition-all border"
+                style={{ background: 'rgba(139,92,246,0.06)', borderColor: 'rgba(139,92,246,0.2)', color: '#a78bfa' }}>
+                ⚡ Add to Parlay
+              </button>
             )}
 
             {/* CTA */}
@@ -302,7 +341,8 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
               {submitting ? <><Loader2 className="w-4 h-4 animate-spin" />Placing...</>
                : done      ? '✓ Bet Placed!'
                : !outcome  ? 'Select an outcome'
-               : `Bet ${outcome.label} · ${amt} ${asset}`}
+               : hrMode    ? <><Crown className="w-4 h-4" />High Roller · ${fees?.totalCost ?? amt}</>
+               : `Bet ${outcome.label} · $${fees?.totalCost ?? amt} ${asset}`}
             </button>
           </div>
         )}
