@@ -1,5 +1,6 @@
 import React from 'react';
 import { Clock, TrendingUp, Users } from 'lucide-react';
+import { LiquidityBar, RiskBadge, AIConfidence, MarketTimer, ProfitMultiplier, WatchlistButton } from './MarketEngagement';
 
 const SOURCE_BADGE = {
   polymarket: { bg: 'rgba(99,102,241,0.12)',  text: '#818cf8', border: 'rgba(99,102,241,0.25)', label: 'Polymarket' },
@@ -28,7 +29,7 @@ function daysLeft(dateStr) {
   return `${Math.round(d/30)}mo`;
 }
 
-export default function MarketCard({ market, participated, onBet }) {
+export default function MarketCard({ market, participated, onBet, watchlist, onWatchlist }) {
   const maxPayout  = (1 / Math.max(...market.outcomes.map(o => o.prob), 0.001)).toFixed(2);
   const isBinary   = market.outcomes.length === 2;
   const src        = SOURCE_BADGE[market.source] ?? SOURCE_BADGE.internal;
@@ -49,7 +50,10 @@ export default function MarketCard({ market, participated, onBet }) {
         })}
         {participated && <span className="text-[8px] font-black px-1.5 py-0.5 rounded border"
           style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', borderColor: 'rgba(0,212,170,0.2)' }}>✓ IN</span>}
-        {market.category && <span className="ml-auto text-[8px] text-slate-600 uppercase font-bold truncate max-w-[80px]">{market.category}</span>}
+        <RiskBadge market={market} />
+        <div className="ml-auto flex items-center gap-1">
+          {onWatchlist && <WatchlistButton marketId={market.id} watchlist={watchlist} onToggle={onWatchlist} />}
+        </div>
       </div>
 
       {/* Question */}
@@ -92,16 +96,12 @@ export default function MarketCard({ market, participated, onBet }) {
       )}
 
       {/* Footer */}
-      <div className="flex items-center justify-between text-[9px] pt-2.5 border-t border-[rgba(148,163,184,0.05)]">
-        <div className="flex items-center gap-1 text-slate-500"><TrendingUp className="w-3 h-3" />{fmtVol(market.volume)}</div>
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-lg"
-          style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.15)' }}>
-          <span className="text-amber-400 font-black">⚡ {maxPayout}x max</span>
-        </div>
-        <div className="flex items-center gap-1 text-slate-500"><Clock className="w-3 h-3" />
-          <span className={daysLeft(market.endDate) === 'Ended' ? 'text-red-400' : parseInt(daysLeft(market.endDate)) <= 3 ? 'text-orange-400' : ''}>
-            {daysLeft(market.endDate)}
-          </span>
+      <div className="pt-2.5 border-t space-y-2" style={{ borderColor: 'rgba(148,163,184,0.05)' }}>
+        <LiquidityBar volume={market.volume} />
+        <div className="flex items-center justify-between text-[9px]">
+          <AIConfidence market={market} />
+          <ProfitMultiplier outcomes={market.outcomes} />
+          {market.endDate && <MarketTimer endDate={market.endDate} />}
         </div>
       </div>
     </div>
