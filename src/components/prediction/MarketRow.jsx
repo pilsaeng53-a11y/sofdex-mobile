@@ -3,7 +3,7 @@
  * Shows key data: question, top outcome bars, volume, payout, tags.
  */
 import React from 'react';
-import { Clock, TrendingUp, Zap, Star, AlertCircle } from 'lucide-react';
+import { Clock, TrendingUp, Zap, Star, AlertCircle, Lock } from 'lucide-react';
 import { LiquidityBar, RiskBadge, AIConfidence, OddsMovement, MarketTimer, ProfitMultiplier, WatchlistButton } from './MarketEngagement';
 
 const TAG_STYLES = {
@@ -12,6 +12,13 @@ const TAG_STYLES = {
   'HIGH PAYOUT':  { bg: 'rgba(251,191,36,0.12)',  text: '#fbbf24', border: 'rgba(251,191,36,0.25)' },
   'AI PICK':      { bg: 'rgba(0,212,170,0.12)',   text: '#00d4aa', border: 'rgba(0,212,170,0.25)' },
   'ENDING SOON':  { bg: 'rgba(239,68,68,0.12)',   text: '#f87171', border: 'rgba(239,68,68,0.25)' },
+};
+
+const SOURCE_BADGE = {
+  polymarket: { bg: 'rgba(99,102,241,0.12)',  text: '#818cf8', border: 'rgba(99,102,241,0.25)', label: 'Poly' },
+  kalshi:     { bg: 'rgba(16,185,129,0.10)',  text: '#34d399', border: 'rgba(16,185,129,0.22)', label: 'Kalshi' },
+  solfort:    { bg: 'rgba(0,212,170,0.10)',   text: '#00d4aa', border: 'rgba(0,212,170,0.22)', label: 'SF' },
+  internal:   { bg: 'rgba(0,212,170,0.10)',   text: '#00d4aa', border: 'rgba(0,212,170,0.22)', label: 'SF' },
 };
 
 function fmtVol(n) {
@@ -51,15 +58,31 @@ function OutcomeBar({ outcomes }) {
 
 export default function MarketRow({ market, participated, onBet, compact = false, watchlist, onWatchlist }) {
   const topOutcome = market.outcomes.reduce((best, o) => o.prob > best.prob ? o : best, market.outcomes[0]);
+  const src = SOURCE_BADGE[market.source] ?? SOURCE_BADGE.solfort;
+  const isLocked = market.status === 'locked';
 
   return (
     <div
-      onClick={() => onBet(market)}
-      className={`group flex flex-col gap-2 px-4 py-3 border-b cursor-pointer transition-all hover:bg-[#111827]/60 ${participated ? 'opacity-60' : ''}`}
+      onClick={() => !isLocked && onBet(market)}
+      className={`group flex flex-col gap-2 px-4 py-3 border-b transition-all ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#111827]/60'} ${participated ? 'opacity-60' : ''}`}
       style={{ borderColor: 'rgba(148,163,184,0.05)' }}>
 
-      {/* Row 1: tags + meta */}
+      {/* Row 1: source badge + tags + meta */}
       <div className="flex items-center gap-1.5 flex-wrap">
+        <span className="text-[7px] font-black px-1.5 py-0.5 rounded border flex-shrink-0"
+          style={{ background: src.bg, color: src.text, borderColor: src.border }}>{src.label}</span>
+        {market.timeframe && (
+          <span className="text-[7px] font-black px-1.5 py-0.5 rounded border"
+            style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24', borderColor: 'rgba(251,191,36,0.2)' }}>
+            {market.timeframe}
+          </span>
+        )}
+        {isLocked && (
+          <span className="text-[7px] font-black px-1.5 py-0.5 rounded border flex items-center gap-0.5"
+            style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', borderColor: 'rgba(239,68,68,0.2)' }}>
+            <Lock className="w-2 h-2" />LOCKED
+          </span>
+        )}
         {market.tags.slice(0, 2).map(tag => {
           const s = TAG_STYLES[tag];
           return s ? (
