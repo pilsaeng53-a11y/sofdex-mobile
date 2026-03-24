@@ -6,7 +6,7 @@ import ParlayBuilder from '../components/prediction/ParlayBuilder';
 import {
   TrendingUp, Trophy, MessageSquare, CalendarDays, Briefcase,
   History, Compass, BarChart2, Filter, Search, Sparkles, Loader2,
-  ChevronDown, Wifi, WifiOff, RefreshCw, Zap
+  ChevronDown, Wifi, WifiOff, RefreshCw, Zap, Crown
 } from 'lucide-react';
 import CategorySidebar from '../components/prediction/CategorySidebar';
 import MarketCard from '../components/prediction/MarketCard';
