@@ -104,19 +104,30 @@ export function useCategories() {
     fetch(`${API_BASE}/prediction/categories`)
       .then(r => r.json())
       .then(data => {
-        const raw = Array.isArray(data) ? data : data?.categories ?? [];
-        const normalized = raw.map(c => ({
-          id:    (c.id ?? c.slug ?? c.name ?? '').toLowerCase().replace(/\s+/g,'-'),
-          label: c.label ?? c.name ?? c.title ?? c.id ?? 'Category',
-          emoji: c.emoji ?? c.icon ?? '',
-          subs:  (c.sub_categories ?? c.subcategories ?? c.subs ?? c.children ?? []).map(s =>
-            typeof s === 'string' ? s : (s.name ?? s.label ?? s.title ?? '')
-          ),
-          count: c.count ?? c.market_count ?? 0,
-        }));
+        // Backend returns { data: ["Crypto", "Sports", ...] } (array of strings)
+        const raw = Array.isArray(data) ? data
+          : Array.isArray(data?.data) ? data.data
+          : data?.categories ?? [];
+
+        console.log('[categories] fetched raw:', raw);
+
+        const normalized = raw.map(c => {
+          const exactValue = typeof c === 'string' ? c : (c.name ?? c.label ?? c.id ?? String(c));
+          return {
+            id:    exactValue, // EXACT backend value — used in API requests
+            label: exactValue,
+            emoji: typeof c === 'object' ? (c.emoji ?? c.icon ?? '') : '',
+            subs:  typeof c === 'object' ? (c.sub_categories ?? c.subcategories ?? c.subs ?? []).map(s =>
+              typeof s === 'string' ? s : (s.name ?? s.label ?? '')
+            ) : [],
+            count: typeof c === 'object' ? (c.count ?? 0) : 0,
+          };
+        });
+
+        console.log('[categories] normalized IDs:', normalized.map(c => c.id));
         setCategories(normalized);
       })
-      .catch(() => setCategories([]))
+      .catch(e => { console.warn('[categories] fetch failed:', e); setCategories([]); })
       .finally(() => setLoading(false));
   }, []);
 
@@ -164,12 +175,16 @@ export function useMarkets({ category = '', sub = '', source = '', limit = 200 }
     if (category && category !== 'explore') params.set('category', category);
     if (source)   params.set('source', source);
 
-    fetch(`${API_BASE}/prediction/markets?${params}`, { signal: abortRef.current.signal })
+    const requestUrl = `${API_BASE}/prediction/markets?${params}`;
+    console.log('[markets] selected category:', category, '| request URL:', requestUrl);
+
+    fetch(requestUrl, { signal: abortRef.current.signal })
       .then(r => r.json())
       .then(data => {
         const list = parseList(data);
         // client-side sub filter (backend may not support it)
         const filtered = sub ? list.filter(m => m.sub?.toLowerCase() === sub.toLowerCase()) : list;
+        console.log('[markets] returned count:', filtered.length, '| category:', category);
         setMarkets(filtered);
         setTotal(data.total ?? data.count ?? filtered.length);
       })
