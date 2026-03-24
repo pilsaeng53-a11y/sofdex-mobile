@@ -12,6 +12,14 @@ const TAG_STYLES = {
   'HIGH PAYOUT':  { bg: 'rgba(251,191,36,0.12)',  text: '#fbbf24', border: 'rgba(251,191,36,0.25)' },
   'AI PICK':      { bg: 'rgba(0,212,170,0.12)',   text: '#00d4aa', border: 'rgba(0,212,170,0.25)' },
   'ENDING SOON':  { bg: 'rgba(239,68,68,0.12)',   text: '#f87171', border: 'rgba(239,68,68,0.25)' },
+  'NEW':          { bg: 'rgba(59,130,246,0.12)',  text: '#60a5fa', border: 'rgba(59,130,246,0.25)' },
+};
+
+const STATUS_BADGE = {
+  open:     null,
+  locked:   { bg: 'rgba(239,68,68,0.12)',    text: '#f87171', border: 'rgba(239,68,68,0.25)',    label: 'Locked'   },
+  resolved: { bg: 'rgba(59,130,246,0.12)',   text: '#60a5fa', border: 'rgba(59,130,246,0.25)',   label: 'Resolved' },
+  archived: { bg: 'rgba(148,163,184,0.1)',   text: '#94a3b8', border: 'rgba(148,163,184,0.2)',   label: 'Archived' },
 };
 
 const SOURCE_BADGE = {
@@ -57,14 +65,15 @@ function OutcomeBar({ outcomes }) {
 }
 
 export default function MarketRow({ market, participated, onBet, compact = false, watchlist, onWatchlist }) {
-  const topOutcome = market.outcomes.reduce((best, o) => o.prob > best.prob ? o : best, market.outcomes[0]);
-  const src = SOURCE_BADGE[market.source] ?? SOURCE_BADGE.solfort;
-  const isLocked = market.status === 'locked';
+  const src         = SOURCE_BADGE[market.source] ?? SOURCE_BADGE.solfort;
+  const isLocked    = market.status === 'locked';
+  const isInactive  = market.status === 'resolved' || market.status === 'archived';
+  const statusBadge = STATUS_BADGE[market.status] ?? null;
 
   return (
     <div
-      onClick={() => !isLocked && onBet(market)}
-      className={`group flex flex-col gap-2 px-4 py-3 border-b transition-all ${isLocked ? 'opacity-50 cursor-not-allowed' : participated ? 'cursor-pointer hover:bg-[#111827]/60 opacity-75' : 'cursor-pointer hover:bg-[#111827]/60'}`}
+      onClick={() => onBet(market)}
+      className={`group flex flex-col gap-2 px-4 py-3 border-b transition-all ${isLocked || isInactive ? 'opacity-60 cursor-pointer hover:bg-[#111827]/40' : participated ? 'cursor-pointer hover:bg-[#111827]/60 opacity-75' : 'cursor-pointer hover:bg-[#111827]/60'}`}
       style={{ borderColor: 'rgba(148,163,184,0.05)' }}>
 
       {/* Row 1: source badge + tags + meta */}
@@ -77,10 +86,10 @@ export default function MarketRow({ market, participated, onBet, compact = false
             {market.timeframe}
           </span>
         )}
-        {isLocked && (
+        {statusBadge && (
           <span className="text-[7px] font-black px-1.5 py-0.5 rounded border flex items-center gap-0.5"
-            style={{ background: 'rgba(239,68,68,0.1)', color: '#f87171', borderColor: 'rgba(239,68,68,0.2)' }}>
-            <Lock className="w-2 h-2" />LOCKED
+            style={{ background: statusBadge.bg, color: statusBadge.text, borderColor: statusBadge.border }}>
+            {isLocked && <Lock className="w-2 h-2" />}{statusBadge.label}
           </span>
         )}
         {market.tags.slice(0, 2).map(tag => {
