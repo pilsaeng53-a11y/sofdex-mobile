@@ -216,6 +216,43 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
         {market && (
           <div className="px-5 py-4 space-y-4">
 
+            {/* SolFort metadata */}
+            {market.source === 'solfort' && market.timeframe && (
+              <div className="flex items-center gap-2 px-3 py-2 rounded-xl border"
+                style={{ background: 'rgba(0,212,170,0.04)', borderColor: 'rgba(0,212,170,0.15)' }}>
+                <Zap className="w-3.5 h-3.5 text-[#00d4aa]" />
+                <span className="text-[10px] text-slate-300">
+                  Timeframe: <span className="font-black text-[#00d4aa]">{market.timeframe}</span>
+                  {market.resolutionType && <> · {market.resolutionType}</>}
+                  {market.targetPrice && <> · Target: ${market.targetPrice}</>}
+                </span>
+              </div>
+            )}
+
+            {/* Locked banner */}
+            {isBettingBlocked && (
+              <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl font-bold"
+                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', color: '#f87171' }}>
+                <Lock className="w-3.5 h-3.5" />
+                <span className="text-[11px]">
+                  {market.status === 'resolved' ? 'Market resolved' :
+                   secsLeft <= 0 ? 'Market closed' :
+                   `Betting locked · resolves in ${formatCountdown(secsLeft)}`}
+                </span>
+              </div>
+            )}
+
+            {/* Countdown for SolFort short markets */}
+            {market.source === 'solfort' && !isBettingBlocked && secsLeft > 0 && secsLeft <= 3600 && (
+              <div className="flex items-center justify-between px-3 py-2 rounded-xl border"
+                style={{ background: secsLeft <= 60 ? 'rgba(251,191,36,0.06)' : 'rgba(26,35,64,0.4)', borderColor: secsLeft <= 60 ? 'rgba(251,191,36,0.2)' : 'rgba(148,163,184,0.07)' }}>
+                <span className="text-[10px] text-slate-400">Resolves in</span>
+                <span className={`text-base font-black font-mono ${secsLeft <= 20 ? 'text-red-400' : secsLeft <= 60 ? 'text-amber-400' : 'text-white'}`}>
+                  {formatCountdown(secsLeft)}
+                </span>
+              </div>
+            )}
+
             {/* Market stats */}
             <div className="grid grid-cols-3 gap-2">
               {[
@@ -365,7 +402,7 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
 
             {/* CTA */}
             <button onClick={handleSubmit}
-              disabled={!outcome || blocked || !amt || submitting || done}
+              disabled={!outcome || blocked || !amt || submitting || done || isBettingBlocked}
               className="w-full py-3.5 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed mb-2"
               style={done
                 ? { background: '#1e293b', color: '#94a3b8' }
