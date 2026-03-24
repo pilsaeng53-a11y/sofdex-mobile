@@ -128,9 +128,11 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
 
   // Countdown + lock state
   const secsLeft   = useCountdown(market?.endDate);
+  // Only treat secsLeft<=0 as expired if the market actually HAS an endDate
+  const hasEndDate = !!(market?.endDate && String(market.endDate).length > 5);
   const isLockLocked = market?.status === 'locked' ||
-    (market?.endDate && secsLeft <= 20 && secsLeft >= 0 && market?.source === 'solfort');
-  const isBettingBlocked = isLockLocked || market?.status === 'resolved' || secsLeft <= 0;
+    (hasEndDate && secsLeft <= 20 && secsLeft >= 0 && market?.source === 'solfort');
+  const isBettingBlocked = isLockLocked || market?.status === 'resolved' || (hasEndDate && secsLeft <= 0);
 
   const fees = outcome && amt > 0
     ? calcFees({ stake: amt, outcome, boosts, isHighRoller: hrMode })

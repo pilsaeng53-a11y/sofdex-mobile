@@ -21,12 +21,10 @@ const PRESETS  = [10, 50, 100, 500];
 
 // ─── Single market row with live timer ────────────────────────────────────
 function CryptoMarketRow({ market, participated, onBet, locked }) {
-  const endTime = new Date(market.endDate || market.resolvesAt).getTime();
-  const lockTime = endTime - 20000; // 20s before resolution
-  const now = Date.now();
   const { secsLeft, status } = useMarketStatus(market.endDate || market.resolvesAt);
-  const isLocked = now >= lockTime;
-  const urgent   = status === 'closing_soon' || isLocked;
+  // Use reactive secsLeft (not a static Date.now() snapshot) for lock detection
+  const isLocked = locked || status === 'locked' || status === 'resolved' || secsLeft <= 20;
+  const urgent   = status === 'closing_soon' || secsLeft <= 60;
 
   const maxPayout = (1 / Math.max(...market.outcomes.map(o => o.prob), 0.001)).toFixed(2);
   const symbol = market.question.match(/([A-Z]{2,})/)?.[1] || '??';
@@ -74,15 +72,14 @@ function CryptoMarketRow({ market, participated, onBet, locked }) {
 }
 
 // ─── Betting sheet ─────────────────────────────────────────────────────────
-function CryptoBettingSheet({ market, status, secsLeft, existingBet, onClose, onPlace }) {
+function CryptoBettingSheet({ market, existingBet, onClose, onPlace }) {
   const [selected, setSelected] = useState(existingBet?.outcomeId ?? null);
   const [amount,   setAmount]   = useState('50');
   const [asset,    setAsset]    = useState('USDT');
 
-  const endTime = new Date(market.endDate || market.resolvesAt).getTime();
-  const lockTime = endTime - 20000; // 20s before resolution
-  const now = Date.now();
-  const locked = now >= lockTime || status === 'resolved';
+  // Use reactive hook — not a static Date.now() snapshot
+  const { secsLeft, status } = useMarketStatus(market.endDate || market.resolvesAt);
+  const locked = status === 'locked' || status === 'resolved' || secsLeft <= 20;
   const blocked = existingBet && existingBet.outcomeId !== selected;
   const outcome = market.outcomes.find(o => o.id === selected);
   const amt     = parseFloat(amount) || 0;
@@ -343,8 +340,6 @@ export default function CryptoShortMarkets({ participatedIds = new Set(), onPlac
       {activeSheet && (
         <CryptoBettingSheet
           market={activeSheet.market}
-          status={activeSheet.status}
-          secsLeft={activeSheet.secsLeft}
           existingBet={[...participatedIds].includes(activeSheet.market.id) ? { outcomeId: null } : null}
           onClose={() => setActiveSheet(null)}
           onPlace={(bet) => {

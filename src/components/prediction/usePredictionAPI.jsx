@@ -152,7 +152,7 @@ export function useCategories() {
 
 // ─── Top sections ─────────────────────────────────────────────────────────
 export function useTopMarkets() {
-  const [top, setTop] = useState({ trending: [], popular: [], payout: [], ending: [], aiPick: [] });
+  const [top, setTop] = useState({ trending: [], popular: [], payout: [], ending: [], aiPick: [], highestOdds: [] });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

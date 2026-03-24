@@ -64,7 +64,7 @@ export default function MarketRow({ market, participated, onBet, compact = false
   return (
     <div
       onClick={() => !isLocked && onBet(market)}
-      className={`group flex flex-col gap-2 px-4 py-3 border-b transition-all ${isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#111827]/60'} ${participated ? 'opacity-60' : ''}`}
+      className={`group flex flex-col gap-2 px-4 py-3 border-b transition-all ${isLocked ? 'opacity-50 cursor-not-allowed' : participated ? 'cursor-pointer hover:bg-[#111827]/60 opacity-75' : 'cursor-pointer hover:bg-[#111827]/60'}`}
       style={{ borderColor: 'rgba(148,163,184,0.05)' }}>
 
       {/* Row 1: source badge + tags + meta */}

@@ -37,7 +37,7 @@ const SOURCE_FILTERS = [
   { id: '',           label: 'All Sources' },
   { id: 'polymarket', label: 'Polymarket' },
   { id: 'kalshi',     label: 'Kalshi' },
-  { id: 'internal',   label: 'SolFort' },
+  { id: 'solfort',    label: 'SolFort' },
 ];
 
 const TOP_SECTIONS = [
