@@ -4,6 +4,7 @@
  */
 import React from 'react';
 import { Clock, TrendingUp, Zap, Star, AlertCircle } from 'lucide-react';
+import { LiquidityBar, RiskBadge, AIConfidence, OddsMovement, MarketTimer, ProfitMultiplier, WatchlistButton } from './MarketEngagement';
 
 const TAG_STYLES = {
   'HOT':          { bg: 'rgba(249,115,22,0.12)',  text: '#f97316', border: 'rgba(249,115,22,0.25)' },
@@ -48,9 +49,8 @@ function OutcomeBar({ outcomes }) {
   );
 }
 
-export default function MarketRow({ market, participated, onBet, compact = false }) {
+export default function MarketRow({ market, participated, onBet, compact = false, watchlist, onWatchlist }) {
   const topOutcome = market.outcomes.reduce((best, o) => o.prob > best.prob ? o : best, market.outcomes[0]);
-  const maxPayout  = (1 / (market.outcomes.reduce((min, o) => o.prob < min ? o.prob : min, 1))).toFixed(2);
 
   return (
     <div
@@ -71,12 +71,11 @@ export default function MarketRow({ market, participated, onBet, compact = false
           <span className="text-[8px] font-black px-1.5 py-0.5 rounded border"
             style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', borderColor: 'rgba(0,212,170,0.2)' }}>✓ IN</span>
         )}
-        <span className="text-[8px] text-slate-600 ml-auto flex items-center gap-1">
-          <Clock className="w-2.5 h-2.5" />
-          <span className={daysLeft(market.endDate).includes('Ended') ? 'text-red-400' : daysLeft(market.endDate).replace('d','').length <= 2 && parseInt(daysLeft(market.endDate)) <= 3 ? 'text-orange-400' : ''}>
-            {daysLeft(market.endDate)}
-          </span>
-        </span>
+        <RiskBadge market={market} />
+        <div className="ml-auto flex items-center gap-1.5">
+          {market.endDate && <MarketTimer endDate={market.endDate} />}
+          {onWatchlist && <WatchlistButton marketId={market.id} watchlist={watchlist} onToggle={onWatchlist} />}
+        </div>
       </div>
 
       {/* Row 2: question */}
@@ -84,18 +83,15 @@ export default function MarketRow({ market, participated, onBet, compact = false
         {market.question}
       </p>
 
-      {/* Row 3: outcome bars + stats */}
+      {/* Row 3: outcome bars */}
+      <OutcomeBar outcomes={market.outcomes} />
+
+      {/* Row 4: stats */}
       <div className="flex items-center justify-between gap-2">
-        <OutcomeBar outcomes={market.outcomes} />
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="text-right">
-            <p className="text-[8px] text-slate-600">Vol</p>
-            <p className="text-[9px] font-mono text-slate-400">{fmtVol(market.volume)}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[8px] text-slate-600">Max</p>
-            <p className="text-[9px] font-black font-mono text-yellow-400">{maxPayout}x</p>
-          </div>
+        <LiquidityBar volume={market.volume} />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <AIConfidence market={market} />
+          <ProfitMultiplier outcomes={market.outcomes} />
         </div>
       </div>
     </div>
