@@ -5,6 +5,7 @@ import { LiquidityBar, RiskBadge, AIConfidence, MarketTimer, ProfitMultiplier, W
 const SOURCE_BADGE = {
   polymarket: { bg: 'rgba(99,102,241,0.12)',  text: '#818cf8', border: 'rgba(99,102,241,0.25)', label: 'Polymarket' },
   kalshi:     { bg: 'rgba(16,185,129,0.10)',  text: '#34d399', border: 'rgba(16,185,129,0.22)', label: 'Kalshi' },
+  solfort:    { bg: 'rgba(0,212,170,0.10)',   text: '#00d4aa', border: 'rgba(0,212,170,0.22)', label: 'SolFort' },
   internal:   { bg: 'rgba(0,212,170,0.10)',   text: '#00d4aa', border: 'rgba(0,212,170,0.22)', label: 'SolFort' },
 };
 
