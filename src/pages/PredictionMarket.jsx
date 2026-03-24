@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import LiveBetFeed from '../components/prediction/LiveBetFeed';
 import PersonalStats from '../components/prediction/PersonalStats';
+import ParlayBuilder from '../components/prediction/ParlayBuilder';
 import {
   TrendingUp, Trophy, MessageSquare, CalendarDays, Briefcase,
   History, Compass, BarChart2, Filter, Search, Sparkles, Loader2,
@@ -295,12 +296,18 @@ export default function PredictionMarket() {
   const [bets,         setBets]         = useState([]);
   const [activeMkt,    setActiveMkt]    = useState(null);
   const [watchlist,    setWatchlist]    = useState(() => new Set());
+  const [parlayLegs,   setParlayLegs]   = useState([]);
 
   const handleWatchlist = (id) => setWatchlist(prev => {
     const next = new Set(prev);
     next.has(id) ? next.delete(id) : next.add(id);
     return next;
   });
+
+  const handleAddToParlay = ({ market, outcome }) => {
+    setParlayLegs(prev => prev.find(l => l.market.id === market.id) ? prev : [...prev, { market, outcome }]);
+    setActiveMkt(null);
+  };
 
   const apiStatus                       = useAPIHealth();
   const { categories, loading: catLoading } = useCategories();
@@ -456,7 +463,19 @@ export default function PredictionMarket() {
                 onPlaceBet={(bet) => setBets(prev => prev.find(b => b.marketId === bet.marketId) ? prev : [...prev, bet])}
               />
             )}
-            {tab === 'markets'     && <MarketsTab category={category} sub={activeSub} source={source} onBet={handleBet} participatedIds={participatedIds} watchlist={watchlist} onWatchlist={handleWatchlist} />}
+            {tab === 'markets'     && (
+              <div className="space-y-4">
+                <MarketsTab category={category} sub={activeSub} source={source} onBet={handleBet} participatedIds={participatedIds} watchlist={watchlist} onWatchlist={handleWatchlist} />
+                {parlayLegs.length > 0 && (
+                  <ParlayBuilder
+                    legs={parlayLegs}
+                    onRemoveLeg={(i) => setParlayLegs(prev => prev.filter((_, idx) => idx !== i))}
+                    onClear={() => setParlayLegs([])}
+                    onPlace={(p) => { setBets(prev => [...prev, { ...p, type: 'parlay' }]); setParlayLegs([]); }}
+                  />
+                )}
+              </div>
+            )}
             {tab === 'portfolio'   && <PortfolioTab bets={bets} />}
             {tab === 'history'     && <HistoryTab />}
             {tab === 'leaderboard' && <LeaderboardTab />}
@@ -473,6 +492,7 @@ export default function PredictionMarket() {
           existingBet={activeMkt.existingBet}
           onClose={() => setActiveMkt(null)}
           onPlace={handlePlace}
+          onAddToParlay={handleAddToParlay}
         />
       )}
     </div>
