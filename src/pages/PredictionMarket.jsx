@@ -41,11 +41,12 @@ const SOURCE_FILTERS = [
 ];
 
 const TOP_SECTIONS = [
-  { key: 'aiPick',   label: '🤖 AI Picks' },
-  { key: 'trending', label: '🔥 Trending' },
-  { key: 'popular',  label: '📊 Most Popular' },
-  { key: 'payout',   label: '💰 Highest Payout' },
-  { key: 'ending',   label: '⏰ Ending Soon' },
+  { key: 'trending',    label: '🔥 Trending' },
+  { key: 'popular',     label: '📊 Most Popular' },
+  { key: 'highestOdds', label: '🎯 Highest Odds' },
+  { key: 'payout',      label: '💰 Highest Payout' },
+  { key: 'ending',      label: '⏰ Ending Soon' },
+  { key: 'aiPick',      label: '🤖 AI Picks' },
 ];
 
 function fmtVol(n) {
