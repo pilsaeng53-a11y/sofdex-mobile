@@ -297,16 +297,7 @@ export default function CryptoShortMarkets({ participatedIds = new Set(), onPlac
             <CryptoMarketRow key={m.id} market={m}
               participated={participatedIds.has(m.id)}
               locked={false}
-              onBet={(market, status) => {
-                const now = Math.floor(Date.now() / 1000);
-                const endTime = new Date(market.endDate).getTime() / 1000;
-                const secs = Math.max(endTime - now, 0);
-                let st = 'open';
-                if (secs <= 0) st = 'resolved';
-                else if (secs <= 20) st = 'locked';
-                else if (secs <= 60) st = 'closing_soon';
-                setActiveSheet({ market, status: st, secsLeft: secs });
-              }} />
+              onBet={(market) => setActiveSheet({ market })} />
           ))}
         </div>
       )}
