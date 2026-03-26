@@ -143,15 +143,19 @@ export default function MarketCard({ market, participated, onBet, watchlist, onW
 
       {/* Countdown for SolFort short markets */}
       {isSolFort && hasEndDate && secsLeft > 0 && secsLeft <= 3600 && (
-        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg mb-2.5 border"
+        <div className="flex items-center justify-between px-3 py-2 rounded-xl mb-2.5 border"
           style={{
-            background: isUrgent ? 'rgba(251,191,36,0.06)' : 'rgba(0,212,170,0.04)',
-            borderColor: isUrgent ? 'rgba(251,191,36,0.2)' : 'rgba(0,212,170,0.12)',
+            background: secsLeft <= 30 ? 'rgba(239,68,68,0.08)' : isUrgent ? 'rgba(251,191,36,0.07)' : 'rgba(0,212,170,0.05)',
+            borderColor: secsLeft <= 30 ? 'rgba(239,68,68,0.35)' : isUrgent ? 'rgba(251,191,36,0.3)' : 'rgba(0,212,170,0.18)',
+            boxShadow: isUrgent ? `0 0 12px ${secsLeft <= 30 ? 'rgba(239,68,68,0.12)' : 'rgba(251,191,36,0.08)'}` : 'none',
           }}>
-          <span className="text-[8px] text-slate-500 flex items-center gap-1">
+          <span className="text-[8px] font-bold flex items-center gap-1"
+            style={{ color: secsLeft <= 30 ? '#f87171' : isUrgent ? '#fbbf24' : '#00d4aa' }}>
             <Clock className="w-2.5 h-2.5" />Resolves in
           </span>
-          <span className={`text-[13px] font-black font-mono ${secsLeft <= 20 ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-[#00d4aa]'}`}>
+          <span className={`text-[16px] font-black font-mono leading-none ${
+            secsLeft <= 30 ? 'text-red-400' : isUrgent ? 'text-amber-400' : 'text-[#00d4aa]'
+          }`}>
             {formatTime(secsLeft)}
           </span>
         </div>
@@ -160,7 +164,7 @@ export default function MarketCard({ market, participated, onBet, watchlist, onW
       {/* Outcome visual */}
       {isBinary ? (
         <div className="mb-3">
-          <div className="flex rounded-lg overflow-hidden h-6 mb-1.5">
+          <div className="flex rounded-xl overflow-hidden h-7 mb-1.5">
             {market.outcomes.map((o, i) => {
               const isFirst = i === 0;
               const isYes = o.label === 'YES' || isFirst;
@@ -169,22 +173,22 @@ export default function MarketCard({ market, participated, onBet, watchlist, onW
                   className="flex items-center justify-center text-[9px] font-black text-white transition-all"
                   style={{
                     width: `${Math.round(o.prob * 100)}%`,
-                    background: isYes ? 'rgba(34,197,94,0.6)' : 'rgba(239,68,68,0.6)',
-                    borderRight: isFirst ? '1px solid rgba(0,0,0,0.3)' : 'none',
+                    background: isYes ? 'rgba(34,197,94,0.65)' : 'rgba(239,68,68,0.65)',
+                    borderRight: isFirst ? '2px solid rgba(0,0,0,0.4)' : 'none',
                   }}>
                   {Math.round(o.prob * 100) > 15 ? `${o.label} ${Math.round(o.prob * 100)}%` : ''}
                 </div>
               );
             })}
           </div>
-          <div className="flex justify-between text-[9px]">
+          <div className="flex justify-between">
             {market.outcomes.map((o, i) => {
               const isYes = o.label === 'YES' || i === 0;
               return (
                 <span key={o.id} className="font-mono font-black"
                   style={{ color: isYes ? '#22c55e' : '#ef4444' }}>
-                  {o.label}: <span className="text-white">{(1 / o.prob).toFixed(2)}x</span>
-                  <span className="text-slate-600 font-normal ml-1">{Math.round(o.prob * 100)}¢</span>
+                  {o.label}: <span className="text-[13px] text-white">{(1 / o.prob).toFixed(2)}x</span>
+                  <span className="text-slate-600 font-normal ml-1 text-[8px]">{Math.round(o.prob * 100)}¢</span>
                 </span>
               );
             })}

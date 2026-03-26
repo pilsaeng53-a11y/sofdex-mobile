@@ -111,34 +111,45 @@ function OutcomeButton({ outcome, selected, blocked, onSelect }) {
   const isYes  = outcome.id === 'YES' || outcome.label === 'YES';
   const isNo   = outcome.id === 'NO'  || outcome.label === 'NO';
   const color  = isNo ? '#ef4444' : isYes ? '#22c55e' : '#00d4aa';
-  const glow   = isNo ? 'rgba(239,68,68,0.2)' : isYes ? 'rgba(34,197,94,0.2)' : 'rgba(0,212,170,0.2)';
+  const glow   = isNo ? 'rgba(239,68,68,0.28)' : isYes ? 'rgba(34,197,94,0.28)' : 'rgba(0,212,170,0.28)';
+  const bg     = isNo ? 'rgba(239,68,68,0.13)' : isYes ? 'rgba(34,197,94,0.13)' : 'rgba(0,212,170,0.13)';
 
   return (
     <button
       onClick={() => !blocked && onSelect(outcome.id)}
       disabled={blocked}
-      className={`relative flex flex-col gap-1.5 px-3 py-2.5 rounded-xl font-bold text-left w-full transition-all ${blocked ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+      className={`relative flex flex-col gap-2 px-4 py-3.5 rounded-2xl font-bold text-left w-full transition-all ${
+        blocked ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer active:scale-[0.98]'
+      }`}
       style={selected
-        ? { background: `${color}12`, border: `2px solid ${color}55`, boxShadow: `0 0 24px ${glow}, inset 0 0 20px ${color}05` }
-        : { background: 'rgba(15,21,37,0.9)', border: '1px solid rgba(148,163,184,0.1)' }}>
-      <div className="flex items-center justify-between w-full">
-        <span className="text-[13px] font-black" style={selected ? { color } : { color: '#e2e8f0' }}>
-          {outcome.label}
-        </span>
-        <span className="text-[12px] font-black font-mono px-2 py-0.5 rounded-lg"
-          style={selected
-            ? { background: `${color}18`, color, border: `1px solid ${color}35` }
-            : { background: 'rgba(26,35,64,0.9)', color: '#94a3b8', border: '1px solid rgba(148,163,184,0.08)' }}>
+        ? { background: bg, border: `2px solid ${color}`, boxShadow: `0 0 32px ${glow}, 0 0 0 1px ${color}30 inset` }
+        : { background: 'rgba(15,21,37,0.95)', border: '1.5px solid rgba(148,163,184,0.1)' }}>
+
+      {/* Selected check */}
+      {selected && (
+        <div className="absolute top-2.5 right-2.5 w-4 h-4 rounded-full flex items-center justify-center"
+          style={{ background: color }}>
+          <span className="text-[8px] text-black font-black">✓</span>
+        </div>
+      )}
+
+      {/* Label */}
+      <span className="text-[14px] font-black leading-none" style={{ color: selected ? color : '#e2e8f0' }}>
+        {outcome.label}
+      </span>
+
+      {/* Prob bar */}
+      <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.08)' }}>
+        <div className="h-full rounded-full transition-all"
+          style={{ width: `${cents}%`, background: color, boxShadow: selected ? `0 0 10px ${color}` : 'none' }} />
+      </div>
+
+      {/* Bottom: prob + payout */}
+      <div className="flex items-end justify-between w-full">
+        <span className="text-[9px] font-bold" style={{ color: selected ? color : '#64748b' }}>{cents}% chance · {cents}¢</span>
+        <span className="text-[18px] font-black font-mono leading-none" style={{ color: selected ? color : '#475569' }}>
           {payout}x
         </span>
-      </div>
-      <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(148,163,184,0.08)' }}>
-        <div className="h-full rounded-full transition-all"
-          style={{ width: `${cents}%`, background: color, boxShadow: selected ? `0 0 8px ${color}` : 'none' }} />
-      </div>
-      <div className="flex items-center justify-between w-full">
-        <span className="text-[9px] font-mono" style={selected ? { color } : { color: '#64748b' }}>{cents}% chance</span>
-        <span className="text-[9px] font-mono font-bold" style={selected ? { color } : { color: '#475569' }}>{cents}¢</span>
       </div>
     </button>
   );
@@ -148,80 +159,96 @@ function OutcomeButton({ outcome, selected, blocked, onSelect }) {
 function MyPositionPanel({ position, market, onCashOut, cashedOut }) {
   const [expanded, setExpanded] = useState(true);
   if (!position) return (
-    <div className="rounded-xl border px-4 py-5 text-center"
-      style={{ background: 'rgba(15,21,37,0.6)', borderColor: 'rgba(148,163,184,0.07)' }}>
-      <Wallet className="w-5 h-5 text-slate-700 mx-auto mb-2" />
-      <p className="text-[11px] text-slate-600 font-bold">No Active Position</p>
-      <p className="text-[9px] text-slate-700 mt-0.5">Place a bet to see your position here</p>
+    <div className="rounded-xl border px-4 py-4 flex items-center gap-3"
+      style={{ background: 'rgba(15,21,37,0.5)', borderColor: 'rgba(148,163,184,0.07)' }}>
+      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+        style={{ background: 'rgba(148,163,184,0.06)', border: '1px solid rgba(148,163,184,0.08)' }}>
+        <Wallet className="w-4 h-4 text-slate-700" />
+      </div>
+      <div>
+        <p className="text-[11px] text-slate-500 font-bold">No Active Position</p>
+        <p className="text-[9px] text-slate-700">Select an outcome and place a bet</p>
+      </div>
     </div>
   );
 
-  const outcome = market?.outcomes?.find(o => o.id === position.outcomeId);
-  const currentProb = outcome?.prob ?? position.payoutMult ? (1 / position.payoutMult) : 0.5;
+  const outcome     = market?.outcomes?.find(o => o.id === position.outcomeId);
+  const currentProb = outcome?.prob ?? (position.payoutMult ? (1 / position.payoutMult) : 0.5);
   const totalReturn = (position.amount * position.payoutMult).toFixed(2);
   const netProfit   = (position.amount * position.payoutMult - position.amount).toFixed(2);
-  const cashOutVal  = outcome
-    ? calcCashOut({ stake: position.amount, outcome, currentProb })
-    : 0;
-  const timeAgo = new Date(position.placedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const cashOutVal  = outcome ? calcCashOut({ stake: position.amount, outcome, currentProb }) : 0;
+  const timeStr     = new Date(position.placedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const isYes       = position.outcomeLabel === 'YES';
+  const isNo        = position.outcomeLabel === 'NO';
+  const outcomeColor = isNo ? '#ef4444' : isYes ? '#22c55e' : '#00d4aa';
 
   return (
-    <div className="rounded-xl border overflow-hidden"
-      style={{ background: 'rgba(0,212,170,0.03)', borderColor: 'rgba(0,212,170,0.15)' }}>
-      <button
-        onClick={() => setExpanded(e => !e)}
-        className="w-full flex items-center justify-between px-4 py-2.5">
+    <div className="rounded-2xl overflow-hidden"
+      style={{ background: 'rgba(10,14,26,0.98)', border: '1px solid rgba(0,212,170,0.2)', boxShadow: '0 0 30px rgba(0,212,170,0.05)' }}>
+
+      {/* Header */}
+      <button onClick={() => setExpanded(e => !e)}
+        className="w-full flex items-center justify-between px-4 py-3"
+        style={{ background: 'rgba(0,212,170,0.06)', borderBottom: expanded ? '1px solid rgba(0,212,170,0.1)' : 'none' }}>
         <span className="text-[10px] font-black text-[#00d4aa] flex items-center gap-1.5">
-          <Activity className="w-3 h-3" />My Position
+          <Activity className="w-3.5 h-3.5" />MY POSITION
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 ml-0.5" style={{ boxShadow: '0 0 6px rgba(34,197,94,0.9)' }} />
         </span>
-        {expanded ? <ChevronUp className="w-3.5 h-3.5 text-slate-500" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-500" />}
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] text-slate-500">{timeStr}</span>
+          {expanded ? <ChevronUp className="w-3.5 h-3.5 text-slate-600" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-600" />}
+        </div>
       </button>
 
       {expanded && (
-        <div className="px-4 pb-4 space-y-3">
-          {/* Outcome badge */}
+        <div className="px-4 pt-3 pb-4 space-y-3">
+
+          {/* Outcome + status row */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-black px-2.5 py-1 rounded-lg"
-              style={{
-                background: position.outcomeLabel === 'NO' ? 'rgba(239,68,68,0.12)' : 'rgba(34,197,94,0.12)',
-                color: position.outcomeLabel === 'NO' ? '#ef4444' : '#22c55e',
-                border: `1px solid ${position.outcomeLabel === 'NO' ? 'rgba(239,68,68,0.25)' : 'rgba(34,197,94,0.25)'}`,
-              }}>
+            <span className="text-[12px] font-black px-3 py-1 rounded-lg"
+              style={{ background: `${outcomeColor}18`, color: outcomeColor, border: `1px solid ${outcomeColor}35` }}>
               {position.outcomeLabel}
             </span>
-            <span className="text-[9px] text-slate-500">at {timeAgo}</span>
-            <span className="ml-auto text-[8px] font-bold px-1.5 py-0.5 rounded"
-              style={{ background: 'rgba(34,197,94,0.1)', color: '#22c55e' }}>OPEN</span>
+            <span className="text-[9px] text-slate-600">{position.asset}</span>
+            <span className="ml-auto text-[8px] font-black px-2 py-0.5 rounded-full"
+              style={{ background: 'rgba(34,197,94,0.12)', color: '#22c55e' }}>● LIVE</span>
           </div>
 
-          {/* Stats grid */}
-          <div className="grid grid-cols-2 gap-2">
+          {/* Big profit display */}
+          <div className="rounded-xl px-4 py-3 text-center"
+            style={{ background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.12)' }}>
+            <p className="text-[9px] text-slate-600 mb-0.5 uppercase tracking-wider">Potential Net Profit</p>
+            <p className="text-[32px] font-black font-mono leading-none text-emerald-400">+${netProfit}</p>
+            <p className="text-[9px] text-slate-600 mt-0.5">{position.asset} · if {position.outcomeLabel} resolves</p>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-1.5">
             {[
-              { label: 'Staked',        value: `${position.amount} ${position.asset}`, color: '#e2e8f0' },
-              { label: 'Payout at Entry', value: `${position.payoutMult}x`,           color: '#00d4aa' },
-              { label: 'Total Return',  value: `$${totalReturn}`,                     color: '#22c55e' },
-              { label: 'Net Profit',    value: `+$${netProfit}`,                      color: '#22c55e' },
+              { label: 'Staked',  value: `$${position.amount}`,       color: '#e2e8f0' },
+              { label: 'Payout',  value: `${position.payoutMult}x`,   color: '#00d4aa' },
+              { label: 'Return',  value: `$${totalReturn}`,           color: '#22c55e' },
             ].map(s => (
-              <div key={s.label} className="rounded-lg px-3 py-2 border"
-                style={{ background: 'rgba(15,21,37,0.7)', borderColor: 'rgba(148,163,184,0.07)' }}>
-                <p className="text-[9px] text-slate-500 mb-0.5">{s.label}</p>
-                <p className="text-[12px] font-black font-mono" style={{ color: s.color }}>{s.value}</p>
+              <div key={s.label} className="rounded-xl px-3 py-2 text-center"
+                style={{ background: 'rgba(15,21,37,0.8)', border: '1px solid rgba(148,163,184,0.06)' }}>
+                <p className="text-[8px] text-slate-600 mb-0.5">{s.label}</p>
+                <p className="text-[13px] font-black font-mono" style={{ color: s.color }}>{s.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Cash out button */}
+          {/* Cash out */}
           {cashOutVal > 0 && !cashedOut && (
             <button onClick={onCashOut}
-              className="w-full py-2 rounded-lg text-[10px] font-black transition-all"
-              style={{ background: 'rgba(0,212,170,0.12)', border: '1px solid rgba(0,212,170,0.25)', color: '#00d4aa' }}>
-              💸 Early Cash Out — Receive ${cashOutVal}
-              <span className="text-[8px] opacity-60 ml-1">({(CASHOUT_FEE_RATE * 100).toFixed(0)}% fee)</span>
+              className="w-full py-2.5 rounded-xl text-[11px] font-black transition-all flex items-center justify-center gap-1.5"
+              style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.3)', color: '#00d4aa' }}>
+              💸 Cash Out Now — <span className="text-white">${cashOutVal}</span>
+              <span className="text-[8px] opacity-50">({(CASHOUT_FEE_RATE * 100).toFixed(0)}% fee)</span>
             </button>
           )}
           {cashedOut && (
-            <div className="text-center text-[10px] text-[#00d4aa] font-black py-1.5">
-              ✓ Cashed out successfully
+            <div className="flex items-center justify-center gap-2 py-2 text-[11px] font-black text-[#00d4aa]">
+              <CheckCircle2 className="w-4 h-4" />Cashed out successfully
             </div>
           )}
         </div>
@@ -387,29 +414,34 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
 
             {/* Closing soon urgent warning */}
             {isClosingSoon && (
-              <div className="flex items-center justify-between px-4 py-3 rounded-xl border animate-pulse"
-                style={{ background: 'rgba(251,191,36,0.08)', borderColor: 'rgba(251,191,36,0.3)' }}>
-                <div className="flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-400" />
-                  <div>
-                    <p className="text-[11px] font-black text-amber-400">Closing Soon</p>
-                    <p className="text-[8px] text-slate-500">Betting locks when timer reaches 20s</p>
+              <div className="rounded-xl overflow-hidden"
+                style={{ border: `1px solid ${secsLeft <= 30 ? 'rgba(239,68,68,0.5)' : 'rgba(251,191,36,0.4)'}`, boxShadow: `0 0 24px ${secsLeft <= 30 ? 'rgba(239,68,68,0.15)' : 'rgba(251,191,36,0.1)'}` }}>
+                <div className="flex items-center justify-between px-4 py-2"
+                  style={{ background: secsLeft <= 30 ? 'rgba(239,68,68,0.12)' : 'rgba(251,191,36,0.1)' }}>
+                  <div className="flex items-center gap-2">
+                    <AlertCircle className={`w-4 h-4 ${secsLeft <= 30 ? 'text-red-400' : 'text-amber-400'}`} />
+                    <div>
+                      <p className={`text-[11px] font-black ${secsLeft <= 30 ? 'text-red-400' : 'text-amber-400'}`}>
+                        {secsLeft <= 30 ? '🚨 Betting Closes Very Soon' : '⚡ Closing Soon'}
+                      </p>
+                      <p className="text-[8px] text-slate-500">Locks at 20s · place your bet now</p>
+                    </div>
                   </div>
+                  <span className={`text-[28px] font-black font-mono leading-none ${secsLeft <= 30 ? 'text-red-400' : 'text-amber-400'}`}>
+                    {formatCountdown(secsLeft)}
+                  </span>
                 </div>
-                <span className={`text-xl font-black font-mono ${secsLeft <= 30 ? 'text-red-400' : 'text-amber-400'}`}>
-                  {formatCountdown(secsLeft)}
-                </span>
               </div>
             )}
 
             {/* Normal countdown for SolFort short markets */}
             {!isClosingSoon && (market.source === 'solfort' || market.source === 'internal') && !isBettingBlocked && secsLeft > 0 && secsLeft <= 3600 && (
-              <div className="flex items-center justify-between px-3 py-2 rounded-xl border"
-                style={{ background: 'rgba(26,35,64,0.5)', borderColor: 'rgba(148,163,184,0.08)' }}>
-                <span className="text-[9px] text-slate-500 flex items-center gap-1">
-                  <Clock className="w-3 h-3" />Resolves in
+              <div className="flex items-center justify-between px-4 py-2.5 rounded-xl border"
+                style={{ background: 'rgba(0,212,170,0.04)', borderColor: 'rgba(0,212,170,0.15)' }}>
+                <span className="text-[9px] text-[#00d4aa] font-bold flex items-center gap-1.5">
+                  <Zap className="w-3 h-3" />Resolves in
                 </span>
-                <span className="text-[15px] font-black font-mono text-white">{formatCountdown(secsLeft)}</span>
+                <span className="text-[22px] font-black font-mono text-white leading-none">{formatCountdown(secsLeft)}</span>
               </div>
             )}
 
@@ -518,24 +550,24 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     placeholder="Enter amount"
-                    className="w-full rounded-xl px-4 py-3 text-[14px] text-white font-mono font-bold focus:outline-none mb-2 transition-all"
+                    className="w-full rounded-xl px-4 py-3 text-[18px] text-white font-mono font-black focus:outline-none mb-2 transition-all"
                     style={{ background: 'rgba(15,21,37,0.9)', border: '1px solid rgba(148,163,184,0.1)' }}
-                    onFocus={e => e.target.style.borderColor = 'rgba(0,212,170,0.35)'}
+                    onFocus={e => e.target.style.borderColor = 'rgba(0,212,170,0.4)'}
                     onBlur={e => e.target.style.borderColor = 'rgba(148,163,184,0.1)'}
                   />
-                  <div className="flex gap-1.5">
+                  <div className="grid grid-cols-6 gap-1.5">
                     {PRESETS.map(p => (
                       <button key={p} onClick={() => setAmount(String(p))}
-                        className="flex-1 py-1.5 rounded-lg text-[9px] font-black transition-all"
+                        className="py-2 rounded-xl text-[10px] font-black transition-all"
                         style={Number(amount) === p
-                          ? { background: 'rgba(0,212,170,0.15)', color: '#00d4aa' }
-                          : { background: 'rgba(15,21,37,0.9)', color: '#475569', border: '1px solid rgba(148,163,184,0.06)' }}>
+                          ? { background: 'rgba(0,212,170,0.18)', color: '#00d4aa', border: '1.5px solid rgba(0,212,170,0.35)' }
+                          : { background: 'rgba(15,21,37,0.9)', color: '#64748b', border: '1px solid rgba(148,163,184,0.08)' }}>
                         {p}
                       </button>
                     ))}
                     <button onClick={() => setAmount(String(BALANCES[asset]))}
-                      className="flex-1 py-1.5 rounded-lg text-[9px] font-black transition-all"
-                      style={{ background: 'rgba(15,21,37,0.9)', color: '#475569', border: '1px solid rgba(148,163,184,0.06)' }}>
+                      className="py-2 rounded-xl text-[10px] font-black transition-all"
+                      style={{ background: 'rgba(15,21,37,0.9)', color: '#64748b', border: '1px solid rgba(148,163,184,0.08)' }}>
                       MAX
                     </button>
                   </div>
@@ -572,46 +604,42 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
 
                 {/* Payout Preview */}
                 {fees && outcome && (
-                  <div className="rounded-xl overflow-hidden border"
-                    style={{ background: 'rgba(10,14,26,0.95)', borderColor: 'rgba(148,163,184,0.08)' }}>
-                    <div className="px-4 py-2 border-b flex items-center justify-between"
-                      style={{ borderColor: 'rgba(148,163,184,0.05)', background: 'rgba(0,212,170,0.03)' }}>
-                      <span className="text-[9px] font-black text-slate-500 uppercase tracking-wider">Payout Preview</span>
-                      <span className="text-[9px] font-bold text-slate-500">
-                        Outcome: <span className="text-white">{outcome.label}</span>
-                      </span>
+                  <div className="rounded-2xl overflow-hidden"
+                    style={{ background: 'rgba(10,14,26,0.98)', border: '1px solid rgba(0,212,170,0.15)' }}>
+
+                    {/* Big return row */}
+                    <div className="grid grid-cols-2" style={{ borderBottom: '1px solid rgba(148,163,184,0.06)' }}>
+                      <div className="px-4 py-4 text-center" style={{ borderRight: '1px solid rgba(148,163,184,0.06)', background: 'rgba(34,197,94,0.05)' }}>
+                        <p className="text-[8px] text-slate-600 uppercase tracking-wider mb-1">Total Return</p>
+                        <p className="text-[24px] font-black font-mono text-emerald-400 leading-none">
+                          ${(fees.netStake * fees.finalMultiplier).toFixed(2)}
+                        </p>
+                        <p className="text-[8px] text-slate-700 mt-1">{asset}</p>
+                      </div>
+                      <div className="px-4 py-4 text-center" style={{ background: 'rgba(34,197,94,0.05)' }}>
+                        <p className="text-[8px] text-slate-600 uppercase tracking-wider mb-1">Net Profit</p>
+                        <p className="text-[24px] font-black font-mono text-emerald-400 leading-none">
+                          +${fees.profit.toFixed(2)}
+                        </p>
+                        <p className="text-[8px] text-slate-700 mt-1">{fees.finalMultiplier}x multiplier</p>
+                      </div>
                     </div>
-                    <div className="divide-y" style={{ divideColor: 'rgba(148,163,184,0.04)' }}>
+
+                    {/* Detail rows */}
+                    <div>
                       {[
-                        { label: 'Stake',            value: `${amt} ${asset}`,            color: '#e2e8f0' },
-                        { label: `Entry fee (${(PLATFORM_FEE_RATE*100).toFixed(0)}%)`, value: `-$${fees.entryFee}`, color: '#f87171' },
-                        { label: 'Net stake',         value: `$${fees.netStake}`,          color: '#94a3b8' },
+                        { label: 'Stake',             value: `${amt} ${asset}`,      color: '#e2e8f0' },
+                        { label: `Fee (${(PLATFORM_FEE_RATE*100).toFixed(0)}%)`,  value: `-$${fees.entryFee}`, color: '#f87171' },
                         { label: 'Implied probability', value: `${Math.round(outcome.prob * 100)}%`, color: '#94a3b8' },
-                        { label: 'Payout multiplier', value: `${fees.finalMultiplier}x`,   color: '#00d4aa', bold: true },
                         boosts.includes('insurance')
                           ? { label: `Insurance (${(INSURANCE_RATE*100).toFixed(0)}%)`, value: `-$${fees.insuranceCost}`, color: '#f87171' }
                           : null,
                       ].filter(Boolean).map((row, i) => (
-                        <div key={i} className="px-4 py-1.5 flex justify-between text-[10px]">
+                        <div key={i} className="px-4 py-1.5 flex justify-between text-[10px]" style={{ borderTop: '1px solid rgba(148,163,184,0.04)' }}>
                           <span className="text-slate-600">{row.label}</span>
-                          <span className="font-mono font-bold" style={{ color: row.bold ? row.color : row.color }}>{row.value}</span>
+                          <span className="font-mono font-bold" style={{ color: row.color }}>{row.value}</span>
                         </div>
                       ))}
-                    </div>
-                    {/* If correct row */}
-                    <div className="grid grid-cols-2 divide-x" style={{ divideColor: 'rgba(148,163,184,0.06)', background: 'rgba(34,197,94,0.04)' }}>
-                      <div className="px-4 py-3 text-center">
-                        <p className="text-[8px] text-slate-600 mb-0.5">Total Return</p>
-                        <p className="text-[14px] font-black font-mono text-emerald-400">
-                          ${(fees.netStake * fees.finalMultiplier).toFixed(2)}
-                        </p>
-                      </div>
-                      <div className="px-4 py-3 text-center">
-                        <p className="text-[8px] text-slate-600 mb-0.5">Net Profit</p>
-                        <p className="text-[14px] font-black font-mono text-emerald-400">
-                          +${fees.profit.toFixed(2)} {asset}
-                        </p>
-                      </div>
                     </div>
                   </div>
                 )}
@@ -629,14 +657,14 @@ export default function MarketDetailPanel({ preloaded, source, id, existingBet, 
                 <button
                   onClick={handleSubmit}
                   disabled={!outcome || blocked || !amt || submitting || isBettingBlocked}
-                  className="w-full py-4 rounded-xl font-black text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed mb-2"
+                  className="w-full py-4 rounded-2xl font-black text-[15px] transition-all flex items-center justify-center gap-2 disabled:opacity-35 disabled:cursor-not-allowed mb-2 active:scale-[0.98]"
                   style={submitting || !outcome
-                    ? { background: '#111827', color: '#64748b', border: '1px solid rgba(148,163,184,0.08)' }
-                    : { background: 'linear-gradient(135deg, #00d4aa, #06b6d4)', color: '#fff', boxShadow: '0 4px 28px rgba(0,212,170,0.3)' }}>
+                    ? { background: '#0f1525', color: '#475569', border: '1px solid rgba(148,163,184,0.08)' }
+                    : { background: 'linear-gradient(135deg, #00d4aa 0%, #06b6d4 60%, #3b82f6 100%)', color: '#fff', boxShadow: '0 6px 32px rgba(0,212,170,0.35), 0 2px 8px rgba(0,0,0,0.4)' }}>
                   {submitting ? (
                     <><Loader2 className="w-4 h-4 animate-spin" />Placing Bet...</>
                   ) : !outcome ? (
-                    'Select an outcome to continue'
+                    'Select an outcome above'
                   ) : hrMode ? (
                     <><Crown className="w-4 h-4" />High Roller · Buy {outcome.label} · ${fees?.totalCost ?? amt}</>
                   ) : (
