@@ -13,8 +13,10 @@ import { DisconnectedState, NotApprovedState, CheckingState } from '@/components
 import { DEV_MODE, DEV_WALLET, DEV_SALES_PARTNER } from '@/components/shared/devConfig';
 import CustomerRegistrationForm from '@/components/sofpartner/CustomerRegistrationForm';
 import CustomerTable from '@/components/sofpartner/CustomerTable';
-import RetailSalesForm from '@/components/sofpartner/RetailSalesForm';
+import SalesCalculator from '@/components/sofpartner/SalesCalculator';
+import SubordinatePanel from '@/components/sofpartner/SubordinatePanel';
 import { formatNumber } from '@/components/sofpartner/SOFQuantityCalc';
+import { useSubordinates } from '@/hooks/useSubordinates';
 import { UserPlus, List, Users, ShoppingBag } from 'lucide-react';
 import PartnerGradePanel from '@/components/sofpartner/PartnerGradePanel';
 import { usePartnerGrade } from '@/hooks/usePartnerGrade';
@@ -34,6 +36,7 @@ export default function SOFSalesPartnerDashboard() {
   const { t } = useLang();
   const effectiveWallet = DEV_MODE ? DEV_WALLET : address;
   const { gradeInfo, loading: gradeLoading, fetched: gradeFetched } = usePartnerGrade(effectiveWallet);
+  const { active: subActive, promoted: subPromoted, loading: subLoading } = useSubordinates(effectiveWallet, gradeInfo?.grade);
 
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [isApproved, setIsApproved] = useState(false);
@@ -184,18 +187,14 @@ export default function SOFSalesPartnerDashboard() {
             fetched={gradeFetched}
             wallet={effectiveWallet}
           />
-          <div className="glass-card rounded-2xl p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <ShoppingBag className="w-4 h-4 text-[#00d4aa]" />
-              <p className="text-xs font-bold text-white">도소매 세일즈 파트너</p>
-            </div>
-            <p className="text-[10px] text-slate-500">매출 기반으로 SOF 수량을 계산하고 재단에 제출합니다.</p>
-          </div>
-          <RetailSalesForm
+          <SalesCalculator
             partnerWallet={effectiveWallet}
-            suggestedPromotion={gradeInfo?.promotionPercent ?? null}
-            centerFeePercent={gradeInfo?.centerFeePercent ?? null}
-            gradeLabel={gradeInfo?.grade ?? null}
+            gradeInfo={gradeInfo}
+          />
+          <SubordinatePanel
+            active={subActive}
+            promoted={subPromoted}
+            loading={subLoading}
           />
         </div>
       )}
