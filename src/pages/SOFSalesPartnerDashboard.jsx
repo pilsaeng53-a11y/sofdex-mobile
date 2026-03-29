@@ -1,8 +1,6 @@
 /**
  * SOFSalesPartnerDashboard.jsx
- * Exclusively for approved SOF token sales partners.
- * No referral logic. No commission cascades. No FeeEngine rewards.
- * Access: only wallets whitelisted in ApprovedSalesPartner entity.
+ * Full operational partner management system for approved SOF token sales partners.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -11,50 +9,50 @@ import { useLang } from '@/components/shared/LanguageContext';
 import { base44 } from '@/api/base44Client';
 import { DisconnectedState, NotApprovedState, CheckingState } from '@/components/sofpartner/SOFPartnerGate';
 import { DEV_MODE, DEV_WALLET, DEV_SALES_PARTNER } from '@/components/shared/devConfig';
-import CustomerRegistrationForm from '@/components/sofpartner/CustomerRegistrationForm';
-import CustomerTable from '@/components/sofpartner/CustomerTable';
 import SalesCalculator from '@/components/sofpartner/SalesCalculator';
-import SubordinatePanel from '@/components/sofpartner/SubordinatePanel';
-import { formatNumber } from '@/components/sofpartner/SOFQuantityCalc';
 import { useSubordinates } from '@/hooks/useSubordinates';
-import { UserPlus, List, Users, ShoppingBag } from 'lucide-react';
-import PartnerGradePanel from '@/components/sofpartner/PartnerGradePanel';
 import { usePartnerGrade } from '@/hooks/usePartnerGrade';
+import PartnerGradePanel from '@/components/sofpartner/PartnerGradePanel';
+import PartnerDashboardStats from '@/components/sofpartner/PartnerDashboardStats';
+import SubmissionHistoryTable from '@/components/sofpartner/SubmissionHistoryTable';
+import GradeSimulator from '@/components/sofpartner/GradeSimulator';
+import OrgTree from '@/components/sofpartner/OrgTree';
+import CalcLogPanel from '@/components/sofpartner/CalcLogPanel';
+import NotificationCenter from '@/components/sofpartner/NotificationCenter';
+import AdminPanel from '@/components/sofpartner/AdminPanel';
+import {
+  LayoutDashboard, UserPlus, List, GitBranch,
+  TrendingUp, Bell, Calculator, Shield
+} from 'lucide-react';
 
-function StatCard({ label, value, sub, color = '#00d4aa' }) {
-  return (
-    <div className="glass-card rounded-xl p-4">
-      <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">{label}</p>
-      <p className="text-xl font-bold mt-1" style={{ color }}>{value}</p>
-      {sub && <p className="text-[8px] text-slate-500 mt-0.5">{sub}</p>}
-    </div>
-  );
-}
+const TABS = [
+  { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
+  { id: 'register',  label: '판매 등록', icon: UserPlus },
+  { id: 'history',   label: '제출 기록', icon: List },
+  { id: 'org',       label: '조직도',   icon: GitBranch },
+  { id: 'grade',     label: '등급',     icon: TrendingUp },
+  { id: 'calc',      label: '계산로그',  icon: Calculator },
+  { id: 'notify',    label: '알림',     icon: Bell },
+  { id: 'admin',     label: '관리자',   icon: Shield },
+];
 
 export default function SOFSalesPartnerDashboard() {
   const { isConnected, address } = useWallet();
   const { t } = useLang();
   const effectiveWallet = DEV_MODE ? DEV_WALLET : address;
+
   const { gradeInfo, loading: gradeLoading, fetched: gradeFetched } = usePartnerGrade(effectiveWallet);
   const { active: subActive, promoted: subPromoted, loading: subLoading } = useSubordinates(effectiveWallet, gradeInfo?.grade);
 
   const [checkingAccess, setCheckingAccess] = useState(true);
-  const [isApproved, setIsApproved] = useState(false);
-  const [partnerInfo, setPartnerInfo] = useState(null);
-  const [submissions, setSubmissions] = useState([]);
-  const [loadingData, setLoadingData] = useState(false);
-  const [activeTab, setActiveTab] = useState('register');
-  const [periodFilter, setPeriodFilter] = useState('all');
-
-  const TABS = [
-    { id: 'register', labelKey: 'sof_sales_register', icon: UserPlus },
-    { id: 'retail',   label: '도소매 파트너', icon: ShoppingBag },
-    { id: 'manage',   labelKey: 'sof_sales_customers', icon: Users },
-    { id: 'history',  labelKey: 'sof_sales_history', icon: List },
-  ];
+  const [isApproved,     setIsApproved]     = useState(false);
+  const [partnerInfo,    setPartnerInfo]     = useState(null);
+  const [submissions,    setSubmissions]     = useState([]);
+  const [loadingData,    setLoadingData]     = useState(false);
+  const [activeTab,      setActiveTab]       = useState('dashboard');
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
   useEffect(() => {
-    // DEV_MODE: bypass all approval/whitelist checks
     if (DEV_MODE) {
       setCheckingAccess(false);
       setIsApproved(true);
@@ -62,11 +60,7 @@ export default function SOFSalesPartnerDashboard() {
       loadSubmissions();
       return;
     }
-    if (!isConnected || !address) {
-      setCheckingAccess(false);
-      setIsApproved(false);
-      return;
-    }
+    if (!isConnected || !address) { setCheckingAccess(false); setIsApproved(false); return; }
     checkPartnerAccess();
   }, [isConnected, address]);
 
@@ -81,35 +75,30 @@ export default function SOFSalesPartnerDashboard() {
       } else {
         setIsApproved(false);
       }
-    } catch (e) {
-      console.error(e);
-      setIsApproved(false);
-    }
+    } catch (e) { console.error(e); setIsApproved(false); }
     setCheckingAccess(false);
   }
 
   const loadSubmissions = useCallback(async () => {
-    const effectiveAddress = DEV_MODE ? DEV_WALLET : address;
-    if (!effectiveAddress) return;
+    const wallet = DEV_MODE ? DEV_WALLET : address;
+    if (!wallet) return;
     setLoadingData(true);
     try {
-      const data = await base44.entities.SOFSaleSubmission.filter({ partner_wallet: DEV_MODE ? DEV_WALLET : address }, '-submitted_at', 500);
+      const data = await base44.entities.SOFSaleSubmission.filter({ partner_wallet: wallet }, '-submitted_at', 500);
       setSubmissions(data);
     } catch (e) { console.error(e); }
     setLoadingData(false);
   }, [address]);
 
-  const totalUSDT  = submissions.reduce((s, r) => s + (r.purchase_amount || 0), 0);
-  const totalSOF   = submissions.reduce((s, r) => s + (r.sof_quantity || 0), 0);
-  const processing = submissions.filter(r => r.status === 'Processing').length;
-  const approved   = submissions.filter(r => r.status === 'Approved').length;
-
-  // DEV_MODE: never show gate screens
+  // Gate checks
   if (!DEV_MODE) {
-    if (!isConnected) return <DisconnectedState />;
-    if (checkingAccess) return <CheckingState />;
-    if (!isApproved) return <NotApprovedState />;
+    if (!isConnected)    return <DisconnectedState />;
+    if (checkingAccess)  return <CheckingState />;
+    if (!isApproved)     return <NotApprovedState />;
   }
+
+  // Unread notifications count
+  const unread = subPromoted.length + submissions.filter(r => r.status === 'Approved' || r.status === 'Rejected').slice(0, 3).length;
 
   return (
     <div className="px-4 py-6 max-w-lg mx-auto space-y-5 pb-24">
@@ -118,130 +107,138 @@ export default function SOFSalesPartnerDashboard() {
       <div>
         <div className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full bg-[#00d4aa]" style={{ boxShadow: '0 0 8px rgba(0,212,170,0.8)' }} />
-          <span className="text-[9px] font-bold text-[#00d4aa] uppercase tracking-widest">{t('sof_approved_label')}</span>
+          <span className="text-[9px] font-bold text-[#00d4aa] uppercase tracking-widest">SOF 승인 파트너</span>
         </div>
-        <h1 className="text-2xl font-bold text-white">{t('sof_sales_title')}</h1>
-        <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">{DEV_MODE ? DEV_WALLET : address}</p>
-        {DEV_MODE && <span className="text-[8px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-bold">DEV MODE</span>}
-        {partnerInfo?.display_name && (
-          <p className="text-xs text-slate-400 mt-1">{partnerInfo.display_name}</p>
-        )}
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-3">
-        <StatCard label={t('sof_sales_total_submissions')} value={submissions.length} sub={t('sof_sales_all_time')} color="#ffffff" />
-        <StatCard label={t('sof_sales_total_volume')} value={`$${formatNumber(totalUSDT, 0)}`} sub={t('sof_sales_customer_purchases')} color="#00d4aa" />
-        <StatCard label={t('sof_sales_total_sof')} value={`${formatNumber(totalSOF, 2)}`} sub={t('sof_sales_calc_qty')} color="#8b5cf6" />
-        <div className="glass-card rounded-xl p-4">
-          <p className="text-[8px] font-bold text-slate-500 uppercase tracking-wider">{t('sof_sales_status')}</p>
-          <div className="flex items-center gap-3 mt-1.5">
-            <div>
-              <p className="text-[8px] text-yellow-400 font-bold">{processing}</p>
-              <p className="text-[7px] text-slate-600">{t('sof_status_processing')}</p>
-            </div>
-            <div className="w-px h-6 bg-[rgba(148,163,184,0.1)]" />
-            <div>
-              <p className="text-[8px] text-green-400 font-bold">{approved}</p>
-              <p className="text-[7px] text-slate-600">{t('sof_status_approved')}</p>
-            </div>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-white">파트너 운영 센터</h1>
+            <p className="text-[9px] text-slate-500 font-mono mt-0.5 truncate">{effectiveWallet}</p>
           </div>
+          {partnerInfo?.display_name && (
+            <div className="text-right">
+              <p className="text-xs font-bold text-slate-300">{partnerInfo.display_name}</p>
+              {gradeInfo?.grade && (
+                <p className="text-[8px]" style={{ color: { GREEN: '#22c55e', PURPLE: '#a78bfa', GOLD: '#fbbf24', PLATINUM: '#e2e8f0' }[gradeInfo.grade] }}>
+                  {gradeInfo.grade}
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+        {DEV_MODE && <span className="text-[8px] bg-yellow-500/20 text-yellow-400 px-2 py-0.5 rounded-full font-bold mt-1 inline-block">DEV MODE</span>}
+      </div>
+
+      {/* Tab navigation — horizontal scrollable */}
+      <div className="overflow-x-auto scrollbar-none -mx-4 px-4">
+        <div className="flex gap-1 min-w-max glass-card rounded-2xl p-1">
+          {TABS.map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            const hasNotif = tab.id === 'notify' && unread > 0;
+            return (
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)}
+                className={`relative flex flex-col items-center gap-1 px-3 py-2.5 rounded-xl transition-all flex-shrink-0 ${isActive ? 'bg-[#00d4aa]/15 text-[#00d4aa]' : 'text-slate-500 hover:text-slate-300'}`}>
+                <div className="relative">
+                  <Icon className="w-3.5 h-3.5" />
+                  {hasNotif && <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-[#00d4aa]" style={{ boxShadow: '0 0 6px rgba(0,212,170,0.8)' }} />}
+                </div>
+                <span className="text-[7px] font-bold leading-tight text-center whitespace-nowrap">{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 glass-card rounded-2xl p-1">
-        {TABS.map(tab => {
-          const Icon = tab.icon;
-          return (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all ${
-                    activeTab === tab.id
-                      ? 'bg-[#00d4aa]/15 text-[#00d4aa]'
-                      : 'text-slate-500 hover:text-slate-300'
-                  }`}
-                >
-                  <Icon className="w-3.5 h-3.5" />
-                  <span className="text-[8px] font-bold leading-tight text-center">{tab.label ?? t(tab.labelKey)}</span>
-            </button>
-          );
-        })}
-      </div>
+      {/* Tab: Dashboard */}
+      {activeTab === 'dashboard' && (
+        <PartnerDashboardStats
+          submissions={submissions}
+          gradeInfo={gradeInfo}
+          subActive={subActive}
+          subPromoted={subPromoted}
+        />
+      )}
 
-      {/* Tab: Register — uses unified SalesCalculator (same fields as 도소매 tab) */}
+      {/* Tab: Register */}
       {activeTab === 'register' && (
         <div className="space-y-4">
-          <PartnerGradePanel
-            gradeInfo={gradeInfo}
-            loading={gradeLoading}
-            fetched={gradeFetched}
-            wallet={effectiveWallet}
-          />
+          <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} />
           <SalesCalculator
             partnerWallet={effectiveWallet}
             gradeInfo={gradeInfo}
-            onSubmitSuccess={() => { loadSubmissions(); setActiveTab('manage'); }}
+            onSubmitSuccess={() => { loadSubmissions(); setActiveTab('history'); }}
           />
         </div>
       )}
 
-      {/* Tab: 도소매 파트너 */}
-      {activeTab === 'retail' && (
-        <div className="space-y-4">
-          <PartnerGradePanel
-            gradeInfo={gradeInfo}
-            loading={gradeLoading}
-            fetched={gradeFetched}
-            wallet={effectiveWallet}
-          />
-          <SalesCalculator
-            partnerWallet={effectiveWallet}
-            gradeInfo={gradeInfo}
-          />
-          <SubordinatePanel
-            active={subActive}
-            promoted={subPromoted}
-            loading={subLoading}
-          />
-        </div>
-      )}
-
-      {/* Tab: Manage */}
-      {activeTab === 'manage' && (
-        <div>
-          {loadingData ? (
-            <div className="py-10 flex justify-center"><div className="w-6 h-6 spin-glow" /></div>
-          ) : submissions.length === 0 ? (
-            <div className="py-16 flex flex-col items-center gap-4 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#1a2340] flex items-center justify-center border border-[rgba(148,163,184,0.08)]">
-                <Users className="w-6 h-6 text-slate-600" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-white">{t('sof_sales_no_customers')}</p>
-                <p className="text-xs text-slate-500 mt-1">{t('sof_sales_no_customers_desc')}</p>
-              </div>
-              <button onClick={() => setActiveTab('register')} className="btn-solana px-6 py-2.5 text-xs font-bold rounded-xl">
-                {t('sof_sales_register_first')}
-              </button>
-            </div>
-          ) : (
-            <CustomerTable records={submissions} periodFilter={periodFilter} onPeriodFilterChange={setPeriodFilter} />
-          )}
-        </div>
-      )}
-
-      {/* Tab: History */}
+      {/* Tab: Submission History */}
       {activeTab === 'history' && (
-        <div>
+        <div className="space-y-4">
           {loadingData ? (
             <div className="py-10 flex justify-center"><div className="w-6 h-6 spin-glow" /></div>
           ) : (
-            <CustomerTable records={submissions} periodFilter={periodFilter} onPeriodFilterChange={setPeriodFilter} />
+            <>
+              <SubmissionHistoryTable
+                records={submissions}
+              />
+              {/* Calc log for last selected */}
+              {submissions.length > 0 && (
+                <div>
+                  <p className="text-[8px] text-slate-500 mb-2">최근 제출 계산 로그:</p>
+                  <CalcLogPanel record={submissions[0]} />
+                </div>
+              )}
+            </>
           )}
         </div>
       )}
+
+      {/* Tab: Org Tree */}
+      {activeTab === 'org' && (
+        <OrgTree
+          wallet={effectiveWallet}
+          active={subActive}
+          promoted={subPromoted}
+          loading={subLoading}
+          gradeInfo={gradeInfo}
+        />
+      )}
+
+      {/* Tab: Grade Simulator */}
+      {activeTab === 'grade' && (
+        <div className="space-y-4">
+          <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} />
+          <GradeSimulator
+            gradeInfo={gradeInfo}
+            submissions={submissions}
+            subActive={subActive}
+          />
+        </div>
+      )}
+
+      {/* Tab: Calc Log */}
+      {activeTab === 'calc' && (
+        <div className="space-y-3">
+          <p className="text-[9px] text-slate-500">최근 제출 기록의 계산 내역을 확인합니다.</p>
+          {submissions.length === 0 ? (
+            <div className="py-12 text-center text-slate-500 text-sm">제출 내역이 없습니다</div>
+          ) : (
+            submissions.slice(0, 10).map((r, i) => <CalcLogPanel key={r.id || i} record={r} />)
+          )}
+        </div>
+      )}
+
+      {/* Tab: Notifications */}
+      {activeTab === 'notify' && (
+        <NotificationCenter
+          submissions={submissions}
+          subActive={subActive}
+          subPromoted={subPromoted}
+        />
+      )}
+
+      {/* Tab: Admin */}
+      {activeTab === 'admin' && <AdminPanel />}
     </div>
   );
 }
