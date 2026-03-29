@@ -25,6 +25,10 @@ import NotificationCenter from '@/components/sofpartner/NotificationCenter';
 import AdminPanel from '@/components/sofpartner/AdminPanel';
 import ProfitSimulator from '@/components/sofpartner/ProfitSimulator';
 import AnnouncementPanel from '@/components/sofpartner/AnnouncementPanel';
+import RealtimeSalesBoard from '@/components/sofpartner/RealtimeSalesBoard';
+import ActivityPressure from '@/components/sofpartner/ActivityPressure';
+import SalesScriptGenerator from '@/components/sofpartner/SalesScriptGenerator';
+import LiveEarningsCounter from '@/components/sofpartner/LiveEarningsCounter';
 import {
   LayoutDashboard, UserPlus, List, GitBranch,
   TrendingUp, Bell, Calculator, Shield, Megaphone
@@ -32,10 +36,12 @@ import {
 
 const TABS = [
   { id: 'dashboard', label: '대시보드',   icon: LayoutDashboard },
+  { id: 'sales',     label: '실적현황',   icon: TrendingUp },
   { id: 'register',  label: '판매 등록',  icon: UserPlus },
   { id: 'history',   label: '제출 기록',  icon: List },
   { id: 'org',       label: '조직도',     icon: GitBranch },
   { id: 'grade',     label: '등급',       icon: TrendingUp },
+  { id: 'script',    label: '스크립트',   icon: Megaphone },
   { id: 'sim',       label: '시뮬레이터', icon: Calculator },
   { id: 'announce',  label: '공지',       icon: Megaphone },
   { id: 'calc',      label: '계산로그',   icon: Calculator },
@@ -158,10 +164,16 @@ export default function SOFSalesPartnerDashboard() {
 
       {activeTab === 'dashboard' && (
         <div className="space-y-4">
+          <ActivityPressure submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} />
           <PartnerDashboardStats submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} subPromoted={subPromoted} />
+          <LiveEarningsCounter submissions={submissions} gradeInfo={gradeInfo} />
           <EarningsPreview walletAddress={effectiveWallet} />
           <TargetSystem walletAddress={effectiveWallet} />
         </div>
+      )}
+
+      {activeTab === 'sales' && (
+        <RealtimeSalesBoard submissions={submissions} subActive={subActive} />
       )}
 
       {activeTab === 'register' && (
@@ -203,6 +215,10 @@ export default function SOFSalesPartnerDashboard() {
 
       {activeTab === 'sim' && (
         <ProfitSimulator gradeInfo={gradeInfo} />
+      )}
+
+      {activeTab === 'script' && (
+        <SalesScriptGenerator gradeInfo={gradeInfo} />
       )}
 
       {activeTab === 'announce' && (

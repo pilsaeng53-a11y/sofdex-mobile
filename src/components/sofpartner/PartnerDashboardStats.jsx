@@ -43,16 +43,18 @@ export default function PartnerDashboardStats({ submissions = [], gradeInfo, sub
   const thisMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
   const stats = useMemo(() => {
+    const today  = submissions.filter(r => r.submitted_at && new Date(r.submitted_at).toDateString() === new Date().toDateString());
+    const weekly  = submissions.filter(r => r.submitted_at && (Date.now() - new Date(r.submitted_at).getTime()) < 7 * 86400000);
+    const monthly = submissions.filter(r => (r.submitted_at || '').startsWith(thisMonth));
     const totalUSDT = submissions.reduce((s, r) => s + (r.purchase_amount || 0), 0);
     const totalSOF  = submissions.reduce((s, r) => s + (r.sof_quantity || 0), 0);
-    const monthly   = submissions.filter(r => (r.submitted_at || '').startsWith(thisMonth));
     const monthlyUSDT = monthly.reduce((s, r) => s + (r.purchase_amount || 0), 0);
     const processing = submissions.filter(r => r.status === 'Processing').length;
     const approved   = submissions.filter(r => r.status === 'Approved').length;
     const rejected   = submissions.filter(r => r.status === 'Rejected').length;
     const subTotalSales = subActive.reduce((s, r) => s + (r.accumulatedSalesKRW || 0), 0);
     const recent = [...submissions].sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at)).slice(0, 5);
-    return { totalUSDT, totalSOF, monthly: monthly.length, monthlyUSDT, processing, approved, rejected, subTotalSales, recent };
+    return { totalUSDT, totalSOF, today: today.length, todayUSDT: today.reduce((s,r)=>s+(r.purchase_amount||0),0), weekly: weekly.length, monthly: monthly.length, monthlyUSDT, processing, approved, rejected, subTotalSales, recent };
   }, [submissions, subActive, thisMonth]);
 
   const grade = gradeInfo?.grade;

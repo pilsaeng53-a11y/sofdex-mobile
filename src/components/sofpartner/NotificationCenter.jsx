@@ -3,6 +3,30 @@ import { Bell, CheckCircle, TrendingUp, FileText, AlertTriangle, X } from 'lucid
 
 function buildNotifications(submissions, subActive, subPromoted) {
   const notes = [];
+  const now = Date.now();
+
+  // Inactivity alerts
+  const sorted = [...submissions].sort((a, b) => new Date(b.submitted_at) - new Date(a.submitted_at));
+  const lastSub = sorted[0];
+  const daysSince = lastSub?.submitted_at ? Math.floor((now - new Date(lastSub.submitted_at).getTime()) / 86400000) : 999;
+  if (daysSince >= 3 && daysSince < 7) {
+    notes.push({ id: 'inactivity-3', type: 'activity', icon: AlertTriangle, color: '#f59e0b', title: `${daysSince}일간 활동 없음`, desc: '최근 3일 이상 제출 기록이 없습니다.', time: new Date().toISOString(), read: false });
+  } else if (daysSince >= 7) {
+    notes.push({ id: 'inactivity-7', type: 'activity', icon: AlertTriangle, color: '#ef4444', title: `${daysSince}일간 비활성 경고`, desc: '즉시 영업 활동을 재개해 주세요!', time: new Date().toISOString(), read: false });
+  }
+
+  // Missing submission this month
+  const thisMonth = `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,'0')}`;
+  const hasMonthly = submissions.some(r => (r.submitted_at||'').startsWith(thisMonth));
+  if (!hasMonthly && submissions.length > 0) {
+    notes.push({ id: 'no-monthly', type: 'activity', icon: AlertTriangle, color: '#f59e0b', title: '이번 달 제출 없음', desc: '이번 달 아직 제출 기록이 없습니다.', time: new Date().toISOString(), read: false });
+  }
+
+  // Inactive subordinates
+  const inactiveSubs = subActive.filter(s => s.lastSubmitAt && (now - new Date(s.lastSubmitAt).getTime()) > 7 * 86400000);
+  if (inactiveSubs.length > 0) {
+    notes.push({ id: 'inactive-subs', type: 'activity', icon: AlertTriangle, color: '#a78bfa', title: `하위 파트너 ${inactiveSubs.length}명 비활성`, desc: inactiveSubs.map(s=>s.name||'파트너').slice(0,3).join(', ') + ' — 7일 이상 활동 없음', time: new Date().toISOString(), read: false });
+  }
 
   // New submissions from subordinates (mock: just use promoted as "activity")
   subPromoted.forEach(sub => {

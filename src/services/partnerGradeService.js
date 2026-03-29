@@ -174,6 +174,14 @@ export function calculateCenterFeeSOF({ baseQuantity, centerFeePercent, recommen
  * Auto-remove subordinates whose grade rank >= parent grade rank.
  * Returns { active, promoted }
  */
+/**
+ * classifySubordinates — true structural separation rule.
+ * If a subordinate reaches the same or higher grade as parent:
+ *   - removed from active list
+ *   - removed from subordinate count & sales totals
+ *   - returned in `promoted` array (treated as independent partner)
+ * Callers MUST exclude `promoted` from all fee/hierarchy calculations.
+ */
 export function classifySubordinates(subordinates, parentGrade) {
   const parentRank = GRADE_CONFIG[parentGrade]?.rank ?? 0;
   const active   = [];
@@ -181,12 +189,37 @@ export function classifySubordinates(subordinates, parentGrade) {
   for (const s of subordinates) {
     const subRank = GRADE_CONFIG[s.grade]?.rank ?? 0;
     if (subRank >= parentRank) {
-      promoted.push({ ...s, status: 'promoted' });
+      // TRUE STRUCTURAL SEPARATION — not just UI hide
+      const reason = subRank > parentRank ? 'higher_grade' : 'same_grade';
+      promoted.push({ ...s, status: 'promoted', separationReason: reason });
     } else {
       active.push(s);
     }
   }
   return { active, promoted };
+}
+
+/**
+ * Record a separation event to the DB.
+ * Call this when a subordinate is detected as promoted during a sync.
+ */
+export async function recordSeparation(base44Client, { sub_wallet, sub_name, sub_grade, parent_wallet, parent_grade, reason }) {
+  try {
+    // Avoid duplicate records
+    const existing = await base44Client.entities.SeparationHistory.filter({ sub_wallet, parent_wallet });
+    if (existing.length > 0) return;
+    await base44Client.entities.SeparationHistory.create({
+      sub_wallet,
+      sub_name,
+      sub_grade,
+      parent_wallet,
+      parent_grade,
+      reason,
+      separation_date: new Date().toISOString(),
+    });
+  } catch (e) {
+    console.error('[partnerGradeService] recordSeparation error:', e);
+  }
 }
 
 // ─── Util ──────────────────────────────────────────────────────────────────────

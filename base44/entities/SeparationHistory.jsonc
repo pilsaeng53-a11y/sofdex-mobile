@@ -1,0 +1,51 @@
+{
+  "name": "SeparationHistory",
+  "type": "object",
+  "properties": {
+    "sub_wallet": {
+      "type": "string",
+      "description": "Separated subordinate wallet"
+    },
+    "sub_name": {
+      "type": "string"
+    },
+    "sub_grade": {
+      "type": "string"
+    },
+    "parent_wallet": {
+      "type": "string",
+      "description": "Former parent wallet"
+    },
+    "parent_grade": {
+      "type": "string"
+    },
+    "separation_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "enum": [
+        "same_grade",
+        "higher_grade",
+        "manual_reassign",
+        "admin"
+      ],
+      "default": "same_grade"
+    },
+    "new_parent_wallet": {
+      "type": "string",
+      "description": "Set if admin reassigned"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "sub_wallet",
+    "parent_wallet",
+    "sub_grade",
+    "parent_grade",
+    "reason"
+  ]
+}
