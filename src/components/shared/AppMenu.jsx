@@ -93,12 +93,13 @@ const NAV_SECTIONS = [
   {
     label: 'RWA',
     items: [
-      { label: 'RWA 마켓',         page: 'RWAExplore',      icon: Building2 },
-      { label: '카테고리',          page: 'RealEstate',      icon: MapPin },
-      { label: '트렌딩 자산',       page: 'RWAExplore',      icon: TrendingUp },
-      { label: '내 자산 등록 신청', page: 'AssetOnboarding', icon: Plus, highlight: true },
-      { label: '내 신청 내역',      page: 'MySubmissions',   icon: FileText },
-      { label: 'RWA 인사이트',      page: 'RWAInsights',     icon: BarChart2 },
+      { label: 'RWA 마켓',         page: 'RealEstate',        icon: Building2 },
+      { label: '타 플랫폼 매물에 투자하기', page: 'RWAExplore', icon: Globe },
+      { label: 'RWA 선물거래',      page: 'RWAFuturesList',   icon: TrendingDown, highlight: true },
+      { label: '내 자산 등록 신청', page: 'AssetOnboarding',  icon: Plus },
+      { label: '내 신청 내역',      page: 'MySubmissions',    icon: FileText },
+      { label: 'RWA 인사이트',      page: 'RWAInsights',      icon: BarChart2 },
+      { label: '내 RWA 자산',       page: 'MyRWAPortfolio',   icon: Star },
     ],
   },
   {
