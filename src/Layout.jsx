@@ -18,6 +18,7 @@ import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
 import AnimatedBackground from './components/shared/AnimatedBackground';
 import { WalletProvider, useWallet } from './components/shared/WalletContext';
 import ConnectWalletModal from './components/shared/ConnectWalletModal';
+import AISalesManager from './components/sofpartner/AISalesManager';
 import { getRegionDefaultCurrency } from '@/services/RegionDetectionService';
 import { DEV_MODE } from '@/components/shared/devConfig';
 
@@ -173,6 +174,7 @@ function LayoutInner({ children, currentPageName }) {
           {children}
         </div>
         {showShell && <BottomNav currentPage={currentPageName} />}
+        <AISalesManager />
         {DEV_MODE && (
           <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
             <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest" style={{ background: 'rgba(234,179,8,0.15)', border: '1px solid rgba(234,179,8,0.4)', color: '#fbbf24' }}>

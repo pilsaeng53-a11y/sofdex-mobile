@@ -32,7 +32,6 @@ import SalesLeaderboard from '@/components/sofpartner/SalesLeaderboard';
 import ActivityPressure from '@/components/sofpartner/ActivityPressure';
 import SalesScriptGenerator from '@/components/sofpartner/SalesScriptGenerator';
 import LiveEarningsCounter from '@/components/sofpartner/LiveEarningsCounter';
-import AISalesManager from '@/components/sofpartner/AISalesManager';
 import {
   LayoutDashboard, UserPlus, List, GitBranch,
   TrendingUp, Bell, Calculator, Shield, Megaphone
@@ -255,7 +254,7 @@ export default function SOFSalesPartnerDashboard() {
 
       {activeTab === 'admin' && <AdminPanel />}
 
-      <AISalesManager submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} />
+
     </div>
   );
 }
