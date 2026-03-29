@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Building2, MapPin } from 'lucide-react';
 import { LANDMARK_RE } from '../components/shared/RWAData';
 import PropertyCard from '../components/rwa/PropertyCard';
+import RWAPropertyCard from '../components/rwa/RWAPropertyCard';
+import { getPropertyList } from '@/services/rwaPropertyService';
 
 const SUBCATS = ['All', 'Landmark', 'Commercial', 'Residential', 'Hospitality'];
 
 export default function RealEstate() {
   const [subcat, setSubcat] = useState('All');
+  const [importedProps, setImportedProps] = useState([]);
 
-  const filtered = LANDMARK_RE.filter(p =>
-    subcat === 'All' || p.subcategory === subcat
-  );
+  useEffect(() => {
+    getPropertyList('published').then(list => {
+      // Only include external/imported assets (not native LANDMARK_RE)
+      setImportedProps(list.filter(p => p.sourcePlatform !== 'manual' || p.id?.startsWith('seed')));
+    }).catch(() => {});
+  }, []);
+
+  // Normalize LANDMARK_RE subcategory to lowercase for unified filtering
+  const filtered = LANDMARK_RE.filter(p => {
+    if (subcat === 'All') return true;
+    return p.subcategory?.toLowerCase() === subcat.toLowerCase();
+  });
+
+  // Filter imported assets by category (already lowercase)
+  const filteredImported = importedProps.filter(p => {
+    if (subcat === 'All') return true;
+    return p.category?.toLowerCase() === subcat.toLowerCase();
+  });
+
+  const totalCount = filtered.length + filteredImported.length;
 
   return (
     <div className="min-h-screen">
@@ -76,14 +96,23 @@ export default function RealEstate() {
 
       {/* Properties grid */}
       <div className="px-4 space-y-4 pb-8">
-        {filtered.length === 0 ? (
+        {totalCount === 0 ? (
           <div className="glass-card rounded-2xl p-8 text-center">
             <Building2 className="w-10 h-10 text-slate-600 mx-auto mb-3" />
             <p className="text-sm font-semibold text-slate-400">More properties coming soon</p>
             <p className="text-xs text-slate-600 mt-1">This subcategory is currently in curation.</p>
           </div>
         ) : (
-          filtered.map(p => <PropertyCard key={p.symbol} property={p} />)
+          <>
+            {filteredImported.length > 0 && (
+              <>
+                <p className="text-[9px] font-black text-purple-400 uppercase tracking-wider px-1">SolFort 등록 자산</p>
+                {filteredImported.map((p, i) => <RWAPropertyCard key={p.id || i} property={p} />)}
+                {filtered.length > 0 && <div className="h-px bg-[rgba(148,163,184,0.08)] my-1" />}
+              </>
+            )}
+            {filtered.map(p => <PropertyCard key={p.symbol} property={p} />)}
+          </>
         )}
       </div>
     </div>
