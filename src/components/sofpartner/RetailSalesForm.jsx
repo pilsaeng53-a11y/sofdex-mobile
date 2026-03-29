@@ -20,8 +20,16 @@ const EMPTY = {
   promotion: '',
 };
 
-export default function RetailSalesForm({ partnerWallet }) {
+export default function RetailSalesForm({ partnerWallet, suggestedPromotion, centerFeePercent, gradeLabel }) {
   const [form, setForm] = useState(EMPTY);
+  const [promoOverridden, setPromoOverridden] = useState(false);
+
+  // Auto-fill promotion from grade when grade data arrives (unless user already overrode it)
+  React.useEffect(() => {
+    if (suggestedPromotion != null && !promoOverridden) {
+      setForm(f => ({ ...f, promotion: String(suggestedPromotion) }));
+    }
+  }, [suggestedPromotion]);
   const [touched, setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
@@ -29,6 +37,7 @@ export default function RetailSalesForm({ partnerWallet }) {
   const set = (field, val) => {
     setForm(f => ({ ...f, [field]: val }));
     setTouched(t => ({ ...t, [field]: true }));
+    if (field === 'promotion') setPromoOverridden(true);
   };
 
   const calc = useMemo(() => {
@@ -155,7 +164,15 @@ export default function RetailSalesForm({ partnerWallet }) {
         </div>
 
         <div>
-          <label className={labelCls}>프로모션 비율 (%)</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className={`${labelCls} mb-0`}>프로모션 비율 (%)</label>
+            {suggestedPromotion != null && (
+              <span className="text-[8px] px-2 py-0.5 rounded-full font-bold"
+                style={{ background: 'rgba(0,212,170,0.1)', color: '#00d4aa', border: '1px solid rgba(0,212,170,0.2)' }}>
+                {gradeLabel} 등급 기준: {suggestedPromotion}%
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-3">
             <input
               type="number" min="0" step="1"
@@ -166,11 +183,20 @@ export default function RetailSalesForm({ partnerWallet }) {
             />
             <span className="text-sm font-bold text-slate-400 flex-shrink-0">%</span>
           </div>
+          {promoOverridden && suggestedPromotion != null && parseFloat(form.promotion) !== suggestedPromotion && (
+            <div className="flex items-center justify-between mt-1.5">
+              <p className="text-[8px] text-amber-400">⚠ 등급 기본값({suggestedPromotion}%)에서 수동 변경됨</p>
+              <button type="button" onClick={() => { setForm(f => ({ ...f, promotion: String(suggestedPromotion) })); setPromoOverridden(false); }}
+                className="text-[8px] text-[#00d4aa] underline">초기화</button>
+            </div>
+          )}
           {parseFloat(form.promotion) > 0 && (
-            <div className="flex items-center gap-2 mt-2">
+            <div className="flex items-center gap-2 mt-1.5">
               <span className="text-[9px] text-slate-500">프로모션 배수:</span>
               <span className="text-xs font-bold text-[#00d4aa]">{(parseFloat(form.promotion) / 100).toFixed(1)}x</span>
-              <span className="text-[9px] text-slate-500">(실질 {(parseFloat(form.promotion) / 100).toFixed(1)}배 지급)</span>
+              {centerFeePercent != null && (
+                <span className="text-[9px] text-slate-500 ml-2">· 센터피: <span className="text-amber-400 font-bold">{centerFeePercent}%</span></span>
+              )}
             </div>
           )}
           {errors.promotion && <p className="text-[9px] text-red-400 mt-1">{errors.promotion}</p>}

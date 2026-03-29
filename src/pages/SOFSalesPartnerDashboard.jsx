@@ -16,6 +16,8 @@ import CustomerTable from '@/components/sofpartner/CustomerTable';
 import RetailSalesForm from '@/components/sofpartner/RetailSalesForm';
 import { formatNumber } from '@/components/sofpartner/SOFQuantityCalc';
 import { UserPlus, List, Users, ShoppingBag } from 'lucide-react';
+import PartnerGradePanel from '@/components/sofpartner/PartnerGradePanel';
+import { usePartnerGrade } from '@/hooks/usePartnerGrade';
 
 function StatCard({ label, value, sub, color = '#00d4aa' }) {
   return (
@@ -30,6 +32,8 @@ function StatCard({ label, value, sub, color = '#00d4aa' }) {
 export default function SOFSalesPartnerDashboard() {
   const { isConnected, address } = useWallet();
   const { t } = useLang();
+  const effectiveWallet = DEV_MODE ? DEV_WALLET : address;
+  const { gradeInfo, loading: gradeLoading, fetched: gradeFetched } = usePartnerGrade(effectiveWallet);
 
   const [checkingAccess, setCheckingAccess] = useState(true);
   const [isApproved, setIsApproved] = useState(false);
@@ -173,15 +177,26 @@ export default function SOFSalesPartnerDashboard() {
 
       {/* Tab: 도소매 파트너 */}
       {activeTab === 'retail' && (
-        <div>
-          <div className="glass-card rounded-2xl p-4 mb-4">
+        <div className="space-y-4">
+          <PartnerGradePanel
+            gradeInfo={gradeInfo}
+            loading={gradeLoading}
+            fetched={gradeFetched}
+            wallet={effectiveWallet}
+          />
+          <div className="glass-card rounded-2xl p-4">
             <div className="flex items-center gap-2 mb-1">
               <ShoppingBag className="w-4 h-4 text-[#00d4aa]" />
               <p className="text-xs font-bold text-white">도소매 세일즈 파트너</p>
             </div>
             <p className="text-[10px] text-slate-500">매출 기반으로 SOF 수량을 계산하고 재단에 제출합니다.</p>
           </div>
-          <RetailSalesForm partnerWallet={DEV_MODE ? DEV_WALLET : address} />
+          <RetailSalesForm
+            partnerWallet={effectiveWallet}
+            suggestedPromotion={gradeInfo?.promotionPercent ?? null}
+            centerFeePercent={gradeInfo?.centerFeePercent ?? null}
+            gradeLabel={gradeInfo?.grade ?? null}
+          />
         </div>
       )}
 
