@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Search, Shield, Globe, ArrowRight, Building2, Package, BarChart2, Palette, TrendingUp, Zap, Music, Gem, Flame } from 'lucide-react';
+import RWAPropertyCard from '../components/rwa/RWAPropertyCard';
+import { getPropertyList } from '@/services/rwaPropertyService';
 import { LANDMARK_RE, ART_MARKETS, COMMODITY_MARKETS, YIELD_MARKETS, ALT_MARKETS, STOCK_MARKETS, ETF_MARKETS } from '../components/shared/RWAData';
 import RWACategoryCard from '../components/rwa/RWACategoryCard';
 import RWAAssetCard from '../components/rwa/RWAAssetCard';
@@ -54,6 +56,11 @@ function ArtCard({ asset }) {
 export default function RWAExplore() {
   const [activeTab, setActiveTab] = useState('All');
   const [search, setSearch] = useState('');
+  const [rwaProperties, setRwaProperties] = useState([]);
+
+  useEffect(() => {
+    getPropertyList('published').then(setRwaProperties).catch(() => {});
+  }, []);
 
   const filterBySearch = (arr, fields = ['name', 'symbol']) =>
     !search ? arr : arr.filter(a => fields.some(f => a[f]?.toLowerCase().includes(search.toLowerCase())));
@@ -61,7 +68,23 @@ export default function RWAExplore() {
   const getContent = () => {
     if (activeTab === 'Real Estate') {
       const filtered = filterBySearch(LANDMARK_RE);
-      return <div className="space-y-4">{filtered.map(p => <PropertyCard key={p.symbol} property={p} />)}</div>;
+      const filteredRWA = !search ? rwaProperties : rwaProperties.filter(p =>
+        p.title?.toLowerCase().includes(search.toLowerCase()) ||
+        p.location?.toLowerCase().includes(search.toLowerCase())
+      );
+      return (
+        <div className="space-y-4">
+          {filteredRWA.length > 0 && (
+            <>
+              <p className="text-[10px] font-bold text-purple-400 uppercase tracking-wider px-1">SolFort RWA 등록 자산</p>
+              {filteredRWA.map((p, i) => <RWAPropertyCard key={p.id || i} property={p} />)}
+              <div className="h-px bg-[rgba(148,163,184,0.08)]" />
+              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">토큰화 자산 (시장 데이터)</p>
+            </>
+          )}
+          {filtered.map(p => <PropertyCard key={p.symbol} property={p} />)}
+        </div>
+      );
     }
 
     if (activeTab === 'Commodities') {

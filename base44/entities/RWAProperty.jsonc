@@ -1,0 +1,132 @@
+{
+  "name": "RWAProperty",
+  "type": "object",
+  "properties": {
+    "sourcePlatform": {
+      "type": "string",
+      "enum": [
+        "redswan",
+        "stake",
+        "manual",
+        "other"
+      ],
+      "description": "Source platform"
+    },
+    "sourceUrl": {
+      "type": "string",
+      "description": "Original listing URL"
+    },
+    "sourcePropertyId": {
+      "type": "string",
+      "description": "ID from source platform"
+    },
+    "title": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "hospitality",
+        "residential",
+        "commercial",
+        "mixed-use",
+        "land"
+      ]
+    },
+    "subcategory": {
+      "type": "string"
+    },
+    "shortDescription": {
+      "type": "string"
+    },
+    "longDescription": {
+      "type": "string"
+    },
+    "featuredImage": {
+      "type": "string",
+      "description": "Image URL"
+    },
+    "galleryImages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "minimumInvestment": {
+      "type": "number"
+    },
+    "currency": {
+      "type": "string",
+      "default": "USD"
+    },
+    "targetIRR": {
+      "type": "string"
+    },
+    "targetCashYield": {
+      "type": "string"
+    },
+    "targetEquityMultiple": {
+      "type": "string"
+    },
+    "holdingPeriod": {
+      "type": "string"
+    },
+    "tokenPrice": {
+      "type": "number"
+    },
+    "occupancyNotes": {
+      "type": "string"
+    },
+    "managementNotes": {
+      "type": "string"
+    },
+    "riskNotes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "imported",
+        "review",
+        "approved",
+        "published",
+        "archived"
+      ],
+      "default": "imported"
+    },
+    "missingFields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "importedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "title",
+    "sourcePlatform",
+    "category"
+  ]
+}
