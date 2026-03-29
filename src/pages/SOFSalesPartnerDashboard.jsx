@@ -1,6 +1,6 @@
 /**
  * SOFSalesPartnerDashboard.jsx
- * Full operational partner management system for approved SOF token sales partners.
+ * Full operational partner management system.
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -20,20 +20,24 @@ import OrgTree from '@/components/sofpartner/OrgTree';
 import CalcLogPanel from '@/components/sofpartner/CalcLogPanel';
 import NotificationCenter from '@/components/sofpartner/NotificationCenter';
 import AdminPanel from '@/components/sofpartner/AdminPanel';
+import ProfitSimulator from '@/components/sofpartner/ProfitSimulator';
+import AnnouncementPanel from '@/components/sofpartner/AnnouncementPanel';
 import {
   LayoutDashboard, UserPlus, List, GitBranch,
-  TrendingUp, Bell, Calculator, Shield
+  TrendingUp, Bell, Calculator, Shield, Megaphone
 } from 'lucide-react';
 
 const TABS = [
-  { id: 'dashboard', label: '대시보드', icon: LayoutDashboard },
-  { id: 'register',  label: '판매 등록', icon: UserPlus },
-  { id: 'history',   label: '제출 기록', icon: List },
-  { id: 'org',       label: '조직도',   icon: GitBranch },
-  { id: 'grade',     label: '등급',     icon: TrendingUp },
-  { id: 'calc',      label: '계산로그',  icon: Calculator },
-  { id: 'notify',    label: '알림',     icon: Bell },
-  { id: 'admin',     label: '관리자',   icon: Shield },
+  { id: 'dashboard', label: '대시보드',   icon: LayoutDashboard },
+  { id: 'register',  label: '판매 등록',  icon: UserPlus },
+  { id: 'history',   label: '제출 기록',  icon: List },
+  { id: 'org',       label: '조직도',     icon: GitBranch },
+  { id: 'grade',     label: '등급',       icon: TrendingUp },
+  { id: 'sim',       label: '시뮬레이터', icon: Calculator },
+  { id: 'announce',  label: '공지',       icon: Megaphone },
+  { id: 'calc',      label: '계산로그',   icon: Calculator },
+  { id: 'notify',    label: '알림',       icon: Bell },
+  { id: 'admin',     label: '관리자',     icon: Shield },
 ];
 
 export default function SOFSalesPartnerDashboard() {
@@ -50,7 +54,6 @@ export default function SOFSalesPartnerDashboard() {
   const [submissions,    setSubmissions]     = useState([]);
   const [loadingData,    setLoadingData]     = useState(false);
   const [activeTab,      setActiveTab]       = useState('dashboard');
-  const [selectedRecord, setSelectedRecord] = useState(null);
 
   useEffect(() => {
     if (DEV_MODE) {
@@ -97,7 +100,6 @@ export default function SOFSalesPartnerDashboard() {
     if (!isApproved)     return <NotApprovedState />;
   }
 
-  // Unread notifications count
   const unread = subPromoted.length + submissions.filter(r => r.status === 'Approved' || r.status === 'Rejected').slice(0, 3).length;
 
   return (
@@ -149,17 +151,12 @@ export default function SOFSalesPartnerDashboard() {
         </div>
       </div>
 
-      {/* Tab: Dashboard */}
+      {/* ── Tab Content ── */}
+
       {activeTab === 'dashboard' && (
-        <PartnerDashboardStats
-          submissions={submissions}
-          gradeInfo={gradeInfo}
-          subActive={subActive}
-          subPromoted={subPromoted}
-        />
+        <PartnerDashboardStats submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} subPromoted={subPromoted} />
       )}
 
-      {/* Tab: Register */}
       {activeTab === 'register' && (
         <div className="space-y-4">
           <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} />
@@ -171,73 +168,45 @@ export default function SOFSalesPartnerDashboard() {
         </div>
       )}
 
-      {/* Tab: Submission History */}
       {activeTab === 'history' && (
-        <div className="space-y-4">
-          {loadingData ? (
-            <div className="py-10 flex justify-center"><div className="w-6 h-6 spin-glow" /></div>
-          ) : (
-            <>
-              <SubmissionHistoryTable
-                records={submissions}
-              />
-              {/* Calc log for last selected */}
-              {submissions.length > 0 && (
-                <div>
-                  <p className="text-[8px] text-slate-500 mb-2">최근 제출 계산 로그:</p>
-                  <CalcLogPanel record={submissions[0]} />
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        loadingData
+          ? <div className="py-10 flex justify-center"><div className="w-6 h-6 spin-glow" /></div>
+          : <SubmissionHistoryTable records={submissions} />
       )}
 
-      {/* Tab: Org Tree */}
       {activeTab === 'org' && (
-        <OrgTree
-          wallet={effectiveWallet}
-          active={subActive}
-          promoted={subPromoted}
-          loading={subLoading}
-          gradeInfo={gradeInfo}
-        />
+        <OrgTree wallet={effectiveWallet} active={subActive} promoted={subPromoted} loading={subLoading} gradeInfo={gradeInfo} />
       )}
 
-      {/* Tab: Grade Simulator */}
       {activeTab === 'grade' && (
         <div className="space-y-4">
           <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} />
-          <GradeSimulator
-            gradeInfo={gradeInfo}
-            submissions={submissions}
-            subActive={subActive}
-          />
+          <GradeSimulator gradeInfo={gradeInfo} submissions={submissions} subActive={subActive} />
         </div>
       )}
 
-      {/* Tab: Calc Log */}
+      {activeTab === 'sim' && (
+        <ProfitSimulator gradeInfo={gradeInfo} />
+      )}
+
+      {activeTab === 'announce' && (
+        <AnnouncementPanel gradeInfo={gradeInfo} />
+      )}
+
       {activeTab === 'calc' && (
         <div className="space-y-3">
-          <p className="text-[9px] text-slate-500">최근 제출 기록의 계산 내역을 확인합니다.</p>
-          {submissions.length === 0 ? (
-            <div className="py-12 text-center text-slate-500 text-sm">제출 내역이 없습니다</div>
-          ) : (
-            submissions.slice(0, 10).map((r, i) => <CalcLogPanel key={r.id || i} record={r} />)
-          )}
+          <p className="text-[9px] text-slate-500">최근 제출 기록의 전체 계산 내역입니다.</p>
+          {submissions.length === 0
+            ? <div className="py-12 text-center text-slate-500 text-sm">제출 내역이 없습니다</div>
+            : submissions.slice(0, 10).map((r, i) => <CalcLogPanel key={r.id || i} record={r} />)
+          }
         </div>
       )}
 
-      {/* Tab: Notifications */}
       {activeTab === 'notify' && (
-        <NotificationCenter
-          submissions={submissions}
-          subActive={subActive}
-          subPromoted={subPromoted}
-        />
+        <NotificationCenter submissions={submissions} subActive={subActive} subPromoted={subPromoted} />
       )}
 
-      {/* Tab: Admin */}
       {activeTab === 'admin' && <AdminPanel />}
     </div>
   );

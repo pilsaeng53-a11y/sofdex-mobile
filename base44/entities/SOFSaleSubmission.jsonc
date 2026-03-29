@@ -1,0 +1,119 @@
+{
+  "name": "SOFSaleSubmission",
+  "type": "object",
+  "properties": {
+    "partner_wallet": {
+      "type": "string",
+      "description": "Approved sales partner wallet address"
+    },
+    "partner_grade": {
+      "type": "string",
+      "description": "Partner grade at time of submission"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Customer full name"
+    },
+    "customer_wallet": {
+      "type": "string",
+      "description": "Customer Solana wallet address"
+    },
+    "sales_krw": {
+      "type": "number",
+      "description": "Raw KRW sales amount"
+    },
+    "usdt_rate": {
+      "type": "number",
+      "description": "KRW/USDT exchange rate used"
+    },
+    "purchase_amount": {
+      "type": "number",
+      "description": "USDT amount (salesKRW / usdtRate)"
+    },
+    "sof_unit_price": {
+      "type": "number",
+      "description": "SOF unit price at time of sale (USD)"
+    },
+    "promotion_percent": {
+      "type": "number",
+      "description": "Promotion % applied (100=1x, 200=2x)"
+    },
+    "base_quantity": {
+      "type": "number",
+      "description": "Base SOF quantity before promotion"
+    },
+    "sof_quantity": {
+      "type": "number",
+      "description": "Final customer SOF quantity (base \u00d7 promo%)"
+    },
+    "recommender_name": {
+      "type": "string",
+      "description": "Recommender full name"
+    },
+    "recommender_wallet": {
+      "type": "string",
+      "description": "Recommender Solana wallet address"
+    },
+    "recommender_percent": {
+      "type": "number",
+      "description": "Recommender % (of base quantity)"
+    },
+    "recommender_quantity": {
+      "type": "number",
+      "description": "Recommender SOF quantity (no promotion)"
+    },
+    "center_fee_percent": {
+      "type": "number",
+      "description": "Center fee % from partner grade"
+    },
+    "center_fee_gross": {
+      "type": "number",
+      "description": "Gross center fee before recommender deduction"
+    },
+    "center_fee_quantity": {
+      "type": "number",
+      "description": "Net center fee after recommender deduction"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Processing",
+        "Reviewing",
+        "Approved",
+        "Revision Needed",
+        "Rejected"
+      ],
+      "default": "Processing",
+      "description": "Submission status"
+    },
+    "status_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Status change history [{status, changedAt, note}]"
+    },
+    "revision_feedback": {
+      "type": "string",
+      "description": "Admin feedback for revision requests"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal notes"
+    }
+  },
+  "required": [
+    "partner_wallet",
+    "customer_name",
+    "customer_wallet",
+    "purchase_amount",
+    "sof_unit_price",
+    "promotion_percent",
+    "sof_quantity"
+  ]
+}

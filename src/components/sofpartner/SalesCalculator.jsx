@@ -160,15 +160,27 @@ export default function SalesCalculator({ partnerWallet, gradeInfo, onSubmitSucc
       };
       // Save to internal DB
       await base44.entities.SOFSaleSubmission.create({
-        partner_wallet:     payload.partnerWalletAddress,
-        customer_name:      payload.customerName,
-        customer_wallet:    payload.customerWalletAddress,
-        purchase_amount:    payload.usdtAmount,
-        sof_unit_price:     payload.sofPrice,
-        promotion_percent:  payload.promotionPercent,
-        sof_quantity:       payload.finalCustomerQuantity,
-        status:             'Processing',
-        submitted_at:       payload.submittedAt,
+        partner_wallet:      payload.partnerWalletAddress,
+        partner_grade:       payload.partnerGrade,
+        customer_name:       payload.customerName,
+        customer_wallet:     payload.customerWalletAddress,
+        sales_krw:           payload.salesKRW,
+        usdt_rate:           payload.usdtRate,
+        purchase_amount:     payload.usdtAmount,
+        sof_unit_price:      payload.sofPrice,
+        promotion_percent:   payload.promotionPercent,
+        base_quantity:       payload.baseQuantity,
+        sof_quantity:        payload.finalCustomerQuantity,
+        recommender_name:    payload.recommenderName,
+        recommender_wallet:  payload.recommenderWalletAddress,
+        recommender_percent: payload.recommenderPercent,
+        recommender_quantity:payload.recommenderQuantity,
+        center_fee_percent:  payload.centerFeePercent,
+        center_fee_gross:    calc.grossCenterFee,
+        center_fee_quantity: payload.myCenterFeeQuantity,
+        status:              'Processing',
+        status_history:      [{ status: 'Processing', changedAt: payload.submittedAt, note: '최초 제출' }],
+        submitted_at:        payload.submittedAt,
       });
       // POST to foundation endpoint (non-blocking)
       fetch('https://solfort-api.onrender.com/sales/submit', {
