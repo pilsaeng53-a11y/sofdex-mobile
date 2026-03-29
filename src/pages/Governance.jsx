@@ -1,162 +1,271 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { Vote, Clock, CheckCircle2, XCircle, Users, Zap, Timer, ChevronRight, DollarSign } from 'lucide-react';
+import { CheckCircle2, Users, ChevronDown, ChevronUp, Zap, CalendarCheck } from 'lucide-react';
 import { useLang } from '../components/shared/LanguageContext';
-import { GOVERNANCE_PROPOSALS } from '../components/shared/MarketData';
 import { useSOFPrice, formatSOFPrice } from '../components/shared/useSOFPrice';
 
-const STATUS_CONFIG = {
-  active:   { key: 'gov_status_active',   color: 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20', icon: Clock },
-  passed:   { key: 'gov_status_passed',   color: 'bg-blue-400/10 text-blue-400 border-blue-400/20', icon: CheckCircle2 },
-  rejected: { key: 'gov_status_rejected', color: 'bg-red-400/10 text-red-400 border-red-400/20', icon: XCircle },
-  upcoming: { key: 'gov_status_upcoming', color: 'bg-amber-400/10 text-amber-400 border-amber-400/20', icon: Timer },
-};
+// ─── Governance result data ────────────────────────────────────
+const GOVERNANCE_RESULTS = [
+  {
+    id: 1,
+    title: '락업 6개월 연장',
+    description: '기존 락업 기간을 6개월 추가 연장하는 안건입니다.',
+    reason: [
+      '시장 하락 구간에서 물량 유출 방지',
+      '가격 안정성 유지',
+      '프로젝트 신뢰도 유지',
+    ],
+    effects: [
+      '단기 매도 압력 감소',
+      '가격 방어',
+      '장기 성장 기반 확보',
+    ],
+    benefits: [
+      '보유 가치 안정성',
+      '시장 신뢰 유지',
+      '장기 상승 기반 확보',
+    ],
+    yesVotes: 1408,
+    noVotes: 60,
+    totalVotes: 1468,
+    yesPercent: 95.9,
+    noPercent: 4.1,
+    status: '확정',
+    date: '2025-12-01',
+  },
+  {
+    id: 2,
+    title: 'SOF 토큰 소각 프로그램 도입',
+    description: '분기별 거래 수수료의 일부를 소각하여 총 공급량을 감소시키는 프로그램입니다.',
+    reason: [
+      '토큰 공급량 조절을 통한 가치 상승',
+      '장기 보유자 이익 보호',
+      '지속 가능한 토큰 경제 구조 구축',
+    ],
+    effects: [
+      '총 공급량 연간 최대 2% 감소',
+      '디플레이션 구조 형성',
+      '거래 수수료 수익의 생태계 환원',
+    ],
+    benefits: [
+      '보유 토큰 희소성 증가',
+      '장기적 가격 상승 압력',
+      '건전한 토큰 생태계 유지',
+    ],
+    yesVotes: 2104,
+    noVotes: 88,
+    totalVotes: 2192,
+    yesPercent: 96.0,
+    noPercent: 4.0,
+    status: '확정',
+    date: '2025-10-15',
+  },
+  {
+    id: 3,
+    title: '파트너십 확대 및 마케팅 예산 증액',
+    description: '글로벌 파트너십 확장을 위한 마케팅 예산을 20% 증액하는 안건입니다.',
+    reason: [
+      '글로벌 시장 점유율 확대 필요',
+      '경쟁 프로젝트 대비 브랜드 인지도 제고',
+      '신규 사용자 유입을 통한 생태계 성장',
+    ],
+    effects: [
+      '주요 거래소 상장 협의 가속화',
+      '해외 커뮤니티 확장',
+      '파트너사 공동 마케팅 진행',
+    ],
+    benefits: [
+      '토큰 유동성 증가',
+      '생태계 참여자 다양화',
+      '장기적 프로젝트 가치 상승',
+    ],
+    yesVotes: 1876,
+    noVotes: 312,
+    totalVotes: 2188,
+    yesPercent: 85.7,
+    noPercent: 14.3,
+    status: '확정',
+    date: '2025-08-20',
+  },
+];
 
-function ProposalCard({ proposal }) {
-  const { t } = useLang();
-  const config = STATUS_CONFIG[proposal.status] || STATUS_CONFIG.active;
-  const Icon = config.icon;
+// ─── Result Card ───────────────────────────────────────────────
+function GovernanceResultCard({ item }) {
+  const [expanded, setExpanded] = useState(false);
 
   return (
-    <Link to={`${createPageUrl('GovernanceDetail')}?id=${proposal.id}`}>
-      <div className="glass-card rounded-2xl p-4 glow-border hover:bg-[#1a2340] transition-all cursor-pointer">
-        {/* Status + ID */}
-        <div className="flex items-center justify-between mb-3">
-          <span className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold border ${config.color}`}>
-            <Icon className="w-3 h-3" />
-            {t(config.key)}
-          </span>
-          <div className="flex items-center gap-2">
-            {proposal.treasury_impact && (
-              <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-400/10 text-amber-400 text-[9px] font-semibold">
-                <DollarSign className="w-2.5 h-2.5" /> Treasury
+    <div className="glass-card rounded-2xl overflow-hidden">
+      {/* Summary row — always visible, click to expand */}
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className="w-full text-left p-4"
+      >
+        {/* Top row */}
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1 flex-wrap">
+              <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-emerald-400/10 text-emerald-400 border border-emerald-400/20 flex items-center gap-1">
+                <CheckCircle2 className="w-2.5 h-2.5" /> {item.status}
               </span>
-            )}
-            <span className="text-[10px] text-slate-600 font-mono">SFD-{String(proposal.id).padStart(3, '0')}</span>
+              <span className="text-[9px] text-slate-600 flex items-center gap-1">
+                <CalendarCheck className="w-2.5 h-2.5" /> {item.date}
+              </span>
+            </div>
+            <h3 className="text-sm font-bold text-white leading-snug">{item.title}</h3>
           </div>
+          {expanded
+            ? <ChevronUp className="w-4 h-4 text-slate-500 flex-shrink-0 mt-1" />
+            : <ChevronDown className="w-4 h-4 text-slate-500 flex-shrink-0 mt-1" />
+          }
         </div>
-
-        {/* Title */}
-        <h3 className="text-sm font-bold text-white mb-1.5 leading-snug">{proposal.title}</h3>
-        <p className="text-[11px] text-slate-500 leading-relaxed mb-4 line-clamp-2">{proposal.description}</p>
 
         {/* Vote bar */}
-        <div className="mb-3">
+        <div className="mb-2">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] text-emerald-400 font-semibold">{t('gov_voteYes')} {proposal.yesPercent}%</span>
-            <span className="text-[11px] text-red-400 font-semibold">{t('gov_voteNo')} {proposal.noPercent}%</span>
+            <span className="text-[11px] text-emerald-400 font-bold">YES {item.yesPercent}%</span>
+            <span className="text-[11px] text-red-400 font-bold">NO {item.noPercent}%</span>
           </div>
-          {proposal.yesPercent === 0 && proposal.noPercent === 0 ? (
-            <div className="h-2 rounded-full bg-[#1a2340] flex items-center justify-center">
-              <span className="text-[9px] text-slate-600">Voting not started</span>
-            </div>
-          ) : (
-            <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden flex">
-              <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-l-full" style={{ width: `${proposal.yesPercent}%` }} />
-              <div className="h-full bg-gradient-to-r from-red-400 to-red-500 rounded-r-full" style={{ width: `${proposal.noPercent}%` }} />
-            </div>
-          )}
-        </div>
-
-        {/* Meta */}
-        <div className="flex items-center justify-between text-[10px] text-slate-500">
-          <div className="flex items-center gap-1">
-            <Users className="w-3 h-3" />
-            <span>{proposal.totalVotes > 0 ? `${(proposal.totalVotes / 1000).toFixed(0)}K ${t('gov_votes')}` : t('gov_awaitingVotes')}</span>
-          </div>
-          <div className="flex items-center gap-1 text-slate-500">
-            <span>{proposal.status === 'active' ? `${t('gov_ends')} ${proposal.endDate}` : proposal.status === 'upcoming' ? `${t('gov_starts')} ${proposal.startDate}` : `${t('gov_ended')} ${proposal.endDate}`}</span>
-            <ChevronRight className="w-3 h-3 text-slate-700" />
+          <div className="h-2 rounded-full bg-[#0d1220] overflow-hidden flex">
+            <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-l-full transition-all"
+              style={{ width: `${item.yesPercent}%` }} />
+            <div className="h-full bg-gradient-to-r from-red-400 to-red-500 rounded-r-full transition-all"
+              style={{ width: `${item.noPercent}%` }} />
           </div>
         </div>
 
-        {/* Vote buttons for active */}
-        {proposal.status === 'active' && (
-          <div className="flex gap-2 mt-4" onClick={e => e.preventDefault()}>
-            <button className="flex-1 py-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold hover:bg-emerald-500/20 transition-all">
-              {t('gov_voteYes')}
-            </button>
-            <button className="flex-1 py-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-bold hover:bg-red-500/20 transition-all">
-              {t('gov_voteNo')}
-            </button>
+        {/* Vote count */}
+        <div className="flex items-center gap-1 text-[10px] text-slate-500">
+          <Users className="w-3 h-3" />
+          <span>총 투표수 {item.totalVotes.toLocaleString()}</span>
+        </div>
+      </button>
+
+      {/* Expanded detail */}
+      {expanded && (
+        <div className="border-t border-[rgba(148,163,184,0.07)] px-4 pb-4 space-y-4 pt-4">
+
+          {/* 안건 개요 */}
+          <Section color="text-slate-300" title="안건 개요">
+            <p className="text-[11px] text-slate-300 leading-relaxed">{item.description}</p>
+          </Section>
+
+          {/* 결정 이유 */}
+          <Section color="text-blue-400" title="결정 이유">
+            <BulletList items={item.reason} color="text-blue-400" />
+          </Section>
+
+          {/* 기대 효과 */}
+          <Section color="text-[#00d4aa]" title="기대 효과">
+            <BulletList items={item.effects} color="text-[#00d4aa]" />
+          </Section>
+
+          {/* 참여자 이득 */}
+          <Section color="text-purple-400" title="참여자 이득">
+            <BulletList items={item.benefits} color="text-purple-400" />
+          </Section>
+
+          {/* 투표 결과 */}
+          <div className="bg-[#0a0e1a] rounded-2xl p-4 space-y-2">
+            <p className="text-[9px] font-black text-slate-400 uppercase tracking-wider mb-3">투표 결과</p>
+            <div className="h-3 rounded-full bg-[#0d1220] overflow-hidden flex mb-3">
+              <div className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-l-full"
+                style={{ width: `${item.yesPercent}%` }} />
+              <div className="h-full bg-gradient-to-r from-red-400 to-red-500 rounded-r-full"
+                style={{ width: `${item.noPercent}%` }} />
+            </div>
+            <div className="grid grid-cols-3 gap-3 text-center">
+              <div>
+                <p className="text-base font-black text-emerald-400">{item.yesVotes.toLocaleString()}</p>
+                <p className="text-[8px] text-slate-500">YES ({item.yesPercent}%)</p>
+              </div>
+              <div>
+                <p className="text-base font-black text-red-400">{item.noVotes.toLocaleString()}</p>
+                <p className="text-[8px] text-slate-500">NO ({item.noPercent}%)</p>
+              </div>
+              <div>
+                <p className="text-base font-black text-slate-200">{item.totalVotes.toLocaleString()}</p>
+                <p className="text-[8px] text-slate-500">총 투표</p>
+              </div>
+            </div>
           </div>
-        )}
-      </div>
-    </Link>
+        </div>
+      )}
+    </div>
   );
 }
 
+function Section({ title, color, children }) {
+  return (
+    <div>
+      <p className={`text-[9px] font-black uppercase tracking-wider mb-2 ${color}`}>{title}</p>
+      {children}
+    </div>
+  );
+}
+
+function BulletList({ items, color }) {
+  return (
+    <ul className="space-y-1.5">
+      {items.map((item, i) => (
+        <li key={i} className="flex items-start gap-2">
+          <span className={`text-[9px] mt-0.5 ${color}`}>·</span>
+          <span className="text-[11px] text-slate-300 leading-snug">{item}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// ─── Main Page ─────────────────────────────────────────────────
 export default function Governance() {
-  const { t } = useLang();
   const sofPrice = useSOFPrice();
-  const [filter, setFilter] = useState('all');
-
-  const FILTER_TABS = [
-    { key: 'all',      labelKey: 'gov_all' },
-    { key: 'active',   labelKey: 'gov_active' },
-    { key: 'upcoming', labelKey: 'gov_status_upcoming' },
-    { key: 'passed',   labelKey: 'gov_passed' },
-    { key: 'rejected', labelKey: 'gov_rejected' },
-  ];
-
-  const filtered = filter === 'all'
-    ? GOVERNANCE_PROPOSALS
-    : GOVERNANCE_PROPOSALS.filter(p => p.status === filter);
-
-  const activeCount = GOVERNANCE_PROPOSALS.filter(p => p.status === 'active').length;
-  const upcomingCount = GOVERNANCE_PROPOSALS.filter(p => p.status === 'upcoming').length;
-  const totalVotes = GOVERNANCE_PROPOSALS.reduce((s, p) => s + p.totalVotes, 0);
-
   const sofDisplay = sofPrice.loading ? '…' : sofPrice.error ? '—' : formatSOFPrice(sofPrice.price);
   const sofChange = sofPrice.change24h != null ? `${sofPrice.change24h >= 0 ? '+' : ''}${sofPrice.change24h.toFixed(2)}%` : null;
 
+  const totalVotes = GOVERNANCE_RESULTS.reduce((s, p) => s + p.totalVotes, 0);
+
   return (
     <div className="min-h-screen">
+      {/* Header */}
       <div className="px-4 pt-4 pb-2">
         <div className="flex items-center gap-2 mb-1">
-          <Vote className="w-5 h-5 text-[#00d4aa]" />
-          <h1 className="text-xl font-bold text-white">{t('page_governance')}</h1>
+          <CheckCircle2 className="w-5 h-5 text-[#00d4aa]" />
+          <h1 className="text-xl font-bold text-white">거버넌스 결정 내역</h1>
         </div>
-        <p className="text-xs text-slate-500">{t('gov_communityProposals')}</p>
+        <p className="text-xs text-slate-500">재단이 확정한 거버넌스 결정 사항을 표시합니다</p>
       </div>
 
       {/* Stats */}
       <div className="px-4 my-4">
         <div className="glass-card rounded-2xl p-4 glow-border">
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             <div className="text-center">
-              <p className="text-lg font-bold text-white">{GOVERNANCE_PROPOSALS.length}</p>
-              <p className="text-[9px] text-slate-500">{t('gov_totalProposals')}</p>
+              <p className="text-lg font-bold text-[#00d4aa]">{GOVERNANCE_RESULTS.length}</p>
+              <p className="text-[9px] text-slate-500">확정 안건</p>
             </div>
             <div className="text-center border-x border-[rgba(148,163,184,0.06)]">
-              <p className="text-lg font-bold text-[#00d4aa]">{activeCount}</p>
-              <p className="text-[9px] text-slate-500">{t('gov_active')}</p>
-            </div>
-            <div className="text-center border-r border-[rgba(148,163,184,0.06)]">
-              <p className="text-lg font-bold text-amber-400">{upcomingCount}</p>
-              <p className="text-[9px] text-slate-500">{t('gov_upcoming')}</p>
+              <p className="text-lg font-bold text-white">{(totalVotes / 1000).toFixed(1)}K</p>
+              <p className="text-[9px] text-slate-500">총 투표수</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-white">{(totalVotes / 1e6).toFixed(1)}M</p>
-              <p className="text-[9px] text-slate-500">{t('gov_totalVotes')}</p>
+              <p className="text-lg font-bold text-emerald-400">100%</p>
+              <p className="text-[9px] text-slate-500">가결률</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* SOF token info — live price */}
+      {/* SOF token info */}
       <div className="px-4 mb-4">
         <div className="relative overflow-hidden glass-card rounded-2xl p-4 border border-[#00d4aa]/10">
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#00d4aa]/5 rounded-full blur-xl" />
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00d4aa] to-[#06b6d4] flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <div>
                 <p className="text-sm font-bold text-white">SOF Token</p>
-                <p className="text-[11px] text-slate-500">{t('gov_stakingToken')}</p>
+                <p className="text-[11px] text-slate-500">거버넌스 토큰</p>
               </div>
             </div>
             <div className="text-right">
@@ -169,29 +278,10 @@ export default function Governance() {
         </div>
       </div>
 
-      {/* Filter tabs */}
-      <div className="px-4 mb-4">
-        <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
-          {FILTER_TABS.map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setFilter(tab.key)}
-              className={`flex-shrink-0 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                filter === tab.key
-                  ? 'bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20'
-                  : 'text-slate-500 border border-transparent'
-              }`}
-            >
-              {t(tab.labelKey)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Proposals */}
-      <div className="px-4 space-y-3 pb-6">
-        {filtered.map(proposal => (
-          <ProposalCard key={proposal.id} proposal={proposal} />
+      {/* Result cards */}
+      <div className="px-4 space-y-3 pb-8">
+        {GOVERNANCE_RESULTS.map(item => (
+          <GovernanceResultCard key={item.id} item={item} />
         ))}
       </div>
     </div>
