@@ -8,7 +8,7 @@ export const TRADING_ASSETS = {
   ],
   COMMODITIES: [
     { symbol: 'GOLD-T', name: 'Gold', category: 'Commodities', spread: 0.50, pip_value: 0.01, lot_size: 100 },
-    { symbol: 'OIL-T', name: 'Crude Oil', category: 'Commodities', spread: 0.05, pip_value: 0.01, lot_size: 100 },
+    { symbol: 'USOIL-T', name: 'Crude Oil (WTI)', category: 'Commodities', spread: 0.05, pip_value: 0.01, lot_size: 100 },
     { symbol: 'SILVER-T', name: 'Silver', category: 'Commodities', spread: 3.0, pip_value: 0.01, lot_size: 5000 },
     { symbol: 'NATGAS-T', name: 'Natural Gas', category: 'Commodities', spread: 0.04, pip_value: 0.001, lot_size: 10000 },
   ],

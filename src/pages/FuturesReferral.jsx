@@ -68,7 +68,7 @@ export default function FuturesReferral() {
           Futures Referral Program
         </h1>
         <p className="text-sm text-slate-400">
-          Earn 25% commission on your referrals' trading volume
+          미승인 40% → 승인 후 60% · 레퍼럴 수수료 허브
         </p>
       </div>
 
@@ -179,47 +179,24 @@ export default function FuturesReferral() {
           {activeTab === 'overview' && (
             <div className="space-y-4">
               <div>
-                <p className="text-[9px] font-bold text-slate-500 uppercase mb-2">Commission Rate</p>
-                <div className="bg-[#1a2340] rounded-lg p-3">
-                  <p className="text-2xl font-bold text-[#00d4aa]">25%</p>
-                  <p className="text-[9px] text-slate-500 mt-1">
-                    On all trading fees and spreads from referred traders
-                  </p>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-[9px] font-bold text-slate-500 uppercase mb-2">How It Works</p>
-                <ol className="space-y-2">
-                  {[
-                    'Share your referral link with potential traders',
-                    'New traders sign up using your link',
-                    'They deposit and start trading',
-                    'You earn 25% commission on their trading volume',
-                    'Commission paid weekly to your wallet',
-                  ].map((step, idx) => (
-                    <li key={idx} className="flex gap-2 text-[9px] text-slate-400">
-                      <span className="font-bold text-[#00d4aa] flex-shrink-0">{idx + 1}.</span>
-                      {step}
-                    </li>
-                  ))}
-                </ol>
-              </div>
-
-              <div>
-                <p className="text-[9px] font-bold text-slate-500 uppercase mb-2">Commission Tiers</p>
+                <p className="text-[9px] font-bold text-slate-500 uppercase mb-2">거래소 레퍼럴 수수료</p>
                 <div className="space-y-2">
-                  {[
-                    { vol: '$0 - $100K', rate: '20%' },
-                    { vol: '$100K - $500K', rate: '25%' },
-                    { vol: '$500K+', rate: '30%' },
-                  ].map((tier, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-[#1a2340] rounded-lg p-2">
-                      <span className="text-[9px] text-slate-400">{tier.vol} Volume</span>
-                      <span className="text-xs font-bold text-green-400">{tier.rate}</span>
+                  <div className="bg-[#1a2340] rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-[9px] text-slate-400">미승인 (Before Approval)</p>
+                      <p className="text-[8px] text-slate-600 mt-0.5">레퍼럴 링크 가입 후 즉시 적용</p>
                     </div>
-                  ))}
+                    <p className="text-xl font-bold text-amber-400">40%</p>
+                  </div>
+                  <div className="bg-[#1a2340] rounded-lg p-3 flex items-center justify-between border border-[#00d4aa]/15">
+                    <div>
+                      <p className="text-[9px] text-slate-300 font-bold">승인 후 (After Approval)</p>
+                      <p className="text-[8px] text-slate-600 mt-0.5">파트너 승인 완료 시 자동 업그레이드</p>
+                    </div>
+                    <p className="text-xl font-bold text-[#00d4aa]">60%</p>
+                  </div>
                 </div>
+                <p className="text-[8px] text-slate-600 mt-2">※ 트레이딩 수수료 및 스프레드 기준 / SOF 세일즈 등급과 무관</p>
               </div>
             </div>
           )}

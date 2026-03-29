@@ -6,6 +6,8 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { AlertCircle, CheckCircle, Send, Calculator, UserPlus, User } from 'lucide-react';
 import { isValidSolanaAddress } from './SOFQuantityCalc';
+import { base44 } from '@/api/base44Client';
+import { DEV_MODE, DEV_WALLET } from '@/components/shared/devConfig';
 import {
   calculateCustomerSOF,
   calculateRecommenderSOF,
@@ -46,7 +48,7 @@ function CalcRow({ label, value, color, highlight }) {
   );
 }
 
-export default function SalesCalculator({ partnerWallet, gradeInfo }) {
+export default function SalesCalculator({ partnerWallet, gradeInfo, onSubmitSuccess }) {
   const [form, setForm]           = useState(EMPTY_FORM);
   const [touched, setTouched]     = useState({});
   const [promoLocked, setPromoLocked] = useState(false);
@@ -136,31 +138,49 @@ export default function SalesCalculator({ partnerWallet, gradeInfo }) {
     setSubmitResult(null);
     try {
       const payload = {
-        customerName:         form.customerName.trim(),
-        customerWalletAddress: form.customerWallet.trim(),
-        salesKRW:             parseFloat(form.salesKRW),
-        usdtRate:             parseFloat(form.usdtRate),
-        usdtAmount:           calc.usdtAmount,
-        sofPrice:             parseFloat(form.sofPrice),
-        promotionPercent:     parseFloat(form.promotionPercent),
-        promotionMultiplier:  parseFloat(form.promotionPercent) / 100,
-        baseQuantity:         calc.baseQuantity,
-        finalCustomerQuantity: calc.finalQuantity,
-        partnerWalletAddress: partnerWallet,
-        partnerGrade:         gradeInfo?.grade ?? null,
-        centerFeePercent:     gradeInfo?.centerFeePercent ?? 0,
-        myCenterFeeQuantity:  calc.netCenterFee,
-        recommenderName:      form.recommenderName.trim() || null,
+        customerName:             form.customerName.trim(),
+        customerWalletAddress:    form.customerWallet.trim(),
+        salesKRW:                 parseFloat(form.salesKRW),
+        usdtRate:                 parseFloat(form.usdtRate),
+        usdtAmount:               calc.usdtAmount,
+        sofPrice:                 parseFloat(form.sofPrice),
+        promotionPercent:         parseFloat(form.promotionPercent),
+        promotionMultiplier:      parseFloat(form.promotionPercent) / 100,
+        baseQuantity:             calc.baseQuantity,
+        finalCustomerQuantity:    calc.finalQuantity,
+        partnerWalletAddress:     DEV_MODE ? DEV_WALLET : partnerWallet,
+        partnerGrade:             gradeInfo?.grade ?? null,
+        centerFeePercent:         gradeInfo?.centerFeePercent ?? 0,
+        myCenterFeeQuantity:      calc.netCenterFee,
+        recommenderName:          form.recommenderName.trim() || null,
         recommenderWalletAddress: form.recommenderWallet.trim() || null,
-        recommenderPercent:   parseFloat(form.recommenderPercent) || 0,
-        recommenderQuantity:  calc.recommenderQuantity,
-        submittedAt:          new Date().toISOString(),
+        recommenderPercent:       parseFloat(form.recommenderPercent) || 0,
+        recommenderQuantity:      calc.recommenderQuantity,
+        submittedAt:              new Date().toISOString(),
       };
-      const res = await submitSaleToFoundation(payload);
-      setSubmitResult({ type: 'success', msg: `제출 완료 · ID: ${res.submissionId}` });
+      // Save to internal DB
+      await base44.entities.SOFSaleSubmission.create({
+        partner_wallet:     payload.partnerWalletAddress,
+        customer_name:      payload.customerName,
+        customer_wallet:    payload.customerWalletAddress,
+        purchase_amount:    payload.usdtAmount,
+        sof_unit_price:     payload.sofPrice,
+        promotion_percent:  payload.promotionPercent,
+        sof_quantity:       payload.finalCustomerQuantity,
+        status:             'Processing',
+        submitted_at:       payload.submittedAt,
+      });
+      // POST to foundation endpoint (non-blocking)
+      fetch('https://solfort-api.onrender.com/sales/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }).catch(() => {});
+      setSubmitResult({ type: 'success', msg: `제출 완료 (${new Date().toLocaleTimeString('ko-KR')})` });
       setForm(EMPTY_FORM);
       setTouched({});
       setPromoLocked(false);
+      if (onSubmitSuccess) onSubmitSuccess();
     } catch (err) {
       setSubmitResult({ type: 'error', msg: `오류: ${err.message}` });
     }

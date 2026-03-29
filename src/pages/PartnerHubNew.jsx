@@ -258,14 +258,14 @@ export default function PartnerHubNew() {
           <div className="glass-card rounded-xl p-4 space-y-3">
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Fee Distribution Policy</p>
             <div className="space-y-1.5">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-slate-400">Normal user (no partner):</span>
-                <span className="text-white font-bold">Exchange 70% / Referral 30%</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-slate-400">Partner user:</span>
-                <span className="text-white font-bold">Partner 60% / Exchange 40%</span>
-              </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-slate-400">레퍼럴 (미승인):</span>
+              <span className="text-white font-bold">거래소 60% / 레퍼럴 40%</span>
+            </div>
+            <div className="flex justify-between text-[10px]">
+              <span className="text-slate-400">레퍼럴 (승인 후):</span>
+              <span className="text-white font-bold">거래소 40% / 레퍼럴 60%</span>
+            </div>
               <div className="flex justify-between text-[10px]">
                 <span className="text-slate-400">Your rate:</span>
                 <span className="text-[#00d4aa] font-bold">{(myNode?.rate * 100 || 0).toFixed(0)}% of partner pool</span>

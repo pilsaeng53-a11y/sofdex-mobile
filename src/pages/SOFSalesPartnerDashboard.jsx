@@ -170,12 +170,21 @@ export default function SOFSalesPartnerDashboard() {
         })}
       </div>
 
-      {/* Tab: Register */}
+      {/* Tab: Register — uses unified SalesCalculator (same fields as 도소매 tab) */}
       {activeTab === 'register' && (
-        <CustomerRegistrationForm
-          partnerWallet={address}
-          onSubmitSuccess={() => { loadSubmissions(); setActiveTab('manage'); }}
-        />
+        <div className="space-y-4">
+          <PartnerGradePanel
+            gradeInfo={gradeInfo}
+            loading={gradeLoading}
+            fetched={gradeFetched}
+            wallet={effectiveWallet}
+          />
+          <SalesCalculator
+            partnerWallet={effectiveWallet}
+            gradeInfo={gradeInfo}
+            onSubmitSuccess={() => { loadSubmissions(); setActiveTab('manage'); }}
+          />
+        </div>
       )}
 
       {/* Tab: 도소매 파트너 */}
