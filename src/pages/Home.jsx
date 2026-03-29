@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLang } from '../components/shared/LanguageContext';
+import { useUserMode } from '../components/shared/UserModeContext';
+import SalesPartnerHome from '../components/shared/SalesPartnerHome';
 import { useUserType } from '../components/shared/UserTypeContext';
 import { getUserTierLabel, getTierBadgeClass, FEATURE_DESCRIPTIONS } from '../lib/roleVisibility';
 import HotAssets from '../components/shared/HotAssets';
@@ -25,6 +27,8 @@ import AdvancedFeaturesPreview from '../components/home/AdvancedFeaturesPreview'
 export default function Home() {
   const { t } = useLang();
   const { userType } = useUserType();
+  const { isSalesPartner } = useUserMode();
+  if (isSalesPartner) return <SalesPartnerHome />;
 
   return (
     <div className="min-h-screen">

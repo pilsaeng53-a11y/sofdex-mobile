@@ -15,7 +15,7 @@ export function UserModeProvider({ children }) {
   }
 
   return (
-    <UserModeContext.Provider value={{ mode, setMode, isLite: mode === 'lite', isPro: mode === 'pro' }}>
+    <UserModeContext.Provider value={{ mode, setMode, isLite: mode === 'lite', isPro: mode === 'pro', isSalesPartner: mode === 'sales' }}>
       {children}
     </UserModeContext.Provider>
   );

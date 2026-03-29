@@ -170,7 +170,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
   const [visible, setVisible] = useState(false);
   const { t } = useLang();
   const { isPartnerApproved, isPartnerPending, userType } = useUserType();
-  const { mode, isLite } = useUserMode();
+  const { mode, isLite, isSalesPartner } = useUserMode();
 
   useEffect(() => {
     if (isOpen) requestAnimationFrame(() => setVisible(true));
@@ -250,6 +250,26 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
 
         {/* Nav sections */}
         <div className="flex-1 px-3 py-2 space-y-4">
+          {/* Sales Partner mode: focused operational menu */}
+          {isSalesPartner && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-amber-600/80 uppercase tracking-wider">영업 파트너 메뉴</p>
+              <div className="space-y-0.5">
+                {[
+                  { label: '홈 (영업 요약)', page: 'Home', icon: Home },
+                  { label: 'SOF Sales Partner', page: 'SOFSalesPartnerDashboard', icon: Briefcase },
+                  { label: '파트너 대시보드', page: 'PartnerHub', icon: Star },
+                  { label: '제출 내역', page: 'MySubmissions', icon: FileText },
+                  { label: '하부 관리', page: 'DownlineTree', icon: GitBranch },
+                  { label: '추천인 관리', page: 'FuturesReferral', icon: Users },
+                  { label: '지갑', page: 'Wallet', icon: Wallet },
+                  { label: '공지사항', page: 'Announcements', icon: Bell },
+                  { label: '계정', page: 'Account', icon: User },
+                ].map(item => <NavLink key={item.page} item={item} />)}
+              </div>
+            </div>
+          )}
+
           {/* Lite mode: quick links */}
           {isLite && (
             <div>
@@ -271,7 +291,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
           )}
 
           {/* Pro mode: full nav sections */}
-          {!isLite && NAV_SECTIONS.map(section => (
+          {!isLite && !isSalesPartner && NAV_SECTIONS.map(section => (
             <div key={section.label || section.labelKey}>
               <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{section.label || t(section.labelKey)}</p>
               <div className="space-y-0.5">
@@ -301,14 +321,12 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
           ))}
 
           {/* Partner Hub — access controlled */}
+          {!isSalesPartner && (
           <div>
             <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_partnerHub')}</p>
             {isPartnerApproved ? (
               <>
-                <button
-                  onClick={() => setPartnerExpanded(v => !v)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group"
-                >
+                <button onClick={() => setPartnerExpanded(v => !v)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group">
                   <UserCheck className="w-4 h-4 text-[#00d4aa] flex-shrink-0" />
                   <span className="text-sm font-medium flex-1 text-left">{t('menu_partnerHubMain')}</span>
                   <span className="text-[9px] text-[#00d4aa] bg-[#00d4aa]/10 px-1.5 py-0.5 rounded-lg border border-[#00d4aa]/20 mr-1">Approved</span>
@@ -316,27 +334,21 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
                 </button>
                 {partnerExpanded && (
                   <div className="ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-[rgba(148,163,184,0.08)]">
-                    {PARTNER_FULL_ITEMS.map(item => {
-                      const Icon = item.icon;
-                      return (
-                        <Link key={item.labelKey} to={createPageUrl(item.page)} onClick={onClose}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#151c2e] transition-all group">
-                          <Icon className="w-3.5 h-3.5 text-slate-600 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
-                          <span className="text-xs font-medium">{t(item.labelKey)}</span>
-                        </Link>
-                      );
-                    })}
+                    {PARTNER_FULL_ITEMS.map(item => { const Icon = item.icon; return (
+                      <Link key={item.labelKey} to={createPageUrl(item.page)} onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#151c2e] transition-all group">
+                        <Icon className="w-3.5 h-3.5 text-slate-600 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
+                        <span className="text-xs font-medium">{t(item.labelKey)}</span>
+                      </Link>
+                    );})}
                   </div>
                 )}
               </>
             ) : (
               <div className="space-y-0.5">
-                <Link to={createPageUrl('PartnerHub')} onClick={onClose}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group">
+                <Link to={createPageUrl('PartnerHub')} onClick={onClose} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group">
                   <Rocket className="w-4 h-4 text-amber-400 flex-shrink-0" />
                   <span className="text-sm font-medium">{t('menu_applyDistributor') || 'Apply as Distributor'}</span>
                 </Link>
-                {/* Locked items indicator */}
                 <div className="flex items-center gap-3 px-3 py-2 rounded-xl opacity-40">
                   <Lock className="w-4 h-4 text-slate-600 flex-shrink-0" />
                   <span className="text-sm text-slate-600">{t('menu_partnerLocked') || 'Partner features locked'}</span>
@@ -349,47 +361,54 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
               </div>
             )}
           </div>
+          )}
 
           {/* SOF Sales Partner — fully separate from Partner Hub */}
-          <div>
-            <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_sof_sales') || 'SOF Sales'}</p>
-            <NavLink item={SOF_SALES_PARTNER_ITEM} />
-          </div>
+          {!isSalesPartner && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_sof_sales') || 'SOF Sales'}</p>
+              <NavLink item={SOF_SALES_PARTNER_ITEM} />
+            </div>
+          )}
 
-          {/* Governance expandable */}
+          {!isSalesPartner && (
           <div>
             <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_dao')}</p>
-            <button
-              onClick={() => setGovExpanded(v => !v)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group"
-            >
+            <button onClick={() => setGovExpanded(v => !v)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group">
               <Vote className="w-4 h-4 text-slate-500 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
               <span className="text-sm font-medium flex-1 text-left">{t('menu_governance')}</span>
               {govExpanded ? <ChevronDown className="w-3.5 h-3.5 text-slate-600" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-600" />}
             </button>
             {govExpanded && (
               <div className="ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-[rgba(148,163,184,0.08)]">
-                {GOVERNANCE_ITEM_KEYS.map(item => {
-                  const Icon = item.icon;
-                  return (
-                    <Link key={item.labelKey} to={createPageUrl(item.page)} onClick={onClose}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#151c2e] transition-all group">
-                      <Icon className="w-3.5 h-3.5 text-slate-600 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
-                      <span className="text-xs font-medium">{t(item.labelKey)}</span>
-                    </Link>
-                  );
-                })}
+                {GOVERNANCE_ITEM_KEYS.map(item => { const Icon = item.icon; return (
+                  <Link key={item.labelKey} to={createPageUrl(item.page)} onClick={onClose} className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#151c2e] transition-all group">
+                    <Icon className="w-3.5 h-3.5 text-slate-600 group-hover:text-[#00d4aa] transition-colors flex-shrink-0" />
+                    <span className="text-xs font-medium">{t(item.labelKey)}</span>
+                  </Link>
+                );})}
               </div>
             )}
           </div>
+          )}
 
-          {/* Account */}
+          {!isSalesPartner && (
           <div>
             <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{t('menu_account')}</p>
             <div className="space-y-0.5">
               {ACCOUNT_LINK_KEYS.map(item => <NavLink key={item.labelKey} item={item} />)}
             </div>
           </div>
+          )}
+
+          {isSalesPartner && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">계정</p>
+              <div className="space-y-0.5">
+                {ACCOUNT_LINK_KEYS.map(item => <NavLink key={item.labelKey} item={item} />)}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Footer */}
