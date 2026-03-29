@@ -58,10 +58,11 @@ export async function fetchTicker(appSymbol) {
 
   return {
     symbol:       appSymbol,
-    price:        data.mark_price  ?? data['24h_close'] ?? null,
+    // Trading price fields — used by resolveTradingPrice() only
+    // NO generic 'price' field: use resolveTradingPrice(ticker) to get price
     markPrice:    data.mark_price  ?? null,
-    indexPrice:   data.index_price ?? null,
     lastPrice:    data['24h_close'] ?? null,
+    indexPrice:   data.index_price ?? null,
     high24h:      data['24h_high'] ?? null,
     low24h:       data['24h_low']  ?? null,
     open24h:      open24,
