@@ -26,6 +26,9 @@ import AdminPanel from '@/components/sofpartner/AdminPanel';
 import ProfitSimulator from '@/components/sofpartner/ProfitSimulator';
 import AnnouncementPanel from '@/components/sofpartner/AnnouncementPanel';
 import RealtimeSalesBoard from '@/components/sofpartner/RealtimeSalesBoard';
+import EarningsSummaryCard from '@/components/sofpartner/EarningsSummaryCard';
+import SettlementHistory from '@/components/sofpartner/SettlementHistory';
+import SalesLeaderboard from '@/components/sofpartner/SalesLeaderboard';
 import ActivityPressure from '@/components/sofpartner/ActivityPressure';
 import SalesScriptGenerator from '@/components/sofpartner/SalesScriptGenerator';
 import LiveEarningsCounter from '@/components/sofpartner/LiveEarningsCounter';
@@ -43,6 +46,8 @@ const TABS = [
   { id: 'grade',     label: '등급',       icon: TrendingUp },
   { id: 'script',    label: '스크립트',   icon: Megaphone },
   { id: 'sim',       label: '시뮬레이터', icon: Calculator },
+  { id: 'settle',    label: '정산내역',   icon: List },
+  { id: 'leaderboard', label: '리더보드', icon: TrendingUp },
   { id: 'announce',  label: '공지',       icon: Megaphone },
   { id: 'calc',      label: '계산로그',   icon: Calculator },
   { id: 'notify',    label: '알림',       icon: Bell },
@@ -166,8 +171,8 @@ export default function SOFSalesPartnerDashboard() {
         <div className="space-y-4">
           <ActivityPressure submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} />
           <PartnerDashboardStats submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} subPromoted={subPromoted} />
+          <EarningsSummaryCard walletAddress={effectiveWallet} />
           <LiveEarningsCounter submissions={submissions} gradeInfo={gradeInfo} />
-          <EarningsPreview walletAddress={effectiveWallet} />
           <TargetSystem walletAddress={effectiveWallet} />
         </div>
       )}
@@ -208,9 +213,17 @@ export default function SOFSalesPartnerDashboard() {
 
       {activeTab === 'grade' && (
         <div className="space-y-4">
-          <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} />
+          <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} submissions={submissions} subActive={subActive} />
           <GradeSimulator gradeInfo={gradeInfo} submissions={submissions} subActive={subActive} />
         </div>
+      )}
+
+      {activeTab === 'settle' && (
+        <SettlementHistory submissions={submissions} />
+      )}
+
+      {activeTab === 'leaderboard' && (
+        <SalesLeaderboard submissions={submissions} subActive={subActive} walletAddress={effectiveWallet} />
       )}
 
       {activeTab === 'sim' && (

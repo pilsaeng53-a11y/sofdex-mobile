@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Edit2, Check, X, Shield, Users, FileText } from 'lucide-react';
+import { Search, Edit2, Check, X, Shield, Users, FileText, GitBranch, Trophy } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { GRADE_CONFIG } from '@/services/partnerGradeService';
 import { formatNumber } from './SOFQuantityCalc';
@@ -99,6 +99,10 @@ export default function AdminPanel() {
   const [loading, setLoading]       = useState(false);
   const [search, setSearch]         = useState('');
   const [activeView, setActiveView] = useState('partners');
+  const [separations, setSeparations] = useState([]);
+  const [reassignTarget, setReassignTarget] = useState(null);
+  const [newParentInput, setNewParentInput] = useState('');
+  const [reassigning, setReassigning] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(user => {
@@ -111,14 +115,32 @@ export default function AdminPanel() {
   async function loadData() {
     setLoading(true);
     try {
-      const [p, s] = await Promise.all([
+      const [p, s, sep] = await Promise.all([
         base44.entities.ApprovedSalesPartner.list('-approved_at', 200),
         base44.entities.SOFSaleSubmission.list('-submitted_at', 500),
+        base44.entities.SeparationHistory.list('-separation_date', 100).catch(() => []),
       ]);
       setPartners(p);
       setSubmissions(s);
+      setSeparations(sep);
     } catch(e) { console.error(e); }
     setLoading(false);
+  }
+
+  async function handleReassign(sep) {
+    if (!newParentInput.trim()) return;
+    setReassigning(true);
+    try {
+      await base44.entities.SeparationHistory.update(sep.id, {
+        new_parent_wallet: newParentInput.trim(),
+        reason: 'admin',
+        notes: `Admin reassigned on ${new Date().toISOString()}`,
+      });
+      setSeparations(prev => prev.map(s => s.id === sep.id ? { ...s, new_parent_wallet: newParentInput.trim() } : s));
+      setReassignTarget(null);
+      setNewParentInput('');
+    } catch(e) { console.error(e); }
+    setReassigning(false);
   }
 
   if (checking) return <div className="py-10 flex justify-center"><div className="w-5 h-5 spin-glow" /></div>;
@@ -153,8 +175,8 @@ export default function AdminPanel() {
       </div>
 
       {/* View switcher */}
-      <div className="flex gap-1 glass-card rounded-xl p-1">
-        {[['partners', '파트너 목록', Users], ['submissions', '제출 현황', FileText]].map(([v, l, Ic]) => (
+      <div className="flex gap-1 glass-card rounded-xl p-1 flex-wrap">
+        {[['partners', '파트너', Users], ['submissions', '제출', FileText], ['separation', '분리 내역', GitBranch], ['leaderboard', '리더보드', Trophy]].map(([v, l, Ic]) => (
           <button key={v} onClick={() => setActiveView(v)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg text-[9px] font-bold transition-all ${activeView === v ? 'bg-amber-400/10 text-amber-400' : 'text-slate-500'}`}>
             <Ic className="w-3 h-3" />{l}
@@ -177,7 +199,7 @@ export default function AdminPanel() {
             <PartnerRow key={p.id} partner={p} submissions={submissions} onGradeEdit={loadData} />
           ))}
         </>
-      ) : (
+      ) : activeView === 'submissions' ? (
         <>
           <div className="grid grid-cols-2 gap-2">
             {Object.entries(byStatus).map(([status, count]) => (
@@ -192,7 +214,78 @@ export default function AdminPanel() {
             상세 제출 내역은 제출 기록 탭에서 확인하세요
           </div>
         </>
-      )}
+      ) : activeView === 'separation' ? (
+        <div className="space-y-3">
+          <p className="text-[9px] text-slate-500">독립 분리된 파트너 목록 및 재배정 관리</p>
+          {separations.length === 0 ? (
+            <div className="py-8 text-center"><p className="text-sm text-slate-500">분리 이력 없음</p></div>
+          ) : separations.map((sep, i) => (
+            <div key={sep.id || i} className="glass-card rounded-xl p-4 space-y-2">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-white">{sep.sub_name || sep.sub_wallet?.slice(0,10)+'...'}</p>
+                  <p className="text-[8px] text-slate-500">{sep.sub_grade} 등급 · {sep.separation_date ? new Date(sep.separation_date).toLocaleDateString('ko-KR') : '—'}</p>
+                  <p className="text-[8px] text-slate-600">이전 상위: {sep.parent_wallet?.slice(0,10)}...</p>
+                </div>
+                <span className="text-[7px] font-bold px-2 py-0.5 rounded-full bg-red-400/10 text-red-400">
+                  {sep.reason === 'same_grade' ? '동급' : sep.reason === 'higher_grade' ? '상위승급' : '관리자'}
+                </span>
+              </div>
+              {sep.new_parent_wallet ? (
+                <p className="text-[9px] text-emerald-400">✓ 재배정 완료 → {sep.new_parent_wallet.slice(0,12)}...</p>
+              ) : (
+                reassignTarget?.id === sep.id ? (
+                  <div className="flex gap-1.5">
+                    <input value={newParentInput} onChange={e => setNewParentInput(e.target.value)}
+                      placeholder="새 상위 파트너 지갑"
+                      className="flex-1 bg-[#0a0e1a] border border-[rgba(148,163,184,0.1)] rounded-lg px-2 py-1.5 text-[9px] text-white" />
+                    <button onClick={() => handleReassign(sep)} disabled={reassigning}
+                      className="px-2.5 py-1.5 rounded-lg text-[9px] font-bold text-white bg-[#00d4aa]/15 border border-[#00d4aa]/30">
+                      {reassigning ? '...' : '저장'}
+                    </button>
+                    <button onClick={() => setReassignTarget(null)}
+                      className="px-2.5 py-1.5 rounded-lg text-[9px] text-slate-400 bg-[#151c2e]">
+                      취소
+                    </button>
+                  </div>
+                ) : (
+                  <button onClick={() => { setReassignTarget(sep); setNewParentInput(''); }}
+                    className="text-[9px] font-bold text-amber-400 bg-amber-400/8 border border-amber-400/20 px-3 py-1.5 rounded-lg">
+                    재배정하기
+                  </button>
+                )
+              )}
+            </div>
+          ))}
+        </div>
+      ) : activeView === 'leaderboard' ? (
+        <div className="space-y-3">
+          <p className="text-[9px] text-slate-500">전체 파트너 매출 기준 순위</p>
+          {(() => {
+            const byWallet = {};
+            submissions.forEach(r => {
+              const w = r.partner_wallet;
+              if (!w) return;
+              if (!byWallet[w]) byWallet[w] = { wallet: w, name: r.partner_name || w.slice(0,8), usdt: 0, count: 0 };
+              byWallet[w].usdt += r.purchase_amount || 0;
+              byWallet[w].count++;
+            });
+            return Object.values(byWallet).sort((a,b)=>b.usdt-a.usdt).slice(0,20).map((p,i) => (
+              <div key={i} className="flex items-center gap-3 py-2 border-b border-[rgba(148,163,184,0.05)] last:border-0">
+                <span className="w-6 text-center text-[10px] font-black text-slate-500">{i+1}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[10px] font-bold text-white truncate">{p.name}</p>
+                  <p className="text-[8px] text-slate-600 font-mono">{p.wallet.slice(0,10)}...</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] font-black text-[#00d4aa]">${formatNumber(p.usdt,0)}</p>
+                  <p className="text-[7px] text-slate-500">{p.count}건</p>
+                </div>
+              </div>
+            ));
+          })()}
+        </div>
+      ) : null}
     </div>
   );
 }
