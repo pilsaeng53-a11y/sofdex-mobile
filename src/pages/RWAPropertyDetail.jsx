@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, TrendingUp, Clock, DollarSign, AlertCircle, Shield, Building2, Loader2 } from 'lucide-react';
+import { ArrowLeft, MapPin, TrendingUp, Clock, DollarSign, AlertCircle, Shield, Building2, Loader2, Star } from 'lucide-react';
 import { getPropertyDetail, PLATFORM_CONFIG, CATEGORY_CONFIG } from '@/services/rwaPropertyService';
+import { useRWAWatchlist } from '@/hooks/useRWAWatchlist';
+import RWASimulator from '../components/rwa/RWASimulator';
+import RWAParticipateModal from '../components/rwa/RWAParticipateModal';
 
 function InfoRow({ label, value, color = 'text-slate-300' }) {
   return (
@@ -31,6 +34,8 @@ export default function RWAPropertyDetail() {
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeImg, setActiveImg] = useState(0);
+  const [showParticipate, setShowParticipate] = useState(false);
+  const { isWatched, toggle } = useRWAWatchlist();
 
   useEffect(() => {
     if (!id) { setLoading(false); return; }
@@ -70,6 +75,11 @@ export default function RWAPropertyDetail() {
           style={{ color: platform.color, background: platform.bg }}>
           {platform.label}
         </span>
+        <button onClick={() => toggle(property.id || property.sourcePropertyId)}
+          className="w-8 h-8 rounded-xl flex items-center justify-center transition-all"
+          style={{ background: isWatched(property.id || property.sourcePropertyId) ? 'rgba(251,191,36,0.15)' : '#151c2e' }}>
+          <Star className={`w-4 h-4 ${isWatched(property.id || property.sourcePropertyId) ? 'fill-current text-amber-400' : 'text-slate-500'}`} />
+        </button>
       </div>
 
       {/* Image gallery */}
@@ -188,6 +198,17 @@ export default function RWAPropertyDetail() {
           {property.publishedAt && <InfoRow label="게시일" value={new Date(property.publishedAt).toLocaleDateString('ko-KR')} />}
         </Section>
 
+        {/* Simulator */}
+        <RWASimulator property={property} />
+
+        {/* Participate CTA */}
+        <button
+          onClick={() => setShowParticipate(true)}
+          className="w-full py-4 rounded-2xl text-sm font-black text-white"
+          style={{ background: 'linear-gradient(135deg,#8b5cf6,#3b82f6)' }}>
+          참여하기
+        </button>
+
         {/* Source info passive label */}
         <div className="text-center pb-2">
           <span className="text-[9px] text-slate-600">
@@ -195,6 +216,10 @@ export default function RWAPropertyDetail() {
           </span>
         </div>
       </div>
+
+      {showParticipate && (
+        <RWAParticipateModal property={property} onClose={() => setShowParticipate(false)} />
+      )}
     </div>
   );
 }

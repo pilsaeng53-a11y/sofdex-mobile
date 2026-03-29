@@ -1,0 +1,62 @@
+{
+  "name": "RWAParticipation",
+  "type": "object",
+  "properties": {
+    "propertyId": {
+      "type": "string",
+      "description": "Property ID (seed or DB)"
+    },
+    "propertyTitle": {
+      "type": "string"
+    },
+    "investAmount": {
+      "type": "number",
+      "description": "Investment amount in USD"
+    },
+    "tokenQty": {
+      "type": "number",
+      "description": "Estimated token quantity"
+    },
+    "expectedYield": {
+      "type": "string"
+    },
+    "scenario": {
+      "type": "string",
+      "enum": [
+        "conservative",
+        "base",
+        "aggressive"
+      ],
+      "default": "base"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "processing",
+        "active",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "userWallet": {
+      "type": "string"
+    },
+    "userEmail": {
+      "type": "string"
+    },
+    "submittedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "propertyId",
+    "propertyTitle",
+    "investAmount"
+  ]
+}

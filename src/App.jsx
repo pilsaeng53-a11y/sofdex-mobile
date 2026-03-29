@@ -75,6 +75,7 @@ import OverseasFutures from './pages/OverseasFutures';
 import AdminDashboard from './pages/AdminDashboard';
 import RWAPropertyDetail from './pages/RWAPropertyDetail';
 import RWAImportPanel from './pages/RWAImportPanel';
+import MyRWAPortfolio from './pages/MyRWAPortfolio';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -153,6 +154,7 @@ const AuthenticatedApp = () => {
       <Route path="/AdminDashboard" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper>} />
       <Route path="/RWAPropertyDetail" element={<LayoutWrapper currentPageName="RWAPropertyDetail"><RWAPropertyDetail /></LayoutWrapper>} />
       <Route path="/RWAImportPanel" element={<LayoutWrapper currentPageName="RWAImportPanel"><RWAImportPanel /></LayoutWrapper>} />
+      <Route path="/MyRWAPortfolio" element={<LayoutWrapper currentPageName="MyRWAPortfolio"><MyRWAPortfolio /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/BeginnerDashboard" element={<LayoutWrapper currentPageName="BeginnerDashboard"><BeginnerDashboard /></LayoutWrapper>} />

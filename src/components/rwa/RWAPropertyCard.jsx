@@ -3,13 +3,16 @@
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, TrendingUp, Clock, DollarSign, AlertCircle } from 'lucide-react';
+import { MapPin, TrendingUp, Clock, DollarSign, AlertCircle, Star, GitCompare } from 'lucide-react';
 import { PLATFORM_CONFIG, CATEGORY_CONFIG } from '@/services/rwaPropertyService';
+import { useRWAWatchlist } from '@/hooks/useRWAWatchlist';
 
-export default function RWAPropertyCard({ property }) {
+export default function RWAPropertyCard({ property, onCompare, isComparing }) {
   const platform = PLATFORM_CONFIG[property.sourcePlatform] || PLATFORM_CONFIG.other;
   const category = CATEGORY_CONFIG[property.category] || CATEGORY_CONFIG.commercial;
   const detailUrl = `/RWAPropertyDetail?id=${property.id || property.sourcePropertyId}`;
+  const { isWatched, toggle } = useRWAWatchlist();
+  const wid = property.id || property.sourcePropertyId;
 
   return (
     <div className="glass-card rounded-2xl overflow-hidden border border-[rgba(148,163,184,0.06)]">
@@ -31,6 +34,21 @@ export default function RWAPropertyCard({ property }) {
               style={{ color: category.color, background: 'rgba(0,0,0,0.7)', border: `1px solid ${category.color}40` }}>
               {category.label}
             </span>
+          </div>
+          {/* Watchlist + Compare buttons */}
+          <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5">
+            {onCompare && (
+              <button onClick={(e) => { e.preventDefault(); onCompare(property); }}
+                className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+                style={{ background: isComparing ? 'rgba(59,130,246,0.8)' : 'rgba(0,0,0,0.7)', border: `1px solid ${isComparing ? '#3b82f6' : 'rgba(148,163,184,0.3)'}` }}>
+                <GitCompare className="w-3.5 h-3.5" style={{ color: isComparing ? '#fff' : '#94a3b8' }} />
+              </button>
+            )}
+            <button onClick={(e) => { e.preventDefault(); toggle(wid); }}
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all"
+              style={{ background: isWatched(wid) ? 'rgba(251,191,36,0.25)' : 'rgba(0,0,0,0.7)', border: `1px solid ${isWatched(wid) ? '#fbbf24' : 'rgba(148,163,184,0.3)'}` }}>
+              <Star className={`w-3.5 h-3.5 ${isWatched(wid) ? 'fill-current text-amber-400' : 'text-slate-400'}`} />
+            </button>
           </div>
         </div>
       )}

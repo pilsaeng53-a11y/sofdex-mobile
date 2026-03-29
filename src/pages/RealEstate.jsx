@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, MapPin } from 'lucide-react';
+import { Building2, MapPin, GitCompare, X } from 'lucide-react';
+import RWACompareModal from '../components/rwa/RWACompareModal';
 import { LANDMARK_RE } from '../components/shared/RWAData';
 import PropertyCard from '../components/rwa/PropertyCard';
 import RWAPropertyCard from '../components/rwa/RWAPropertyCard';
@@ -10,6 +11,19 @@ const SUBCATS = ['All', 'Landmark', 'Commercial', 'Residential', 'Hospitality'];
 export default function RealEstate() {
   const [subcat, setSubcat] = useState('All');
   const [importedProps, setImportedProps] = useState([]);
+  const [compareList, setCompareList] = useState([]);
+  const [showCompare, setShowCompare] = useState(false);
+
+  const handleCompare = (p) => {
+    const id = p.id || p.sourcePropertyId || p.symbol;
+    setCompareList(prev => {
+      if (prev.find(x => (x.id || x.sourcePropertyId || x.symbol) === id)) {
+        return prev.filter(x => (x.id || x.sourcePropertyId || x.symbol) !== id);
+      }
+      if (prev.length >= 3) return prev;
+      return [...prev, p];
+    });
+  };
 
   useEffect(() => {
     getPropertyList('published').then(list => {
@@ -94,6 +108,24 @@ export default function RealEstate() {
         ))}
       </div>
 
+      {/* Compare bar */}
+      {compareList.length > 0 && (
+        <div className="mx-4 mb-3 p-3 rounded-2xl flex items-center justify-between"
+          style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
+          <div className="flex items-center gap-2">
+            <GitCompare className="w-3.5 h-3.5 text-blue-400" />
+            <span className="text-[11px] text-blue-400 font-bold">{compareList.length}개 선택됨</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowCompare(true)}
+              className="px-3 py-1.5 rounded-xl text-[10px] font-bold text-white"
+              style={{ background: '#3b82f6' }}>비교하기</button>
+            <button onClick={() => setCompareList([])}>
+              <X className="w-4 h-4 text-slate-500" /></button>
+          </div>
+        </div>
+      )}
+
       {/* Properties grid */}
       <div className="px-4 space-y-4 pb-8">
         {totalCount === 0 ? (
@@ -107,7 +139,12 @@ export default function RealEstate() {
             {filteredImported.length > 0 && (
               <>
                 <p className="text-[9px] font-black text-purple-400 uppercase tracking-wider px-1">SolFort 등록 자산</p>
-                {filteredImported.map((p, i) => <RWAPropertyCard key={p.id || i} property={p} />)}
+                {filteredImported.map((p, i) => (
+                  <RWAPropertyCard key={p.id || i} property={p}
+                    onCompare={handleCompare}
+                    isComparing={!!compareList.find(x => (x.id || x.sourcePropertyId) === (p.id || p.sourcePropertyId))}
+                  />
+                ))}
                 {filtered.length > 0 && <div className="h-px bg-[rgba(148,163,184,0.08)] my-1" />}
               </>
             )}
@@ -115,6 +152,10 @@ export default function RealEstate() {
           </>
         )}
       </div>
+
+      {showCompare && (
+        <RWACompareModal properties={compareList} onClose={() => setShowCompare(false)} />
+      )}
     </div>
   );
 }
