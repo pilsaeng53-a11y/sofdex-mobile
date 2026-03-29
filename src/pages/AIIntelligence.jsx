@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
+import { useUserMode } from '../components/shared/UserModeContext';
+import LiteModeAI from '../components/shared/LiteModeAI';
 import {
   Brain, TrendingUp, TrendingDown, Minus, Zap, AlertTriangle,
   ArrowUpRight, ArrowDownRight, Activity, Bot, Sparkles, FileText,
@@ -129,6 +131,8 @@ function ReasoningCard({ factors, risk, basis, t }) {
 }
 
 export default function AIIntelligence() {
+  const { isLite } = useUserMode();
+  if (isLite) return <LiteModeAI />;
   const { t } = useLang();
   const [tab, setTab]               = useState('Signals');
   const [refreshKey, setRefreshKey] = useState(0);

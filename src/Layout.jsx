@@ -13,6 +13,7 @@ import { LanguageProvider } from './components/shared/LanguageContext';
 import { UserTypeProvider } from './components/shared/UserTypeContext';
 import { CurrencyProvider, useCurrency } from './components/shared/CurrencyContext';
 import { RegionProvider } from './components/shared/RegionContext';
+import { UserModeProvider } from './components/shared/UserModeContext';
 import SolFortLogo, { LOGO_FONT_URL } from './components/shared/SolFortLogo';
 import AnimatedBackground from './components/shared/AnimatedBackground';
 import { WalletProvider, useWallet } from './components/shared/WalletContext';
@@ -191,11 +192,13 @@ export default function Layout({ children, currentPageName }) {
       <LanguageProvider>
         <RegionProvider>
           <UserTypeProvider>
+            <UserModeProvider>
             <WalletProvider>
               <RegionPersonalizationInitializer />
               <LayoutInner currentPageName={currentPageName}>{children}</LayoutInner>
               <ConnectWalletModal />
             </WalletProvider>
+          </UserModeProvider>
           </UserTypeProvider>
         </RegionProvider>
       </LanguageProvider>

@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
+import { useUserMode } from './UserModeContext';
+import UserModeToggle from './UserModeToggle';
 import SolFortLogo from './SolFortLogo';
 import { getUserTierLabel, getTierBadgeClass } from '@/lib/roleVisibility';
 
@@ -140,6 +142,20 @@ const PARTNER_FULL_ITEMS = [
 // SOF Sales Partner — separate nav entry (not in PARTNER_FULL_ITEMS)
 const SOF_SALES_PARTNER_ITEM = { label: 'SOF Sales Partner', page: 'SOFSalesPartnerDashboard', icon: Briefcase };
 
+// Lite mode: only these page keys are visible
+const LITE_ALLOWED_PAGES = new Set([
+  'Home','GlobalMarkets','Markets','MarketHeatmap','CopyTrading','Trade',
+  'Wallet','Portfolio','SOFSalesPartnerDashboard','PartnerHub','Announcements','Account','Profile',
+]);
+
+// Lite mode: sections to show (by labelKey)
+const LITE_ALLOWED_SECTIONS = new Set([
+  'menu_trading','menu_portfolio_hub',
+]);
+
+// Lite: simplified labels for certain pages
+const LITE_LABELS = { Trade: '트레이드 (매수/매도)', Markets: '마켓', GlobalMarkets: '글로벌 마켓' };
+
 const ACCOUNT_LINK_KEYS = [
   { labelKey: 'menu_account',       page: 'Account',       icon: User },
   { labelKey: 'menu_activity',      page: 'Activity',      icon: Activity },
@@ -154,6 +170,7 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
   const [visible, setVisible] = useState(false);
   const { t } = useLang();
   const { isPartnerApproved, isPartnerPending, userType } = useUserType();
+  const { mode, isLite } = useUserMode();
 
   useEffect(() => {
     if (isOpen) requestAnimationFrame(() => setVisible(true));
@@ -217,8 +234,13 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
           </div>
         </div>
 
+        {/* Mode toggle in header */}
+        <div className="px-3 pt-3 pb-1">
+          <UserModeToggle compact />
+        </div>
+
         {/* Home quick link */}
-        <div className="px-3 pt-3">
+        <div className="px-3 pt-1">
           <Link to={createPageUrl('Home')} onClick={onClose}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${currentPage === 'Home' ? 'bg-[#00d4aa]/10 text-[#00d4aa]' : 'text-slate-300 hover:text-white hover:bg-[#151c2e]'}`}>
             <Home className={`w-4 h-4 flex-shrink-0 transition-colors ${currentPage === 'Home' ? 'text-[#00d4aa]' : 'text-slate-500 group-hover:text-[#00d4aa]'}`} />
@@ -228,7 +250,28 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
 
         {/* Nav sections */}
         <div className="flex-1 px-3 py-2 space-y-4">
-          {NAV_SECTIONS.map(section => (
+          {/* Lite mode: quick links */}
+          {isLite && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">빠른 메뉴</p>
+              <div className="space-y-0.5">
+                {[
+                  { label: '글로벌 마켓', page: 'GlobalMarkets', icon: Globe },
+                  { label: '마켓', page: 'Markets', icon: BarChart3 },
+                  { label: '시장 히트맵', page: 'MarketHeatmap', icon: Flame },
+                  { label: '카피 트레이딩', page: 'CopyTrading', icon: Copy },
+                  { label: '트레이드 (매수/매도)', page: 'Trade', icon: TrendingUp },
+                  { label: '지갑', page: 'Wallet', icon: Wallet },
+                  { label: '내 투자', page: 'Portfolio', icon: Layers },
+                  { label: '공지사항', page: 'Announcements', icon: Bell },
+                  { label: '계정', page: 'Account', icon: User },
+                ].map(item => <NavLink key={item.page} item={item} />)}
+              </div>
+            </div>
+          )}
+
+          {/* Pro mode: full nav sections */}
+          {!isLite && NAV_SECTIONS.map(section => (
             <div key={section.label || section.labelKey}>
               <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">{section.label || t(section.labelKey)}</p>
               <div className="space-y-0.5">
