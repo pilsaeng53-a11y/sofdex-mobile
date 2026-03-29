@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, ExternalLink, TrendingUp, Clock, DollarSign, AlertCircle, Shield, Building2, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, MapPin, TrendingUp, Clock, DollarSign, AlertCircle, Shield, Building2, Loader2 } from 'lucide-react';
 import { getPropertyDetail, PLATFORM_CONFIG, CATEGORY_CONFIG } from '@/services/rwaPropertyService';
 
 function InfoRow({ label, value, color = 'text-slate-300' }) {
@@ -109,10 +109,10 @@ export default function RWAPropertyDetail() {
         </div>
 
         {/* Disclaimer */}
-        <div className="flex items-start gap-2 bg-amber-400/5 border border-amber-400/15 rounded-2xl px-4 py-3">
-          <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-          <p className="text-[10px] text-amber-400/80 leading-relaxed">
-            본 자산은 외부 플랫폼 기반 정보이며, SolFort 내부 검수 후 등록된 참고 자료입니다.
+        <div className="flex items-start gap-2 bg-[#8b5cf6]/5 border border-[#8b5cf6]/15 rounded-2xl px-4 py-3">
+          <Shield className="w-4 h-4 text-[#8b5cf6] flex-shrink-0 mt-0.5" />
+          <p className="text-[10px] text-[#8b5cf6]/80 leading-relaxed">
+            외부 데이터를 기반으로 내부 등록된 자산입니다. SolFort 검수 완료.
           </p>
         </div>
 
@@ -188,15 +188,12 @@ export default function RWAPropertyDetail() {
           {property.publishedAt && <InfoRow label="게시일" value={new Date(property.publishedAt).toLocaleDateString('ko-KR')} />}
         </Section>
 
-        {/* External button */}
-        {property.sourceUrl && (
-          <a href={property.sourceUrl} target="_blank" rel="noopener noreferrer"
-            className="block w-full py-3.5 rounded-2xl text-sm font-bold text-white flex items-center justify-center gap-2"
-            style={{ background: `linear-gradient(135deg, ${platform.color}, ${platform.color}99)` }}>
-            <ExternalLink className="w-4 h-4" />
-            {platform.label} 외부 플랫폼 이동
-          </a>
-        )}
+        {/* Source info passive label */}
+        <div className="text-center pb-2">
+          <span className="text-[9px] text-slate-600">
+            데이터 출처: <span style={{ color: platform.color }}>{platform.label}</span> (SolFort 내부 등록 자산)
+          </span>
+        </div>
       </div>
     </div>
   );

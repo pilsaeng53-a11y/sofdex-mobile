@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MapPin, ExternalLink, TrendingUp, Clock, DollarSign, AlertCircle } from 'lucide-react';
+import { MapPin, TrendingUp, Clock, DollarSign, AlertCircle } from 'lucide-react';
 import { PLATFORM_CONFIG, CATEGORY_CONFIG } from '@/services/rwaPropertyService';
 
 export default function RWAPropertyCard({ property }) {
@@ -84,21 +84,14 @@ export default function RWAPropertyCard({ property }) {
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-2 pt-1">
-          <Link to={detailUrl} className="flex-1">
+        {/* Action */}
+        <div className="pt-1">
+          <Link to={detailUrl}>
             <button className="w-full py-2.5 rounded-xl text-xs font-bold text-white transition-all"
               style={{ background: 'linear-gradient(135deg,#8b5cf6,#6d28d9)' }}>
               자세히 보기
             </button>
           </Link>
-          {property.sourceUrl && (
-            <a href={property.sourceUrl} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-bold text-slate-400 bg-[#151c2e] border border-[rgba(148,163,184,0.1)] hover:text-white hover:border-[rgba(148,163,184,0.2)] transition-all">
-              <ExternalLink className="w-3.5 h-3.5" />
-              외부
-            </a>
-          )}
         </div>
       </div>
     </div>
