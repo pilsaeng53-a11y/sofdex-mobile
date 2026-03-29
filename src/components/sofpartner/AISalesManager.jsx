@@ -2,6 +2,7 @@
  * AISalesManager — Floating AI Sales Manager panel
  */
 import React, { useState, useRef } from 'react';
+import { GRADE_CONFIG } from '@/services/partnerGradeService';
 import {
   Brain, X, ChevronRight, Sparkles, Calculator, AlertTriangle,
   FileText, Users, TrendingUp, Copy, Check, Zap, Target, RefreshCw, BarChart2
