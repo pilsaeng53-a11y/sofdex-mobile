@@ -77,6 +77,7 @@ import RWAPropertyDetail from './pages/RWAPropertyDetail';
 import RWAImportPanel from './pages/RWAImportPanel';
 import MyRWAPortfolio from './pages/MyRWAPortfolio';
 import RWAFuturesList from './pages/RWAFuturesList';
+import PartnerApplicationPage from './pages/PartnerApplication';
 import RWAFuturesDetail from './pages/RWAFuturesDetail';
 import RWAFuturesTrade from './pages/RWAFuturesTrade';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -159,6 +160,7 @@ const AuthenticatedApp = () => {
       <Route path="/RWAImportPanel" element={<LayoutWrapper currentPageName="RWAImportPanel"><RWAImportPanel /></LayoutWrapper>} />
       <Route path="/MyRWAPortfolio" element={<LayoutWrapper currentPageName="MyRWAPortfolio"><MyRWAPortfolio /></LayoutWrapper>} />
       <Route path="/RWAFuturesList" element={<LayoutWrapper currentPageName="RWAFuturesList"><RWAFuturesList /></LayoutWrapper>} />
+      <Route path="/PartnerApplication" element={<LayoutWrapper currentPageName="PartnerApplication"><PartnerApplicationPage /></LayoutWrapper>} />
       <Route path="/RWAFuturesDetail" element={<LayoutWrapper currentPageName="RWAFuturesDetail"><RWAFuturesDetail /></LayoutWrapper>} />
       <Route path="/RWAFuturesTrade" element={<LayoutWrapper currentPageName="RWAFuturesTrade"><RWAFuturesTrade /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />

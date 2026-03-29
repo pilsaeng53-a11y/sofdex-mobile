@@ -1,0 +1,119 @@
+{
+  "name": "PartnerApplication",
+  "type": "object",
+  "properties": {
+    "applicant_name": {
+      "type": "string"
+    },
+    "wallet_address": {
+      "type": "string"
+    },
+    "referrer_wallet": {
+      "type": "string",
+      "description": "Parent/referrer wallet"
+    },
+    "application_type": {
+      "type": "string",
+      "enum": [
+        "new_partner",
+        "self_upgrade",
+        "subordinate_upgrade"
+      ],
+      "default": "new_partner"
+    },
+    "current_grade": {
+      "type": "string",
+      "enum": [
+        "NONE",
+        "GREEN",
+        "PURPLE",
+        "GOLD",
+        "PLATINUM"
+      ],
+      "default": "NONE"
+    },
+    "target_grade": {
+      "type": "string",
+      "enum": [
+        "GREEN",
+        "PURPLE",
+        "GOLD",
+        "PLATINUM"
+      ]
+    },
+    "subordinate_wallet": {
+      "type": "string",
+      "description": "For subordinate upgrade requests"
+    },
+    "subordinate_name": {
+      "type": "string"
+    },
+    "checklist": {
+      "type": "object",
+      "properties": {
+        "academy_completed": {
+          "type": "boolean",
+          "default": false
+        },
+        "social_followed": {
+          "type": "boolean",
+          "default": false
+        },
+        "referrals_5": {
+          "type": "boolean",
+          "default": false
+        },
+        "exam_passed": {
+          "type": "boolean",
+          "default": false
+        },
+        "purple_subs_3": {
+          "type": "boolean",
+          "default": false
+        },
+        "office_established": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "exam_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "completed"
+      ],
+      "default": "not_started"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Submitted",
+        "Under Review",
+        "Approved",
+        "Rejected"
+      ],
+      "default": "Submitted"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "applicant_name",
+    "wallet_address",
+    "application_type",
+    "target_grade"
+  ]
+}

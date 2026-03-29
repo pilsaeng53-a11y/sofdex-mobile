@@ -132,6 +132,7 @@ const GOVERNANCE_ITEM_KEYS = [
 
 const PARTNER_FULL_ITEMS = [
   { labelKey: 'menu_partnerHubMain',  page: 'PartnerHub',         icon: Star },
+  { label: '파트너 신청 & 승급', page: 'PartnerApplication', icon: UserPlus },
   { labelKey: 'menu_downlineTree',    page: 'DownlineTree',       icon: GitBranch },
   { labelKey: 'menu_commissionDist',  page: 'CommissionDist',     icon: DollarSign },
   { labelKey: 'menu_rankProgress',    page: 'RankProgress',       icon: Award },
