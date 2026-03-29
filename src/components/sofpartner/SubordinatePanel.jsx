@@ -1,9 +1,11 @@
 /**
  * SubordinatePanel.jsx
  * 하부 관리 — shows active and promoted-out subordinates.
+ * Respects visibility setting: 비공개 subs show limited info.
  */
-import React, { useState } from 'react';
-import { Users, TrendingUp, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, TrendingUp, ChevronDown, ChevronUp, Loader2, Eye, EyeOff } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { GRADE_CONFIG } from '@/services/partnerGradeService';
 
 function GradeBadge({ grade }) {
@@ -18,6 +20,15 @@ function GradeBadge({ grade }) {
 }
 
 function SubRow({ sub, dimmed }) {
+  const [visibility, setVisibility] = useState('공개');
+  useEffect(() => {
+    if (!sub.walletAddress) return;
+    base44.entities.PartnerActivity.filter({ partner_wallet: sub.walletAddress })
+      .then(acts => { if (acts.length > 0) setVisibility(acts[0].visibility || '공개'); })
+      .catch(() => {});
+  }, [sub.walletAddress]);
+
+  const isPrivate = visibility === '비공개';
   const dateStr = sub.lastSubmitAt
     ? new Date(sub.lastSubmitAt).toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
     : '—';
@@ -32,6 +43,15 @@ function SubRow({ sub, dimmed }) {
         <div className="flex items-center gap-2">
           <span className="text-[11px] font-bold text-white">{sub.name}</span>
           <GradeBadge grade={sub.grade} />
+          {isPrivate ? (
+            <span className="flex items-center gap-0.5 text-[7px] text-slate-500">
+              <EyeOff className="w-2.5 h-2.5" /> 비공개
+            </span>
+          ) : (
+            <span className="flex items-center gap-0.5 text-[7px] text-slate-600">
+              <Eye className="w-2.5 h-2.5" />
+            </span>
+          )}
           {sub.status === 'promoted' && (
             <span className="text-[7px] font-black px-1.5 py-0.5 rounded-full"
               style={{ background: 'rgba(251,191,36,0.1)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.2)' }}>
@@ -41,26 +61,31 @@ function SubRow({ sub, dimmed }) {
         </div>
         <span className="text-[8px] text-slate-600 font-mono">{shortW}</span>
       </div>
-      <div className="grid grid-cols-3 gap-2">
-        <div>
-          <p className="text-[7px] text-slate-600 mb-0.5">누적 매출</p>
-          <p className="text-[9px] font-bold text-slate-300">
-            {(sub.accumulatedSalesKRW / 10000).toFixed(0)}만원
+      {isPrivate ? (
+        <p className="text-[8px] text-slate-600 italic">이 하부 파트너는 매출 정보를 비공개로 설정했습니다.</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-3 gap-2">
+            <div>
+              <p className="text-[7px] text-slate-600 mb-0.5">누적 매출</p>
+              <p className="text-[9px] font-bold text-slate-300">
+                {(sub.accumulatedSalesKRW / 10000).toFixed(0)}만원
+              </p>
+            </div>
+            <div>
+              <p className="text-[7px] text-slate-600 mb-0.5">최근 제출 수량</p>
+              <p className="text-[9px] font-bold text-[#00d4aa]">{sub.lastSubmitQuantity?.toLocaleString()} SOF</p>
+            </div>
+            <div>
+              <p className="text-[7px] text-slate-600 mb-0.5">최근 제출일</p>
+              <p className="text-[9px] font-bold text-slate-400">{dateStr}</p>
+            </div>
+          </div>
+          <p className="text-[8px] text-slate-600 mt-1.5">
+            {sub.name}가 {(sub.accumulatedSalesKRW / 10000).toFixed(0)}만원 매출 · {sub.lastSubmitQuantity?.toLocaleString()} SOF 제출
           </p>
-        </div>
-        <div>
-          <p className="text-[7px] text-slate-600 mb-0.5">최근 제출 수량</p>
-          <p className="text-[9px] font-bold text-[#00d4aa]">{sub.lastSubmitQuantity?.toLocaleString()} SOF</p>
-        </div>
-        <div>
-          <p className="text-[7px] text-slate-600 mb-0.5">최근 제출일</p>
-          <p className="text-[9px] font-bold text-slate-400">{dateStr}</p>
-        </div>
-      </div>
-      {/* Activity line */}
-      <p className="text-[8px] text-slate-600 mt-1.5">
-        {sub.name}가 {(sub.accumulatedSalesKRW / 10000).toFixed(0)}만원 매출 · {sub.lastSubmitQuantity?.toLocaleString()} SOF 제출
-      </p>
+        </>
+      )}
     </div>
   );
 }

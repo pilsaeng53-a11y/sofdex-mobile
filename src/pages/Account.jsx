@@ -1,6 +1,7 @@
 import React from 'react';
 import { useWallet } from '../components/shared/WalletContext';
 import { useSolanaBalances } from '../hooks/useSolanaBalances';
+import SubordinateVisibilitySettings from '../components/sofpartner/SubordinateVisibilitySettings';
 import { useLang } from '../components/shared/LanguageContext';
 import { User, Wallet, LogOut, Copy, Check, RotateCw, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -120,6 +121,12 @@ export default function Account() {
          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">{t('menu_settings')}</p>
          <DisplayCurrencySelector />
        </div>
+
+      {/* Subordinate Visibility Settings */}
+      <div className="space-y-2">
+        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider px-1">하부 공개 설정</p>
+        <SubordinateVisibilitySettings walletAddress={address} partnerName={shortAddress} />
+      </div>
 
       {/* Quick Actions */}
        <div className="space-y-2">

@@ -1,0 +1,64 @@
+{
+  "name": "PartnerActivity",
+  "type": "object",
+  "properties": {
+    "partner_wallet": {
+      "type": "string"
+    },
+    "last_submission_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_activity_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "submission_count_30d": {
+      "type": "number",
+      "default": 0
+    },
+    "personal_sales_30d": {
+      "type": "number",
+      "default": 0
+    },
+    "subordinate_sales_30d": {
+      "type": "number",
+      "default": 0
+    },
+    "activity_score": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 score"
+    },
+    "is_inactive": {
+      "type": "boolean",
+      "default": false
+    },
+    "inactive_since": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "\uacf5\uac1c",
+        "\ube44\uacf5\uac1c"
+      ],
+      "default": "\uacf5\uac1c"
+    },
+    "monthly_target_usdt": {
+      "type": "number",
+      "default": 0
+    },
+    "bookmarked_wallets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "partner_wallet"
+  ]
+}

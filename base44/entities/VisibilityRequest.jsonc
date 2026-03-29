@@ -1,0 +1,52 @@
+{
+  "name": "VisibilityRequest",
+  "type": "object",
+  "properties": {
+    "requester_wallet": {
+      "type": "string",
+      "description": "Partner wallet address"
+    },
+    "requester_name": {
+      "type": "string"
+    },
+    "requested_visibility": {
+      "type": "string",
+      "enum": [
+        "\uacf5\uac1c",
+        "\ube44\uacf5\uac1c"
+      ],
+      "description": "Requested new state"
+    },
+    "current_visibility": {
+      "type": "string",
+      "enum": [
+        "\uacf5\uac1c",
+        "\ube44\uacf5\uac1c"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "\uc2b9\uc778 \ub300\uae30",
+        "\uc2b9\uc778\ub428",
+        "\ubc18\ub824\ub428"
+      ],
+      "default": "\uc2b9\uc778 \ub300\uae30"
+    },
+    "reason": {
+      "type": "string"
+    },
+    "admin_note": {
+      "type": "string"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "requester_wallet",
+    "requested_visibility",
+    "current_visibility"
+  ]
+}

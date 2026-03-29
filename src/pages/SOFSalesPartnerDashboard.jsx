@@ -15,6 +15,9 @@ import { usePartnerGrade } from '@/hooks/usePartnerGrade';
 import PartnerGradePanel from '@/components/sofpartner/PartnerGradePanel';
 import PartnerDashboardStats from '@/components/sofpartner/PartnerDashboardStats';
 import SubmissionHistoryTable from '@/components/sofpartner/SubmissionHistoryTable';
+import QuickEntryForm from '@/components/sofpartner/QuickEntryForm';
+import EarningsPreview from '@/components/sofpartner/EarningsPreview';
+import TargetSystem from '@/components/sofpartner/TargetSystem';
 import GradeSimulator from '@/components/sofpartner/GradeSimulator';
 import OrgTree from '@/components/sofpartner/OrgTree';
 import CalcLogPanel from '@/components/sofpartner/CalcLogPanel';
@@ -154,11 +157,24 @@ export default function SOFSalesPartnerDashboard() {
       {/* ── Tab Content ── */}
 
       {activeTab === 'dashboard' && (
-        <PartnerDashboardStats submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} subPromoted={subPromoted} />
+        <div className="space-y-4">
+          <PartnerDashboardStats submissions={submissions} gradeInfo={gradeInfo} subActive={subActive} subPromoted={subPromoted} />
+          <EarningsPreview walletAddress={effectiveWallet} />
+          <TargetSystem walletAddress={effectiveWallet} />
+        </div>
       )}
 
       {activeTab === 'register' && (
         <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-slate-400">판매 등록</p>
+            <QuickEntryForm
+              walletAddress={effectiveWallet}
+              partnerGrade={gradeInfo?.grade || 'C'}
+              partnerName={partnerInfo?.display_name}
+              onSubmitted={() => { loadSubmissions(); }}
+            />
+          </div>
           <PartnerGradePanel gradeInfo={gradeInfo} loading={gradeLoading} fetched={gradeFetched} wallet={effectiveWallet} />
           <SalesCalculator
             partnerWallet={effectiveWallet}

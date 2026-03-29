@@ -4,6 +4,10 @@ import { formatNumber } from './SOFQuantityCalc';
 import ExportTools from './ExportTools';
 
 const STATUS_CONFIG = {
+  '제출됨':        { label: '제출됨',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)'  },
+  '재단 수정':     { label: '재단 수정', color: '#3b82f6', bg: 'rgba(59,130,246,0.12)'  },
+  '재단 확정':     { label: '재단 확정', color: '#22c55e', bg: 'rgba(34,197,94,0.12)'   },
+  // legacy compat
   'Processing':       { label: '검토 중',    color: '#f59e0b', bg: 'rgba(245,158,11,0.12)'  },
   'Reviewing':        { label: '심사 중',    color: '#3b82f6', bg: 'rgba(59,130,246,0.12)'  },
   'Approved':         { label: '승인',       color: '#22c55e', bg: 'rgba(34,197,94,0.12)'   },

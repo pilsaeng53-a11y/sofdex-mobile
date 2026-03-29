@@ -2,18 +2,20 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   LayoutDashboard, ShoppingCart, Users, Newspaper, Bell, Settings,
   RefreshCw, CheckCircle2, XCircle, Loader2, ExternalLink, Clock,
-  TrendingUp, Activity, Globe, AlertTriangle
+  TrendingUp, Activity, Globe, AlertTriangle, Shield
 } from 'lucide-react';
+import FoundationControlPanel from '../components/sofpartner/FoundationControlPanel';
 import { getNews, getMarketData, checkEndpoint, normalizeSymbol, submitSale } from '../services/solfortApi';
 
 const API_BASE = 'https://solfort-api.onrender.com';
 const TABS = [
-  { id: 'overview',  label: 'Overview',  icon: LayoutDashboard },
-  { id: 'sales',     label: 'Sales',     icon: ShoppingCart },
-  { id: 'partners',  label: 'Partners',  icon: Users },
-  { id: 'news',      label: 'News Monitor', icon: Newspaper },
-  { id: 'alerts',    label: 'Alerts',    icon: Bell },
-  { id: 'settings',  label: 'Settings',  icon: Settings },
+  { id: 'overview',    label: 'Overview',    icon: LayoutDashboard },
+  { id: 'foundation',  label: '재단 관리',    icon: Shield },
+  { id: 'sales',       label: 'Sales',       icon: ShoppingCart },
+  { id: 'partners',    label: 'Partners',    icon: Users },
+  { id: 'news',        label: 'News Monitor', icon: Newspaper },
+  { id: 'alerts',      label: 'Alerts',      icon: Bell },
+  { id: 'settings',    label: 'Settings',    icon: Settings },
 ];
 
 const NEWS_SYMBOLS = ['BTC', 'ETH', 'SOL', 'XRP'];
@@ -435,12 +437,13 @@ export default function AdminDashboard() {
   const [tab, setTab] = useState('overview');
 
   const TAB_CONTENT = {
-    overview: <OverviewTab />,
-    sales: <SalesTab />,
-    partners: <PartnersTab />,
-    news: <NewsMonitorTab />,
-    alerts: <AlertsTab />,
-    settings: <SettingsTab />,
+    overview:   <OverviewTab />,
+    foundation: <FoundationControlPanel />,
+    sales:      <SalesTab />,
+    partners:   <PartnersTab />,
+    news:       <NewsMonitorTab />,
+    alerts:     <AlertsTab />,
+    settings:   <SettingsTab />,
   };
 
   return (
