@@ -9,7 +9,7 @@ import {
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
   Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User, Globe,
-  TrendingDown, Briefcase, Plus
+  TrendingDown, Briefcase, Plus, UserPlus
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
