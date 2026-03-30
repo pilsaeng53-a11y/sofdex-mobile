@@ -81,8 +81,16 @@ import PartnerApplicationPage from './pages/PartnerApplication';
 import P2PRWAExchange from './pages/P2PRWAExchange';
 import OTCOverview from './pages/OTCOverview';
 import GoodsShop from './pages/GoodsShop';
+import GoodsDetail from './pages/GoodsDetail';
+import GoodsCart from './pages/GoodsCart';
+import GoodsCheckout from './pages/GoodsCheckout';
+import GoodsOrderComplete from './pages/GoodsOrderComplete';
+import GoodsMyOrders from './pages/GoodsMyOrders';
 import GoodsOrderStatus from './pages/GoodsOrderStatus';
+import GoodsMembership from './pages/GoodsMembership';
 import GoodsSalesDashboard from './pages/GoodsSalesDashboard';
+import GoodsSalesHistory from './pages/GoodsSalesHistory';
+import GoodsSettlement from './pages/GoodsSettlement';
 import OTCBlockTrade from './pages/OTCBlockTrade';
 import MyOTCListings from './pages/MyOTCListings';
 import OTCSupportDispute from './pages/OTCSupportDispute';
@@ -176,8 +184,16 @@ const AuthenticatedApp = () => {
       <Route path="/P2PRWAExchange" element={<LayoutWrapper currentPageName="P2PRWAExchange"><P2PRWAExchange /></LayoutWrapper>} />
       <Route path="/OTCOverview" element={<LayoutWrapper currentPageName="OTCOverview"><OTCOverview /></LayoutWrapper>} />
       <Route path="/GoodsShop" element={<LayoutWrapper currentPageName="GoodsShop"><GoodsShop /></LayoutWrapper>} />
+      <Route path="/GoodsDetail" element={<LayoutWrapper currentPageName="GoodsDetail"><GoodsDetail /></LayoutWrapper>} />
+      <Route path="/GoodsCart" element={<LayoutWrapper currentPageName="GoodsCart"><GoodsCart /></LayoutWrapper>} />
+      <Route path="/GoodsCheckout" element={<LayoutWrapper currentPageName="GoodsCheckout"><GoodsCheckout /></LayoutWrapper>} />
+      <Route path="/GoodsOrderComplete" element={<LayoutWrapper currentPageName="GoodsOrderComplete"><GoodsOrderComplete /></LayoutWrapper>} />
+      <Route path="/GoodsMyOrders" element={<LayoutWrapper currentPageName="GoodsMyOrders"><GoodsMyOrders /></LayoutWrapper>} />
       <Route path="/GoodsOrderStatus" element={<LayoutWrapper currentPageName="GoodsOrderStatus"><GoodsOrderStatus /></LayoutWrapper>} />
+      <Route path="/GoodsMembership" element={<LayoutWrapper currentPageName="GoodsMembership"><GoodsMembership /></LayoutWrapper>} />
       <Route path="/GoodsSalesDashboard" element={<LayoutWrapper currentPageName="GoodsSalesDashboard"><GoodsSalesDashboard /></LayoutWrapper>} />
+      <Route path="/GoodsSalesHistory" element={<LayoutWrapper currentPageName="GoodsSalesHistory"><GoodsSalesHistory /></LayoutWrapper>} />
+      <Route path="/GoodsSettlement" element={<LayoutWrapper currentPageName="GoodsSettlement"><GoodsSettlement /></LayoutWrapper>} />
       <Route path="/OTCBlockTrade" element={<LayoutWrapper currentPageName="OTCBlockTrade"><OTCBlockTrade /></LayoutWrapper>} />
       <Route path="/MyOTCListings" element={<LayoutWrapper currentPageName="MyOTCListings"><MyOTCListings /></LayoutWrapper>} />
       <Route path="/OTCSupportDispute" element={<LayoutWrapper currentPageName="OTCSupportDispute"><OTCSupportDispute /></LayoutWrapper>} />

@@ -412,14 +412,18 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
           </div>
           )}
 
-          {/* 굿즈 영업 — Sales Partner mode */}
+          {/* 굿즈 영업 — visible in Pro + Sales Partner */}
           {(isSalesPartner || !isLite) && (
             <div>
               <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">굿즈 영업</p>
               <div className="space-y-0.5">
-                <NavLink item={{ label: '굿즈샵', page: 'GoodsShop', icon: ShoppingBag }} />
-                <NavLink item={{ label: '판매 현황', page: 'GoodsSalesDashboard', icon: TrendingUp }} />
+                <NavLink item={{ label: '굿즈샵 홈', page: 'GoodsShop', icon: ShoppingBag }} />
+                <NavLink item={{ label: '내 멤버십', page: 'GoodsMembership', icon: Star }} />
+                <NavLink item={{ label: '내 주문 내역', page: 'GoodsMyOrders', icon: Archive }} />
                 <NavLink item={{ label: '배송 현황', page: 'GoodsOrderStatus', icon: Truck }} />
+                <NavLink item={{ label: '굿즈 영업 현황', page: 'GoodsSalesDashboard', icon: TrendingUp }} />
+                <NavLink item={{ label: '판매 내역', page: 'GoodsSalesHistory', icon: BarChart2 }} />
+                <NavLink item={{ label: '정산 현황', page: 'GoodsSettlement', icon: DollarSign }} />
               </div>
             </div>
           )}
