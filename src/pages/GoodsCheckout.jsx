@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { getCart, clearCart, SOF_PRICE_KRW } from '../data/goodsProducts';
+import { getCart, clearCart, USDT_RATE, toUSDT } from '../data/goodsProducts';
 
-const MOCK_SOF_BALANCE = 500;
+
 
 export default function GoodsCheckout() {
   const navigate = useNavigate();
@@ -12,9 +12,9 @@ export default function GoodsCheckout() {
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const delivery = subtotal < 50000 ? 3000 : 0;
   const total = subtotal + delivery;
-  const sofRequired = Math.ceil(total / SOF_PRICE_KRW);
+  const usdtTotal = toUSDT(total);
 
-  const [payMethod, setPayMethod] = useState('krw');
+  const [payMethod] = useState('usdt');
   const [form, setForm] = useState({ name: '', phone: '', email: '', receiver: '', zip: '', address: '', addressDetail: '', memo: '' });
   const [loading, setLoading] = useState(false);
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
@@ -42,10 +42,10 @@ export default function GoodsCheckout() {
         });
       }
       clearCart();
-      navigate(`/GoodsOrderComplete?order=${orderNum}&method=${payMethod}&total=${total}`);
+      navigate(`/GoodsOrderComplete?order=${orderNum}&method=usdt&total=${total}&usdt=${usdtTotal}`);
     } catch {
       clearCart();
-      navigate(`/GoodsOrderComplete?order=${orderNum}&method=${payMethod}&total=${total}`);
+      navigate(`/GoodsOrderComplete?order=${orderNum}&method=usdt&total=${total}&usdt=${usdtTotal}`);
     }
     setLoading(false);
   }
@@ -116,59 +116,46 @@ export default function GoodsCheckout() {
       </Section>
 
       {/* 결제 수단 */}
-      <div className="rounded-2xl overflow-hidden mb-4" style={{ border: '1px solid rgba(245,158,11,0.15)' }}>
-        <div className="px-4 py-2.5 border-b" style={{ background: 'rgba(245,158,11,0.08)', borderColor: 'rgba(245,158,11,0.1)' }}>
-          <p className="text-[9px] font-black uppercase tracking-wider text-[#f59e0b]">결제 수단</p>
+      <div className="rounded-2xl overflow-hidden mb-4" style={{ border: '1px solid rgba(59,130,246,0.15)' }}>
+        <div className="px-4 py-2.5 border-b" style={{ background: 'rgba(59,130,246,0.08)', borderColor: 'rgba(59,130,246,0.1)' }}>
+          <p className="text-[9px] font-black uppercase tracking-wider text-[#3b82f6]">결제 수단</p>
         </div>
         <div className="p-4 bg-[#0d1220]">
-          <div className="flex gap-2 mb-3">
-            {[['krw', '원화 결제'], ['sof', 'SOF 결제']].map(([val, label]) => (
-              <button key={val} onClick={() => setPayMethod(val)}
-                className="flex-1 py-2.5 rounded-xl text-[11px] font-black transition-all"
-                style={{
-                  background: payMethod === val ? (val === 'sof' ? 'rgba(139,92,246,0.2)' : 'rgba(0,212,170,0.2)') : '#151c2e',
-                  border: `1px solid ${payMethod === val ? (val === 'sof' ? '#8b5cf6' : '#00d4aa') : 'rgba(148,163,184,0.1)'}`,
-                  color: payMethod === val ? (val === 'sof' ? '#8b5cf6' : '#00d4aa') : '#94a3b8',
-                }}>
-                {label}
-              </button>
-            ))}
-          </div>
-          {payMethod === 'sof' && (
-            <div className="rounded-xl p-3 space-y-2" style={{ background: 'rgba(139,92,246,0.06)', border: '1px solid rgba(139,92,246,0.15)' }}>
-              <div className="flex justify-between"><span className="text-[9px] text-slate-500">보유 SOF</span><span className="text-[10px] text-[#8b5cf6] font-black">{MOCK_SOF_BALANCE} SOF</span></div>
-              <div className="flex justify-between"><span className="text-[9px] text-slate-500">결제 필요 SOF</span><span className="text-[10px] text-white font-black">{sofRequired} SOF</span></div>
-              <div className="flex justify-between"><span className="text-[9px] text-slate-500">환산 비율</span><span className="text-[9px] text-slate-400">1 SOF = {SOF_PRICE_KRW.toLocaleString()}원</span></div>
-              {MOCK_SOF_BALANCE < sofRequired && (
-                <p className="text-[9px] text-red-400 font-bold">SOF 잔액이 부족합니다</p>
-              )}
+          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.25)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: '#3b82f6' }}>
+              <span className="text-[10px] font-black text-white">₮</span>
             </div>
-          )}
+            <div>
+              <p className="text-[11px] font-black text-white">USDT (Tether)</p>
+              <p className="text-[9px] text-slate-400">현재 테더 시세: 1 USDT = {USDT_RATE.toLocaleString()}원</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* 최종 결제 요약 */}
-      <div className="rounded-2xl p-4 mb-5" style={{ background: 'rgba(0,212,170,0.05)', border: '1px solid rgba(0,212,170,0.1)' }}>
-        <p className="text-[9px] font-black text-[#00d4aa] uppercase tracking-wider mb-3">최종 결제 요약</p>
+      <div className="rounded-2xl p-4 mb-5" style={{ background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.12)' }}>
+        <p className="text-[9px] font-black text-[#3b82f6] uppercase tracking-wider mb-3">최종 결제 요약</p>
         <div className="space-y-1.5">
-          <div className="flex justify-between"><span className="text-[10px] text-slate-500">상품 금액</span><span className="text-[10px] text-white">{subtotal.toLocaleString()}원</span></div>
+          <div className="flex justify-between"><span className="text-[10px] text-slate-500">상품 가격</span><span className="text-[10px] text-white">{subtotal.toLocaleString()}원</span></div>
           <div className="flex justify-between"><span className="text-[10px] text-slate-500">배송비</span><span className="text-[10px] text-white">{delivery === 0 ? '무료' : `${delivery.toLocaleString()}원`}</span></div>
           <div className="flex justify-between pt-2 border-t border-[rgba(148,163,184,0.06)]">
-            <span className="text-sm font-black text-white">총 결제 금액</span>
-            <span className="text-lg font-black text-[#00d4aa]">{total.toLocaleString()}원</span>
+            <span className="text-[10px] text-slate-400">총 결제 금액 (KRW)</span>
+            <span className="text-sm font-black text-white">{total.toLocaleString()}원</span>
           </div>
-          {payMethod === 'sof' && <div className="flex justify-between"><span className="text-[9px] text-slate-500">SOF 환산</span><span className="text-[10px] text-[#8b5cf6] font-black">{sofRequired} SOF</span></div>}
+          <div className="flex justify-between pt-1 border-t border-[rgba(59,130,246,0.1)]">
+            <span className="text-[10px] font-black text-[#3b82f6]">테더 환산 금액</span>
+            <span className="text-lg font-black text-[#3b82f6]">{usdtTotal} USDT</span>
+          </div>
+          <p className="text-[8px] text-slate-600">현재 테더 시세: 1 USDT = {USDT_RATE.toLocaleString()}원</p>
         </div>
       </div>
 
-      <button onClick={placeOrder} disabled={loading || !form.name || !form.phone || !form.address || (payMethod === 'sof' && MOCK_SOF_BALANCE < sofRequired)}
+      <button onClick={placeOrder} disabled={loading || !form.name || !form.phone || !form.address}
         className="w-full py-3.5 rounded-xl text-sm font-black flex items-center justify-center gap-2 disabled:opacity-40"
-        style={{
-          background: payMethod === 'sof' ? 'linear-gradient(135deg,#8b5cf6,#6d28d9)' : 'linear-gradient(135deg,#00d4aa,#06b6d4)',
-          color: '#000',
-        }}>
-        {loading && <RefreshCw className="w-4 h-4 animate-spin text-white" />}
-        {payMethod === 'sof' ? 'SOF로 결제하기' : '주문하기'}
+        style={{ background: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', color: '#fff' }}>
+        {loading && <RefreshCw className="w-4 h-4 animate-spin" />}
+        USDT로 결제하기
       </button>
     </div>
   );

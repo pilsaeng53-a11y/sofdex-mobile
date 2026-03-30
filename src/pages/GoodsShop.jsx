@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingBag, Truck, Star, ChevronRight, ShoppingCart, Sparkles } from 'lucide-react';
+import { USDT_RATE, toUSDT } from '../data/goodsProducts';
 import { PRODUCTS, CATEGORIES, addToCart, getCart } from '../data/goodsProducts';
 
 function ProductCard({ product, onDetail }) {
@@ -21,7 +22,10 @@ function ProductCard({ product, onDetail }) {
         <span className="text-[8px] font-black px-2 py-0.5 rounded-full text-slate-500 bg-[#151c2e] mb-1.5 inline-block">{product.category}</span>
         <h3 className="text-sm font-black text-white mb-0.5">{product.name}</h3>
         <p className="text-[9px] text-slate-500 mb-2">{product.description}</p>
-        <p className="text-base font-black text-[#00d4aa] mb-3">{product.price.toLocaleString()}원</p>
+        <div className="mb-3">
+          <p className="text-base font-black text-[#00d4aa]">{product.price.toLocaleString()}원</p>
+          <p className="text-[9px] text-slate-500">(≈ {toUSDT(product.price)} USDT)</p>
+        </div>
         <div className="flex gap-1.5">
           <button onClick={() => onDetail(product)}
             className="flex-1 py-2 rounded-xl text-[10px] font-black text-slate-300 border border-[rgba(148,163,184,0.12)] bg-[#151c2e]">

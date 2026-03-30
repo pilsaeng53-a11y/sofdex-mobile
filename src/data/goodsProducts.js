@@ -79,7 +79,8 @@ export const PRODUCTS = [
 
 export const CATEGORIES = ['전체', '의류', '문구', '액세서리', '한정판'];
 
-export const SOF_PRICE_KRW = 850; // 1 SOF = 850 KRW (mock)
+export const USDT_RATE = 1500; // 1 USDT = 1,500 KRW (mock)
+export const toUSDT = (krw) => Math.round((krw / USDT_RATE) * 100) / 100;
 
 export function getProductById(id) {
   return PRODUCTS.find(p => p.id === id);
