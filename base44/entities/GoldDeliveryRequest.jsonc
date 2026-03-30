@@ -1,0 +1,84 @@
+{
+  "name": "GoldDeliveryRequest",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string"
+    },
+    "listing_title": {
+      "type": "string"
+    },
+    "requester_wallet": {
+      "type": "string"
+    },
+    "delivery_quantity": {
+      "type": "number",
+      "description": "Quantity in grams or oz"
+    },
+    "unit": {
+      "type": "string",
+      "default": "grams"
+    },
+    "receiver_name": {
+      "type": "string"
+    },
+    "delivery_country": {
+      "type": "string"
+    },
+    "delivery_address": {
+      "type": "string"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "confirmed_terms": {
+      "type": "boolean",
+      "default": false
+    },
+    "delivery_fee_usdt": {
+      "type": "number"
+    },
+    "insurance_note": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Requested",
+        "Under Review",
+        "Approved",
+        "Preparing Shipment",
+        "Shipped",
+        "Delivered",
+        "Rejected"
+      ],
+      "default": "Requested"
+    },
+    "tracking_info": {
+      "type": "string"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "requested_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "listing_id",
+    "requester_wallet",
+    "delivery_quantity",
+    "receiver_name",
+    "delivery_country",
+    "delivery_address",
+    "confirmed_terms"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "name": "P2PRWAListing",
+  "type": "object",
+  "properties": {
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "real_estate",
+        "gold"
+      ],
+      "description": "Type of RWA asset"
+    },
+    "title": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "seller_wallet": {
+      "type": "string"
+    },
+    "seller_name": {
+      "type": "string"
+    },
+    "quantity_available": {
+      "type": "number"
+    },
+    "unit": {
+      "type": "string",
+      "description": "e.g. tokens, grams, oz"
+    },
+    "asking_price_usdt": {
+      "type": "number"
+    },
+    "buy_now_enabled": {
+      "type": "boolean",
+      "default": false
+    },
+    "description": {
+      "type": "string"
+    },
+    "transaction_terms": {
+      "type": "string"
+    },
+    "gold_weight_grams": {
+      "type": "number",
+      "description": "For gold listings only"
+    },
+    "vault_info": {
+      "type": "string",
+      "description": "Gold vault / storage info"
+    },
+    "reference_price_usdt": {
+      "type": "number",
+      "description": "Current market reference price"
+    },
+    "delivery_eligible": {
+      "type": "boolean",
+      "default": false,
+      "description": "Physical delivery available for gold"
+    },
+    "delivery_fee_usdt": {
+      "type": "number"
+    },
+    "kyc_required": {
+      "type": "boolean",
+      "default": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_review",
+        "active",
+        "paused",
+        "sold",
+        "rejected"
+      ],
+      "default": "pending_review"
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "listed_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "asset_type",
+    "title",
+    "seller_wallet",
+    "quantity_available",
+    "asking_price_usdt"
+  ]
+}

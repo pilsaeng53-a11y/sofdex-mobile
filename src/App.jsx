@@ -78,6 +78,11 @@ import RWAImportPanel from './pages/RWAImportPanel';
 import MyRWAPortfolio from './pages/MyRWAPortfolio';
 import RWAFuturesList from './pages/RWAFuturesList';
 import PartnerApplicationPage from './pages/PartnerApplication';
+import P2PRWAExchange from './pages/P2PRWAExchange';
+import RealEstateP2P from './pages/RealEstateP2P';
+import GoldP2PMarket from './pages/GoldP2PMarket';
+import MyDeliveryRequests from './pages/MyDeliveryRequests';
+import MyP2POrders from './pages/MyP2POrders';
 import RWAFuturesDetail from './pages/RWAFuturesDetail';
 import RWAFuturesTrade from './pages/RWAFuturesTrade';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
@@ -161,6 +166,11 @@ const AuthenticatedApp = () => {
       <Route path="/MyRWAPortfolio" element={<LayoutWrapper currentPageName="MyRWAPortfolio"><MyRWAPortfolio /></LayoutWrapper>} />
       <Route path="/RWAFuturesList" element={<LayoutWrapper currentPageName="RWAFuturesList"><RWAFuturesList /></LayoutWrapper>} />
       <Route path="/PartnerApplication" element={<LayoutWrapper currentPageName="PartnerApplication"><PartnerApplicationPage /></LayoutWrapper>} />
+      <Route path="/P2PRWAExchange" element={<LayoutWrapper currentPageName="P2PRWAExchange"><P2PRWAExchange /></LayoutWrapper>} />
+      <Route path="/RealEstateP2P" element={<LayoutWrapper currentPageName="RealEstateP2P"><RealEstateP2P /></LayoutWrapper>} />
+      <Route path="/GoldP2PMarket" element={<LayoutWrapper currentPageName="GoldP2PMarket"><GoldP2PMarket /></LayoutWrapper>} />
+      <Route path="/MyDeliveryRequests" element={<LayoutWrapper currentPageName="MyDeliveryRequests"><MyDeliveryRequests /></LayoutWrapper>} />
+      <Route path="/MyP2POrders" element={<LayoutWrapper currentPageName="MyP2POrders"><MyP2POrders /></LayoutWrapper>} />
       <Route path="/RWAFuturesDetail" element={<LayoutWrapper currentPageName="RWAFuturesDetail"><RWAFuturesDetail /></LayoutWrapper>} />
       <Route path="/RWAFuturesTrade" element={<LayoutWrapper currentPageName="RWAFuturesTrade"><RWAFuturesTrade /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />

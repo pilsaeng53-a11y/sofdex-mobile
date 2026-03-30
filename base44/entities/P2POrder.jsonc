@@ -1,0 +1,83 @@
+{
+  "name": "P2POrder",
+  "type": "object",
+  "properties": {
+    "listing_id": {
+      "type": "string"
+    },
+    "listing_title": {
+      "type": "string"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "real_estate",
+        "gold"
+      ]
+    },
+    "buyer_wallet": {
+      "type": "string"
+    },
+    "buyer_name": {
+      "type": "string"
+    },
+    "seller_wallet": {
+      "type": "string"
+    },
+    "order_type": {
+      "type": "string",
+      "enum": [
+        "buy_now",
+        "offer"
+      ],
+      "default": "offer"
+    },
+    "quantity": {
+      "type": "number"
+    },
+    "offered_price_usdt": {
+      "type": "number"
+    },
+    "total_usdt": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Submitted",
+        "Under Review",
+        "Approved",
+        "Rejected",
+        "Completed",
+        "Cancelled"
+      ],
+      "default": "Submitted"
+    },
+    "status_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": []
+    },
+    "admin_notes": {
+      "type": "string"
+    },
+    "ordered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "settled_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "listing_id",
+    "listing_title",
+    "asset_type",
+    "buyer_wallet",
+    "quantity",
+    "offered_price_usdt"
+  ]
+}
