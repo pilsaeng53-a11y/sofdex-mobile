@@ -76,6 +76,10 @@ export default function AISalesManager({ submissions = [], gradeInfo, subActive 
   console.log('[AISalesManager] Rendering — open state managed internally');
 
   const [open, setOpen] = useState(false);
+  const [analysisInput, setAnalysisInput] = useState({ amount: '', keywords: '', engagement: 'medium' });
+  const [customerAnalysis, setCustomerAnalysis] = useState(null);
+  const [autoScript, setAutoScript] = useState(null);
+  const [loadingAnalysis, setLoadingAnalysis] = useState(false);
   const [scenario, setScenario] = useState('new_customer');
   const [loading, setLoading] = useState({});
   const [script, setScript] = useState(null);
@@ -201,6 +205,64 @@ Be precise and practical. No guarantees, just estimates.`,
     alert(`Estimated SOF: ${calcResult.estimatedSOF}\nRecommender Share: ${calcResult.recommenderShare}\nYour Earnings: ${calcResult.yourEarnings}\n\n${calcResult.note || ''}`);
   }
 
+  async function analyzeCustomer() {
+    setLoadingAnalysis(true);
+    setCustomerAnalysis(null);
+    setAutoScript(null);
+    try {
+      const res = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this customer profile and classify their type:
+- Sales amount mentioned: ${analysisInput.amount || 'not specified'}
+- Keywords / questions from customer: ${analysisInput.keywords || 'none'}
+- Engagement level: ${analysisInput.engagement}
+
+Customer types:
+1. High-Value Customer: large amount, fast decision
+2. Hesitant Customer: many questions, slow decision
+3. Comparison Customer: mentions other projects or competitors
+4. Partner-Oriented Customer: interested in structure, building a team
+
+Return:
+- customerType: one of ["High-Value Customer", "Hesitant Customer", "Comparison Customer", "Partner-Oriented Customer"]
+- recommendedApproach: 1-2 sentence practical approach
+- autoScenario: one of ["new_customer", "hesitant", "comparing", "recruit"]
+- hook: 1-2 sentence script hook tailored to this customer
+- explanation: 2-3 sentence explanation block
+- conversation: 2-3 line dialogue example`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            customerType: { type: 'string' },
+            recommendedApproach: { type: 'string' },
+            autoScenario: { type: 'string' },
+            hook: { type: 'string' },
+            explanation: { type: 'string' },
+            conversation: { type: 'string' },
+          }
+        }
+      });
+      setCustomerAnalysis(res);
+      setAutoScript({ hook: res.hook, explanation: res.explanation, conversation: res.conversation });
+    } catch {
+      setCustomerAnalysis({ customerType: 'Unknown', recommendedApproach: 'Analysis failed. Try again.', autoScenario: 'new_customer' });
+    }
+    setLoadingAnalysis(false);
+  }
+
+  const CUSTOMER_TYPE_COLORS = {
+    'High-Value Customer': '#00d4aa',
+    'Hesitant Customer': '#f59e0b',
+    'Comparison Customer': '#3b82f6',
+    'Partner-Oriented Customer': '#8b5cf6',
+  };
+
+  function copyAutoScript() {
+    const text = [autoScript?.hook, autoScript?.explanation, autoScript?.conversation].filter(Boolean).join('\n\n');
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1800);
+  }
+
   function copyScript() {
     const text = [script?.hook, script?.explanation, script?.conversation].filter(Boolean).join('\n\n');
     navigator.clipboard.writeText(text).catch(() => {});
@@ -251,6 +313,100 @@ Be precise and practical. No guarantees, just estimates.`,
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 scrollbar-none">
+
+          {/* ── Customer Analysis ── */}
+          <Card title="Customer Analysis" color="#00d4aa">
+            <div className="space-y-2.5 mb-3">
+              <div>
+                <label className="text-[9px] text-slate-500 block mb-1">Sales Amount (USDT)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 500, 2000, 10000"
+                  value={analysisInput.amount}
+                  onChange={e => setAnalysisInput(p => ({ ...p, amount: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-[11px] text-white border border-[rgba(0,212,170,0.15)] outline-none"
+                  style={{ background: 'rgba(0,212,170,0.06)' }}
+                />
+              </div>
+              <div>
+                <label className="text-[9px] text-slate-500 block mb-1">Customer Keywords / Questions</label>
+                <input
+                  type="text"
+                  placeholder="e.g. comparing to Bitcoin, how does structure work"
+                  value={analysisInput.keywords}
+                  onChange={e => setAnalysisInput(p => ({ ...p, keywords: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-[11px] text-white border border-[rgba(0,212,170,0.15)] outline-none"
+                  style={{ background: 'rgba(0,212,170,0.06)' }}
+                />
+              </div>
+              <div>
+                <label className="text-[9px] text-slate-500 block mb-1">Engagement Level</label>
+                <select
+                  value={analysisInput.engagement}
+                  onChange={e => setAnalysisInput(p => ({ ...p, engagement: e.target.value }))}
+                  className="w-full px-3 py-2 rounded-xl text-[11px] text-white border border-[rgba(0,212,170,0.15)] appearance-none"
+                  style={{ background: 'rgba(0,212,170,0.06)' }}
+                >
+                  <option value="high" style={{ background: '#0b0f1c' }}>High — very interested</option>
+                  <option value="medium" style={{ background: '#0b0f1c' }}>Medium — exploring</option>
+                  <option value="low" style={{ background: '#0b0f1c' }}>Low — skeptical</option>
+                </select>
+              </div>
+            </div>
+
+            <button onClick={analyzeCustomer} disabled={loadingAnalysis}
+              className="w-full py-2.5 rounded-xl text-[11px] font-black text-[#00d4aa] flex items-center justify-center gap-2 transition-all active:scale-95 mb-3"
+              style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.25)' }}>
+              {loadingAnalysis ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Brain className="w-3.5 h-3.5" />}
+              Analyze Customer
+            </button>
+
+            {customerAnalysis && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between py-2 border-b border-[rgba(148,163,184,0.06)]">
+                  <span className="text-[9px] text-slate-500">Customer Type</span>
+                  <span className="text-[11px] font-black" style={{ color: CUSTOMER_TYPE_COLORS[customerAnalysis.customerType] || '#00d4aa' }}>
+                    {customerAnalysis.customerType}
+                  </span>
+                </div>
+                <div className="py-2">
+                  <p className="text-[9px] text-slate-500 mb-1">Recommended Approach</p>
+                  <p className="text-[10px] text-slate-300 leading-relaxed">{customerAnalysis.recommendedApproach}</p>
+                </div>
+              </div>
+            )}
+
+            {!customerAnalysis && !loadingAnalysis && (
+              <p className="text-[10px] text-slate-600 text-center py-1">Fill inputs and click Analyze Customer</p>
+            )}
+          </Card>
+
+          {/* ── Auto Script ── */}
+          {autoScript && (
+            <Card title="Auto Script" color="#00d4aa">
+              <div className="flex gap-2 mb-3">
+                <button onClick={analyzeCustomer} disabled={loadingAnalysis}
+                  className="flex-1 py-2 rounded-xl text-[10px] font-black text-[#00d4aa] flex items-center justify-center gap-1.5"
+                  style={{ background: 'rgba(0,212,170,0.1)', border: '1px solid rgba(0,212,170,0.2)' }}>
+                  {loadingAnalysis ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                  Generate Script
+                </button>
+                <button onClick={copyAutoScript}
+                  className="flex-1 py-2 rounded-xl text-[10px] font-black flex items-center justify-center gap-1.5"
+                  style={{
+                    background: copied ? 'rgba(34,197,94,0.12)' : 'rgba(100,116,139,0.1)',
+                    border: `1px solid ${copied ? 'rgba(34,197,94,0.25)' : 'rgba(100,116,139,0.15)'}`,
+                    color: copied ? '#22c55e' : '#94a3b8'
+                  }}>
+                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  Copy Script
+                </button>
+              </div>
+              <ScriptBlock title="Hook" content={autoScript.hook} color="#00d4aa" />
+              <ScriptBlock title="Explanation" content={autoScript.explanation} color="#8b5cf6" />
+              <ScriptBlock title="Conversation" content={autoScript.conversation} color="#3b82f6" />
+            </Card>
+          )}
 
           {/* ── Quick Actions ── */}
           <Card title="Quick Actions" color="#8b5cf6">
