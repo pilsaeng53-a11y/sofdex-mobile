@@ -9,7 +9,7 @@ import {
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
   Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User, Globe,
-  TrendingDown, Briefcase, Plus, UserPlus
+  TrendingDown, Briefcase, Plus, UserPlus, Package, Truck
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
@@ -169,6 +169,7 @@ const ACCOUNT_LINK_KEYS = [
 export default function AppMenu({ isOpen, onClose, currentPage }) {
   const [govExpanded, setGovExpanded] = useState(false);
   const [partnerExpanded, setPartnerExpanded] = useState(false);
+  const [otcExpanded, setOtcExpanded] = useState(false);
   const [visible, setVisible] = useState(false);
   const { t } = useLang();
   const { isPartnerApproved, isPartnerPending, userType } = useUserType();
@@ -321,6 +322,42 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
               </div>
             </div>
           ))}
+
+          {/* OTC — Pro mode only */}
+          {!isLite && !isSalesPartner && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">OTC</p>
+              <button onClick={() => setOtcExpanded(v => !v)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-300 hover:text-white hover:bg-[#151c2e] transition-all group">
+                <Layers className="w-4 h-4 text-[#00d4aa] flex-shrink-0" />
+                <span className="text-sm font-medium flex-1 text-left">OTC Overview</span>
+                <span className="text-[9px] text-[#00d4aa] bg-[#00d4aa]/10 px-1.5 py-0.5 rounded-lg border border-[#00d4aa]/20 mr-1">NEW</span>
+                {otcExpanded ? <ChevronDown className="w-3.5 h-3.5 text-slate-600" /> : <ChevronRight className="w-3.5 h-3.5 text-slate-600" />}
+              </button>
+              {otcExpanded && (
+                <div className="ml-4 mt-0.5 space-y-0.5 pl-3 border-l border-[rgba(148,163,184,0.08)]">
+                  {[
+                    { label: 'OTC Overview',      page: 'OTCOverview',         icon: Layers },
+                    { label: 'P2P Exchange',       page: 'P2PRWAExchange',      icon: ArrowDownUp },
+                    { label: 'Real Estate OTC',    page: 'RealEstateP2P',       icon: Building2 },
+                    { label: 'Gold OTC',           page: 'GoldP2PMarket',       icon: DollarSign },
+                    { label: 'Block Trade Desk',   page: 'OTCBlockTrade',       icon: Package },
+                    { label: 'Physical Delivery',  page: 'MyDeliveryRequests',  icon: Truck },
+                    { label: 'My OTC Orders',      page: 'MyP2POrders',         icon: Archive },
+                    { label: 'My OTC Listings',    page: 'MyOTCListings',       icon: FileText },
+                    { label: 'Support & Dispute',  page: 'OTCSupportDispute',   icon: HelpCircle },
+                  ].map(item => { const Icon = item.icon; const isActive = currentPage === item.page; return (
+                    <Link key={item.page} to={createPageUrl(item.page)} onClick={onClose}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all group ${
+                        isActive ? 'bg-[#00d4aa]/10 text-[#00d4aa]' : 'text-slate-400 hover:text-white hover:bg-[#151c2e]'
+                      }`}>
+                      <Icon className={`w-3.5 h-3.5 flex-shrink-0 transition-colors ${isActive ? 'text-[#00d4aa]' : 'text-slate-600 group-hover:text-[#00d4aa]'}`} />
+                      <span className="text-xs font-medium">{item.label}</span>
+                    </Link>
+                  );})}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Partner Hub — access controlled */}
           {!isSalesPartner && (

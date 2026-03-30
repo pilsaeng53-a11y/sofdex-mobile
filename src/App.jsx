@@ -79,6 +79,10 @@ import MyRWAPortfolio from './pages/MyRWAPortfolio';
 import RWAFuturesList from './pages/RWAFuturesList';
 import PartnerApplicationPage from './pages/PartnerApplication';
 import P2PRWAExchange from './pages/P2PRWAExchange';
+import OTCOverview from './pages/OTCOverview';
+import OTCBlockTrade from './pages/OTCBlockTrade';
+import MyOTCListings from './pages/MyOTCListings';
+import OTCSupportDispute from './pages/OTCSupportDispute';
 import RealEstateP2P from './pages/RealEstateP2P';
 import GoldP2PMarket from './pages/GoldP2PMarket';
 import MyDeliveryRequests from './pages/MyDeliveryRequests';
@@ -167,6 +171,10 @@ const AuthenticatedApp = () => {
       <Route path="/RWAFuturesList" element={<LayoutWrapper currentPageName="RWAFuturesList"><RWAFuturesList /></LayoutWrapper>} />
       <Route path="/PartnerApplication" element={<LayoutWrapper currentPageName="PartnerApplication"><PartnerApplicationPage /></LayoutWrapper>} />
       <Route path="/P2PRWAExchange" element={<LayoutWrapper currentPageName="P2PRWAExchange"><P2PRWAExchange /></LayoutWrapper>} />
+      <Route path="/OTCOverview" element={<LayoutWrapper currentPageName="OTCOverview"><OTCOverview /></LayoutWrapper>} />
+      <Route path="/OTCBlockTrade" element={<LayoutWrapper currentPageName="OTCBlockTrade"><OTCBlockTrade /></LayoutWrapper>} />
+      <Route path="/MyOTCListings" element={<LayoutWrapper currentPageName="MyOTCListings"><MyOTCListings /></LayoutWrapper>} />
+      <Route path="/OTCSupportDispute" element={<LayoutWrapper currentPageName="OTCSupportDispute"><OTCSupportDispute /></LayoutWrapper>} />
       <Route path="/RealEstateP2P" element={<LayoutWrapper currentPageName="RealEstateP2P"><RealEstateP2P /></LayoutWrapper>} />
       <Route path="/GoldP2PMarket" element={<LayoutWrapper currentPageName="GoldP2PMarket"><GoldP2PMarket /></LayoutWrapper>} />
       <Route path="/MyDeliveryRequests" element={<LayoutWrapper currentPageName="MyDeliveryRequests"><MyDeliveryRequests /></LayoutWrapper>} />
