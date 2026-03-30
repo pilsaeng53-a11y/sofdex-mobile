@@ -1,0 +1,80 @@
+{
+  "name": "GoodsOrder",
+  "type": "object",
+  "properties": {
+    "order_number": {
+      "type": "string"
+    },
+    "partner_wallet": {
+      "type": "string",
+      "description": "Sales partner wallet (if partner-referred)"
+    },
+    "customer_name": {
+      "type": "string"
+    },
+    "customer_phone": {
+      "type": "string"
+    },
+    "customer_address": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "product_price": {
+      "type": "number"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "option": {
+      "type": "string",
+      "description": "Size or variant"
+    },
+    "commission_rate": {
+      "type": "number",
+      "default": 0.1,
+      "description": "Partner commission rate (10%)"
+    },
+    "commission_amount": {
+      "type": "number"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "\uc8fc\ubb38 \uc644\ub8cc",
+        "\ubc30\uc1a1 \uc900\ube44 \uc911",
+        "\ubc30\uc1a1 \uc911",
+        "\ubc30\uc1a1 \uc644\ub8cc",
+        "\ucde8\uc18c\ub428"
+      ],
+      "default": "\uc8fc\ubb38 \uc644\ub8cc"
+    },
+    "ordered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "shipped_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "tracking_number": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "customer_name",
+    "customer_phone",
+    "customer_address",
+    "product_name",
+    "product_price",
+    "quantity"
+  ]
+}

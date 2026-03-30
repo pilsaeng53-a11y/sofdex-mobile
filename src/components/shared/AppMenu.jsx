@@ -9,7 +9,7 @@ import {
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
   Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User, Globe,
-  TrendingDown, Briefcase, Plus, UserPlus, Package, Truck
+  TrendingDown, Briefcase, Plus, UserPlus, Package, Truck, ShoppingBag
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
@@ -242,6 +242,16 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
           <UserModeToggle compact />
         </div>
 
+        {/* 굿즈샵 — visible in all modes */}
+        <div className="px-3 pt-1 pb-1">
+          <Link to={createPageUrl('GoodsShop')} onClick={onClose}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${currentPage === 'GoodsShop' ? 'bg-[#00d4aa]/10 text-[#00d4aa]' : 'text-slate-300 hover:text-white hover:bg-[#151c2e]'}`}>
+            <ShoppingBag className={`w-4 h-4 flex-shrink-0 transition-colors ${currentPage === 'GoodsShop' ? 'text-[#00d4aa]' : 'text-slate-500 group-hover:text-[#00d4aa]'}`} />
+            <span className="text-sm font-medium">굿즈샵</span>
+            <span className="ml-auto text-[9px] font-black px-1.5 py-0.5 rounded-full bg-[#00d4aa]/10 text-[#00d4aa] border border-[#00d4aa]/20">NEW</span>
+          </Link>
+        </div>
+
         {/* Home quick link */}
         <div className="px-3 pt-1">
           <Link to={createPageUrl('Home')} onClick={onClose}
@@ -400,6 +410,18 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
               </div>
             )}
           </div>
+          )}
+
+          {/* 굿즈 영업 — Sales Partner mode */}
+          {(isSalesPartner || !isLite) && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">굿즈 영업</p>
+              <div className="space-y-0.5">
+                <NavLink item={{ label: '굿즈샵', page: 'GoodsShop', icon: ShoppingBag }} />
+                <NavLink item={{ label: '판매 현황', page: 'GoodsSalesDashboard', icon: TrendingUp }} />
+                <NavLink item={{ label: '배송 현황', page: 'GoodsOrderStatus', icon: Truck }} />
+              </div>
+            </div>
           )}
 
           {/* SOF Sales Partner — fully separate from Partner Hub */}
