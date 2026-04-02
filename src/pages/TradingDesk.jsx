@@ -114,7 +114,7 @@ export default function TradingDesk() {
             Futures
           </span>
           {/* DEBUG: price source badge */}
-          {process.env.NODE_ENV === 'development' && (
+          {import.meta.env.DEV && (
             <span className="text-[7px] font-black px-1.5 py-0.5 rounded uppercase tracking-widest"
               style={{ background: 'rgba(251,191,36,0.08)', color: '#fbbf24', border: '1px solid rgba(251,191,36,0.15)' }}>
               PRICE: MARK
@@ -209,7 +209,7 @@ export default function TradingDesk() {
 
       {/* ── Debug panels ── */}
       <OrderlyDebugPanel />
-      {process.env.NODE_ENV === 'development' && <DebugRuntimePanel />}
+      {import.meta.env.DEV && <DebugRuntimePanel />}
     </div>
   );
 }

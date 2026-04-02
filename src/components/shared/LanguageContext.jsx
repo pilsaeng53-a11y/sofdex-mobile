@@ -114,7 +114,7 @@ export function LanguageProvider({ children }) {
     }
 
     // Log missing key in development
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.warn(`[Translation] Missing key "${key}" in ${lang}`);
     }
 

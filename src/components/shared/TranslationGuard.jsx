@@ -11,7 +11,7 @@ export const useTranslationGuard = (componentName, keysUsed = []) => {
   const { t } = useLang();
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       // Check if all keys have valid translations
       keysUsed.forEach(key => {
         const result = t(key);
@@ -52,7 +52,7 @@ export const SafeText = ({ k, fallback = '', children }) => {
  * Run in development to catch translation issues early
  */
 export const validateComponentTranslations = (componentName, componentModule) => {
-  if (process.env.NODE_ENV !== 'development') return;
+  if (!import.meta.env.DEV) return;
 
   try {
     const code = componentModule.toString();

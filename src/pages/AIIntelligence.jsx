@@ -132,7 +132,6 @@ function ReasoningCard({ factors, risk, basis, t }) {
 
 export default function AIIntelligence() {
   const { isLite } = useUserMode();
-  if (isLite) return <LiteModeAI />;
   const { t } = useLang();
   const [tab, setTab]               = useState('Signals');
   const [refreshKey, setRefreshKey] = useState(0);
@@ -146,9 +145,6 @@ export default function AIIntelligence() {
     setRefreshKey(k => k + 1);
     setTimeout(() => setRefreshed(false), 1200);
   }, []);
-
-  const overallSentiment = useOverallAISignal(refreshKey);
-  const assetSignals     = useAssetAISignals(refreshKey);
 
   const volatilityAlerts = useMemo(() => {
     return ALL_MARKETS_FLAT
@@ -193,6 +189,8 @@ export default function AIIntelligence() {
       };
     });
   }, [liveData, refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (isLite) return <LiteModeAI />;
 
   const sentimentStyle = overallSentiment.label === 'Bullish'
     ? 'text-emerald-400' : overallSentiment.label === 'Bearish' ? 'text-red-400' : 'text-slate-400';

@@ -9,7 +9,7 @@
  * - clearAllCaches()
  */
 
-const IS_DEV = process.env.NODE_ENV === 'development';
+const IS_DEV = import.meta.env.DEV;
 const DEBUG_KEY = '__DEBUG_TRADING_UI__';
 
 // ─── Price Source Logging ────────────────────────────────────────────────────

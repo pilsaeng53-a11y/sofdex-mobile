@@ -52,13 +52,16 @@ export default function DisplayCurrencySelector() {
         </p>
       )}
 
-      {displayCurrency !== 'Default' && (
-        <div className="mt-3 p-2 rounded-lg bg-slate-900/40 border border-slate-700/30">
-          <p className="text-xs text-slate-500">
-            💡 Prices will be converted to {currency.label} in real time
-          </p>
-        </div>
-      )}
+      {displayCurrency !== 'Default' && (() => {
+        const selected = currencies.find(c => c.value === displayCurrency);
+        return selected ? (
+          <div className="mt-3 p-2 rounded-lg bg-slate-900/40 border border-slate-700/30">
+            <p className="text-xs text-slate-500">
+              💡 Prices will be converted to {selected.label} in real time
+            </p>
+          </div>
+        ) : null;
+      })()}
     </div>
   );
 }

@@ -7,7 +7,7 @@
  * No mock data, no local JSON, no hardcoded prices.
  */
 
-const BASE_URL = 'https://solfort-api.onrender.com';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'https://solfort-api.onrender.com';
 
 async function apiFetch(path, options = {}) {
   const res = await fetch(`${BASE_URL}${path}`, {
