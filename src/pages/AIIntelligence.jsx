@@ -190,6 +190,9 @@ export default function AIIntelligence() {
     });
   }, [liveData, refreshKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const overallSentiment = useOverallAISignal(refreshKey);
+  const assetSignals     = useAssetAISignals(refreshKey);
+
   if (isLite) return <LiteModeAI />;
 
   const sentimentStyle = overallSentiment.label === 'Bullish'

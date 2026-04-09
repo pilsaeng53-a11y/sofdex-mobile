@@ -9,7 +9,7 @@ import {
   Eye, Flame, Bell, PieChart, Activity, ArrowDownUp, Star,
   Wrench, Compass, Sparkles, Brain, MessageSquare, Gift,
   Trophy, Copy, Layers, GitBranch, DollarSign, Award, Lock, UserCheck, User, Globe,
-  TrendingDown, Briefcase, Plus, UserPlus, Package, Truck, ShoppingBag
+  TrendingDown, Briefcase, Plus, UserPlus, Package, Truck, ShoppingBag, Heart
 } from 'lucide-react';
 import { useLang } from './LanguageContext';
 import { useUserType } from './UserTypeContext';
@@ -410,6 +410,14 @@ export default function AppMenu({ isOpen, onClose, currentPage }) {
               </div>
             )}
           </div>
+          )}
+
+          {/* 복지재단 기부 — Pro mode only */}
+          {!isLite && !isSalesPartner && (
+            <div>
+              <p className="px-3 mb-1 text-[10px] font-bold text-slate-600 uppercase tracking-wider">복지재단</p>
+              <NavLink item={{ label: '복지재단 기부', page: 'WelfareDonation', icon: Heart }} />
+            </div>
           )}
 
           {/* 굿즈 영업 — visible in Pro + Sales Partner */}

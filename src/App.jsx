@@ -100,6 +100,7 @@ import MyDeliveryRequests from './pages/MyDeliveryRequests';
 import MyP2POrders from './pages/MyP2POrders';
 import RWAFuturesDetail from './pages/RWAFuturesDetail';
 import RWAFuturesTrade from './pages/RWAFuturesTrade';
+import WelfareDonation from './pages/WelfareDonation';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -203,6 +204,7 @@ const AuthenticatedApp = () => {
       <Route path="/MyP2POrders" element={<LayoutWrapper currentPageName="MyP2POrders"><MyP2POrders /></LayoutWrapper>} />
       <Route path="/RWAFuturesDetail" element={<LayoutWrapper currentPageName="RWAFuturesDetail"><RWAFuturesDetail /></LayoutWrapper>} />
       <Route path="/RWAFuturesTrade" element={<LayoutWrapper currentPageName="RWAFuturesTrade"><RWAFuturesTrade /></LayoutWrapper>} />
+      <Route path="/WelfareDonation" element={<LayoutWrapper currentPageName="WelfareDonation"><WelfareDonation /></LayoutWrapper>} />
       <Route path="/SolFort" element={<LayoutWrapper currentPageName="SolFort"><SolFort /></LayoutWrapper>} />
       <Route path="/CopyTraderDetail" element={<LayoutWrapper currentPageName="CopyTraderDetail"><CopyTraderDetail /></LayoutWrapper>} />
       <Route path="/BeginnerDashboard" element={<LayoutWrapper currentPageName="BeginnerDashboard"><BeginnerDashboard /></LayoutWrapper>} />
