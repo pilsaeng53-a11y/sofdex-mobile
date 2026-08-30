@@ -1,0 +1,35 @@
+{
+  "name": "Reward",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "daily_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "claimable": {
+      "type": "number",
+      "default": 0
+    },
+    "total_claimed": {
+      "type": "number",
+      "default": 0
+    },
+    "trading_volume_24h": {
+      "type": "number",
+      "default": 0
+    },
+    "last_claim_date": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

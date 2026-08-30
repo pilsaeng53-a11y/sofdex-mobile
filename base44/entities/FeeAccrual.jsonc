@@ -1,0 +1,72 @@
+{
+  "name": "FeeAccrual",
+  "type": "object",
+  "properties": {
+    "trade_id": {
+      "type": "string",
+      "description": "Source trade/position ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Trader who generated the fee"
+    },
+    "recipient_id": {
+      "type": "string",
+      "description": "Partner/referrer receiving this accrual"
+    },
+    "recipient_wallet": {
+      "type": "string",
+      "description": "Payout wallet address"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "exchange",
+        "referral",
+        "partner_l1",
+        "partner_l2",
+        "partner_l3"
+      ],
+      "description": "Role of recipient in fee distribution"
+    },
+    "total_fee": {
+      "type": "number",
+      "description": "Total fee collected from trade"
+    },
+    "accrual_rate": {
+      "type": "number",
+      "description": "Rate applied (0-1)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "USD amount accrued to this recipient"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "settled",
+        "reversed"
+      ],
+      "default": "pending"
+    },
+    "settled_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "trade_symbol": {
+      "type": "string"
+    },
+    "trade_volume": {
+      "type": "number"
+    }
+  },
+  "required": [
+    "trade_id",
+    "user_id",
+    "recipient_id",
+    "role",
+    "total_fee",
+    "amount"
+  ]
+}

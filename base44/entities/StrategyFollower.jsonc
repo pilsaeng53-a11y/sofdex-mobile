@@ -1,0 +1,37 @@
+{
+  "name": "StrategyFollower",
+  "type": "object",
+  "properties": {
+    "strategy_id": {
+      "type": "string",
+      "description": "Strategy ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Follower user ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Follower email"
+    },
+    "notify_alerts": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive performance alerts"
+    },
+    "notify_updates": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive strategy updates"
+    },
+    "notify_ranking": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive ranking notifications"
+    }
+  },
+  "required": [
+    "strategy_id",
+    "user_id"
+  ]
+}

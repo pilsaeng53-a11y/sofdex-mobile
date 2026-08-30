@@ -1,0 +1,53 @@
+{
+  "name": "StrategyCompetition",
+  "type": "object",
+  "properties": {
+    "strategy_id": {
+      "type": "string",
+      "description": "Strategy ID"
+    },
+    "creator_name": {
+      "type": "string",
+      "description": "Creator name"
+    },
+    "month": {
+      "type": "string",
+      "description": "Competition month (YYYY-MM)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "monthly_roi",
+        "best_ai",
+        "low_risk",
+        "subscriber_growth"
+      ],
+      "description": "Competition category"
+    },
+    "rank": {
+      "type": "number",
+      "description": "Current rank in category"
+    },
+    "score": {
+      "type": "number",
+      "description": "Competition score (varies by category)"
+    },
+    "reward_tier": {
+      "type": "string",
+      "enum": [
+        "gold",
+        "silver",
+        "bronze",
+        null
+      ],
+      "description": "Reward tier if ranked in top 3"
+    }
+  },
+  "required": [
+    "strategy_id",
+    "creator_name",
+    "month",
+    "category",
+    "score"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "SaleRecord",
+  "type": "object",
+  "properties": {
+    "partner_id": {
+      "type": "string",
+      "description": "Sales partner user ID"
+    },
+    "partner_wallet": {
+      "type": "string",
+      "description": "Partner's wallet address"
+    },
+    "customer_name": {
+      "type": "string",
+      "description": "Customer full name"
+    },
+    "customer_wallet": {
+      "type": "string",
+      "description": "Customer's Solana wallet address"
+    },
+    "usdt_amount": {
+      "type": "number",
+      "description": "Amount customer paid in USDT"
+    },
+    "sof_price_at_sale": {
+      "type": "number",
+      "description": "SOF price in USD at time of sale"
+    },
+    "sof_quantity": {
+      "type": "number",
+      "description": "Calculated SOF tokens to deliver"
+    },
+    "reward_usdt": {
+      "type": "number",
+      "description": "USDT reward for partner"
+    },
+    "reward_sof": {
+      "type": "number",
+      "description": "SOF reward for partner"
+    },
+    "reward_sof_usd": {
+      "type": "number",
+      "description": "USD value of SOF reward"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "paid",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "sale_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the sale was recorded"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "partner_id",
+    "partner_wallet",
+    "customer_name",
+    "customer_wallet",
+    "usdt_amount",
+    "sof_price_at_sale",
+    "sof_quantity"
+  ]
+}

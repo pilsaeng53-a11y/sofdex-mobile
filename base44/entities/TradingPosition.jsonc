@@ -1,0 +1,91 @@
+{
+  "name": "TradingPosition",
+  "type": "object",
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "Associated trading account ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Trading symbol (e.g., EURUSD-T, GOLD-T)"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "buy",
+        "sell"
+      ],
+      "description": "Position direction"
+    },
+    "volume": {
+      "type": "number",
+      "description": "Position size in lots"
+    },
+    "entry_price": {
+      "type": "number",
+      "description": "Entry price per unit"
+    },
+    "current_price": {
+      "type": "number",
+      "description": "Current market price"
+    },
+    "stop_loss": {
+      "type": "number",
+      "description": "Stop loss price (optional)"
+    },
+    "take_profit": {
+      "type": "number",
+      "description": "Take profit price (optional)"
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Position open time"
+    },
+    "swap_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Funding rate charged daily"
+    },
+    "accumulated_swap": {
+      "type": "number",
+      "default": 0,
+      "description": "Total swap/funding fees paid"
+    },
+    "pnl": {
+      "type": "number",
+      "description": "Current unrealized profit/loss"
+    },
+    "pnl_percent": {
+      "type": "number",
+      "description": "PnL as percentage"
+    },
+    "margin_used": {
+      "type": "number",
+      "description": "Margin allocated to this position"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed",
+        "liquidated"
+      ],
+      "default": "open",
+      "description": "Position status"
+    }
+  },
+  "required": [
+    "account_id",
+    "user_id",
+    "symbol",
+    "type",
+    "volume",
+    "entry_price"
+  ]
+}

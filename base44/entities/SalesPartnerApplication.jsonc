@@ -1,0 +1,78 @@
+{
+  "name": "SalesPartnerApplication",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Applicant user ID"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Contact email"
+    },
+    "telegram": {
+      "type": "string",
+      "description": "Telegram handle or username"
+    },
+    "wallet_address": {
+      "type": "string",
+      "description": "Solana wallet address for payouts"
+    },
+    "region": {
+      "type": "string",
+      "description": "Primary region / market focus"
+    },
+    "experience": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "professional"
+      ],
+      "description": "Trading/sales experience level"
+    },
+    "referral_source": {
+      "type": "string",
+      "description": "How they heard about SolFort Futures"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "withdrawn"
+      ],
+      "default": "pending",
+      "description": "Application status"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Application submission date"
+    },
+    "reviewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date of review decision"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Internal review notes"
+    }
+  },
+  "required": [
+    "user_id",
+    "name",
+    "email",
+    "telegram",
+    "wallet_address",
+    "region",
+    "experience"
+  ]
+}

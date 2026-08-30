@@ -1,0 +1,34 @@
+{
+  "name": "StrategyRating",
+  "type": "object",
+  "properties": {
+    "strategy_id": {
+      "type": "string",
+      "description": "Strategy ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "Rating user ID"
+    },
+    "rating": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 5,
+      "description": "User rating (1-5 stars)"
+    },
+    "review": {
+      "type": "string",
+      "description": "Optional review text"
+    },
+    "is_subscriber": {
+      "type": "boolean",
+      "default": false,
+      "description": "User was a subscriber when rating"
+    }
+  },
+  "required": [
+    "strategy_id",
+    "user_id",
+    "rating"
+  ]
+}

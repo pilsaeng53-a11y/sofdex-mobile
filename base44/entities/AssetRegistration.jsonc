@@ -1,0 +1,71 @@
+{
+  "name": "AssetRegistration",
+  "type": "object",
+  "properties": {
+    "wallet_address": {
+      "type": "string",
+      "description": "Submitter wallet address"
+    },
+    "name": {
+      "type": "string",
+      "description": "Submitter full name"
+    },
+    "email": {
+      "type": "string",
+      "description": "Submitter email"
+    },
+    "telegram": {
+      "type": "string",
+      "description": "Submitter Telegram ID"
+    },
+    "asset_class": {
+      "type": "string",
+      "enum": [
+        "Coin",
+        "Token",
+        "RWA"
+      ],
+      "description": "Top-level asset class"
+    },
+    "rwa_subcategory": {
+      "type": "string",
+      "enum": [
+        "Real Estate",
+        "Art / Collectibles",
+        "Commodities",
+        "Equity",
+        "Yield",
+        "Alternative Assets"
+      ],
+      "description": "RWA subcategory (only if asset_class = RWA)"
+    },
+    "fields": {
+      "type": "object",
+      "description": "Dynamic fields based on subcategory",
+      "additionalProperties": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "Processing",
+        "Approved",
+        "Rejected"
+      ],
+      "default": "Processing",
+      "description": "Review status"
+    },
+    "submitted_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin review notes"
+    }
+  },
+  "required": [
+    "name",
+    "email",
+    "asset_class"
+  ]
+}

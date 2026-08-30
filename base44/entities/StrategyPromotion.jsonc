@@ -1,0 +1,48 @@
+{
+  "name": "StrategyPromotion",
+  "type": "object",
+  "properties": {
+    "strategy_id": {
+      "type": "string",
+      "description": "Strategy ID"
+    },
+    "creator_id": {
+      "type": "string",
+      "description": "Creator ID"
+    },
+    "promotion_type": {
+      "type": "string",
+      "enum": [
+        "1day",
+        "1week"
+      ],
+      "description": "Promotion duration"
+    },
+    "promotion_price": {
+      "type": "number",
+      "description": "Cost of promotion"
+    },
+    "starts_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Promotion start date"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Promotion end date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Is promotion currently active"
+    }
+  },
+  "required": [
+    "strategy_id",
+    "creator_id",
+    "promotion_type",
+    "promotion_price",
+    "expires_at"
+  ]
+}

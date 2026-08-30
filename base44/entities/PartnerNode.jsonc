@@ -1,0 +1,89 @@
+{
+  "name": "PartnerNode",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID of this partner"
+    },
+    "wallet_address": {
+      "type": "string",
+      "description": "Solana wallet for payouts"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Partner display name"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "User ID of parent partner (null = root)"
+    },
+    "rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Commission rate (0-1) granted by parent. e.g. 0.6 = 60%"
+    },
+    "max_child_rate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Max rate this partner can grant to their children (\u2264 their own rate)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "pending"
+      ],
+      "default": "pending"
+    },
+    "accrued_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Accrued commission USD not yet paid"
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Lifetime commission earned"
+    },
+    "total_withdrawn": {
+      "type": "number",
+      "default": 0,
+      "description": "Total withdrawn"
+    },
+    "total_volume": {
+      "type": "number",
+      "default": 0,
+      "description": "Total trading volume from this node's subtree"
+    },
+    "sub_volume": {
+      "type": "number",
+      "default": 0,
+      "description": "Volume from children only"
+    },
+    "is_sales_partner": {
+      "type": "boolean",
+      "default": false,
+      "description": "Approved SOF token sales partner"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze",
+      "description": "Sales partner tier"
+    }
+  },
+  "required": [
+    "user_id",
+    "wallet_address",
+    "rate"
+  ]
+}

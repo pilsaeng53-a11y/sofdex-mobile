@@ -1,0 +1,62 @@
+{
+  "name": "Subscription",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Subscriber user ID"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Subscriber email"
+    },
+    "strategy_id": {
+      "type": "string",
+      "description": "Strategy ID"
+    },
+    "creator_id": {
+      "type": "string",
+      "description": "Strategy creator ID"
+    },
+    "plan_type": {
+      "type": "string",
+      "enum": [
+        "1day",
+        "1week",
+        "1month"
+      ],
+      "description": "Subscription plan duration"
+    },
+    "price": {
+      "type": "number",
+      "description": "Subscription price paid"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "expired",
+        "cancelled"
+      ],
+      "default": "active",
+      "description": "Subscription status"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Subscription expiry date"
+    },
+    "transaction_id": {
+      "type": "string",
+      "description": "Payment transaction ID"
+    }
+  },
+  "required": [
+    "user_id",
+    "strategy_id",
+    "creator_id",
+    "plan_type",
+    "price",
+    "expires_at"
+  ]
+}

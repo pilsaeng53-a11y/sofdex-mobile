@@ -1,0 +1,98 @@
+{
+  "name": "TradingAccount",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "Associated user ID"
+    },
+    "account_type": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "pro",
+        "raw"
+      ],
+      "description": "Account tier level"
+    },
+    "balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Account balance in USD"
+    },
+    "equity": {
+      "type": "number",
+      "default": 0,
+      "description": "Current equity (balance + unrealized PnL)"
+    },
+    "used_margin": {
+      "type": "number",
+      "default": 0,
+      "description": "Margin currently in use"
+    },
+    "available_margin": {
+      "type": "number",
+      "default": 0,
+      "description": "Available margin for new positions"
+    },
+    "leverage": {
+      "type": "number",
+      "default": 1,
+      "description": "Selected leverage multiplier"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "closed"
+      ],
+      "default": "active",
+      "description": "Account status"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Account creation date"
+    },
+    "total_deposits": {
+      "type": "number",
+      "default": 0,
+      "description": "Total deposited amount"
+    },
+    "total_withdrawals": {
+      "type": "number",
+      "default": 0,
+      "description": "Total withdrawn amount"
+    },
+    "bonus_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Bonus credit available"
+    },
+    "trading_volume": {
+      "type": "number",
+      "default": 0,
+      "description": "Cumulative trading volume in USD"
+    },
+    "total_trades": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of trades"
+    },
+    "winning_trades": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of winning trades"
+    },
+    "realized_pnl": {
+      "type": "number",
+      "default": 0,
+      "description": "Total realized profit/loss"
+    }
+  },
+  "required": [
+    "user_id",
+    "account_type"
+  ]
+}

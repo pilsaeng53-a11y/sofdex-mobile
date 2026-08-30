@@ -1,0 +1,96 @@
+{
+  "name": "TradingHistory",
+  "type": "object",
+  "properties": {
+    "account_id": {
+      "type": "string",
+      "description": "Associated trading account ID"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "symbol": {
+      "type": "string",
+      "description": "Trading symbol"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "buy",
+        "sell"
+      ],
+      "description": "Trade direction"
+    },
+    "volume": {
+      "type": "number",
+      "description": "Trade size in lots"
+    },
+    "entry_price": {
+      "type": "number",
+      "description": "Entry execution price"
+    },
+    "exit_price": {
+      "type": "number",
+      "description": "Exit execution price"
+    },
+    "opened_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trade open time"
+    },
+    "closed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Trade close time"
+    },
+    "realized_pnl": {
+      "type": "number",
+      "description": "Realized profit/loss"
+    },
+    "gross_profit": {
+      "type": "number",
+      "description": "Profit before fees"
+    },
+    "trading_fee": {
+      "type": "number",
+      "description": "Trading fee charged"
+    },
+    "spread_cost": {
+      "type": "number",
+      "description": "Cost from spread"
+    },
+    "swap_fee": {
+      "type": "number",
+      "description": "Total funding/swap fee"
+    },
+    "commission": {
+      "type": "number",
+      "default": 0,
+      "description": "Commission paid to partner/referrer"
+    },
+    "duration_hours": {
+      "type": "number",
+      "description": "How long position was held (hours)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "completed",
+        "liquidated",
+        "cancelled"
+      ],
+      "default": "completed",
+      "description": "Trade completion status"
+    }
+  },
+  "required": [
+    "account_id",
+    "user_id",
+    "symbol",
+    "type",
+    "volume",
+    "entry_price",
+    "exit_price"
+  ]
+}

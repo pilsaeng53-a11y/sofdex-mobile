@@ -1,0 +1,54 @@
+{
+  "name": "TradePost",
+  "type": "object",
+  "properties": {
+    "trader_name": {
+      "type": "string"
+    },
+    "trader_id": {
+      "type": "string"
+    },
+    "asset": {
+      "type": "string"
+    },
+    "direction": {
+      "type": "string",
+      "enum": [
+        "long",
+        "short"
+      ]
+    },
+    "entry_price": {
+      "type": "number"
+    },
+    "exit_price": {
+      "type": "number"
+    },
+    "roi": {
+      "type": "number"
+    },
+    "likes": {
+      "type": "number",
+      "default": 0
+    },
+    "comments": {
+      "type": "number",
+      "default": 0
+    },
+    "followers_copied": {
+      "type": "number",
+      "default": 0
+    },
+    "note": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "trader_name",
+    "asset",
+    "direction",
+    "entry_price",
+    "exit_price",
+    "roi"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Watchlist",
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Asset symbol e.g. SOL, BTC"
+    },
+    "asset_name": {
+      "type": "string",
+      "description": "Full asset name"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "crypto",
+        "rwa",
+        "tradfi"
+      ],
+      "default": "crypto"
+    }
+  },
+  "required": [
+    "symbol",
+    "asset_name"
+  ]
+}

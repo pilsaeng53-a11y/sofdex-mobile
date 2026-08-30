@@ -1,0 +1,48 @@
+{
+  "name": "CreatorEarnings",
+  "type": "object",
+  "properties": {
+    "creator_id": {
+      "type": "string",
+      "description": "Creator user ID"
+    },
+    "creator_name": {
+      "type": "string",
+      "description": "Creator name"
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total earnings from subscriptions (70% of revenue)"
+    },
+    "total_withdrawn": {
+      "type": "number",
+      "default": 0,
+      "description": "Total withdrawn amount"
+    },
+    "withdrawable_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Available balance to withdraw"
+    },
+    "pending_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Pending balance (earned but not yet withdrawable)"
+    },
+    "strategies_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total strategies published"
+    },
+    "total_subscribers": {
+      "type": "number",
+      "default": 0,
+      "description": "Total active subscribers across all strategies"
+    }
+  },
+  "required": [
+    "creator_id",
+    "creator_name"
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "ApprovedSalesPartner",
+  "type": "object",
+  "properties": {
+    "wallet_address": {
+      "type": "string",
+      "description": "Approved partner wallet address (primary key)"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Partner display name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended"
+      ],
+      "default": "active",
+      "description": "Partner approval status"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the partner was approved"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Admin notes"
+    }
+  },
+  "required": [
+    "wallet_address"
+  ]
+}

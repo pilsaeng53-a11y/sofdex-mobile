@@ -1,0 +1,88 @@
+{
+  "name": "FuturesReferral",
+  "type": "object",
+  "properties": {
+    "referrer_id": {
+      "type": "string",
+      "description": "User ID of the referrer"
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Unique referral code"
+    },
+    "referred_users": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "string"
+          },
+          "referred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "is_active": {
+            "type": "boolean"
+          }
+        }
+      },
+      "default": [],
+      "description": "List of referred users"
+    },
+    "total_referred": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of referred users"
+    },
+    "active_traders": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of active trading referrals"
+    },
+    "total_volume": {
+      "type": "number",
+      "default": 0,
+      "description": "Total trading volume from referrals (USD)"
+    },
+    "commission_rate": {
+      "type": "number",
+      "default": 0.25,
+      "description": "Commission percentage per lot traded (0.25 = 25%)"
+    },
+    "total_earned": {
+      "type": "number",
+      "default": 0,
+      "description": "Total commission earned"
+    },
+    "available_balance": {
+      "type": "number",
+      "default": 0,
+      "description": "Available commission balance"
+    },
+    "withdrawn": {
+      "type": "number",
+      "default": 0,
+      "description": "Total withdrawn commission"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Referral program enrollment date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "inactive",
+        "suspended"
+      ],
+      "default": "active",
+      "description": "Referral status"
+    }
+  },
+  "required": [
+    "referrer_id",
+    "referral_code"
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "name": "Strategy",
+  "type": "object",
+  "properties": {
+    "creator_id": {
+      "type": "string",
+      "description": "User ID of the strategy creator"
+    },
+    "creator_name": {
+      "type": "string",
+      "description": "Display name of the creator"
+    },
+    "name": {
+      "type": "string",
+      "description": "Strategy name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Strategy description (private, only visible to subscribers)"
+    },
+    "logic": {
+      "type": "string",
+      "description": "Strategy logic details (private)"
+    },
+    "roi": {
+      "type": "number",
+      "description": "Return on investment percentage"
+    },
+    "win_rate": {
+      "type": "number",
+      "description": "Win rate percentage"
+    },
+    "max_drawdown": {
+      "type": "number",
+      "description": "Maximum drawdown percentage"
+    },
+    "risk_level": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "default": "medium",
+      "description": "Risk level of strategy"
+    },
+    "follower_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of followers"
+    },
+    "subscriber_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of active subscribers"
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": true,
+      "description": "Strategy is private (only subscribers can see details)"
+    },
+    "pricing_plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "duration": {
+            "type": "string",
+            "enum": [
+              "1day",
+              "1week",
+              "1month"
+            ]
+          },
+          "price": {
+            "type": "number",
+            "description": "Price in USD"
+          }
+        }
+      },
+      "description": "Available subscription plans"
+    },
+    "reputation_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated reputation score"
+    },
+    "average_rating": {
+      "type": "number",
+      "default": 0,
+      "description": "Average user rating"
+    },
+    "total_revenue": {
+      "type": "number",
+      "default": 0,
+      "description": "Total subscription revenue generated"
+    },
+    "is_promoted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is strategy currently promoted"
+    },
+    "promoted_until": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Promotion expiry date"
+    },
+    "backtest_data": {
+      "type": "object",
+      "properties": {
+        "trade_count": {
+          "type": "number"
+        },
+        "winning_trades": {
+          "type": "number"
+        },
+        "losing_trades": {
+          "type": "number"
+        },
+        "avg_win": {
+          "type": "number"
+        },
+        "avg_loss": {
+          "type": "number"
+        }
+      },
+      "description": "Backtest analytics"
+    }
+  },
+  "required": [
+    "creator_id",
+    "creator_name",
+    "name",
+    "roi",
+    "win_rate",
+    "max_drawdown",
+    "pricing_plans"
+  ]
+}

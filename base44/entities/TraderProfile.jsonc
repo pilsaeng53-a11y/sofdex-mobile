@@ -1,0 +1,51 @@
+{
+  "name": "TraderProfile",
+  "type": "object",
+  "properties": {
+    "display_name": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "strategy_description": {
+      "type": "string"
+    },
+    "roi_30d": {
+      "type": "number"
+    },
+    "win_rate": {
+      "type": "number"
+    },
+    "follower_count": {
+      "type": "number",
+      "default": 0
+    },
+    "total_trades": {
+      "type": "number",
+      "default": 0
+    },
+    "is_lead_trader": {
+      "type": "boolean",
+      "default": false
+    },
+    "profit_share_rate": {
+      "type": "number",
+      "default": 10
+    },
+    "public_history": {
+      "type": "boolean",
+      "default": true
+    },
+    "visible_positions": {
+      "type": "boolean",
+      "default": false
+    },
+    "avatar_color": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "display_name"
+  ]
+}

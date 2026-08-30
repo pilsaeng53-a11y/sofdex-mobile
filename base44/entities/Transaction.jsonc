@@ -1,0 +1,86 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string",
+      "description": "User ID"
+    },
+    "wallet_address": {
+      "type": "string",
+      "description": "User's wallet address"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "deposit",
+        "withdrawal",
+        "transfer",
+        "trade"
+      ],
+      "description": "Transaction type"
+    },
+    "asset": {
+      "type": "string",
+      "description": "Asset symbol (SOL, USDC, USDT, etc)"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Transaction amount"
+    },
+    "from_address": {
+      "type": "string",
+      "description": "Source address"
+    },
+    "to_address": {
+      "type": "string",
+      "description": "Destination address"
+    },
+    "network": {
+      "type": "string",
+      "enum": [
+        "solana",
+        "ethereum",
+        "tron",
+        "bsc"
+      ],
+      "description": "Blockchain network"
+    },
+    "fee": {
+      "type": "number",
+      "description": "Transaction fee"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "completed",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Transaction status"
+    },
+    "tx_hash": {
+      "type": "string",
+      "description": "Transaction hash on blockchain"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When transaction was initiated"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes"
+    }
+  },
+  "required": [
+    "user_id",
+    "wallet_address",
+    "type",
+    "asset",
+    "amount",
+    "network",
+    "status"
+  ]
+}
